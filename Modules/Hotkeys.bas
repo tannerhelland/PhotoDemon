@@ -70,7 +70,7 @@ Private Declare Function ToUnicode Lib "user32" (ByVal wVirtKey As Long, ByVal w
 'The final optional parameter should be TRUE if
 '
 'RETURNS: the ID (index) of the added hotkey
-Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal hotKeyAction As String = vbNullString, Optional ByVal hotKeyIsPDDefault As Boolean = False) As Long
+Private Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal hotKeyAction As String = vbNullString, Optional ByVal hotKeyIsPDDefault As Boolean = False) As Long
     
     'If this hotkey already exists in the collection, we will overwrite it with the new hotkey target.
     ' (This works well for overwriting PD's default hotkeys with new ones specified by the user.)
@@ -137,7 +137,7 @@ Public Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shi
     'Return the matching index
     AddHotkey = idxHotkey
     
-    'TODO: consider notifying corresponding menu here, instead of in a batch operation at the end?
+    'NOTE: this function does *not* notify corresponding menu(s), by design.
     
 End Function
 
@@ -211,176 +211,178 @@ End Function
 ' and identical to their corresponding action in the Menus module.  (This is how hotkeys get
 ' matched up to a corresponding menu, which is important since that's the primary mechanism for
 ' discovery!)
-Public Sub InitializeDefaultHotkeys()
+Private Sub InitializeDefaultHotkeys()
+    
+    m_NumOfDefaultHotkeys = 0
     
     'Special hotkeys
-    Hotkeys.AddHotkey vbKeyF, vbCtrlMask, "tool_search", True
+    AddHotkey vbKeyF, vbCtrlMask, "tool_search", True
     
     'Tool hotkeys (e.g. keys not associated with menus)
-    Hotkeys.AddHotkey vbKeyH, , "tool_hand", True
-    Hotkeys.AddHotkey vbKeyZ, , "tool_zoom", True
-    Hotkeys.AddHotkey vbKeyM, , "tool_move", True
-    Hotkeys.AddHotkey vbKeyI, , "tool_colorselect", True
+    AddHotkey vbKeyH, , "tool_hand", True
+    AddHotkey vbKeyZ, , "tool_zoom", True
+    AddHotkey vbKeyM, , "tool_move", True
+    AddHotkey vbKeyI, , "tool_colorselect", True
     
     'Note that some hotkeys do double-duty in tool selection; you can press some of these shortcuts multiple times
     ' to toggle between similar tools (e.g. rectangular and elliptical selections).  Details can be found in
     ' FormMain.pdHotkey event handlers.
-    Hotkeys.AddHotkey vbKeyS, , "tool_select_rect", True
-    Hotkeys.AddHotkey vbKeyL, , "tool_select_lasso", True
-    Hotkeys.AddHotkey vbKeyW, , "tool_select_wand", True
-    Hotkeys.AddHotkey vbKeyT, , "tool_text_basic", True
-    Hotkeys.AddHotkey vbKeyP, , "tool_pencil", True
-    Hotkeys.AddHotkey vbKeyB, , "tool_paintbrush", True
-    Hotkeys.AddHotkey vbKeyE, , "tool_erase", True
-    Hotkeys.AddHotkey vbKeyC, , "tool_clone", True
-    Hotkeys.AddHotkey vbKeyF, , "tool_paintbucket", True
-    Hotkeys.AddHotkey vbKeyG, , "tool_gradient", True
+    AddHotkey vbKeyS, , "tool_select_rect", True
+    AddHotkey vbKeyL, , "tool_select_lasso", True
+    AddHotkey vbKeyW, , "tool_select_wand", True
+    AddHotkey vbKeyT, , "tool_text_basic", True
+    AddHotkey vbKeyP, , "tool_pencil", True
+    AddHotkey vbKeyB, , "tool_paintbrush", True
+    AddHotkey vbKeyE, , "tool_erase", True
+    AddHotkey vbKeyC, , "tool_clone", True
+    AddHotkey vbKeyF, , "tool_paintbucket", True
+    AddHotkey vbKeyG, , "tool_gradient", True
     
     'Tool modifiers; UI setting changes only!
-    Hotkeys.AddHotkey VK_OEM_4, , "tool_active_sizedown", True
-    Hotkeys.AddHotkey VK_OEM_6, , "tool_active_sizeup", True
-    Hotkeys.AddHotkey VK_OEM_4, vbShiftMask, "tool_active_hardnessdown", True
-    Hotkeys.AddHotkey VK_OEM_6, vbShiftMask, "tool_active_hardnessup", True
-    Hotkeys.AddHotkey VK_CAPITAL, , "tool_active_togglecursor", True
+    AddHotkey VK_OEM_4, , "tool_active_sizedown", True
+    AddHotkey VK_OEM_6, , "tool_active_sizeup", True
+    AddHotkey VK_OEM_4, vbShiftMask, "tool_active_hardnessdown", True
+    AddHotkey VK_OEM_6, vbShiftMask, "tool_active_hardnessup", True
+    AddHotkey VK_CAPITAL, , "tool_active_togglecursor", True
     
     'File menu
-    Hotkeys.AddHotkey vbKeyN, vbCtrlMask, "file_new", True
-    Hotkeys.AddHotkey vbKeyO, vbCtrlMask, "file_open", True
+    AddHotkey vbKeyN, vbCtrlMask, "file_new", True
+    AddHotkey vbKeyO, vbCtrlMask, "file_open", True
     
         'Most-recently used files.  Note that we cannot automatically associate these with a menu,
         ' as these menus may not exist at run-time.  (They are created dynamically.)
-        Hotkeys.AddHotkey vbKey1, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "0", True
-        Hotkeys.AddHotkey vbKey2, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "1", True
-        Hotkeys.AddHotkey vbKey3, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "2", True
-        Hotkeys.AddHotkey vbKey4, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "3", True
-        Hotkeys.AddHotkey vbKey5, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "4", True
-        Hotkeys.AddHotkey vbKey6, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "5", True
-        Hotkeys.AddHotkey vbKey7, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "6", True
-        Hotkeys.AddHotkey vbKey8, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "7", True
-        Hotkeys.AddHotkey vbKey9, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "8", True
-        Hotkeys.AddHotkey vbKey0, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "9", True
+        AddHotkey vbKey1, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "0", True
+        AddHotkey vbKey2, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "1", True
+        AddHotkey vbKey3, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "2", True
+        AddHotkey vbKey4, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "3", True
+        AddHotkey vbKey5, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "4", True
+        AddHotkey vbKey6, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "5", True
+        AddHotkey vbKey7, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "6", True
+        AddHotkey vbKey8, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "7", True
+        AddHotkey vbKey9, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "8", True
+        AddHotkey vbKey0, vbCtrlMask Or vbShiftMask, COMMAND_FILE_OPEN_RECENT & "9", True
         
         'File -> Import submenu
-        Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "file_import_scanner", True
-        Hotkeys.AddHotkey vbKeyD, vbCtrlMask Or vbShiftMask, "file_import_web", True
-        Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbAltMask, "file_import_screenshot", True
+        AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask Or vbAltMask, "file_import_scanner", True
+        AddHotkey vbKeyD, vbCtrlMask Or vbShiftMask, "file_import_web", True
+        AddHotkey vbKeyI, vbCtrlMask Or vbAltMask, "file_import_screenshot", True
     
-    Hotkeys.AddHotkey vbKeyW, vbCtrlMask, "file_close", True
-    Hotkeys.AddHotkey vbKeyW, vbCtrlMask Or vbAltMask, "file_closeall", True
-    Hotkeys.AddHotkey vbKeyS, vbCtrlMask, "file_save", True
-    Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "file_savecopy", True
-    Hotkeys.AddHotkey vbKeyS, vbCtrlMask Or vbShiftMask, "file_saveas", True
-    Hotkeys.AddHotkey vbKeyF12, 0, "file_revert", True
+    AddHotkey vbKeyW, vbCtrlMask, "file_close", True
+    AddHotkey vbKeyW, vbCtrlMask Or vbAltMask, "file_closeall", True
+    AddHotkey vbKeyS, vbCtrlMask, "file_save", True
+    AddHotkey vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "file_savecopy", True
+    AddHotkey vbKeyS, vbCtrlMask Or vbShiftMask, "file_saveas", True
+    AddHotkey vbKeyF12, 0, "file_revert", True
     
         'File -> Export submenu
-        Hotkeys.AddHotkey vbKeyW, vbCtrlMask Or vbShiftMask Or vbAltMask, "file_export_image", True
+        AddHotkey vbKeyW, vbCtrlMask Or vbShiftMask Or vbAltMask, "file_export_image", True
         
-    Hotkeys.AddHotkey vbKeyB, vbCtrlMask, "file_batch_process", True
-    Hotkeys.AddHotkey vbKeyP, vbCtrlMask, "file_print", True
-    Hotkeys.AddHotkey vbKeyQ, vbCtrlMask, "file_quit", True
+    AddHotkey vbKeyB, vbCtrlMask, "file_batch_process", True
+    AddHotkey vbKeyP, vbCtrlMask, "file_print", True
+    AddHotkey vbKeyQ, vbCtrlMask, "file_quit", True
     
     'Edit menu
-    Hotkeys.AddHotkey vbKeyZ, vbCtrlMask, "edit_undo", True
-    Hotkeys.AddHotkey vbKeyY, vbCtrlMask, "edit_redo", True
+    AddHotkey vbKeyZ, vbCtrlMask, "edit_undo", True
+    AddHotkey vbKeyY, vbCtrlMask, "edit_redo", True
     
-    Hotkeys.AddHotkey vbKeyY, vbCtrlMask Or vbShiftMask, "edit_repeat", True
+    AddHotkey vbKeyY, vbCtrlMask Or vbShiftMask, "edit_repeat", True
     
-    Hotkeys.AddHotkey vbKeyX, vbCtrlMask, "edit_cutlayer", True
-    Hotkeys.AddHotkey vbKeyC, vbCtrlMask, "edit_copylayer", True
-    Hotkeys.AddHotkey vbKeyC, vbCtrlMask Or vbShiftMask, "edit_copymerged", True
-    Hotkeys.AddHotkey vbKeyV, vbCtrlMask, "edit_pasteaslayer", True
-    Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbAltMask, "edit_pastetocursor", True
-    Hotkeys.AddHotkey vbKeyV, vbCtrlMask Or vbShiftMask, "edit_pasteasimage", True
+    AddHotkey vbKeyX, vbCtrlMask, "edit_cutlayer", True
+    AddHotkey vbKeyC, vbCtrlMask, "edit_copylayer", True
+    AddHotkey vbKeyC, vbCtrlMask Or vbShiftMask, "edit_copymerged", True
+    AddHotkey vbKeyV, vbCtrlMask, "edit_pasteaslayer", True
+    AddHotkey vbKeyV, vbCtrlMask Or vbAltMask, "edit_pastetocursor", True
+    AddHotkey vbKeyV, vbCtrlMask Or vbShiftMask, "edit_pasteasimage", True
     
-    Hotkeys.AddHotkey vbKeyF5, vbCtrlMask Or vbShiftMask, "edit_contentawarefill", True
+    AddHotkey vbKeyF5, vbCtrlMask Or vbShiftMask, "edit_contentawarefill", True
     
     'Image menu
-    Hotkeys.AddHotkey vbKeyA, vbCtrlMask Or vbShiftMask, "image_duplicate", True
-    Hotkeys.AddHotkey vbKeyR, vbCtrlMask, "image_resize", True
-    Hotkeys.AddHotkey vbKeyR, vbCtrlMask Or vbAltMask, "image_canvassize", True
-    Hotkeys.AddHotkey vbKeyX, vbCtrlMask Or vbShiftMask, "image_crop", True
-    Hotkeys.AddHotkey vbKeyX, vbCtrlMask Or vbAltMask, "image_trim", True
+    AddHotkey vbKeyA, vbCtrlMask Or vbShiftMask, "image_duplicate", True
+    AddHotkey vbKeyR, vbCtrlMask, "image_resize", True
+    AddHotkey vbKeyR, vbCtrlMask Or vbAltMask, "image_canvassize", True
+    AddHotkey vbKeyX, vbCtrlMask Or vbShiftMask, "image_crop", True
+    AddHotkey vbKeyX, vbCtrlMask Or vbAltMask, "image_trim", True
     
         'Image -> Rotate submenu
-        Hotkeys.AddHotkey vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "image_rotatearbitrary", True
+        AddHotkey vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "image_rotatearbitrary", True
     
-    Hotkeys.AddHotkey vbKeyE, vbCtrlMask Or vbShiftMask, "image_mergevisible", True
-    Hotkeys.AddHotkey vbKeyF, vbCtrlMask Or vbShiftMask, "image_flatten", True
+    AddHotkey vbKeyE, vbCtrlMask Or vbShiftMask, "image_mergevisible", True
+    AddHotkey vbKeyF, vbCtrlMask Or vbShiftMask, "image_flatten", True
     
     'Layer Menu
-    Hotkeys.AddHotkey vbKeyN, vbCtrlMask Or vbShiftMask, "layer_addbasic", True
-    Hotkeys.AddHotkey vbKeyJ, vbCtrlMask, "layer_addviacopy", True
-    Hotkeys.AddHotkey vbKeyJ, vbCtrlMask Or vbShiftMask, "layer_addviacut", True
-    Hotkeys.AddHotkey vbKeyPageUp, vbCtrlMask Or vbAltMask, "layer_gotop", True
-    Hotkeys.AddHotkey vbKeyPageUp, vbAltMask, "layer_goup", True
-    Hotkeys.AddHotkey vbKeyPageDown, vbAltMask, "layer_godown", True
-    Hotkeys.AddHotkey vbKeyPageDown, vbCtrlMask Or vbAltMask, "layer_gobottom", True
-    Hotkeys.AddHotkey vbKeyE, vbCtrlMask, "layer_mergedown", True
+    AddHotkey vbKeyN, vbCtrlMask Or vbShiftMask, "layer_addbasic", True
+    AddHotkey vbKeyJ, vbCtrlMask, "layer_addviacopy", True
+    AddHotkey vbKeyJ, vbCtrlMask Or vbShiftMask, "layer_addviacut", True
+    AddHotkey vbKeyPageUp, vbCtrlMask Or vbAltMask, "layer_gotop", True
+    AddHotkey vbKeyPageUp, vbAltMask, "layer_goup", True
+    AddHotkey vbKeyPageDown, vbAltMask, "layer_godown", True
+    AddHotkey vbKeyPageDown, vbCtrlMask Or vbAltMask, "layer_gobottom", True
+    AddHotkey vbKeyE, vbCtrlMask, "layer_mergedown", True
     
     'Select Menu
-    Hotkeys.AddHotkey vbKeyA, vbCtrlMask, "select_all", True
-    Hotkeys.AddHotkey vbKeyD, vbCtrlMask, "select_none", True
-    Hotkeys.AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask, "select_invert", True
-    Hotkeys.AddHotkey VK_OEM_6, vbCtrlMask Or vbAltMask, "select_grow", True     'VK_OEM_6 = }]
-    Hotkeys.AddHotkey VK_OEM_4, vbCtrlMask Or vbAltMask, "select_shrink", True   'VK_OEM_4 = {[  (next to the letter P)
-    Hotkeys.AddHotkey vbKeyD, vbCtrlMask Or vbAltMask, "select_feather", True
+    AddHotkey vbKeyA, vbCtrlMask, "select_all", True
+    AddHotkey vbKeyD, vbCtrlMask, "select_none", True
+    AddHotkey vbKeyI, vbCtrlMask Or vbShiftMask, "select_invert", True
+    AddHotkey VK_OEM_6, vbCtrlMask Or vbAltMask, "select_grow", True     'VK_OEM_6 = }]
+    AddHotkey VK_OEM_4, vbCtrlMask Or vbAltMask, "select_shrink", True   'VK_OEM_4 = {[  (next to the letter P)
+    AddHotkey vbKeyD, vbCtrlMask Or vbAltMask, "select_feather", True
     
     'Adjustments Menu
     
     'Adjustments top shortcut menu
-    Hotkeys.AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask, "adj_autocorrect", True
-    Hotkeys.AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask Or vbAltMask, "adj_autoenhance", True
-    Hotkeys.AddHotkey vbKeyU, vbCtrlMask Or vbShiftMask, "adj_blackandwhite", True
-    Hotkeys.AddHotkey vbKeyB, vbCtrlMask Or vbShiftMask, "adj_bandc", True
-    Hotkeys.AddHotkey vbKeyC, vbCtrlMask Or vbAltMask, "adj_colorbalance", True
-    Hotkeys.AddHotkey vbKeyM, vbCtrlMask, "adj_curves", True
-    Hotkeys.AddHotkey vbKeyL, vbCtrlMask, "adj_levels", True
-    Hotkeys.AddHotkey vbKeyH, vbCtrlMask Or vbShiftMask, "adj_sandh", True
-    Hotkeys.AddHotkey vbKeyAdd, vbCtrlMask Or vbAltMask, "adj_vibrance", True
+    AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask, "adj_autocorrect", True
+    AddHotkey vbKeyL, vbCtrlMask Or vbShiftMask Or vbAltMask, "adj_autoenhance", True
+    AddHotkey vbKeyU, vbCtrlMask Or vbShiftMask, "adj_blackandwhite", True
+    AddHotkey vbKeyB, vbCtrlMask Or vbShiftMask, "adj_bandc", True
+    AddHotkey vbKeyC, vbCtrlMask Or vbAltMask, "adj_colorbalance", True
+    AddHotkey vbKeyM, vbCtrlMask, "adj_curves", True
+    AddHotkey vbKeyL, vbCtrlMask, "adj_levels", True
+    AddHotkey vbKeyH, vbCtrlMask Or vbShiftMask, "adj_sandh", True
+    AddHotkey vbKeyAdd, vbCtrlMask Or vbAltMask, "adj_vibrance", True
     
         'Color adjustments
-        Hotkeys.AddHotkey vbKeyH, vbCtrlMask, "adj_hsl", True
-        Hotkeys.AddHotkey vbKeyP, vbCtrlMask Or vbAltMask, "adj_photofilters", True
-        Hotkeys.AddHotkey vbKeyT, vbCtrlMask, "adj_temperature", True
+        AddHotkey vbKeyH, vbCtrlMask, "adj_hsl", True
+        AddHotkey vbKeyP, vbCtrlMask Or vbAltMask, "adj_photofilters", True
+        AddHotkey vbKeyT, vbCtrlMask, "adj_temperature", True
         
         'Lighting adjustments
-        Hotkeys.AddHotkey vbKeyE, vbCtrlMask Or vbAltMask, "adj_exposure", True
-        Hotkeys.AddHotkey vbKeyG, vbCtrlMask, "adj_gamma", True
+        AddHotkey vbKeyE, vbCtrlMask Or vbAltMask, "adj_exposure", True
+        AddHotkey vbKeyG, vbCtrlMask, "adj_gamma", True
         
         'Adjustments -> Invert submenu
-        Hotkeys.AddHotkey vbKeyI, vbCtrlMask, "adj_invertrgb", True
+        AddHotkey vbKeyI, vbCtrlMask, "adj_invertrgb", True
         
         'Adjustments -> Monochrome submenu
-        Hotkeys.AddHotkey vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "adj_colortomonochrome", True
+        AddHotkey vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "adj_colortomonochrome", True
         
     'Tools menu
-    Hotkeys.AddHotkey 190, vbCtrlMask Or vbAltMask, "tools_playmacro", True  'KeyCode 190 = >.  (two keys to the right of the M letter key)
-    Hotkeys.AddHotkey vbKeyK, vbCtrlMask, "tools_options", True
-    Hotkeys.AddHotkey vbKeyM, vbCtrlMask Or vbAltMask, "tools_3rdpartylibs", True
+    AddHotkey 190, vbCtrlMask Or vbAltMask, "tools_playmacro", True  'KeyCode 190 = >.  (two keys to the right of the M letter key)
+    AddHotkey vbKeyK, vbCtrlMask, "tools_options", True
+    AddHotkey vbKeyM, vbCtrlMask Or vbAltMask, "tools_3rdpartylibs", True
     
     'View menu
-    Hotkeys.AddHotkey vbKey0, vbCtrlMask, "view_fit", True
-    Hotkeys.AddHotkey vbKeyAdd, vbCtrlMask, "view_zoomin", True
-    Hotkeys.AddHotkey vbKeySubtract, vbCtrlMask, "view_zoomout", True
-    Hotkeys.AddHotkey vbKey5, vbCtrlMask, "zoom_16_1", True
-    Hotkeys.AddHotkey vbKey4, vbCtrlMask, "zoom_8_1", True
-    Hotkeys.AddHotkey vbKey3, vbCtrlMask, "zoom_4_1", True
-    Hotkeys.AddHotkey vbKey2, vbCtrlMask, "zoom_2_1", True
-    Hotkeys.AddHotkey vbKey1, vbCtrlMask, "zoom_actual", True
-    Hotkeys.AddHotkey vbKey2, vbShiftMask, "zoom_1_2", True
-    Hotkeys.AddHotkey vbKey3, vbShiftMask, "zoom_1_4", True
-    Hotkeys.AddHotkey vbKey4, vbShiftMask, "zoom_1_8", True
-    Hotkeys.AddHotkey vbKey5, vbShiftMask, "zoom_1_16", True
-    Hotkeys.AddHotkey VK_OEM_1, vbCtrlMask Or vbShiftMask, "snap_global", True
+    AddHotkey vbKey0, vbCtrlMask, "view_fit", True
+    AddHotkey vbKeyAdd, vbCtrlMask, "view_zoomin", True
+    AddHotkey vbKeySubtract, vbCtrlMask, "view_zoomout", True
+    AddHotkey vbKey5, vbCtrlMask, "zoom_16_1", True
+    AddHotkey vbKey4, vbCtrlMask, "zoom_8_1", True
+    AddHotkey vbKey3, vbCtrlMask, "zoom_4_1", True
+    AddHotkey vbKey2, vbCtrlMask, "zoom_2_1", True
+    AddHotkey vbKey1, vbCtrlMask, "zoom_actual", True
+    AddHotkey vbKey2, vbShiftMask, "zoom_1_2", True
+    AddHotkey vbKey3, vbShiftMask, "zoom_1_4", True
+    AddHotkey vbKey4, vbShiftMask, "zoom_1_8", True
+    AddHotkey vbKey5, vbShiftMask, "zoom_1_16", True
+    AddHotkey VK_OEM_1, vbCtrlMask Or vbShiftMask, "snap_global", True
     
     'Window menu
-    Hotkeys.AddHotkey vbKeyPageDown, , "window_next", True
-    Hotkeys.AddHotkey vbKeyPageUp, , "window_previous", True
+    AddHotkey vbKeyPageDown, , "window_next", True
+    AddHotkey vbKeyPageUp, , "window_previous", True
     
 End Sub
 
 'Replace PD's current hotkey list with its default hotkey list.  This overwrites *all* user hotkey modifications.
-Public Sub CopyDefaultHotkeysToMainHotkeys()
+Private Sub CopyDefaultHotkeysToMainHotkeys()
     
     Hotkeys.EraseHotkeyCollection
     
@@ -395,24 +397,8 @@ End Sub
 ' in from file; otherwise, a default set of hotkeys will be initialized.
 Public Sub InitializeHotkeys()
     
-    'Start by initializing PhotoDemon's default hotkey collection.  We'll only use this if the user hasn't
-    ' customized hotkeys previously, but the hotkey editor needs it (so it can restore defaults, as necessary).
-    InitializeDefaultHotkeys
-    
-    Dim listExistsOnDisk As Boolean
-    listExistsOnDisk = Files.FileExists(UserPrefs.GetPresetPath() & HOTKEY_FILENAME)
-    
-    If listExistsOnDisk Then
-        'TODO: load from disk
-    
-    'If the user hasn't customized hotkeys before, that's fine!  Copy PD's default hotkey list over the
-    ' current hotkey list.
-    Else
-        CopyDefaultHotkeysToMainHotkeys
-    End If
-    
-    'All hotkeys - either PD's default ones, or user-customized ones from a saved file - have now been
-    ' added to a central hotkey collection.
+    'Generate localized translations for "Ctrl","Alt","Shift"; translators requested this!
+    CacheCommonTranslations
     
     'Activate hotkey detection on the main form.
     ' (FormMain has a specialized user control that actually detects hotkey presses,
@@ -420,16 +406,47 @@ Public Sub InitializeHotkeys()
     FormMain.HotkeyManager.Enabled = True
     FormMain.HotkeyManager.ActivateHook
     
+    'Load all hotkeys, whether internal PD defaults or a file of user-edits.
+    LoadAllHotkeys
+    
+End Sub
+
+'Load hotkeys.  As part of this function, PD's default hotkey collection gets initialized, and user edits -
+' if they exist - are loaded from file.
+Public Function LoadAllHotkeys() As Boolean
+
+    'Initializing PhotoDemon's default hotkey collection.  We'll only use this if the user hasn't
+    ' customized hotkeys previously, but the hotkey editor needs it (so it can restore defaults, as necessary).
+    InitializeDefaultHotkeys
+    
+    'Attempt to load hotkey data from file, and if it fails, revert to PD's built-in hotkey collection
+    If (Not ImportHotkeysFromFile(Hotkeys.GetNameOfHotkeyFile)) Then CopyDefaultHotkeysToMainHotkeys
+    
+    'All hotkeys - either PD's default ones, or user-customized ones from a saved file - have now been
+    ' added to a central hotkey collection.
+    
     'Relay all hotkey assignments to the menu manager.  (It needs to generate matching hotkey text
     ' and display it alongside tagged menus.)
-    CacheCommonTranslations
-    
     Dim i As Long
     For i = 0 To m_NumOfHotkeys - 1
         Menus.NotifyMenuHotkey m_Hotkeys(i).hkAction, i
     Next i
     
-End Sub
+End Function
+
+'Returns TRUE if hotkeys were loaded from source file; FALSE if the source file doesn't exist or has bad data.
+' If FALSE is returned, you will need to manually call CopyDefaultHotkeysToMainHotkeys() to ensure the default
+' hotkey collection is used.
+Private Function LoadHotkeysFromFile() As Boolean
+    
+    'A hotkey file will *not* exist on most defaults - PD only creates it if the user edits hotkeys.
+    LoadHotkeysFromFile = Files.FileExists(Hotkeys.GetNameOfHotkeyFile)
+    
+    If LoadHotkeysFromFile Then
+        LoadHotkeysFromFile = ImportHotkeysFromFile(Hotkeys.GetNameOfHotkeyFile)
+    End If
+    
+End Function
 
 'Returns a list of all *currently* active hotkeys.  These may originate from an internal default list,
 ' or the user may have customized them.
@@ -634,6 +651,70 @@ Private Function GetKeyName_Extended(ByVal srcScanCode As Long, ByRef outKeyName
     GetKeyName_Extended = (retCode > 0)
     If GetKeyName_Extended Then outKeyName = Trim$(Strings.TrimNull(Left$(outKeyName, retCode))) Else outKeyName = vbNullString
 
+End Function
+
+'Create a new hotkey collection from a source XML file.
+' This will erase all existing hotkey data, by design.
+Private Function ImportHotkeysFromFile(ByRef srcFile As String) As Boolean
+    
+    ImportHotkeysFromFile = False
+    
+    Dim cXML As pdXML
+    Set cXML = New pdXML
+    If cXML.LoadXMLFile(srcFile) Then
+        If cXML.IsPDDataType("hotkeys") Then
+            
+            'If the file validated, return TRUE.  (This allows the user to, for example, erase all hotkeys if
+            ' for some reason they want to.)
+            ImportHotkeysFromFile = True
+            
+            'Wipe all existing hotkey data
+            Hotkeys.EraseHotkeyCollection
+    
+            Dim i As Long
+            
+            'Get a list of all "hotkey" entries from the XML file
+            Dim hotkeyTags() As Long
+            If cXML.FindAllTagLocations(hotkeyTags, "hotkey") Then
+            
+                On Error GoTo BadHotkey
+                
+                For i = LBound(hotkeyTags) To UBound(hotkeyTags)
+                    
+                    Dim hkActionID As String
+                    Const HOTKEY_CODE_ACTION As String = "action"
+                    hkActionID = cXML.GetUniqueTag_String(HOTKEY_CODE_ACTION, vbNullString, hotkeyTags(i))
+                    If (LenB(hkActionID) <> 0) Then
+                        
+                        'Next, pull shift state and keycode from this entry and store them in this hotkey
+                        Dim newShiftState As ShiftConstants
+                        newShiftState = 0
+                        
+                        Const HOTKEY_CODE_CTRL As String = "ctrl", HOTKEY_CODE_ALT As String = "alt", HOTKEY_CODE_SHIFT As String = "shift"
+                        If (cXML.GetUniqueTag_Long(HOTKEY_CODE_CTRL, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbCtrlMask
+                        If (cXML.GetUniqueTag_Long(HOTKEY_CODE_ALT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbAltMask
+                        If (cXML.GetUniqueTag_Long(HOTKEY_CODE_SHIFT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbShiftMask
+                        
+                        Dim srcKeyCode As KeyCodeConstants
+                        Const HOTKEY_CODE_TAG As String = "key-id"
+                        srcKeyCode = cXML.GetUniqueTag_Long(HOTKEY_CODE_TAG, 0, hotkeyTags(i))
+                        
+                        'Add this to the running hotkey collection
+                        AddHotkey srcKeyCode, newShiftState, hkActionID, False
+                        
+                    End If
+                    
+BadHotkey:
+                Next i
+                
+                On Error GoTo 0
+                
+            '/at least one hotkey found
+            End If
+            
+        End If
+    End If
+    
 End Function
 
 'Some hotkey-related text is accessed very frequently (e.g. "Ctrl"), so when a translation is active,

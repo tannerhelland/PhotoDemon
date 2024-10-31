@@ -583,7 +583,7 @@ BadHotkey:
 End Sub
 
 'Export the current hotkey collection to file
-Private Sub ExportHotkeysToFile(ByRef dstFile As String)
+Private Sub ExportHotkeysToFile(ByRef dstFile As String, Optional ByVal stripDuplicatesFirst As Boolean = False)
     
     If Files.FileExists(dstFile) Then Files.FileDelete dstFile
     
@@ -592,28 +592,60 @@ Private Sub ExportHotkeysToFile(ByRef dstFile As String)
     cXML.PrepareNewXML "hotkeys"
     cXML.WriteBlankLine
     
+    Dim hotkeysWritten As pdVariantHash, actionsWritten As pdVariantHash
+    Set hotkeysWritten = New pdVariantHash: Set actionsWritten = New pdVariantHash
+    
     'Iterate all hotkeys, and write any with non-zero keycodes out to file
     Dim i As Long
     For i = 0 To m_numItems - 1
         If (m_Items(i).hk_KeyCode <> 0) Then
             
-            Const HOTKEY_TAG As String = "hotkey"
-            cXML.WriteTag HOTKEY_TAG, vbNullString, doNotCloseTag:=True
+            Dim okToWrite As Boolean, meaninglessReturn As Variant
+            okToWrite = True
             
-            Const HOTKEY_CODE_TAG As String = "key-id"
-            cXML.WriteTag HOTKEY_CODE_TAG, Trim$(Str$(m_Items(i).hk_KeyCode))
+            'Generate a string version of this keycode, and only proceed if we *haven't* already written out
+            ' this keycode before.
+            Dim strKeyCode As String
+            strKeyCode = Trim$(Str$(m_Items(i).hk_KeyCode))
             
-            Const HOTKEY_CODE_CTRL As String = "ctrl", HOTKEY_CODE_ALT As String = "alt", HOTKEY_CODE_SHIFT As String = "shift"
             Const STR_ZERO As String = "0", STR_ONE As String = "1"
-            cXML.WriteTag HOTKEY_CODE_CTRL, IIf((m_Items(i).hk_ShiftState And vbCtrlMask) <> 0, STR_ONE, STR_ZERO)
-            cXML.WriteTag HOTKEY_CODE_ALT, IIf((m_Items(i).hk_ShiftState And vbAltMask) <> 0, STR_ONE, STR_ZERO)
-            cXML.WriteTag HOTKEY_CODE_SHIFT, IIf((m_Items(i).hk_ShiftState And vbShiftMask) <> 0, STR_ONE, STR_ZERO)
+            Dim strCtrl As String, strAlt As String, strShift As String
+            strCtrl = IIf((m_Items(i).hk_ShiftState And vbCtrlMask) <> 0, STR_ONE, STR_ZERO)
+            strAlt = IIf((m_Items(i).hk_ShiftState And vbAltMask) <> 0, STR_ONE, STR_ZERO)
+            strShift = IIf((m_Items(i).hk_ShiftState And vbShiftMask) <> 0, STR_ONE, STR_ZERO)
             
-            Const HOTKEY_CODE_ACTION As String = "action"
-            cXML.WriteTag HOTKEY_CODE_ACTION, m_Items(i).hk_ActionID
+            If stripDuplicatesFirst Then
+                okToWrite = (Not actionsWritten.GetItemByKey(m_Items(i).hk_ActionID, meaninglessReturn))
+                okToWrite = okToWrite And (Not hotkeysWritten.GetItemByKey(strKeyCode & strCtrl & strAlt & strShift, meaninglessReturn))
+            End If
             
-            cXML.CloseTag HOTKEY_TAG
-            
+            If okToWrite Then
+                
+                Const HOTKEY_TAG As String = "hotkey"
+                cXML.WriteTag HOTKEY_TAG, vbNullString, doNotCloseTag:=True
+                
+                Const HOTKEY_CODE_TAG As String = "key-id"
+                cXML.WriteTag HOTKEY_CODE_TAG, strKeyCode
+                
+                Const HOTKEY_CODE_CTRL As String = "ctrl", HOTKEY_CODE_ALT As String = "alt", HOTKEY_CODE_SHIFT As String = "shift"
+                cXML.WriteTag HOTKEY_CODE_CTRL, strCtrl
+                cXML.WriteTag HOTKEY_CODE_ALT, strAlt
+                cXML.WriteTag HOTKEY_CODE_SHIFT, strShift
+                
+                Const HOTKEY_CODE_ACTION As String = "action"
+                cXML.WriteTag HOTKEY_CODE_ACTION, m_Items(i).hk_ActionID
+                
+                cXML.CloseTag HOTKEY_TAG
+                
+                'Add this as a "written" hotkey, and tag it both by action *and* hotkey.
+                ' (The menu manager automatically handles resolving duplicates by action, and duplicates by *hotkey* break things.)
+                actionsWritten.AddItem m_Items(i).hk_ActionID, meaninglessReturn
+                hotkeysWritten.AddItem strKeyCode & strCtrl & strAlt & strShift, meaninglessReturn
+                
+            Else
+                Debug.Print "skipping writing " & m_Items(i).hk_ActionID
+            End If
+                
         End If
     Next i
     
@@ -630,28 +662,24 @@ End Sub
 Private Sub cmdBar_OKClick()
     
     'TODO: validate that something has changed?
+    'TODO: scan for and notify on duplicates
     
-    'Start by writing the current collection out to file.
+    'Start by writing the current collection out to file, and note that duplicates will be forcibly resolved.
     Dim dstFile As String
     dstFile = Hotkeys.GetNameOfHotkeyFile()
-    ExportHotkeysToFile dstFile
+    ExportHotkeysToFile dstFile, True
     
     'We now need to notify some outside entities that hotkeys have changed.
     
-    'Notify both the hotkey manager and the menu manager that hotkeys are changing
+    'Notify both the hotkey manager and the menu manager that hotkeys are out of date, and need to be re-loaded
     Hotkeys.EraseHotkeyCollection
     Menus.NotifyHotkeysChanged
     
-    'Now, iterate hotkeys and add them to both places simultaneously
-    Dim i As Long, idxAdded As Long
-    For i = 0 To m_numItems - 1
-        If (m_Items(i).hk_KeyCode <> 0) Then
-            idxAdded = Hotkeys.AddHotkey(m_Items(i).hk_KeyCode, m_Items(i).hk_ShiftState, m_Items(i).hk_ActionID)
-            Menus.NotifyMenuHotkey m_Items(i).hk_ActionID, idxAdded
-        End If
-    Next i
+    'Now ask the hotkey manager to re-load all hotkey data from our freshly saved file.  It will also notify the
+    ' menu module of all changes.
+    Hotkeys.LoadAllHotkeys
     
-    'Menus now need to be redrawn with new text
+    'Before exiting, menus need to be redrawn (as their text will have changed)
     Menus.UpdateAgainstCurrentTheme True
     
 End Sub
