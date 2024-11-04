@@ -136,8 +136,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright 2013-2024 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 19/February/24
-'Last update: new property for hiding randomize button (it doesn't make any sense on some dialogs)
+'Last updated: 04/November/24
+'Last update: allow owner to cancel reset actions (for example, if the user declines a "want to proceed?" prompt)
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -180,7 +180,7 @@ Public Event CancelClick()
 'Clicking the RESET button raises the corresponding event.  The rules PD uses for resetting controls are explained
 ' in the cmdReset_Click() sub below.  Additionally, if no last-used settings are found in the Data/Presets folder,
 ' this event will be automatically triggered when the parent dialog is loaded.
-Public Event BeforeResetClick()
+Public Event BeforeResetClick(ByRef cancelReset As Boolean)
 Public Event ResetClick()
 
 'Clicking the RANDOMIZE button raises the corresponding event.  Most dialogs won't need to use this event,
@@ -767,7 +767,9 @@ Private Sub ResetSettings()
     m_allowPreviews = False
     
     'Allow the caller to perform any pre-randomization tasks
-    RaiseEvent BeforeResetClick
+    Dim cancelReset As Boolean: cancelReset = False
+    RaiseEvent BeforeResetClick(cancelReset)
+    If cancelReset Then Exit Sub
     
     'By default, controls are reset according to the following pattern:
     ' 1) If a numeric control can be set to 0, it will be.

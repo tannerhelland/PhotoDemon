@@ -1049,7 +1049,7 @@ Private Sub cmdBar_AddCustomPresetData()
 
 End Sub
 
-Private Sub cmdBar_BeforeResetClick()
+Private Sub cmdBar_BeforeResetClick(ByRef cancelReset As Boolean)
     m_PrevPanelBeforeReset = m_PreviousPanel
     m_PanelBeforeReset = btsEdit.ListIndex
 End Sub

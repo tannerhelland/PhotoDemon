@@ -114,6 +114,8 @@ Begin VB.Form FormHotkeys
       Width           =   11760
       _ExtentX        =   20743
       _ExtentY        =   1296
+      AutoloadLastPreset=   -1  'True
+      DontResetAutomatically=   -1  'True
       HideRandomizeButton=   -1  'True
    End
    Begin PhotoDemon.pdTreeviewOD tvMenus 
@@ -321,6 +323,10 @@ End Sub
 
 Private Sub UpdateHotkeyManually()
     
+    'When one of the Ctrl/Shift/Alt checkboxes *or* the keycode dropdown are changed, call this function to
+    ' relay the change to the underlying hotkey collection, then redraw the treeview.  (Importantly, this function
+    ' *won't* fire if those UI elements were updated by changes that originated from the treeview, like the user
+    ' typing in a new shortcut when auto-detect is ON.)
     If (Not m_inAutoUpdate) And (tvMenus.ListIndex >= 0) And (ddKey.ListIndex >= 0) Then
         
         m_inAutoUpdate = True
@@ -331,12 +337,9 @@ Private Sub UpdateHotkeyManually()
         If chkModifier(2).Value Then newShiftState = newShiftState Or vbShiftMask
         
         With m_Items(tvMenus.ListIndex)
-            m_backupHotkeyShift = newShiftState
-            .hk_ShiftState = m_backupHotkeyShift
-            m_backupHotkeyVKCode = m_possibleHotkeys(ddKey.ListIndex).ph_VKCode
-            .hk_KeyCode = m_backupHotkeyVKCode
-            m_backupHotkeyText = AutoTextKeyChange(newShiftState, .hk_KeyCode)
-            .hk_HotkeyText = m_backupHotkeyText
+            .hk_ShiftState = newShiftState
+            .hk_KeyCode = m_possibleHotkeys(ddKey.ListIndex).ph_VKCode
+            .hk_HotkeyText = AutoTextKeyChange(newShiftState, .hk_KeyCode)
         End With
         
         'Ensure duplicate hotkeys are flagged and marked
@@ -359,8 +362,10 @@ Private Sub cmdAll_Click(Index As Integer)
         
         'Undo all hotkey changes (this session)
         Case 0
-                
-            'TODO: prompt the user before erasing everything they've done!
+            
+            'Because this overwrites everything, ask for change before continuing
+            If (Not OkayToOverwriteAll()) Then Exit Sub
+            
             For i = 0 To m_numItems - 1
                 With m_Items(i)
                     .hk_KeyCode = .hk_BackupKeyCode
@@ -377,7 +382,9 @@ Private Sub cmdAll_Click(Index As Integer)
         'Restore all hotkey defaults
         Case 1
             
-            'TODO: prompt the user before erasing everything they've done!
+            'Because this overwrites everything, ask for change before continuing
+            If (Not OkayToOverwriteAll()) Then Exit Sub
+            
             For i = 0 To m_numItems - 1
                 With m_Items(i)
                     .hk_KeyCode = .hk_DefaultKeyCode
@@ -393,6 +400,9 @@ Private Sub cmdAll_Click(Index As Integer)
         
         'Import hotkeys
         Case 2
+            
+            'Because this overwrites everything, ask for change before continuing
+            If (Not OkayToOverwriteAll()) Then Exit Sub
             
             'Disable user input until the dialog closes
             Interface.DisableUserInput
@@ -565,10 +575,6 @@ BadHotkey:
             'If the user previously selected an item in the treeview, update it now
             If (tvMenus.ListIndex >= 0) Then
                 
-                m_backupHotkeyVKCode = m_Items(tvMenus.ListIndex).hk_KeyCode
-                m_backupHotkeyText = m_Items(tvMenus.ListIndex).hk_HotkeyText
-                m_backupHotkeyShift = m_Items(tvMenus.ListIndex).hk_ShiftState
-                
                 'Similarly, ensure the left-side manual edit controls are updated correctly.
                 m_inAutoUpdate = True
                 AutoTextKeyChange m_Items(tvMenus.ListIndex).hk_ShiftState, m_Items(tvMenus.ListIndex).hk_KeyCode
@@ -659,12 +665,64 @@ Private Sub cmdBar_AddCustomPresetData()
     'TODO: save entire hotkey list - this would let the user swap between e.g. "GIMP" and "Photoshop" presets?
 End Sub
 
+Private Sub cmdBar_BeforeResetClick(ByRef cancelReset As Boolean)
+    
+    'Because this overwrites everything, ask for change before continuing
+    If (Not OkayToOverwriteAll()) Then cancelReset = True
+    
+End Sub
+
+Private Sub cmdBar_ExtraValidations()
+    
+    'PD can automatically resolve duplicate hotkeys, but the user should be warned (since this may produce unexpected results).
+    FlagAllDuplicates
+    
+    Dim dupesFound As Boolean: dupesFound = False
+    Dim i As Long, idxFirstDuplicate As Long
+    For i = 0 To m_numItems - 1
+        If m_Items(i).hk_DuplicateFound Then
+            dupesFound = True
+            idxFirstDuplicate = i
+            Exit For
+        End If
+    Next i
+    
+    If dupesFound Then
+        
+        Dim txtWarning As pdString, txtTitle As String
+        txtTitle = g_Language.TranslateMessage("Warning")
+        
+        Set txtWarning = New pdString
+        txtWarning.AppendLine g_Language.TranslateMessage("One or more hotkeys is currently assigned to multiple actions.")
+        txtWarning.AppendLineBreak
+        txtWarning.AppendLine g_Language.TranslateMessage("If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.")
+        txtWarning.AppendLineBreak
+        txtWarning.AppendLine g_Language.TranslateMessage("Press OK to proceed.")
+        txtWarning.AppendLine g_Language.TranslateMessage("Press cancel to keep editing hotkeys.")
+        
+        Dim userAction As VbMsgBoxResult
+        userAction = PDMsgBox(txtWarning.ToString, vbExclamation Or vbOKCancel Or vbApplicationModal, txtTitle)
+        
+        If (userAction <> vbOK) Then
+            
+            'The user wants to go back to editing.  Auto-select the first duplicate in the list for them.
+            tvMenus.ListIndex = idxFirstDuplicate
+            
+            cmdBar.ValidationFailed
+            Exit Sub
+            
+        End If
+        
+    End If
+    
+End Sub
+
 Private Sub cmdBar_OKClick()
     
+    'Look at ExtraValidations() to see the things this dialog validates before allowing an OK press to continue.
     'TODO: validate that something has changed?
-    'TODO: scan for and notify on duplicates
     
-    'Start by writing the current collection out to file, and note that duplicates will be forcibly resolved.
+    'Start by writing the current collection out to file.  (Any duplicates, if they exist, will be forcibly resolved now.)
     Dim dstFile As String
     dstFile = Hotkeys.GetNameOfHotkeyFile()
     ExportHotkeysToFile dstFile, True
@@ -685,7 +743,30 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    'TODO
+    
+    'Restore everything to its original state (e.g. when the dialog was loaded)
+    Dim i As Long
+    For i = 0 To m_numItems - 1
+        With m_Items(i)
+            .hk_KeyCode = .hk_BackupKeyCode
+            .hk_HotkeyText = .hk_BackupHotkeyText
+            .hk_ShiftState = .hk_BackupShiftState
+        End With
+    Next i
+    
+    'Ensure duplicate hotkeys are flagged and marked (failsafe only)
+    FlagAllDuplicates
+    
+    'Toggle the current listindex to ensure a redraw and correct checkbox values on the lower-left
+    Dim idxOld As Long
+    idxOld = tvMenus.ListIndex
+    tvMenus.ListIndex = -1
+    tvMenus.ListIndex = idxOld
+    tvMenus.RequestListRedraw
+    
+    'Select the (none) entry as relevant
+    If (tvMenus.ListIndex = -1) Then ddKey.ListIndex = m_idxNoneHotkey
+    
 End Sub
 
 Private Sub cmdThisHotkey_Click(Index As Integer)
@@ -698,11 +779,8 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
             Case 0
                 With m_Items(tvMenus.ListIndex)
                     .hk_KeyCode = .hk_BackupKeyCode
-                    m_backupHotkeyVKCode = .hk_KeyCode
                     .hk_HotkeyText = .hk_BackupHotkeyText
-                    m_backupHotkeyText = .hk_HotkeyText
                     .hk_ShiftState = .hk_BackupShiftState
-                    m_backupHotkeyShift = .hk_ShiftState
                 End With
                 
                 'Ensure duplicate hotkeys are flagged and marked
@@ -712,11 +790,8 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
             Case 1
                 With m_Items(tvMenus.ListIndex)
                     .hk_KeyCode = .hk_DefaultKeyCode
-                    m_backupHotkeyVKCode = .hk_KeyCode
                     .hk_HotkeyText = .hk_DefaultHotkeyText
-                    m_backupHotkeyText = .hk_HotkeyText
                     .hk_ShiftState = .hk_DefaultShiftState
-                    m_backupHotkeyShift = .hk_ShiftState
                 End With
                 
                 'Ensure duplicate hotkeys are flagged and marked
@@ -729,9 +804,6 @@ Private Sub cmdThisHotkey_Click(Index As Integer)
                     .hk_HotkeyText = vbNullString
                     .hk_ShiftState = 0
                 End With
-                m_backupHotkeyVKCode = 0
-                m_backupHotkeyText = vbNullString
-                m_backupHotkeyShift = 0
                 
                 'Ensure duplicate hotkeys are flagged and marked.
                 ' (In this case, we're mostly interested in *clearing* duplicate flags, as they may have been resolved
@@ -831,7 +903,7 @@ Private Sub Form_Load()
                     If (m_Menus(i).me_SubSubMenu >= 0) Then .hk_NumParents = 2
                 End If
                 
-                'Debug.Print .hk_ActionID, .hk_ParentID, .hk_HasChildren
+                'PDDebug.LogAction .hk_ActionID & ", " & .hk_ParentID & ", " & .hk_HasChildren & ", " & .hk_NumParents
                 
                 'Add this menu item to the treeview
                 tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, False
@@ -951,12 +1023,6 @@ Private Sub tvMenus_Click()
         Exit Sub
     End If
     
-    'Update the previously edited hotkey, if any
-    If (m_idxLastHotkey >= 0) And (m_idxLastHotkey <> tvMenus.ListIndex) Then
-        StoreUpdatedHotkey m_idxLastHotkey
-        FlagAllDuplicates
-    End If
-    
     m_inAutoUpdate = True
     
     'Do not allow hotkeys on menu items with children
@@ -1028,8 +1094,7 @@ Private Sub tvMenus_Click()
             
             'Position it and fill it with the hotkey for the current tree item.
             ' (Note that the backup hotkey text *must* be set first - see the edit box _Change event for details.)
-            m_backupHotkeyText = m_Items(tvMenus.ListIndex).hk_HotkeyText
-            Me.txtHotkey.Text = m_backupHotkeyText
+            Me.txtHotkey.Text = m_Items(tvMenus.ListIndex).hk_HotkeyText
             Me.txtHotkey.SetPositionAndSize ebRectF.Left, ebRectF.Top, ebRectF.Width, ebRectF.Height
             Me.txtHotkey.Visible = True
             Me.txtHotkey.ZOrder 0
@@ -1037,7 +1102,8 @@ Private Sub tvMenus_Click()
             
         End If
         
-        'Note this as the last-edited hotkey, and update all data backups to match
+        'Note this as the last-edited hotkey, and update all data backups to match.
+        ' (We'll restore these if the user enters an invalid hotkey, like Ctrl+Shift+[nothing])
         m_idxLastHotkey = tvMenus.ListIndex
         m_backupHotkeyText = m_Items(tvMenus.ListIndex).hk_HotkeyText
         m_backupHotkeyVKCode = m_Items(tvMenus.ListIndex).hk_KeyCode
@@ -1123,49 +1189,152 @@ Private Sub tvMenus_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     
 End Sub
 
-Private Sub tvMenus_LostFocusAPI()
-    If (tvMenus.ListIndex >= 0) And (Not m_inAutoUpdate) Then
-        StoreUpdatedHotkey tvMenus.ListIndex
-        FlagAllDuplicates
-        tvMenus.RequestListRedraw
+Private Sub tvMenus_MouseOver(ByVal itemIndex As Long, itemTextEn As String)
+    
+    'If the current treeview item has a duplicate hotkey, warn the user.
+    If (itemIndex >= 0) And (itemIndex < m_numItems) Then
+        If (m_Items(itemIndex).hk_KeyCode <> 0) And m_Items(itemIndex).hk_DuplicateFound Then
+            
+            Dim toolMsg As String
+            toolMsg = g_Language.TranslateMessage("Please use this hotkey on just one action:") & vbCrLf
+            
+            'Start by adding the *current* item to the list
+            Dim hkItemName As String
+            hkItemName = m_Items(itemIndex).hk_TextLocalized
+            
+            Dim idxSource As Long, idxTarget As Variant
+            If (m_Items(itemIndex).hk_NumParents > 0) Then
+                
+                idxSource = itemIndex
+                Do While m_ActionHash.GetItemByKey(m_Items(idxSource).hk_ParentID, idxTarget)
+                    If (idxTarget = idxSource) Then Exit Do     'Failsafe only
+                    hkItemName = m_Items(idxTarget).hk_TextLocalized & " > " & hkItemName
+                    If (m_Items(idxTarget).hk_NumParents > 0) Then
+                        idxSource = idxTarget
+                    Else
+                        Exit Do
+                    End If
+                Loop
+                
+            End If
+            
+            'Append this menu to the list of "duplicates"
+            toolMsg = toolMsg & vbCrLf & hkItemName & " " & g_Language.TranslateMessage("(this item)")
+            
+            Dim i As Long
+            For i = 0 To m_numItems - 1
+                If (i <> itemIndex) Then
+                    If (m_Items(i).hk_KeyCode = m_Items(itemIndex).hk_KeyCode) And (m_Items(i).hk_ShiftState = m_Items(itemIndex).hk_ShiftState) Then
+                        
+                        'This item uses the same hotkey as the target item.  Generate a string for it.
+                        hkItemName = m_Items(i).hk_TextLocalized
+                        If (m_Items(i).hk_NumParents > 0) Then
+                            
+                            idxSource = i
+                            Do While m_ActionHash.GetItemByKey(m_Items(idxSource).hk_ParentID, idxTarget)
+                                If (idxTarget = idxSource) Then Exit Do     'Failsafe only
+                                hkItemName = m_Items(idxTarget).hk_TextLocalized & " > " & hkItemName
+                                If (m_Items(idxTarget).hk_NumParents > 0) Then
+                                    idxSource = idxTarget
+                                Else
+                                    Exit Do
+                                End If
+                            Loop
+                            
+                        End If
+                        
+                        'Append this menu to the list of "duplicates"
+                        toolMsg = toolMsg & vbCrLf & hkItemName
+                        
+                    End If
+                End If
+            Next i
+            
+            Dim toolTitle As String
+            toolTitle = g_Language.TranslateMessage("Hotkeys must be unique.")
+            tvMenus.AssignTooltip toolMsg, toolTitle, True
+        Else
+            tvMenus.AssignTooltip vbNullString, vbNullString, False
+        End If
+    Else
+        tvMenus.AssignTooltip vbNullString, vbNullString, False
     End If
+    
 End Sub
 
 Private Sub tvMenus_ScrollOccurred()
     HideEditBox
 End Sub
 
-Private Sub txtHotkey_Change()
-    If (txtHotkey.Text <> m_backupHotkeyText) Then txtHotkey.Text = m_backupHotkeyText
-End Sub
-
 Private Sub txtHotkey_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
     
+    'Failsafe only
+    If (tvMenus.ListIndex < 0) Then Exit Sub
+    
+    'Prevent circular updates
     m_inAutoUpdate = True
     
-    'Build a string for Ctrl/Alt/Shift, and ensure the checkboxes at the bottom reflect the current state
-    m_backupHotkeyText = AutoTextKeyChange(Shift, vKey)
-    m_backupHotkeyShift = Shift
-    m_backupHotkeyVKCode = vKey
-    txtHotkey.Text = m_backupHotkeyText
+    'Get a text representation of the hotkey as it currently appears, and reflect that in the edit box
+    Dim hkAsText As String
+    hkAsText = AutoTextKeyChange(Shift, vKey)
+    txtHotkey.Text = hkAsText
+    
+    'Only update the stored keycode on non-ctrl/alt/shift presses.
+    If (vKey <> VK_SHIFT) And (vKey <> VK_ALT) And (vKey <> VK_CONTROL) Then
+        
+        'Build a string for Ctrl/Alt/Shift, and ensure the checkboxes at the bottom reflect the current state.
+        With m_Items(tvMenus.ListIndex)
+            .hk_HotkeyText = hkAsText
+            .hk_ShiftState = Shift
+            .hk_KeyCode = vKey
+        End With
+        
+    End If
+    
     preventFurtherHandling = True
     
 End Sub
 
 Private Sub txtHotkey_KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+    
     preventFurtherHandling = True
     m_inAutoUpdate = False
+    
+    'Display a warning symbol if this hotkey is already used elsewhere
+    FlagAllDuplicates
+    tvMenus.RequestListRedraw
+    
 End Sub
 
 Private Sub txtHotkey_LostFocusAPI()
     
+    'To avoid issues at startup, manually check visibility (this will always be *true* after startup)
     If txtHotkey.Visible Then
         
-        If (tvMenus.ListIndex >= 0) And (Not m_inAutoUpdate) Then
-            StoreUpdatedHotkey tvMenus.ListIndex
+        'Failsafe checks only
+        If (m_idxLastHotkey >= 0) And (Not m_inAutoUpdate) Then
+            
+            'Make sure the user entered a valid hotkey
+            If (m_Items(m_idxLastHotkey).hk_KeyCode = 0) Then
+                
+                'The user didn't enter a hotkey.  Restore the previous selection, if any.
+                With m_Items(m_idxLastHotkey)
+                    .hk_HotkeyText = m_backupHotkeyText
+                    .hk_KeyCode = m_backupHotkeyVKCode
+                    .hk_ShiftState = m_backupHotkeyShift
+                End With
+                
+                'Because shift/ctrl/alt modifiers have changed, we also need to reset the on-screen UI for these keys
+                If (tvMenus.ListIndex = m_idxLastHotkey) Then AutoTextKeyChange m_backupHotkeyShift, m_backupHotkeyVKCode
+                
+            End If
+            
+            'Flag duplicates again, just in case
             FlagAllDuplicates
+            
         End If
         
+        'Hide the textbox and request a redraw to ensure on-screen state matches any changes made via edit box
         txtHotkey.Visible = False
         tvMenus.RequestListRedraw
         
@@ -1173,16 +1342,8 @@ Private Sub txtHotkey_LostFocusAPI()
     
 End Sub
 
-Private Sub StoreUpdatedHotkey(ByVal idxTarget As Long)
-    With m_Items(idxTarget)
-        .hk_KeyCode = m_backupHotkeyVKCode
-        .hk_HotkeyText = m_backupHotkeyText
-        .hk_ShiftState = m_backupHotkeyShift
-    End With
-End Sub
-
 'Update the bottom "manual" controls to reflect current keystate.
-' Returns: a string reflecting the current key state
+' Returns: a string reflecting the hotkey key state.
 Private Function AutoTextKeyChange(ByVal Shift As ShiftConstants, ByVal vKey As Long) As String
     
     Dim newText As String
@@ -1237,18 +1398,12 @@ Private Function AutoTextKeyChange(ByVal Shift As ShiftConstants, ByVal vKey As 
     
 End Function
 
-'Hide the hotkey edit box (if visible) and optionally, commit any pending hotkey changes the user has entered
-Private Sub HideEditBox(Optional ByVal commitChangesFirst As Boolean = False)
-    
-    'Ignore if the edit box is already invisible (note also that this *skips* committing changes)
+'Hide the hotkey edit box (if visible).  Make sure you commit any pending hotkey changes *before* calling this.
+' (NOTE: previously, this function would also commit pending hotkey changes.  This has since been removed in favor
+'  of committing on KeyDown; this allows me to immediately display a warning symbol for duplicate hotkeys.)
+Private Sub HideEditBox()
     If (Not txtHotkey.Visible) Then Exit Sub
-    
-    If commitChangesFirst Then
-        'TODO
-    End If
-    
     txtHotkey.Visible = False
-    
 End Sub
 
 Private Sub GeneratePossibleHotkeys()
@@ -1678,7 +1833,8 @@ Private Function FindDuplicates(ByVal idxSource As Long, ByRef dstIdxList As pdS
     
 End Function
 
-'Correctly set all "this hotkey is used elsewhere" flags in m_Items().
+'Correctly set all "this hotkey is used elsewhere" flags in m_Items().  This uses a naive double-loop, and could easily be
+' accelerated with hash tables.
 Private Sub FlagAllDuplicates()
     
     Dim i As Long, j As Long
@@ -1687,19 +1843,42 @@ Private Sub FlagAllDuplicates()
     Next i
     
     For i = 0 To m_numItems - 1
-        For j = i + 1 To m_numItems - 1
-            If (i <> j) Then
-                If Strings.StringsEqual(m_Items(j).hk_HotkeyText, m_Items(i).hk_HotkeyText, True) Then
-                    
-                    'Compare action IDs; we only care if these are *mismatched*
-                    If Strings.StringsNotEqual(m_Items(j).hk_ActionID, m_Items(i).hk_ActionID, True) Then
+        If (m_Items(i).hk_KeyCode <> 0) Then
+            For j = i + 1 To m_numItems - 1
+                If (i <> j) Then
+                    If IsThisAnInvalidDuplicate(i, j) Then
                         m_Items(i).hk_DuplicateFound = True
                         m_Items(j).hk_DuplicateFound = True
                     End If
-                    
                 End If
-            End If
-        Next j
+            Next j
+        End If
     Next i
     
 End Sub
+
+'Compare two items, and return TRUE if they share a hotkey, but map to different actions.
+Private Function IsThisAnInvalidDuplicate(ByVal srcIndex1 As Long, ByVal srcIndex2 As Long) As Boolean
+    
+    'Ignore requests on the same index!
+    If (srcIndex1 <> srcIndex2) Then
+        
+        'Hotkey text must be correctly filled for this function to work
+        If Strings.StringsEqual(m_Items(srcIndex1).hk_HotkeyText, m_Items(srcIndex2).hk_HotkeyText, True) Then
+            
+            'Compare action IDs; we only care if these are *mismatched*.  (Sometimes, two different menus map to the same action;
+            ' e.g. this can happen in the Adjustments menu for top-level shortcuts and formally organized ops - these items share
+            ' the same hotkey *by design* because they do the *same thing*.)
+            IsThisAnInvalidDuplicate = Strings.StringsNotEqual(m_Items(srcIndex1).hk_ActionID, m_Items(srcIndex2).hk_ActionID, True)
+            
+        End If
+    End If
+    
+End Function
+
+'Present a generic dialog that warns all hotkeys are about to be overwritten.  We can show this before any "reset" action.
+Private Function OkayToOverwriteAll() As Boolean
+    Dim msgWarn As String
+    msgWarn = g_Language.TranslateMessage("This will overwrite any hotkey edits.  Are you sure you want to continue?")
+    OkayToOverwriteAll = (PDMsgBox(msgWarn, vbYesNoCancel Or vbExclamation Or vbApplicationModal, "Warning") = vbYes)
+End Function

@@ -3,10 +3,8 @@ Attribute VB_Name = "Hotkeys"
 'PhotoDemon Custom Hotkey handler
 'Copyright 2015-2024 by Tanner Helland and contributors
 'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon)
-'Last updated: 04/October/21
-'Last update: create this new module to host actual hotkey management; the old pdAccelerator control
-'             on FormMain is still used to for actual key-hooking and raising hotkey events, but it
-'             is no longer responsible for *any* element of actual hotkey storage and management.
+'Last updated: 31/October/24
+'Last update: many changes to allow interop with FormHotkeys (for user-edited hotkeys)
 '
 'In 2024 (hopefully), PhotoDemon *finally* provides a way for users to specify custom hotkeys.
 ' This module is responsible for managing custom hotkey assignments, and it also manages default
@@ -65,11 +63,11 @@ Private Declare Function ToUnicode Lib "user32" (ByVal wVirtKey As Long, ByVal w
 
 'Add a new hotkey to the collection.  While the hotKeyAction parameter is marked as OPTIONAL, that's purely to
 ' allow the preceding constant (shift modifiers, which are often null) to be optional.
-' (TODO: reorder parameters in the future to make it abundantly clear that the hotkey action is 100% MANDATORY lol.)
 '
-'The final optional parameter should be TRUE if
+'The final optional parameter should be TRUE if the added hotkey is a PhotoDemon default.  (Default hotkeys
+' are managed separately, so that we can restore them if the user's hotkey settings are invalid or missing.)
 '
-'RETURNS: the ID (index) of the added hotkey
+'RETURNS: the ID (index) of the added hotkey.
 Private Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Shift As ShiftConstants = 0&, Optional ByVal hotKeyAction As String = vbNullString, Optional ByVal hotKeyIsPDDefault As Boolean = False) As Long
     
     'If this hotkey already exists in the collection, we will overwrite it with the new hotkey target.
@@ -80,7 +78,6 @@ Private Function AddHotkey(ByVal vKeyCode As KeyCodeConstants, Optional ByVal Sh
     idxHotkey = Hotkeys.GetHotkeyIndex(vKeyCode, Shift, hotKeyIsPDDefault)
     
     If (idxHotkey >= 0) Then
-        'TODO: notify old menu here, so it can remove hotkey info??
         If PRINT_WARNING_ON_HOTKEY_DUPE Then PDDebug.LogAction "WARNING: duplicate hotkey: " & Hotkeys.GetHotKeyAction(idxHotkey)
     
     'If this is a novel entry, enlarge the list accordingly
