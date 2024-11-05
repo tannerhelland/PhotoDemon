@@ -230,7 +230,7 @@ Attribute VB_Exposed = False
 'Copyright 2024-2024 by Tanner Helland
 'Created: 09/September/24
 'Last updated: 05/November/24
-'Last update: final touches!
+'Last update: final touches!  Almost ready to launch this feature!
 '
 'This dialog allows the user to customize hotkeys.
 '
@@ -665,8 +665,6 @@ Private Function GetCurrentHotkeysAsXML(ByRef cXML As pdXML, Optional ByVal stri
                 actionsWritten.AddItem m_Items(i).hk_ActionID, meaninglessReturn
                 hotkeysWritten.AddItem strKeyCode & strCtrl & strAlt & strShift, meaninglessReturn
                 
-            Else
-                Debug.Print "skipping writing " & m_Items(i).hk_ActionID
             End If
                 
         End If
@@ -895,9 +893,20 @@ Private Sub Form_Load()
     
     For i = 0 To m_NumOfMenus - 1
         
-        'Ignore separators
+        'Ignore separators and a few other "special" menus that require special handling (e.g. "File > Open recent")
         Const ID_DASH As String = "-"
-        If (m_Menus(i).me_Name <> ID_DASH) Then
+        
+        Dim okToProcessMenu As Boolean
+        okToProcessMenu = True
+        okToProcessMenu = okToProcessMenu And (m_Menus(i).me_Name <> ID_DASH)
+        okToProcessMenu = okToProcessMenu And (m_Menus(i).me_Name <> "file_openrecent")
+        okToProcessMenu = okToProcessMenu And (m_Menus(i).me_Name <> "tools_developers")
+        okToProcessMenu = okToProcessMenu And (m_Menus(i).me_Name <> "tools_themeeditor")
+        okToProcessMenu = okToProcessMenu And (m_Menus(i).me_Name <> "tools_themepackage")
+        okToProcessMenu = okToProcessMenu And (m_Menus(i).me_Name <> "tools_standalonepackage")
+        okToProcessMenu = okToProcessMenu And (m_Menus(i).me_Name <> "effects_developertest")
+        
+        If okToProcessMenu Then
             
             With m_Items(m_numItems)
                 
@@ -940,7 +949,7 @@ Private Sub Form_Load()
                 'PDDebug.LogAction .hk_ActionID & ", " & .hk_ParentID & ", " & .hk_HasChildren & ", " & .hk_NumParents
                 
                 'Add this menu item to the treeview
-                tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, False
+                tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, (.hk_SubmenuLevel = 0)
                 
                 'Advance to the next mappable menu index
                 m_numItems = m_numItems + 1
@@ -961,7 +970,7 @@ Private Sub Form_Load()
                 With m_Items(idxHotkey)
                     .hk_DefaultKeyCode = defaultHotkeys(i).hkKeyCode
                     .hk_DefaultShiftState = defaultHotkeys(i).hkShiftState
-                    .hk_DefaultHotkeyText = GetHotkeyNameFromKeys(.hk_BackupShiftState, .hk_DefaultKeyCode)
+                    .hk_DefaultHotkeyText = GetHotkeyNameFromKeys(.hk_DefaultShiftState, .hk_DefaultKeyCode)
                 End With
             End If
         Next i
