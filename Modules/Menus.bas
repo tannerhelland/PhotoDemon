@@ -556,7 +556,7 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 7, 8
     AddMenuItem "Animated screen capture...", "tools_screenrecord", 7, 9, , "file_importscreen"
     AddMenuItem "-", "-", 7, 10
-    AddMenuItem "Keyboard shortcuts...", "tools_hotkeys", 7, 11
+    AddMenuItem "Keyboard shortcuts...", "tools_hotkeys", 7, 11, , "keyboard"
     AddMenuItem "Options...", "tools_options", 7, 12, , "pref_advanced"
     AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 13, , "tools_plugin"
     
