@@ -229,8 +229,8 @@ Attribute VB_Exposed = False
 'Customizable hotkeys dialog
 'Copyright 2024-2024 by Tanner Helland
 'Created: 09/September/24
-'Last updated: 10/October/24
-'Last update: import/export to file now working!
+'Last updated: 05/November/24
+'Last update: final touches!
 '
 'This dialog allows the user to customize hotkeys.
 '
@@ -515,86 +515,103 @@ Private Sub ImportHotkeysFromFile(ByRef srcFile As String)
     
     Dim cXML As pdXML
     Set cXML = New pdXML
-    If cXML.LoadXMLFile(srcFile) Then
-        If cXML.IsPDDataType("hotkeys") Then
-            
-            'Wipe all existing hotkey data
-            Dim i As Long
-            For i = 0 To m_numItems - 1
-                m_Items(i).hk_KeyCode = 0
-                m_Items(i).hk_ShiftState = 0
-                m_Items(i).hk_HotkeyText = vbNullString
-            Next i
-            
-            'Get a list of all "hotkey" entries from the XML file
-            Dim hotkeyTags() As Long
-            If cXML.FindAllTagLocations(hotkeyTags, "hotkey") Then
-            
-                On Error GoTo BadHotkey
-                
-                For i = LBound(hotkeyTags) To UBound(hotkeyTags)
-                    
-                    Dim hkActionID As String
-                    Const HOTKEY_CODE_ACTION As String = "action"
-                    hkActionID = cXML.GetUniqueTag_String(HOTKEY_CODE_ACTION, vbNullString, hotkeyTags(i))
-                    If (LenB(hkActionID) <> 0) Then
-                    
-                        'Find the matching action ID for this command
-                        Dim idxTarget As Long
-                        If m_ActionHash.GetItemByKey(hkActionID, idxTarget) Then
-                        
-                            'Pull the shift state and keycode from this entry and store them in this hotkey
-                            Dim newShiftState As ShiftConstants
-                            newShiftState = 0
-                            
-                            Const HOTKEY_CODE_CTRL As String = "ctrl", HOTKEY_CODE_ALT As String = "alt", HOTKEY_CODE_SHIFT As String = "shift"
-                            If (cXML.GetUniqueTag_Long(HOTKEY_CODE_CTRL, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbCtrlMask
-                            If (cXML.GetUniqueTag_Long(HOTKEY_CODE_ALT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbAltMask
-                            If (cXML.GetUniqueTag_Long(HOTKEY_CODE_SHIFT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbShiftMask
-                            m_Items(idxTarget).hk_ShiftState = newShiftState
-                            
-                            Const HOTKEY_CODE_TAG As String = "key-id"
-                            m_Items(idxTarget).hk_KeyCode = cXML.GetUniqueTag_Long(HOTKEY_CODE_TAG, 0, hotkeyTags(i))
-                            
-                            'Finally, populate text for this key combo
-                            m_Items(idxTarget).hk_HotkeyText = GetHotkeyNameFromKeys(newShiftState, m_Items(idxTarget).hk_KeyCode)
-                            
-                        'Not sure what to do here... maybe an "other, non-menu" category someday?
-                        End If
-                        
-                    End If
-                    
-BadHotkey:
-                Next i
-                
-                On Error GoTo 0
-                
-            '/at least one hotkey found
-            End If
-            
-            'If the user previously selected an item in the treeview, update it now
-            If (tvMenus.ListIndex >= 0) Then
-                
-                'Similarly, ensure the left-side manual edit controls are updated correctly.
-                m_inAutoUpdate = True
-                AutoTextKeyChange m_Items(tvMenus.ListIndex).hk_ShiftState, m_Items(tvMenus.ListIndex).hk_KeyCode
-                If Me.txtHotkey.Visible Then Me.txtHotkey.Text = m_Items(tvMenus.ListIndex).hk_HotkeyText
-                m_inAutoUpdate = False
-                
-            End If
-            
-        End If
+    If cXML.LoadXMLFile(srcFile) Then FillHotkeyArrayFromXML cXML
+    
+    'If the user previously selected an item in the treeview, update it now
+    If (tvMenus.ListIndex >= 0) Then
+        
+        'Similarly, ensure the left-side manual edit controls are updated correctly.
+        m_inAutoUpdate = True
+        AutoTextKeyChange m_Items(tvMenus.ListIndex).hk_ShiftState, m_Items(tvMenus.ListIndex).hk_KeyCode
+        If Me.txtHotkey.Visible Then Me.txtHotkey.Text = m_Items(tvMenus.ListIndex).hk_HotkeyText
+        m_inAutoUpdate = False
+        
     End If
     
 End Sub
 
+Private Function FillHotkeyArrayFromXML(ByRef cXML As pdXML) As Boolean
+    
+    'Ensure the XML object actually holds hotkey data
+    If cXML.IsPDDataType("hotkeys") Then
+        
+        'Wipe all existing hotkey data
+        Dim i As Long
+        For i = 0 To m_numItems - 1
+            m_Items(i).hk_KeyCode = 0
+            m_Items(i).hk_ShiftState = 0
+            m_Items(i).hk_HotkeyText = vbNullString
+        Next i
+        
+        'Get a list of all "hotkey" entries from the XML file
+        Dim hotkeyTags() As Long
+        If cXML.FindAllTagLocations(hotkeyTags, "hotkey") Then
+        
+            On Error GoTo BadHotkey
+            
+            'Iterate hotkey entries, loading as we go
+            For i = LBound(hotkeyTags) To UBound(hotkeyTags)
+                
+                Dim hkActionID As String
+                Const HOTKEY_CODE_ACTION As String = "action"
+                hkActionID = cXML.GetUniqueTag_String(HOTKEY_CODE_ACTION, vbNullString, hotkeyTags(i))
+                If (LenB(hkActionID) <> 0) Then
+                
+                    'Find the matching action ID for this command
+                    Dim idxTarget As Long
+                    If m_ActionHash.GetItemByKey(hkActionID, idxTarget) Then
+                    
+                        'Pull the shift state and keycode from this entry and store them in this hotkey
+                        Dim newShiftState As ShiftConstants
+                        newShiftState = 0
+                        
+                        Const HOTKEY_CODE_CTRL As String = "ctrl", HOTKEY_CODE_ALT As String = "alt", HOTKEY_CODE_SHIFT As String = "shift"
+                        If (cXML.GetUniqueTag_Long(HOTKEY_CODE_CTRL, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbCtrlMask
+                        If (cXML.GetUniqueTag_Long(HOTKEY_CODE_ALT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbAltMask
+                        If (cXML.GetUniqueTag_Long(HOTKEY_CODE_SHIFT, 0, hotkeyTags(i)) <> 0) Then newShiftState = newShiftState Or vbShiftMask
+                        m_Items(idxTarget).hk_ShiftState = newShiftState
+                        
+                        Const HOTKEY_CODE_TAG As String = "key-id"
+                        m_Items(idxTarget).hk_KeyCode = cXML.GetUniqueTag_Long(HOTKEY_CODE_TAG, 0, hotkeyTags(i))
+                        
+                        'Finally, populate text for this key combo
+                        m_Items(idxTarget).hk_HotkeyText = GetHotkeyNameFromKeys(newShiftState, m_Items(idxTarget).hk_KeyCode)
+                        
+                    'Not sure what to do here... maybe an "other, non-menu" category someday?
+                    End If
+                
+                '/action exists for this hotkey
+                End If
+                
+BadHotkey:
+            Next i
+            
+            On Error GoTo 0
+            
+        '/at least one hotkey found
+        End If
+        
+    '/file contains valid hotkey data
+    End If
+
+    FillHotkeyArrayFromXML = True
+    
+End Function
+
 'Export the current hotkey collection to file
 Private Sub ExportHotkeysToFile(ByRef dstFile As String, Optional ByVal stripDuplicatesFirst As Boolean = False)
-    
-    If Files.FileExists(dstFile) Then Files.FileDelete dstFile
-    
     Dim cXML As pdXML
-    Set cXML = New pdXML
+    If GetCurrentHotkeysAsXML(cXML, stripDuplicatesFirst) Then
+        If Files.FileExists(dstFile) Then Files.FileDelete dstFile
+        cXML.WriteXMLToFile dstFile
+    End If
+End Sub
+
+'Convert the current hotkey collection (including all edits) to an XML object.  The result can be dumped out to file,
+' or stored as a preset (or other string-based object).
+Private Function GetCurrentHotkeysAsXML(ByRef cXML As pdXML, Optional ByVal stripDuplicatesFirst As Boolean = False) As Boolean
+    
+    If (cXML Is Nothing) Then Set cXML = New pdXML
     cXML.PrepareNewXML "hotkeys"
     cXML.WriteBlankLine
     
@@ -655,14 +672,19 @@ Private Sub ExportHotkeysToFile(ByRef dstFile As String, Optional ByVal stripDup
         End If
     Next i
     
-    'With all tags added, we can write the collection out to file
+    'Add a last line to make it slightly prettier ;)
     cXML.WriteBlankLine
-    cXML.WriteXMLToFile dstFile
+    GetCurrentHotkeysAsXML = True
     
-End Sub
+End Function
 
 Private Sub cmdBar_AddCustomPresetData()
-    'TODO: save entire hotkey list - this would let the user swap between e.g. "GIMP" and "Photoshop" presets?
+    
+    Dim cXML As pdXML
+    If GetCurrentHotkeysAsXML(cXML, False) Then
+        cmdBar.AddPresetData "hotkeys-as-xml", cXML.ReturnCurrentXMLString(True)
+    End If
+    
 End Sub
 
 Private Sub cmdBar_BeforeResetClick(ByRef cancelReset As Boolean)
@@ -739,6 +761,18 @@ Private Sub cmdBar_OKClick()
     
     'Before exiting, menus need to be redrawn (as their text will have changed)
     Menus.UpdateAgainstCurrentTheme True
+    
+End Sub
+
+Private Sub cmdBar_ReadCustomPresetData()
+    
+    Dim cXML As pdXML: Set cXML = New pdXML
+    If cXML.LoadXMLFromString(cmdBar.RetrievePresetData("hotkeys-as-xml")) Then
+        FillHotkeyArrayFromXML cXML
+    End If
+    
+    FlagAllDuplicates
+    tvMenus.RequestListRedraw
     
 End Sub
 
