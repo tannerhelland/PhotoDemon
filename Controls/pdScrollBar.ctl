@@ -394,6 +394,10 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus()
+End Property
+
 'Timers control repeat value changes when the mouse is held down on an up/down button
 Private Sub m_DownButtonTimer_Timer()
 

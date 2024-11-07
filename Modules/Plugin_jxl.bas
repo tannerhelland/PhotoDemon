@@ -40,6 +40,8 @@ Private m_jxlImportAvailable As Boolean, m_jxlExportAvailable As Boolean
 Public Function InitializeLibJXL(ByRef pathToDLLFolder As String) As Boolean
     
     InitializeLibJXL = False
+    m_jxlExportAvailable = False
+    m_jxlImportAvailable = False
     
     'libjxl cannot currently be built in an XP-compatible way.
     ' As a result, its support is limited to Win Vista and above.
@@ -84,7 +86,7 @@ Public Function GetLibJXLVersion() As String
     Const FUNC_NAME As String = "GetLibJXLVersion"
     
     'Do not attempt to retrieve version info unless the library actually exists
-    If Files.FileExists(PluginManager.GetPluginPath & "djxl.exe") Then
+    If Files.FileExists(PluginManager.GetPluginPath & "djxl.exe") And OS.IsVistaOrLater Then
         
         Dim pluginExeAndPath As String
         pluginExeAndPath = PluginManager.GetPluginPath() & "djxl.exe"

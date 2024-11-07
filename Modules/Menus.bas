@@ -6,8 +6,8 @@ Attribute VB_Name = "Menus"
 'Last updated: 28/September/23
 'Last update: menus now pass menu-specific object IDs to the translation engine, enabling per-menu translations
 '
-'PhotoDemon has an extensive menu system.  Managing all those menus is cumbersome.  This module
-' handles the worst parts of run-time maintenance.
+'PhotoDemon has an extensive menu system.  Managing all those menus is cumbersome.
+' This module handles the worst parts of run-time maintenance.
 '
 'Because PD's menus provide an organized collection of program features, this module also handles
 ' some module-adjacent tasks, like the ProcessDefaultAction-prefixed functions.  You can pass these
@@ -21,7 +21,7 @@ Attribute VB_Name = "Menus"
 
 Option Explicit
 
-Private Type PD_MenuEntry
+Public Type PD_MenuEntry
     me_TopMenu As Long                    'Top-level index of this menu
     me_SubMenu As Long                    'Sub-menu index of this menu (if any)
     me_SubSubMenu As Long                 'Sub-sub-menu index of this menu (if any)
@@ -247,7 +247,7 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 2, 15
     AddMenuItem "Merge visible layers", "image_mergevisible", 2, 16, , "generic_visible"
     AddMenuItem "Flatten image...", "image_flatten", 2, 17, , "layer_flatten"
-    AddMenuItem "-", "0", 2, 18
+    AddMenuItem "-", "-", 2, 18
     AddMenuItem "Animation...", "image_animation", 2, 19, , "animation"
     AddMenuItem "Compare", "image_compare", 2, 20
         AddMenuItem "Create color lookup...", "image_createlut", 2, 20, 0
@@ -556,19 +556,20 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 7, 8
     AddMenuItem "Animated screen capture...", "tools_screenrecord", 7, 9, , "file_importscreen"
     AddMenuItem "-", "-", 7, 10
-    AddMenuItem "Options...", "tools_options", 7, 11, , "pref_advanced"
-    AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 12, , "tools_plugin"
+    AddMenuItem "Keyboard shortcuts...", "tools_hotkeys", 7, 11, , "keyboard"
+    AddMenuItem "Options...", "tools_options", 7, 12, , "pref_advanced"
+    AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 13, , "tools_plugin"
     
     Dim debugMenuVisibility As Boolean
     debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
     If debugMenuVisibility Then
-        AddMenuItem "-", "-", 7, 13
-        AddMenuItem "Developers", "tools_developers", 7, 14
-            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 14, 0, , False
-            AddMenuItem "Build theme package...", "tools_themepackage", 7, 14, 1, , False
-            AddMenuItem "-", "-", 7, 14, 2
-            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 14, 3, , False
-        AddMenuItem "Test", "effects_developertest", 7, 15
+        AddMenuItem "-", "-", 7, 14
+        AddMenuItem "Developers", "tools_developers", 7, 15
+            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 15, 0, , False
+            AddMenuItem "Build theme package...", "tools_themepackage", 7, 15, 1, , False
+            AddMenuItem "-", "-", 7, 15, 2
+            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 15, 3, , False
+        AddMenuItem "Test", "effects_developertest", 7, 16
     End If
     
     'View Menu
@@ -1457,6 +1458,27 @@ Private Function GetIndexFromName(ByRef mnuName As String, ByRef dstIndex As Lon
     
 End Function
 
+'Return a list of all menus and menu attributes.  This is used by the customize hotkeys dialog to both display
+' menu names and attributes, and to correlate menu text against a list of canonical menu IDs (which is how the
+' hotkey engine associates hotkeys <-> actions <-> menus).
+'
+'Returns the number of menus in the list, with a guarantee that the target list is resized to [0, numMenus-1]
+Public Function GetCopyOfAllMenus(ByRef dstMenuList() As PD_MenuEntry) As Long
+    
+    'Still TODO: does our list of menus need to be curated before sending it externally?
+    ' IDK - but there may be menus that we don't want associated with hotkeys, and this could be
+    ' where we strip them out of the menu list.
+    ReDim dstMenuList(0 To m_NumOfMenus - 1) As PD_MenuEntry
+    
+    Dim i As Long
+    For i = 0 To m_NumOfMenus - 1
+        dstMenuList(i) = m_Menus(i)
+    Next i
+    
+    GetCopyOfAllMenus = m_NumOfMenus
+    
+End Function
+
 'Given a menu's search text, return the corresponding menu name.  (Used by PD's right-hand search box.)
 Public Function GetNameFromSearchText(ByRef srcSearchText As String) As String
     
@@ -1537,6 +1559,16 @@ Public Sub NotifyMenuHotkey(ByRef actionID As String, Optional ByVal hkID As Lon
         
     End If
 
+End Sub
+
+'After the user edits hotkeys, this class needs to be notified so it can erase existing hotkey data.
+' (After calling this function, you obviously need to manually update hotkey data to match!)
+Public Sub NotifyHotkeysChanged()
+    Dim i As Long
+    For i = 0 To m_NumOfMenus - 1
+        m_Menus(i).me_HotKeyID = -1
+        m_Menus(i).me_HotKeyTextTranslated = vbNullString
+    Next i
 End Sub
 
 'This function is part of an incredibly unpleasant workaround for ensuring that menu navigation

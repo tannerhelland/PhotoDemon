@@ -1520,6 +1520,7 @@ End Function
 Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal previewOnly As Boolean = False, Optional ByVal noUI As Boolean = False, Optional ByRef userCanceledImportDialog As Boolean = False) As Boolean
 
     LoadPDF = False
+    If (Not OS.IsVistaOrLater) Then Exit Function
     
     'If the user requests "preview only" mode, set the "noUI" mode to match
     If previewOnly Then noUI = True

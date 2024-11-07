@@ -60,7 +60,7 @@ Private m_ListMode As PD_ListSupportMode
 'If custom sizes are in use, PD needs to store each listbox item position independently, since we can't infer it.
 ' Note that this struct (and the corresponding position array) may or may not be in use - or certain parts of it
 ' may be in use, but not other parts - depending on the combination of parameters sent to us by the user.
-Private m_Items() As PD_LISTITEM
+Private m_Items() As PD_ListItem
 
 'Current list item count.  May or may not correspond to the size of m_Items, FYI.
 Private Const INITIAL_LIST_SIZE As Long = 16&
@@ -128,7 +128,7 @@ Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional
     If (Not PDMain.IsProgramRunning()) Then Exit Sub
     
     'Make sure there's room in the array for this item.
-    If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM
+    If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_ListItem
     
     'Change the rendering mode, as necessary
     If (itemHeight <> -1) And (m_SizeMode <> PDLH_Custom) Then
@@ -245,7 +245,7 @@ Friend Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     
     'Reset the array (but only if necessary!)
     If (m_NumOfItems = 0) Then
-        ReDim m_Items(0 To newListSize - 1) As PD_LISTITEM
+        ReDim m_Items(0 To newListSize - 1) As PD_ListItem
     Else
         If UBound(m_Items) = newListSize - 1 Then
             Dim i As Long
@@ -259,7 +259,7 @@ Friend Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
                 End With
             Next i
         Else
-            ReDim m_Items(0 To newListSize - 1) As PD_LISTITEM
+            ReDim m_Items(0 To newListSize - 1) As PD_ListItem
         End If
     End If
     
@@ -274,7 +274,7 @@ Friend Sub Clear(Optional ByVal newListSize As Long = INITIAL_LIST_SIZE)
     
 FailsafeReset:
     If (newListSize <= 0) Then newListSize = INITIAL_LIST_SIZE
-    ReDim m_Items(0 To newListSize - 1) As PD_LISTITEM
+    ReDim m_Items(0 To newListSize - 1) As PD_ListItem
     
 End Sub
 
@@ -292,7 +292,7 @@ Friend Sub CloneExternalListSupport(ByRef srcListSupport As pdListSupport, Optio
     m_NumOfItems = srcListSupport.ListCount
     If (m_NumOfItems > 0) Then
         
-        ReDim m_Items(0 To srcListSupport.GetSizeOfInternalListStruct) As PD_LISTITEM
+        ReDim m_Items(0 To srcListSupport.GetSizeOfInternalListStruct) As PD_ListItem
         
         Dim i As Long
         For i = 0 To m_NumOfItems - 1
@@ -335,7 +335,7 @@ End Sub
 
 'Need to render a specific list item?  Call this to retrieve a full copy of a given list item's data, plus
 ' rendering-specific information like the item's literal position in the current list box.
-Friend Function GetDirectListItem(ByVal srcListIndex As Long) As PD_LISTITEM
+Friend Function GetDirectListItem(ByVal srcListIndex As Long) As PD_ListItem
     GetDirectListItem = m_Items(srcListIndex)
 End Function
 
@@ -347,21 +347,17 @@ Friend Function GetInternalSizeMode() As PD_ListboxHeight
     GetInternalSizeMode = m_SizeMode
 End Function
 
-Friend Function GetPointerToInternalListStruct() As Long
-    GetPointerToInternalListStruct = VarPtr(m_Items(0))
-End Function
-
 Friend Function GetSizeOfInternalListStruct() As Long
     GetSizeOfInternalListStruct = UBound(m_Items)
 End Function
 
 'Font size controls the default height of each list item.  When the font size changes, we need to recalculate a number of
 ' internal size metrics, so it's advisable to set this UP FRONT before doing anything else.
-Friend Property Get DefaultItemHeight() As Single
+Friend Property Get DefaultItemHeight() As Long
     DefaultItemHeight = m_DefaultHeight
 End Property
 
-Friend Property Let DefaultItemHeight(ByVal newHeight As Single)
+Friend Property Let DefaultItemHeight(ByVal newHeight As Long)
     If (m_DefaultHeight <> newHeight) Then
         m_DefaultHeight = newHeight
         
@@ -863,7 +859,7 @@ End Sub
 
 'Need to render a specific list item?  Call this to retrieve a full copy of a given list item's data,
 ' plus rendering-specific information like the item's literal position in the current list box.
-Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_LISTITEM, ByRef dstItemTop As Long, ByRef dstItemHeight As Long, ByRef dstItemHeightWithoutSeparator As Long)
+Friend Sub GetRenderingItem(ByVal srcListIndex As Long, ByRef dstListItem As PD_ListItem, ByRef dstItemTop As Long, ByRef dstItemHeight As Long, ByRef dstItemHeightWithoutSeparator As Long)
     
     dstListItem = m_Items(srcListIndex)
     

@@ -1624,20 +1624,24 @@ Begin VB.Form FormMain
          Index           =   10
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Options..."
+         Caption         =   "Keyboard shortcuts..."
          Index           =   11
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Third-party libraries..."
+         Caption         =   "Options..."
          Index           =   12
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "-"
+         Caption         =   "Third-party libraries..."
          Index           =   13
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Developers"
+         Caption         =   "-"
          Index           =   14
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "Developers"
+         Index           =   15
          Begin VB.Menu MnuDevelopers 
             Caption         =   "Theme editor..."
             Index           =   0
@@ -3860,8 +3864,10 @@ Private Sub mnuTool_Click(Index As Integer)
         Case 10
             '(separator)
         Case 11
-            Actions.LaunchAction_ByName "tools_options"
+            Actions.LaunchAction_ByName "tools_hotkeys"
         Case 12
+            Actions.LaunchAction_ByName "tools_options"
+        Case 13
             Actions.LaunchAction_ByName "tools_3rdpartylibs"
     End Select
 End Sub

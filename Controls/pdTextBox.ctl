@@ -255,6 +255,14 @@ Public Property Let Text(ByRef newString As String)
     End If
 End Property
 
+'INSIDE A KEY EVENT (the only place this is valid), you can call this function to retrieve
+' the unprocessed key code and scan code from the keyboardproc.
+Public Sub GetLastKeyAndScanCode(ByRef dstKeyCode As Long, ByRef dstScanCode As Long, Optional ByVal useKeyDownValues As Boolean = True)
+    If (Not m_EditBox Is Nothing) Then
+        m_EditBox.GetLastKeyAndScanCode dstKeyCode, dstScanCode, useKeyDownValues
+    End If
+End Sub
+
 Private Sub m_EditBox_Change()
     If (PDMain.IsProgramRunning()) Then RaiseEvent Change
 End Sub

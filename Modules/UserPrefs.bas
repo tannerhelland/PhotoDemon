@@ -49,18 +49,20 @@ Private m_ThemePath As String
 Private m_LanguagePath As String
 
 '/Data subfolders come next.  Note that some of these can be modified at run-time by user behavior -
-' e.g. PhotoDemon does not currently ship with a prebuilt collection, so its palette path changes as the
-' user loads/saves palettes from standalone palette files.  Similarly, some features support additional
-' user paths - like 8bf plugins, which have a default folder in the /Data subfolder, but users can also
-' add their own paths through the 8bf dialog, and those paths are tracked and stored separate from this
-' module (which just exists to ensure a core set of default folders exist on every install).
+' e.g. PhotoDemon does not currently ship with a prebuilt palette collection, so its palette path
+' changes as the user loads/saves palettes from standalone palette files.
+'
+'Similarly, some features support additional user paths - like 8bf plugins, which have a default folder
+' in the /Data subfolder, but users can also add their own paths through the 8bf dialog; those paths
+' are tracked and stored separate from this module (which just exists to ensure a core set of default
+' folders exist on every PD install).
 Private m_PreferencesPath As String, m_TempPath As String
 Private m_MacroPath As String, m_IconPath As String
 Private m_ColorProfilePath As String, m_UserLanguagePath As String
 Private m_LUTPathDefault As String, m_LUTPathUser As String
 Private m_GradientPathDefault As String, m_GradientPathUser As String
 Private m_PalettePath As String, m_SelectionPath As String
-Private m_8bfPath As String
+Private m_8bfPath As String, m_HotkeyPath As String
 
 Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private m_DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
@@ -210,6 +212,15 @@ End Function
 Public Sub SetGradientPath(ByRef newPath As String)
     m_GradientPathUser = Files.PathAddBackslash(Files.FileGetPath(newPath))
     SetPref_String "Paths", "Gradients", m_GradientPathUser
+End Sub
+
+Public Function GetHotkeyPath() As String
+    GetHotkeyPath = m_HotkeyPath
+End Function
+
+Public Sub SetHotkeyPath(ByRef newPath As String)
+    m_HotkeyPath = Files.PathAddBackslash(Files.FileGetPath(newPath))
+    SetPref_String "Paths", "Hotkeys", m_HotkeyPath
 End Sub
 
 Public Function GetLUTPath(Optional ByVal useDefaultLocation As Boolean = False) As String
@@ -477,6 +488,9 @@ Public Function InitializePaths() As Boolean
     m_GradientPathDefault = m_DataPath & "Gradients\"
     m_GradientPathUser = m_GradientPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step
     If (Not Files.PathExists(m_GradientPathDefault)) Then Files.PathCreate m_GradientPathDefault
+    
+    m_HotkeyPath = m_DataPath & "Hotkeys\"
+    If (Not Files.PathExists(m_HotkeyPath)) Then Files.PathCreate m_HotkeyPath
     
     m_LUTPathDefault = m_DataPath & "3DLUTs\"
     m_LUTPathUser = m_LUTPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step

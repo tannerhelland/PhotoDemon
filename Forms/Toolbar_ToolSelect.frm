@@ -342,6 +342,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentY        =   1270
       Alignment       =   2
       Caption         =   "macro recording in progress..."
+      CustomDragDropEnabled=   -1  'True
       Layout          =   1
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
@@ -605,6 +606,14 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         m_lastUsedSettings.SetParentForm Nothing
     End If
     
+End Sub
+
+Private Sub lblRecording_CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub lblRecording_CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
 
 'When the mouse leaves this toolbox, reset it to an arrow (so other forms don't magically acquire the west/east resize cursor, as the mouse is

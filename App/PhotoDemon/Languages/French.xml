@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.623</langversion>
+<langversion>6.7.624</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -1782,6 +1782,21 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 </phrase>
 
 <phrase>
+<original>Backspace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Tab</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Escape</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Ctrl</original>
 <translation>Ctrl</translation>
 </phrase>
@@ -1796,7 +1811,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Shift</translation>
 </phrase>
 
-<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Hotkeys.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -5487,6 +5502,11 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
+<original>Keyboard shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Options</original>
 <translation>Options</translation>
 </phrase>
@@ -5789,7 +5809,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 402 phrases. 217 were duplicates of existing phrases, so only 185 new phrases were written to file. -->
+<!-- MainWindow.frm contains 403 phrases. 217 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10828,6 +10848,11 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>page format</original>
+<translation>format de page</translation>
+</phrase>
+
+<phrase>
 <original>lossless</original>
 <translation>sans perte</translation>
 </phrase>
@@ -10837,7 +10862,17 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>avec perte</translation>
 </phrase>
 
-<!-- File_Save_HEIF.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>single page (composited image)</original>
+<translation>une seule page (image composite)</translation>
+</phrase>
+
+<phrase>
+<original>multipage (one page per layer)</original>
+<translation>multipage (une page par calque)</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>icon purpose</original>
@@ -11172,22 +11207,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>compression monochrome</translation>
 </phrase>
 
-<phrase>
-<original>page format</original>
-<translation>format de page</translation>
-</phrase>
-
-<phrase>
-<original>single page (composited image)</original>
-<translation>une seule page (image composite)</translation>
-</phrase>
-
-<phrase>
-<original>multipage (one page per layer)</original>
-<translation>multipage (une page par calque)</translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>image type</original>
@@ -13010,6 +13030,133 @@ Vous pouvez alors si besoin
 <!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
+<original>undo all changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>undo changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>try to capture automatically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>this hotkey</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>restore default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>export to file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>import from file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>restore all defaults</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate summary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Import hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>One or more hotkeys is currently assigned to multiple actions.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Press OK to proceed.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Press cancel to keep editing hotkeys.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please use this hotkey on just one action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(this item)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys must be unique.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Command</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hotkey</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_Hotkeys.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+
+<phrase>
 <original>click here for detailed instructions (in English)</original>
 <translation>clquez ici pour des instructions plus détaillées (en Anglais)</translation>
 </phrase>
@@ -14307,10 +14454,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2704</phrasecount>
+<phrasecount>2733</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5716 phrases. -->
-<!-- 3012 are duplicates, so only 2704 unique phrases have been written to file. -->
-<!-- These 2704 phrases contain approximately 11711 total words. -->
+<!-- As of this build, PhotoDemon contains 5786 phrases. -->
+<!-- 3053 are duplicates, so only 2733 unique phrases have been written to file. -->
+<!-- These 2733 phrases contain approximately 11813 total words. -->
 
 </pdData>

@@ -344,7 +344,7 @@ Public Function AddProfileToCache(ByRef srcProfile As pdICCProfile, Optional ByV
     'Profiles are quickly hashed; subsequent profile requests rely on this hash to return correct data
     If (m_Hasher Is Nothing) Then Set m_Hasher = New pdCrypto
     Dim profHash As String
-    profHash = m_Hasher.QuickHash_AsString(srcProfile.GetICCDataPointer, srcProfile.GetICCDataSize, , PDCA_MD5)
+    profHash = m_Hasher.QuickHash_AsString(srcProfile.GetICCDataPointer, srcProfile.GetICCDataSize, 16, PDCA_MD5)
     
     'Regardless of whether this profile already exists in our cache, we will return its hash value.  (This gives the
     ' caller a unique way to retrieve the profile in the future.)

@@ -233,7 +233,7 @@ Public Sub SyncInterfaceToCurrentImage()
     If (Not PDImages.IsImageActive()) Then
     
         'Because this set of UI changes is immutable, there is no reason to repeat it if it was the last synchronization we performed.
-        If Not (m_LastUISync_HadNoImages = PD_BOOL_TRUE) Then
+        If (m_LastUISync_HadNoImages <> PD_BOOL_TRUE) Then
             SetUIMode_NoImages
             m_LastUISync_HadNoImages = PD_BOOL_TRUE
         End If
@@ -523,7 +523,7 @@ End Sub
 'Whenever PD returns to a "no images loaded" state, this function should be called.  (There are a number of specialized UI decisions
 ' required by this this state, and it's important to keep those options in one place.)
 Private Sub SetUIMode_NoImages()
-        
+    
     'Start by forcibly disabling every conceivable UI group that requires an underlying image
     SetUIGroupState PDUI_Save, False
     SetUIGroupState PDUI_SaveAs, False
@@ -577,7 +577,7 @@ Private Sub SetUIMode_NoImages()
     
     'Forcibly blank out the current message if no images are loaded
     Message vbNullString
-        
+    
 End Sub
 
 'Whenever PD enters an "at least one valid image loaded" state, this function should be called.  Note that this function does not
