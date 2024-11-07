@@ -41,29 +41,36 @@ End Type
 ' double-check everything!)
 Public Enum PDTools
     TOOL_UNDEFINED = -1
+    
     NAV_DRAG = 0
     NAV_ZOOM = 1
     NAV_MOVE = 2
     COLOR_PICKER = 3
     ND_MEASURE = 4
-    SELECT_RECT = 5
-    SELECT_CIRC = 6
-    SELECT_POLYGON = 7
-    SELECT_LASSO = 8
-    SELECT_WAND = 9
-    TEXT_BASIC = 10
-    TEXT_ADVANCED = 11
-    PAINT_PENCIL = 12
-    PAINT_SOFTBRUSH = 13
-    PAINT_ERASER = 14
-    PAINT_CLONE = 15
-    PAINT_FILL = 16
-    PAINT_GRADIENT = 17
+    ND_CROP = 5
+    
+    SELECT_RECT = 6
+    SELECT_CIRC = 7
+    SELECT_POLYGON = 8
+    SELECT_LASSO = 9
+    SELECT_WAND = 10
+    
+    TEXT_BASIC = 11
+    TEXT_ADVANCED = 12
+    
+    PAINT_PENCIL = 13
+    PAINT_SOFTBRUSH = 14
+    PAINT_ERASER = 15
+    PAINT_CLONE = 16
+    PAINT_FILL = 17
+    PAINT_GRADIENT = 18
 End Enum
 
 #If False Then
-    Private Const TOOL_UNDEFINED = -1, NAV_DRAG = 0, NAV_ZOOM = 1, NAV_MOVE = 2, COLOR_PICKER = 3, ND_MEASURE = 4, SELECT_RECT = 5, SELECT_CIRC = 6, SELECT_POLYGON = 7, SELECT_LASSO = 8, SELECT_WAND = 9
-    Private Const TEXT_BASIC = 10, TEXT_ADVANCED = 11, PAINT_PENCIL = 12, PAINT_SOFTBRUSH = 13, PAINT_ERASER = 14, PAINT_CLONE = 15, PAINT_FILL = 16, PAINT_GRADIENT = 17
+    Private Const TOOL_UNDEFINED = -1, NAV_DRAG = 0, NAV_ZOOM = 1, NAV_MOVE = 2, COLOR_PICKER = 3, ND_MEASURE = 4, ND_CROP = 5
+    Private Const SELECT_RECT = 6, SELECT_CIRC = 7, SELECT_POLYGON = 8, SELECT_LASSO = 9, SELECT_WAND = 10
+    Private Const TEXT_BASIC = 11, TEXT_ADVANCED = 12
+    Private Const PAINT_PENCIL = 13, PAINT_SOFTBRUSH = 14, PAINT_ERASER = 15, PAINT_CLONE = 16, PAINT_FILL = 17, PAINT_GRADIENT = 18
 #End If
 
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.

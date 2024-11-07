@@ -220,6 +220,7 @@ Private Sub InitializeDefaultHotkeys()
     AddHotkey vbKeyZ, , "tool_zoom", True
     AddHotkey vbKeyM, , "tool_move", True
     AddHotkey vbKeyI, , "tool_colorselect", True
+    AddHotkey vbKeyC, , "tool_crop", True
     
     'Note that some hotkeys do double-duty in tool selection; you can press some of these shortcuts multiple times
     ' to toggle between similar tools (e.g. rectangular and elliptical selections).  Details can be found in

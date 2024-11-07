@@ -1082,6 +1082,8 @@ Public Function GetNameOfTool(ByVal toolIndex As PDTools) As String
             GetNameOfTool = "Color picker"
         Case ND_MEASURE
             GetNameOfTool = "Measure"
+        Case ND_CROP
+            GetNameOfTool = "Crop"
         Case SELECT_RECT
             GetNameOfTool = "Rectangle selection"
         Case SELECT_CIRC

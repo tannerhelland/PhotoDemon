@@ -146,6 +146,9 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             ElseIf (g_CurrentTool = ND_MEASURE) Then
                 Tools_Measure.RenderMeasureUI dstCanvas
+                
+            ElseIf (g_CurrentTool = ND_CROP) Then
+                'TODO!
             
             'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
