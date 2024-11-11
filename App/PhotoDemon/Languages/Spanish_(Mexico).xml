@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.35</langversion>
+<langversion>9.0.36</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -12294,6 +12294,11 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
+<original>Crop tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rectangle selection tool</original>
 <translation>Herramienta de selección de rectángulo</translation>
 </phrase>
@@ -12353,7 +12358,37 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Herramienta de cubo de pintura</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<phrase>
+<original>Search tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toggle brush cursor</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13120,6 +13155,11 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
+<original>Toolbox tools</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Please use this hotkey on just one action</original>
 <translation></translation>
 </phrase>
@@ -13149,7 +13189,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation></translation>
 </phrase>
 
-<!-- Tools_Hotkeys.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -14440,10 +14480,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2733</phrasecount>
+<phrasecount>2741</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5786 phrases. -->
-<!-- 3053 are duplicates, so only 2733 unique phrases have been written to file. -->
-<!-- These 2733 phrases contain approximately 11813 total words. -->
+<!-- As of this build, PhotoDemon contains 5794 phrases. -->
+<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
+<!-- These 2741 phrases contain approximately 11834 total words. -->
 
 </pdData>

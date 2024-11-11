@@ -961,7 +961,10 @@ Private Sub Form_Load()
         
     Next i
     
-    'Now we can pull all of PD's default hotkeys and correlate those with the current hotkey collection.
+    'Next, we need to manually add toolbox commands
+    AddToolboxActions cHotkeys
+    
+    'Now we can pull all of PD's default hotkeys and correlate those with the current menu and tool collection.
     Dim defaultHotkeys() As PD_Hotkey, numDefaultHotkeys As Long
     numDefaultHotkeys = Hotkeys.GetCopyOfAllHotkeys(defaultHotkeys, True)
     If (numDefaultHotkeys > 0) And (m_numItems > 0) Then
@@ -1018,6 +1021,86 @@ Private Sub Form_Load()
     '*Now* allow the treeview to render itself
     m_RenderingOK = True
     tvMenus.SetAutomaticRedraws True, True
+    
+End Sub
+
+'Manually add toolbox shortcuts to the bottom of the list
+Private Sub AddToolboxActions(ByRef cHotkeys As pdVariantHash)
+    
+    If (m_numItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_numItems * 2 - 1) As PD_HotkeyUI
+    
+    'Add a top-level "toolbox tools" item
+    Dim idxToolboxActions As Long
+    idxToolboxActions = m_numItems
+    
+    With m_Items(m_numItems)
+        
+        .hk_ActionID = "toolbox-tools"
+        .hk_HasChildren = True
+        .hk_TextEn = "Toolbox tools"
+        .hk_TextLocalized = g_Language.TranslateMessage("Toolbox tools")
+        .hk_ParentID = vbNullString
+        
+        'Save this action and index in a fast lookup table
+        m_ActionHash.AddItem .hk_ActionID, m_numItems
+        
+        'Add this to the treeview, then advance
+        tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, (.hk_SubmenuLevel = 0)
+        
+        'Advance to the next mappable menu index
+        m_numItems = m_numItems + 1
+        
+    End With
+    
+    'Now manually add all toolbox actions
+    Dim toolNames As pdStringStack, toolActions As pdStringStack
+    toolbar_Toolbox.GetListOfToolNamesAndActions toolNames, toolActions
+    
+    Dim i As Long
+    For i = 0 To toolNames.GetNumOfStrings - 1
+        AddOneToolboxAction toolNames.GetString(i), toolActions.GetString(i), cHotkeys
+    Next i
+    
+End Sub
+
+Private Sub AddOneToolboxAction(ByRef toolName As String, ByRef toolAction As String, ByRef cHotkeys As pdVariantHash)
+
+    If (m_numItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_numItems * 2 - 1) As PD_HotkeyUI
+    
+    'Add a top-level "toolbox tools" item
+    With m_Items(m_numItems)
+        
+        .hk_ActionID = toolAction
+        .hk_HasChildren = False
+        
+        'Mirror localized name across both english *and* localized text (in this case, we don't need the English text for anything)
+        .hk_TextEn = toolName
+        .hk_TextLocalized = toolName
+        .hk_ParentID = "toolbox-tools"
+        .hk_SubmenuLevel = 1
+        
+        'Save this action and index in a fast lookup table
+        m_ActionHash.AddItem .hk_ActionID, m_numItems
+        
+        'If a hotkey exists for this menu's action, retrieve it and add it
+        ' (and make backups of these *original* hotkeys, so we can revert them if the user doesn't like later changes)
+        Dim idxHotkey As Variant
+        If cHotkeys.GetItemByKey(.hk_ActionID, idxHotkey) Then
+            .hk_KeyCode = m_Hotkeys(idxHotkey).hkKeyCode
+            .hk_BackupKeyCode = .hk_KeyCode
+            .hk_ShiftState = m_Hotkeys(idxHotkey).hkShiftState
+            .hk_BackupShiftState = .hk_ShiftState
+            .hk_HotkeyText = GetHotkeyNameFromKeys(.hk_ShiftState, .hk_KeyCode)
+            .hk_BackupHotkeyText = .hk_HotkeyText
+        End If
+        
+        'Add this to the treeview, then advance
+        tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, (.hk_SubmenuLevel = 0)
+        
+        'Advance to the next mappable menu index
+        m_numItems = m_numItems + 1
+        
+    End With
     
 End Sub
 
@@ -1336,6 +1419,10 @@ Private Sub txtHotkey_KeyDown(ByVal Shift As ShiftConstants, ByVal vKey As Long,
     
     preventFurtherHandling = True
     
+End Sub
+
+Private Sub txtHotkey_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+    preventFurtherHandling = True
 End Sub
 
 Private Sub txtHotkey_KeyUp(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)

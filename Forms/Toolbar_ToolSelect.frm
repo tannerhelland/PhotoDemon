@@ -536,7 +536,12 @@ Private m_ActiveToolPanel As PD_ToolPanels
 
 'Sometimes, external functions need to get a list of valid tool names.  (The search bar, for example.)
 ' We store a list of localized tool names and corresponding action strings internally.
-Private m_ToolNames As pdStringStack, m_ToolActions As pdStringStack
+Private Type PD_ToolboxAction
+    ta_ToolName As String
+    ta_ToolAction As String
+End Type
+
+Private m_ToolActions() As PD_ToolboxAction, m_numToolActions As Long
 
 Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
         
@@ -685,9 +690,9 @@ Private Sub Form_Load()
     m_ShowCategoryLabels = UserPrefs.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
     m_ButtonSize = UserPrefs.GetPref_Long("Core", "Toolbox Button Size", tbs_Small)
     
-    'Ensure our tool name and action stacks exist
-    Set m_ToolNames = New pdStringStack
-    Set m_ToolActions = New pdStringStack
+    'Reset a stack of tool names, actions, and associated hotkeys
+    m_numToolActions = 0
+    ReDim m_ToolActions(0) As PD_ToolboxAction
     
     'Initialize a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -1463,70 +1468,69 @@ Public Sub UpdateAgainstCurrentTheme()
     shortcutText = g_Language.TranslateMessage("Gradient") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "G")
     cmdTools(PAINT_GRADIENT).AssignTooltip shortcutText
     
-    'And finally, tool names and their corresponding action strings
-    m_ToolNames.ResetStack
+    'And finally, tool names and their corresponding action strings.  (These are supplied to the
+    ' hotkey manager, which is why we use slightly different organization, combining some tools that
+    ' are designed to share hotkeys.)
+    ReDim m_ToolActions(0) As PD_ToolboxAction
+    m_numToolActions = 0
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Hand tool")
-    m_ToolActions.AddString "tool_hand"
+    AddToolboxAction g_Language.TranslateMessage("Hand tool"), "tool_hand"
+    AddToolboxAction g_Language.TranslateMessage("Zoom tool"), "tool_zoom"
+    AddToolboxAction g_Language.TranslateMessage("Move tool"), "tool_move"
+    AddToolboxAction g_Language.TranslateMessage("Color selector tool") & ", " & g_Language.TranslateMessage("Measure tool"), "tool_colorselect"
+    AddToolboxAction g_Language.TranslateMessage("Crop tool"), "tool_crop"
+    AddToolboxAction g_Language.TranslateMessage("Rectangle selection tool") & ", " & g_Language.TranslateMessage("Ellipse selection tool"), "tool_select_rect"
+    AddToolboxAction g_Language.TranslateMessage("Polygon selection tool") & ", " & g_Language.TranslateMessage("Lasso selection tool"), "tool_select_polygon"
+    AddToolboxAction g_Language.TranslateMessage("Magic wand selection tool"), "tool_select_wand"
+    AddToolboxAction g_Language.TranslateMessage("Basic text tool") & ", " & g_Language.TranslateMessage("Advanced text tool"), "tool_text_basic"
+    AddToolboxAction g_Language.TranslateMessage("Pencil tool"), "tool_pencil"
+    AddToolboxAction g_Language.TranslateMessage("Paintbrush tool"), "tool_paintbrush"
+    AddToolboxAction g_Language.TranslateMessage("Erase tool"), "tool_erase"
+    AddToolboxAction g_Language.TranslateMessage("Clone stamp tool"), "tool_clone"
+    AddToolboxAction g_Language.TranslateMessage("Paint bucket tool"), "tool_paintbucket"
+    AddToolboxAction g_Language.TranslateMessage("Gradient tool"), "tool_gradient"
+    AddToolboxAction g_Language.TranslateMessage("Search tool"), "tool_search"
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Zoom tool")
-    m_ToolActions.AddString "tool_zoom"
+    'Tool modifiers; UI setting changes only!
+    AddToolboxAction g_Language.TranslateMessage("Decrease brush size"), "tool_active_sizedown"
+    AddToolboxAction g_Language.TranslateMessage("Increase brush size"), "tool_active_sizeup"
+    AddToolboxAction g_Language.TranslateMessage("Decrease brush hardness"), "tool_active_hardnessdown"
+    AddToolboxAction g_Language.TranslateMessage("Increase brush hardness"), "tool_active_hardnessup"
+    AddToolboxAction g_Language.TranslateMessage("Toggle brush cursor"), "tool_active_togglecursor"
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Move tool")
-    m_ToolActions.AddString "tool_move"
+End Sub
+
+Private Sub AddToolboxAction(ByRef translatedName As String, ByRef toolAction As String)
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Color selector tool")
-    m_ToolActions.AddString "tool_colorselect"
+    If (m_numToolActions = 0) Then
+        Const INIT_TOOL_ACTIONS As Long = 16
+        ReDim m_ToolActions(0 To INIT_TOOL_ACTIONS - 1) As PD_ToolboxAction
+    End If
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Measure tool")
-    m_ToolActions.AddString "tool_measure"
+    If (m_numToolActions > UBound(m_ToolActions)) Then ReDim Preserve m_ToolActions(0 To m_numToolActions * 2 - 1) As PD_ToolboxAction
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Rectangle selection tool")
-    m_ToolActions.AddString "tool_select_rect"
+    With m_ToolActions(m_numToolActions)
+        .ta_ToolName = translatedName
+        .ta_ToolAction = toolAction
+    End With
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Ellipse selection tool")
-    m_ToolActions.AddString "tool_select_ellipse"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Polygon selection tool")
-    m_ToolActions.AddString "tool_select_polygon"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Lasso selection tool")
-    m_ToolActions.AddString "tool_select_lasso"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Magic wand selection tool")
-    m_ToolActions.AddString "tool_select wand"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Basic text tool")
-    m_ToolActions.AddString "tool_text_basic"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Advanced text tool")
-    m_ToolActions.AddString "tool_text_advanced"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Pencil tool")
-    m_ToolActions.AddString "tool_pencil"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Paintbrush tool")
-    m_ToolActions.AddString "tool_paintbrush"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Erase tool")
-    m_ToolActions.AddString "tool_erase"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Clone stamp tool")
-    m_ToolActions.AddString "tool_clone"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Paint bucket tool")
-    m_ToolActions.AddString "tool_paintbucket"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Gradient tool")
-    m_ToolActions.AddString "tool_gradient"
+    m_numToolActions = m_numToolActions + 1
     
 End Sub
 
 Public Sub GetListOfToolNamesAndActions(ByRef dstNames As pdStringStack, ByRef dstActions As pdStringStack)
+    
     Set dstNames = New pdStringStack
-    dstNames.CloneStack m_ToolNames
     Set dstActions = New pdStringStack
-    dstActions.CloneStack m_ToolActions
+    
+    If (m_numToolActions > 0) Then
+        Dim i As Long
+        For i = 0 To m_numToolActions - 1
+            dstNames.AddString m_ToolActions(i).ta_ToolName
+            dstActions.AddString m_ToolActions(i).ta_ToolAction
+        Next i
+    End If
+    
 End Sub
 
 'You *must* call this function before shutdown.  This function will forcibly free cached toolbox windows.

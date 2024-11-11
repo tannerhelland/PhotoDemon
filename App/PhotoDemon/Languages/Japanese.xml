@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語 (Japanese)</langname>
-<langversion>2024.7.4</langversion>
+<langversion>2024.7.5</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Kenji Hoshimoto (Hosiken)</author>
@@ -12295,6 +12295,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Crop tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rectangle selection tool</original>
 <translation>矩形選択ツール</translation>
 </phrase>
@@ -12354,7 +12359,37 @@ Would you like to save your batch list before exiting?</original>
 <translation>ペイント バケツ ツール</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<phrase>
+<original>Search tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toggle brush cursor</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13121,6 +13156,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Toolbox tools</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Please use this hotkey on just one action</original>
 <translation></translation>
 </phrase>
@@ -13150,7 +13190,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Tools_Hotkeys.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -14441,10 +14481,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2733</phrasecount>
+<phrasecount>2741</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5786 phrases. -->
-<!-- 3053 are duplicates, so only 2733 unique phrases have been written to file. -->
-<!-- These 2733 phrases contain approximately 11813 total words. -->
+<!-- As of this build, PhotoDemon contains 5794 phrases. -->
+<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
+<!-- These 2741 phrases contain approximately 11834 total words. -->
 
 </pdData>
