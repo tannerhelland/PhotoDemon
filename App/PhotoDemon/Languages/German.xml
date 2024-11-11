@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.8 (build 25).3</langversion>
+<langversion>2024.8 Alpha (build 142).1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1783,17 +1783,17 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>Rücktaste</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Tab</translation>
 </phrase>
 
 <phrase>
 <original>Escape</original>
-<translation></translation>
+<translation>Escape</translation>
 </phrase>
 
 <phrase>
@@ -2278,7 +2278,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 <translation>Leider konnte das Bild '%1' nicht gefunden werden.
 
-Wenn dieses Bild sich ursprünglich auf einem Wechseldatenträger (DVD, USB-Laufwerk etc.) befunden hat, legen Sie bitte das Medium wieder ein oder schließen Sie es wieder an, dann wiederholen Sie den Vorgang.</translation>
+Wenn dieses Bild sich ursprünglich auf einem Wechseldatenträger (DVD, USB-Laufwerk etc.) befunden hat, legen Sie das Medium bitte wieder ein oder schließen Sie es wieder an und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -2802,7 +2802,7 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation>Die spezifizierte Datei konnte nicht lokalisiert werden. Wenn diese sich auf einem Wechseldatenträger befunden hat, legen Sie bitte die richtige Floppy-Disk, CD wieder ein oder oder schließen das portable Laufwerk wieder an. Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
+<translation>Die spezifizierte Datei konnte nicht lokalisiert werden. Wenn diese sich auf einem Wechseldatenträger befunden hat, legen Sie die richtige Floppy-Disk, CD bitte wieder ein oder schließen Sie das portable Laufwerk wieder an. Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
 1) die Datei nicht gelöscht worden ist und ...
 2) der in PhotoDemon angebotene Dateiort korrekt ist.</translation>
 </phrase>
@@ -4155,7 +4155,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
-<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows® für eine einzelne Laden-Operation einkalkuliert. Bitte versuchen Sie es erneut mit einem kleineren Set an selektierten Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows® für eine einzelne Laden-Operation einkalkuliert. Bitte versuchen Sie es erneut mit einem kleineren Set an Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -5504,7 +5504,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Keyboard shortcuts</original>
-<translation></translation>
+<translation>Tastatur-Shortcuts</translation>
 </phrase>
 
 <phrase>
@@ -9782,7 +9782,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>Der Quellordner enhält keinerlei Dateien. Bitte versuchen Sie einen anderen.</translation>
+<translation>Der Quellordner enhält keinerlei Dateien. Bitte versuchen Sie einen anderen Ordner.</translation>
 </phrase>
 
 <phrase>
@@ -10143,7 +10143,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddatei(en) unter Verwendung eines Standard-Dialogs "Bild öffnen".</translation>
+<translation>1) Durch manuelle Hinzufügung einer oder mehrerer Bilddatei(en) unter Verwendung eines Standarddialogs "Bild öffnen".</translation>
 </phrase>
 
 <phrase>
@@ -10168,7 +10168,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Wenn "Bilder in deren Original-Format behalten" selektiert ist, wird PhotoDemon versuchen, jedes Bild in seinem Original-Format zu speichern. Wenn das Original-Format nicht unterstützt wird, wird ein Standard-Format (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
+<translation>Wenn "Bilder in deren Original-Format behalten" selektiert ist, wird PhotoDemon versuchen, jedes Bild in seinem Original-Format zu speichern. Wenn das Original-Format nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
 </phrase>
 
 <phrase>
@@ -10278,7 +10278,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
-<translation>Wenn PhotoDemon das Original-Format eines Bildes nicht unterstützt, wird ein Standard-Format verwendet</translation>
+<translation>Wenn PhotoDemon das Original-Format eines Bildes nicht unterstützt, wird ein Standardformat verwendet</translation>
 </phrase>
 
 <phrase>
@@ -11579,7 +11579,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation>Dies ist ein geschütztes Tag. Bearbeitungen sind erlaubt, aber diese können überschrieben werden, um eine gültige Bilddatei zu produzieren.</translation>
+<translation>Dies ist ein geschütztes Tag. Edits sind erlaubt, aber diese können überschrieben werden, um eine gültige Bilddatei zu produzieren.</translation>
 </phrase>
 
 <phrase>
@@ -13059,97 +13059,97 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>undo all changes</original>
-<translation></translation>
+<translation>Alle Änderungen rückgängig machen</translation>
 </phrase>
 
 <phrase>
 <original>all hotkeys</original>
-<translation></translation>
+<translation>Alle Hotkeys</translation>
 </phrase>
 
 <phrase>
 <original>undo changes</original>
-<translation></translation>
+<translation>Änderungen rückgängig machen</translation>
 </phrase>
 
 <phrase>
 <original>try to capture automatically</original>
-<translation></translation>
+<translation>Versuchen, automatisch zu erfassen</translation>
 </phrase>
 
 <phrase>
 <original>this hotkey</original>
-<translation></translation>
+<translation>Dieser Hotkey</translation>
 </phrase>
 
 <phrase>
 <original>restore default</original>
-<translation></translation>
+<translation>Default wiederherstellen</translation>
 </phrase>
 
 <phrase>
 <original>export to file</original>
-<translation></translation>
+<translation>In Datei exportieren</translation>
 </phrase>
 
 <phrase>
 <original>import from file</original>
-<translation></translation>
+<translation>Aus Datei importieren</translation>
 </phrase>
 
 <phrase>
 <original>delete</original>
-<translation></translation>
+<translation>Löschen</translation>
 </phrase>
 
 <phrase>
 <original>restore all defaults</original>
-<translation></translation>
+<translation>Alle Defaults wiederherstellen</translation>
 </phrase>
 
 <phrase>
 <original>generate summary</original>
-<translation></translation>
+<translation>Zusammenfassung generieren</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys</original>
-<translation></translation>
+<translation>Hotkeys</translation>
 </phrase>
 
 <phrase>
 <original>Import hotkeys</original>
-<translation></translation>
+<translation>Hotkeys importieren</translation>
 </phrase>
 
 <phrase>
 <original>Export hotkeys</original>
-<translation></translation>
+<translation>Hotkeys exportieren</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Hotkeys</original>
-<translation></translation>
+<translation>PhotoDemon-Hotkeys</translation>
 </phrase>
 
 <phrase>
 <original>One or more hotkeys is currently assigned to multiple actions.</original>
-<translation></translation>
+<translation>Ein oder mehrere Hotkeys sind derzeit multiplen Aktionen zugewiesen.</translation>
 </phrase>
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation></translation>
+<translation>Wenn Sie fortfahren, behält PhotoDemon nur das erste Auftreten jeglicher doppelter Hotkeys.</translation>
 </phrase>
 
 <phrase>
 <original>Press OK to proceed.</original>
-<translation></translation>
+<translation>Drücken Sie OK, um fortzufahren.</translation>
 </phrase>
 
 <phrase>
 <original>Press cancel to keep editing hotkeys.</original>
-<translation></translation>
+<translation>Drücken Sie Abbrechen, um Hotkeys weiter zu bearbeiten.</translation>
 </phrase>
 
 <phrase>
@@ -13159,32 +13159,32 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation></translation>
+<translation>Bitte verwenden Sie diesen Hotkey nur für eine Aktion</translation>
 </phrase>
 
 <phrase>
 <original>(this item)</original>
-<translation></translation>
+<translation>(dieses Item)</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation></translation>
+<translation>Hotkeys müssen eindeutig sein.</translation>
 </phrase>
 
 <phrase>
 <original>Command</original>
-<translation></translation>
+<translation>Befehl</translation>
 </phrase>
 
 <phrase>
 <original>Hotkey</original>
-<translation></translation>
+<translation>Hotkey</translation>
 </phrase>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Dies wird jegliche Hotkey-Edits überschreiben. Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -14002,7 +14002,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können möglicherweise diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also seitwärts oder auf dem Kopf stehend importiert werden, können Sie probieren, das Feature zum automatischen Drehen zu deaktivieren.</translation>
+<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können möglicherweise diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also seitwärts oder auf dem Kopf stehend importiert werden, können Sie versuchen, das Feature zum automatischen Drehen zu deaktivieren.</translation>
 </phrase>
 
 <phrase>
@@ -14027,7 +14027,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>Die meisten Foto-Editoren greifen auf den Ordner des aktuellen Bildes zurück. Bei Workflows, die das Laden von Bildern aus einem Ordner, aber das Speichern in einem neuen Ordner involvieren, verwenden Sie den zuletzt-verwendeten Ordner, um Zeit zu sparen.</translation>
+<translation>Die meisten Foto-Editoren verwenden standardmäßig den Ordner des aktuellen Bildes. Bei Workflows, die das Laden von Bildern aus einem Ordner, aber das Speichern in einem neuen Ordner involvieren, verwenden Sie den zuletzt-verwendeten Ordner, um Zeit zu sparen.</translation>
 </phrase>
 
 <phrase>
@@ -14042,7 +14042,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>Die meisten Foto-Editoren greifen auf das Format des aktuellen Bildes zurück. Bei Workflows, die das Laden von Bildern in einem Format (z. B. RAW), aber das Speichern in einem neuen Format (z. B. JPEG) involvieren, verwenden Sie das zuletzt-verwendete Format, um Zeit zu sparen.</translation>
+<translation>Die meisten Foto-Editoren verwenden standardmäßig das Format des aktuellen Bildes. Bei Workflows, die das Laden von Bildern in einem Format (z. B. RAW), aber das Speichern in einem neuen Format (z. B. JPEG) involvieren, verwenden Sie das zuletzt-verwendete Format, um Zeit zu sparen.</translation>
 </phrase>
 
 <phrase>
@@ -14255,7 +14255,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Dieser Button setzt alle Einstellungen von PhotoDemon zurück. Wenn sich das Programm unerwartet verhält, kann dies das Problem eventuell lösen.</translation>
+<translation>Dieser Button setzt alle PhotoDemon-Einstellungen zurück. Wenn sich das Programm unerwartet verhält, kann dies das Problem eventuell lösen.</translation>
 </phrase>
 
 <phrase>
