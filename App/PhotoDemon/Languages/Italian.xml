@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1641</langversion>
+<langversion>8.9.1642</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -1783,17 +1783,17 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>Backspace</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Tab</translation>
 </phrase>
 
 <phrase>
 <original>Escape</original>
-<translation></translation>
+<translation>Esc</translation>
 </phrase>
 
 <phrase>
@@ -2757,7 +2757,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <phrase>
 <original>LGPL license</original>
-<translation></translation>
+<translation>Licenza LGPL</translation>
 </phrase>
 
 <phrase>
@@ -5503,7 +5503,7 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 
 <phrase>
 <original>Keyboard shortcuts</original>
-<translation></translation>
+<translation>Scorciatoie da tastiera</translation>
 </phrase>
 
 <phrase>
@@ -5573,37 +5573,37 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>Mostra extra</translation>
 </phrase>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>Bordi dei livelli</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>Guide intelligenti</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>Aggancia</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>Aggancia a</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>Bordi della tela</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>Linee di centro</translation>
 </phrase>
 
 <phrase>
@@ -12293,6 +12293,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>Crop tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rectangle selection tool</original>
 <translation>Strumento Selezione rettangolare</translation>
 </phrase>
@@ -12352,7 +12357,37 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>Strumento Secchiello</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<phrase>
+<original>Search tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toggle brush cursor</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12603,7 +12638,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>mostra distanze</translation>
 </phrase>
 
 <phrase>
@@ -13025,130 +13060,135 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>undo all changes</original>
-<translation></translation>
+<translation>annulla tutte le modifiche</translation>
 </phrase>
 
 <phrase>
 <original>all hotkeys</original>
-<translation></translation>
+<translation>tutte le scorciatoie da tastiera</translation>
 </phrase>
 
 <phrase>
 <original>undo changes</original>
-<translation></translation>
+<translation>annulla modifica</translation>
 </phrase>
 
 <phrase>
 <original>try to capture automatically</original>
-<translation></translation>
+<translation>prova a catturare automaticamente</translation>
 </phrase>
 
 <phrase>
 <original>this hotkey</original>
-<translation></translation>
+<translation>scorciatoia corrente</translation>
 </phrase>
 
 <phrase>
 <original>restore default</original>
-<translation></translation>
+<translation>ripristina predefinito</translation>
 </phrase>
 
 <phrase>
 <original>export to file</original>
-<translation></translation>
+<translation>esporta come file</translation>
 </phrase>
 
 <phrase>
 <original>import from file</original>
-<translation></translation>
+<translation>importa da file</translation>
 </phrase>
 
 <phrase>
 <original>delete</original>
-<translation></translation>
+<translation>elimina</translation>
 </phrase>
 
 <phrase>
 <original>restore all defaults</original>
-<translation></translation>
+<translation>ripristina i predefiniti</translation>
 </phrase>
 
 <phrase>
 <original>generate summary</original>
-<translation></translation>
+<translation>genera riepilogo</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys</original>
-<translation></translation>
+<translation>Scorciatoie da tastiera</translation>
 </phrase>
 
 <phrase>
 <original>Import hotkeys</original>
-<translation></translation>
+<translation>Importa scorciatoie</translation>
 </phrase>
 
 <phrase>
 <original>Export hotkeys</original>
-<translation></translation>
+<translation>Esposta scorciatoie</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Hotkeys</original>
-<translation></translation>
+<translation>Scorciatoie di PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>One or more hotkeys is currently assigned to multiple actions.</original>
-<translation></translation>
+<translation>Una o più scorciatoie da tastiera sono attualmente assegnate a più azioni.</translation>
 </phrase>
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation></translation>
+<translation>Se procedi, PhotoDemon manterrà solo la prima scorciatoia di ogni duplicato.</translation>
 </phrase>
 
 <phrase>
 <original>Press OK to proceed.</original>
-<translation></translation>
+<translation>Clicca OK per continuare.</translation>
 </phrase>
 
 <phrase>
 <original>Press cancel to keep editing hotkeys.</original>
+<translation>Clicca Annulla per modificare le scorciatoie.</translation>
+</phrase>
+
+<phrase>
+<original>Toolbox tools</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation></translation>
+<translation>Per favore usa questa scorciatoia su una sola azione</translation>
 </phrase>
 
 <phrase>
 <original>(this item)</original>
-<translation></translation>
+<translation>(questo elemento)</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation></translation>
+<translation>Le scorciatoie da tastiera devono esssere uniche.</translation>
 </phrase>
 
 <phrase>
 <original>Command</original>
-<translation></translation>
+<translation>Comando</translation>
 </phrase>
 
 <phrase>
 <original>Hotkey</original>
-<translation></translation>
+<translation>Scorciatoia</translation>
 </phrase>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Questa sovrascriverà qualsiasi modifica alle scorciatoie da tastiera. Continuare?</translation>
 </phrase>
 
-<!-- Tools_Hotkeys.frm contains 60 phrases. 35 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13564,7 +13604,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>distanza di aggancio (in pixel)</translation>
 </phrase>
 
 <phrase>
@@ -14158,17 +14198,17 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>stable, beta, and developer releases</original>
-<translation>versioni stabile, beta e sviluppatore</translation>
+<translation>versioni stabili, beta e sviluppatore</translation>
 </phrase>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Uno dei modi migliori per supportare PhotoDemon è quello di aiutare a testare le nuove versioni.  Per impostazione predefinita, PhotoDemon suggerirà sia le versioni stabili che quelle beta, ma i veri avventurosi possono anche provare le versioni per sviluppatori.  (Le release per sviluppatori danno accesso immediato agli ultimi miglioramenti del programma, ma si potrebbero incontrare alcuni bug).</translation>
+<translation>Uno dei modi migliori per supportare PhotoDemon è quello di aiutare a testare le nuove versioni.  Per impostazione predefinita, PhotoDemon suggerirà sia le versioni stabili che quelle beta, ma i veri avventurosi possono anche provare le versioni per sviluppatori.  (Le release per sviluppatori danno accesso immediato agli ultimi miglioramenti del programma, ma potrebbero contenere più bug).</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon può notificare quando è pronto ad applicare un aggiornamento.  Ciò consente di utilizzare immediatamente la versione aggiornata.</translation>
+<translation>PhotoDemon può notificare quando è pronto ad applicare un aggiornamento.  Questo permette di utilizzare immediatamente la versione aggiornata.</translation>
 </phrase>
 
 <phrase>
@@ -14278,7 +14318,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>expected version</original>
-<translation>versione prevista</translation>
+<translation>versione corretta</translation>
 </phrase>
 
 <phrase>
@@ -14432,17 +14472,17 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>cursor and clicks</original>
-<translation>cursore e clic</translation>
+<translation>cursore e click</translation>
 </phrase>
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2733</phrasecount>
+<phrasecount>2741</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5786 phrases. -->
-<!-- 3053 are duplicates, so only 2733 unique phrases have been written to file. -->
-<!-- These 2733 phrases contain approximately 11813 total words. -->
+<!-- As of this build, PhotoDemon contains 5794 phrases. -->
+<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
+<!-- These 2741 phrases contain approximately 11834 total words. -->
 
 </pdData>
