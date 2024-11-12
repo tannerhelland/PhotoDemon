@@ -928,6 +928,7 @@ Private Sub NewToolSelected()
         
         'Crop tool
         Case ND_CROP
+            'TODO!
         
         'Selection tools
         Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -1085,7 +1086,11 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Measure.hWnd
         
         'Crop tool
-        'Case ND_CROP
+        Case ND_CROP
+            Load toolpanel_Crop
+            toolpanel_Crop.UpdateAgainstCurrentTheme
+            m_ActiveToolPanel = TP_Crop
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Crop.hWnd
         
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -1201,7 +1206,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
         Select Case g_CurrentTool
             
             'Hand and zoom tools do not provide additional options
-            Case NAV_DRAG, NAV_ZOOM, ND_CROP    'TODO: REMOVE THIS WHEN THE OPTIONS FORM IS READY
+            Case NAV_DRAG, NAV_ZOOM
                 Toolboxes.SetToolboxVisibility PDT_TopToolbox, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
