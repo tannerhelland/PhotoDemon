@@ -226,7 +226,7 @@ Private Sub InitializeDefaultHotkeys()
     ' to toggle between similar tools (e.g. rectangular and elliptical selections).  Details can be found in
     ' FormMain.pdHotkey event handlers.
     AddHotkey vbKeyS, , "tool_select_rect", True
-    AddHotkey vbKeyL, , "tool_select_lasso", True
+    AddHotkey vbKeyL, , "tool_select_polygon", True
     AddHotkey vbKeyW, , "tool_select_wand", True
     AddHotkey vbKeyT, , "tool_text_basic", True
     AddHotkey vbKeyP, , "tool_pencil", True
@@ -571,6 +571,38 @@ Public Function GetHotkeyText(ByVal hkID As Long) As String
     Else
         GetHotkeyText = vbNullString
     End If
+    
+End Function
+
+'If an internal PD action has a hotkey associated with it, you can use this function to retrieve a localized
+' string of the hotkey.
+'
+'Returns TRUE if a matching action was found, with the requested text in outHotkeyText.
+' (Comparisons are case-insensitive, FYI.)
+Public Function GetHotkeyText_FromAction(ByRef hkAction As String, ByRef outHotkeyText As String) As Boolean
+    
+    'Failsafe (but technically user can remove all hotkeys, so that case needs to be covered)
+    If (m_NumOfHotkeys <= 0) Then Exit Function
+    
+    'Find a matching
+    Dim i As Long, hkID As Long
+    hkID = -1
+    
+    For i = 0 To m_NumOfHotkeys - 1
+        If Strings.StringsEqual(m_Hotkeys(i).hkAction, hkAction, True) Then
+            hkID = i
+            Exit For
+        End If
+    Next i
+    
+    'Validate ID (which is really just an index into the menu array)
+    If (hkID >= 0) And (hkID < m_NumOfHotkeys) Then
+        outHotkeyText = GetHotkeyText(hkID)
+    Else
+        outHotkeyText = vbNullString
+    End If
+    
+    GetHotkeyText_FromAction = (LenB(outHotkeyText) > 0)
     
 End Function
 

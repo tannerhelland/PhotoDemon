@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.8 Alpha (build 142).1</langversion>
+<langversion>2024.8 Alpha (build 147).1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -450,7 +450,7 @@
 
 <phrase>
 <original>Toggle layer visibility</original>
-<translation>Layer-Sichtbarkeit ein-/ausschalten</translation>
+<translation>Layer-Sichtbarkeit umschalten</translation>
 </phrase>
 
 <phrase>
@@ -6553,7 +6553,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild produzieren. Sie können das Menü "Effekte > Schärfen > Unscharfmaskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
+<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild produzieren. Sie können das Tool "Effekte > Schärfen > Unscharfmaskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -12029,7 +12029,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>search</original>
-<translation>Suchen</translation>
+<translation>Suche</translation>
 </phrase>
 
 <phrase>
@@ -12293,7 +12293,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Crop tool</original>
-<translation></translation>
+<translation>Zuschneide-Tool</translation>
 </phrase>
 
 <phrase>
@@ -12358,32 +12358,32 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Search tool</original>
-<translation></translation>
+<translation>Such-Tool</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush size</original>
-<translation></translation>
+<translation>Pinselgröße verringern</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush size</original>
-<translation></translation>
+<translation>Pinselgröße erhöhen</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation></translation>
+<translation>Pinselhärte verringern</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation></translation>
+<translation>Pinselhärte erhöhen</translation>
 </phrase>
 
 <phrase>
 <original>Toggle brush cursor</original>
-<translation></translation>
+<translation>Pinselcursor umschalten</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
@@ -13154,7 +13154,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Toolbox tools</original>
-<translation></translation>
+<translation>Toolbox-Tools</translation>
 </phrase>
 
 <phrase>
