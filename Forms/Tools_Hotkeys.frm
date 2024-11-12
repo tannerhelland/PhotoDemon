@@ -749,7 +749,7 @@ Private Sub cmdBar_OKClick()
     
     'We now need to notify some outside entities that hotkeys have changed.
     
-    'Notify both the hotkey manager and the menu manager that hotkeys are out of date, and need to be re-loaded
+    'Notify various UI elements that hotkeys are out of date, and need to be re-loaded
     Hotkeys.EraseHotkeyCollection
     Menus.NotifyHotkeysChanged
     
@@ -757,8 +757,9 @@ Private Sub cmdBar_OKClick()
     ' menu module of all changes.
     Hotkeys.LoadAllHotkeys
     
-    'Before exiting, menus need to be redrawn (as their text will have changed)
+    'Before exiting, some UI elements need to be redrawn (as their text will have changed)
     Menus.UpdateAgainstCurrentTheme True
+    toolbar_Toolbox.UpdateAgainstCurrentTheme
     
 End Sub
 

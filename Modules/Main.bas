@@ -374,8 +374,8 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Now that resources are available, extract any default program assets.  (This is only done
     ' once for each group of assets; once extracted, PD will never attempt to extract them again,
-    ' unless the user does a full preferences reset - this is to avoid ever overwriting changes
-    ' the user may have made to said files.)
+    ' unless the user does a full preferences reset - this is to avoid overwriting changes the
+    ' user may have made to said files.)
     g_Resources.ExtractDefaultAssets
     
     
@@ -551,6 +551,21 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     
     '*************************************************************************************************************************************
+    ' Load keyboard shortcuts (either PD's default collection, or a standalone file with user edits)
+    '*************************************************************************************************************************************
+    
+    'In late 2024, this step was moved earlier in the load process.  PD needs to have hotkey data
+    ' available before toolboxes are loaded, because the toolbox pulls hotkey data from the hotkey
+    ' manager in order to show relevant shortcuts in tooltips.
+    
+    'Initialize hotkeys.  (User-customized hotkeys will be loaded from file; if they don't exist,
+    ' this function will generate a default hotkey list.)
+    perfCheck.MarkEvent "Initialize hotkey manager"
+    LogStartupEvent "Initializing hotkeys..."
+    Hotkeys.InitializeHotkeys
+    
+    
+    '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
     '*************************************************************************************************************************************
     
@@ -663,12 +678,6 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     FormMain.MnuTest.Visible = debugMenuVisibility
     FormMain.MnuTool(13).Visible = debugMenuVisibility
     FormMain.MnuTool(14).Visible = debugMenuVisibility
-    
-    'Initialize hotkeys.  (User-customized hotkeys will be loaded from file; if they don't exist,
-    ' this function will generate a default hotkey list.)
-    perfCheck.MarkEvent "Initialize hotkey manager"
-    LogStartupEvent "Initializing hotkeys..."
-    Hotkeys.InitializeHotkeys
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     perfCheck.MarkEvent "Prep MRU menus"

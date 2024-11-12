@@ -1423,49 +1423,67 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdFile(FILE_SAVEAS_FLAT).AssignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
         
     'Layout tool buttons are next
-    Dim shortcutText As String
-    shortcutText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "H")
+    Dim shortcutText As String, hotkeyText As String
+    shortcutText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_hand", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(NAV_DRAG).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Zoom") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "Z")
+    shortcutText = g_Language.TranslateMessage("Zoom")
+    If Hotkeys.GetHotkeyText_FromAction("tool_zoom", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(NAV_ZOOM).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Move and resize image layers") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "M")
+    shortcutText = g_Language.TranslateMessage("Move and resize image layers")
+    If Hotkeys.GetHotkeyText_FromAction("tool_move", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(NAV_MOVE).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Select colors from the image") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "I")
+    shortcutText = g_Language.TranslateMessage("Select colors from the image")
+    If Hotkeys.GetHotkeyText_FromAction("tool_colorselect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(COLOR_PICKER).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Measure angles and distances") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "I")
+    shortcutText = g_Language.TranslateMessage("Measure angles and distances")
+    If Hotkeys.GetHotkeyText_FromAction("tool_colorselect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(ND_MEASURE).AssignTooltip shortcutText
     
     '...then selections...
-    shortcutText = g_Language.TranslateMessage("Rectangular Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "S")
+    shortcutText = g_Language.TranslateMessage("Rectangular Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_rect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_RECT).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Elliptical (Oval) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "S")
+    shortcutText = g_Language.TranslateMessage("Elliptical (Oval) Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_rect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_CIRC).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Polygon Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
+    shortcutText = g_Language.TranslateMessage("Polygon Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_polygon", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_POLYGON).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Lasso (Freehand) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
+    shortcutText = g_Language.TranslateMessage("Lasso (Freehand) Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_polygon", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_LASSO).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Magic Wand Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "W")
+    shortcutText = g_Language.TranslateMessage("Magic Wand Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_wand", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_WAND).AssignTooltip shortcutText
     
     '...then vector tools...
-    shortcutText = g_Language.TranslateMessage("Basic Text") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    shortcutText = g_Language.TranslateMessage("Basic Text")
+    If Hotkeys.GetHotkeyText_FromAction("tool_text_basic", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(TEXT_BASIC).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Advanced Text") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    shortcutText = g_Language.TranslateMessage("Advanced Text")
+    If Hotkeys.GetHotkeyText_FromAction("tool_text_basic", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(TEXT_ADVANCED).AssignTooltip shortcutText
     
     '...then paint tools...
-    shortcutText = g_Language.TranslateMessage("Pencil (hard-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "P")
+    shortcutText = g_Language.TranslateMessage("Pencil (hard-tipped brush)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_pencil", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_PENCIL).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Paintbrush (soft-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "B")
+    shortcutText = g_Language.TranslateMessage("Paintbrush (soft-tipped brush)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_paintbrush", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_SOFTBRUSH).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Eraser") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "E")
+    shortcutText = g_Language.TranslateMessage("Eraser")
+    If Hotkeys.GetHotkeyText_FromAction("tool_erase", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_ERASER).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Clone stamp") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "C")
+    shortcutText = g_Language.TranslateMessage("Clone stamp")
+    If Hotkeys.GetHotkeyText_FromAction("tool_clone", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_CLONE).AssignTooltip shortcutText
     
-    shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "F")
+    shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_paintbucket", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_FILL).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Gradient") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "G")
+    shortcutText = g_Language.TranslateMessage("Gradient")
+    If Hotkeys.GetHotkeyText_FromAction("tool_gradient", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_GRADIENT).AssignTooltip shortcutText
     
     'And finally, tool names and their corresponding action strings.  (These are supplied to the
