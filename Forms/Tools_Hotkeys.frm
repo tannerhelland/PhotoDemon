@@ -886,7 +886,7 @@ Private Sub Form_Load()
     
     'Turn off automatic redraws in the treeview object
     tvMenus.SetAutomaticRedraws False
-    tvMenus.ListItemHeight = BLOCKHEIGHT
+    tvMenus.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
     
     'Iterate the menu collection, and pair each menu with a hotkey against its relevant hotkey partner
     ReDim m_Items(0 To m_NumOfMenus - 1) As PD_HotkeyUI
