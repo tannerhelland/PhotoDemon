@@ -1467,7 +1467,8 @@ Public Sub UpdateAgainstCurrentTheme()
     shortcutText = g_Language.TranslateMessage("Measure angles and distances")
     If Hotkeys.GetHotkeyText_FromAction("tool_colorselect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(ND_MEASURE).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Crop") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "C")
+    shortcutText = g_Language.TranslateMessage("Crop")
+    If Hotkeys.GetHotkeyText_FromAction("tool_crop", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(ND_CROP).AssignTooltip shortcutText
     
     '...then selections...

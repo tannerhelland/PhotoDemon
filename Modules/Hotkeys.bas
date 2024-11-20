@@ -232,7 +232,7 @@ Private Sub InitializeDefaultHotkeys()
     AddHotkey vbKeyP, , "tool_pencil", True
     AddHotkey vbKeyB, , "tool_paintbrush", True
     AddHotkey vbKeyE, , "tool_erase", True
-    AddHotkey vbKeyC, , "tool_clone", True
+    AddHotkey vbKeyK, , "tool_clone", True
     AddHotkey vbKeyF, , "tool_paintbucket", True
     AddHotkey vbKeyG, , "tool_gradient", True
     

@@ -3,8 +3,8 @@ Attribute VB_Name = "Viewport"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright 2001-2024 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 29/November/16
-'Last update: reinstate all color management code under LittleCMS (instead of the Windows ICM engine, which is a hot mess)
+'Last updated: 20/November/24
+'Last update: add switch for crop tool UI rendering
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
 '
@@ -148,8 +148,8 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 Tools_Measure.RenderMeasureUI dstCanvas
                 
             ElseIf (g_CurrentTool = ND_CROP) Then
-                'TODO!
-            
+                Tools_Crop.DrawCanvasUI dstCanvas, srcImage
+                
             'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
             ' they only support the "move" interaction, which is applied by click-dragging anywhere in the lasso region.)

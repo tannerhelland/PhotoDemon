@@ -1033,6 +1033,10 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             Case NAV_MOVE
                 Tools_Move.NotifyKeyDown Shift, vkCode, markEventHandled
             
+            'Crop tool handles some buttons
+            Case ND_CROP
+                'TODO!
+            
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 SelectionUI.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
@@ -1185,6 +1189,10 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             Case ND_MEASURE
                 Tools_Measure.NotifyMouseDown FormMain.MainCanvas(0), imgX, imgY
             
+            'Crop tool
+            Case ND_CROP
+                Tools_Crop.NotifyMouseDown Button, Shift, FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y
+            
             'Selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 SelectionUI.NotifySelectionMouseDown Me, imgX, imgY
@@ -1309,6 +1317,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Move stuff around
             Case NAV_MOVE
                 Tools_Move.NotifyMouseMove m_LMBDown, Shift, imgX, imgY
+            
+            'Crop tool
+            Case ND_CROP
+                Tools_Crop.NotifyMouseMove Button, Shift, FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y
                 
             'Color picker
             Case COLOR_PICKER
@@ -1466,7 +1478,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Measure tool
             Case ND_MEASURE
                 Tools_Measure.NotifyMouseUp Button, Shift, imgX, imgY, m_NumOfMouseMovements, clickEventAlsoFiring
-                
+            
+            'Crop is handled later in this function, because it needs to track both left/right buttons
+            'Case NAV_CROP
+            
             'Selection tools have their own dedicated handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 SelectionUI.NotifySelectionMouseUp Me, Shift, imgX, imgY, clickEventAlsoFiring, m_SelectionActiveBeforeMouseEvents
@@ -1512,6 +1527,8 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
     'Some controls handle multiple button possibilities themselves
     If (g_CurrentTool = NAV_ZOOM) Then
         Tools_Zoom.NotifyMouseUp Button, Shift, Me, PDImages.GetActiveImage(), x, y, m_NumOfMouseMovements, clickEventAlsoFiring
+    ElseIf (g_CurrentTool = ND_CROP) Then
+        Tools_Crop.NotifyMouseUp Button, Shift, FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y, m_NumOfMouseMovements, clickEventAlsoFiring
     End If
     
     If (Button = pdRightButton) Then m_RMBDown = False
