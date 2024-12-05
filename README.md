@@ -1,8 +1,8 @@
 ## Download
 
-| Stable (2024.7) | Nightly | Source code |
+| Stable (2024.12) | Nightly | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download ZIP (18 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2024.7/PhotoDemon-2024.7.zip) | [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (24 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
+| [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2024.12/PhotoDemon-2024.12.zip) | [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (24 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
 
 ## About PhotoDemon
 
@@ -18,7 +18,7 @@ PhotoDemon is a portable photo editor.  It is 100% free and [100% open-source](h
 
 ![Screenshot](https://photodemon.org/media/images/photodemon_9.0.png)
 
-PhotoDemon provides a comprehensive photo editor in a 15 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in an 20 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
@@ -39,12 +39,12 @@ No installer is provided or required.  Aside from a temporary folder – which y
 Complex editing actions can be recorded as macros (similar to Office software).  A built-in batch processor lets you apply macros to entire folders of images.
 
 ### Usability is paramount
-Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
+Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, customizable hotkeys, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
 
 ### Pro-grade features and tools
-* Extensive file format support, including Adobe Photoshop (PSD), Corel PaintShop Pro (PSP), GIMP (XCF), and all major camera RAW formats
+* Extensive file format support, including Adobe Photoshop (PSD), Corel PaintShop Pro (PSP), GIMP (XCF), and major camera RAW formats
 * Advanced multi-layer support, including editable text layers and non-destructive layer modifications 
-* Color-managed workflow, including full support for embedded ICC profiles
+* Color-managed workflow, including support for embedded ICC profiles
 * On-canvas tools: digital paintbrushes, clone and pattern brushes, advanced selection tools, interactive gradients, and more
 * Adjustment tools: levels, curves, HDR, shadow/highlight recovery, white balance, and many more
 * Filters and effects: perspective correction, edge enhancement, noise removal, content-aware fill and resize, unsharp masking, gradient and palette mapping, and many more
@@ -61,9 +61,9 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 [Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2022/09/08/photodemon-9-0.html).
 
-### File formats
+PhotoDemon 2024.12 just released, so there's not much new in nightly builds.
 
-- HEIF/HEIC images can now be imported into PhotoDemon (via libheif).  Multi-frame HEIF images are also supported.
+Check back in a few weeks!
 
 ### Other
 
@@ -81,6 +81,6 @@ If you can contribute in other ways (language translations, bug reports, pull re
 
 PhotoDemon is BSD-licensed.  This allows you to use its source code in any application, commercial or otherwise, if you supply proper attribution.  Proper attribution includes a **notice of copyright** and **disclaimer of warranty**.
 
-PhotoDemon uses some 3rd-party libraries.  These libraries are found in the /App/PhotoDemon/Plugins folder.  These libraries have their own licenses, separate from PhotoDemon.
+PhotoDemon uses some 3rd-party libraries.  These libraries are found in the `/App/PhotoDemon/Plugins` folder.  These libraries have their own licenses, separate from PhotoDemon.
 
 Full licensing details are available in [LICENSE.md](https://github.com/tannerhelland/PhotoDemon/blob/main/LICENSE.md).
