@@ -222,13 +222,6 @@ Private Sub Form_Load()
         
     End Select
     
-    'If the current image has more than one layer, warn the user that this action will flatten the image.
-    If PDImages.GetActiveImage.GetNumOfLayers > 1 Then
-        lblFlatten.Visible = True
-    Else
-        lblFlatten.Visible = False
-    End If
-    
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
@@ -247,15 +240,24 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     cParams.SetParamString xmlParams
     
     Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As PD_MeasurementUnit, imgDPI As Double
-    Dim thingToResize As PD_ActionTarget
+    Dim thingToResize As PD_ActionTarget, thingToResizeString As String
     
     With cParams
         imgWidth = .GetLong("width")
         imgHeight = .GetLong("height")
         imgResizeUnit = .GetLong("unit", mu_Pixels)
         imgDPI = .GetDouble("ppi", 96)
-        thingToResize = .GetLong("target", pdat_Image)
+        thingToResizeString = .GetString("target", "image")
     End With
+    
+    If Strings.StringsEqual(thingToResizeString, "layer", True) Then
+        thingToResize = pdat_SingleLayer
+    ElseIf Strings.StringsEqual(thingToResizeString, "image", True) Then
+        thingToResize = pdat_Image
+    Else
+        PDDebug.LogAction "WARNING! Unknown resize target: " & thingToResizeString
+        thingToResize = pdat_Image
+    End If
     
     'If the entire image is being resized, some extra preparation is required
     If (thingToResize = pdat_Image) And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
@@ -346,4 +348,3 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal imgWidth As Long, ByVa
     If SeamCarveDIB Then srcDIB.CreateFromExistingDIB seamCarver.GetCarvedImage()
     
 End Function
-
