@@ -5,11 +5,11 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（夜间更新版，2024.4 build 42）</langname>
-<langversion>2024.4 build 42.4</langversion>
+<langname>简体中文（夜间更新版，2024.12）</langname>
+<langversion>2024.12.12</langversion>
 <langstatus>完成</langstatus>
 
-<author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
+<author>Charltsing（QQ 564955427） revised on December 12, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -1783,17 +1783,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>Backspace</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Tab</translation>
 </phrase>
 
 <phrase>
 <original>Escape</original>
-<translation></translation>
+<translation>Escape</translation>
 </phrase>
 
 <phrase>
@@ -2753,7 +2753,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>LGPL license</original>
-<translation></translation>
+<translation>LGPL 许可证</translation>
 </phrase>
 
 <phrase>
@@ -5499,7 +5499,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Keyboard shortcuts</original>
-<translation></translation>
+<translation>键盘快捷键</translation>
 </phrase>
 
 <phrase>
@@ -12289,7 +12289,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Crop tool</original>
-<translation></translation>
+<translation>剪裁工具</translation>
 </phrase>
 
 <phrase>
@@ -12354,32 +12354,32 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Search tool</original>
-<translation></translation>
+<translation>搜索工具</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush size</original>
-<translation></translation>
+<translation>减小画笔大小</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush size</original>
-<translation></translation>
+<translation>增加画笔大小</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation></translation>
+<translation>降低笔刷硬度</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation></translation>
+<translation>增加笔刷硬度</translation>
 </phrase>
 
 <phrase>
 <original>Toggle brush cursor</original>
-<translation></translation>
+<translation>切换画笔光标</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
@@ -13055,132 +13055,132 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>undo all changes</original>
-<translation></translation>
+<translation>撤消所有更改</translation>
 </phrase>
 
 <phrase>
 <original>all hotkeys</original>
-<translation></translation>
+<translation>所有热键</translation>
 </phrase>
 
 <phrase>
 <original>undo changes</original>
-<translation></translation>
+<translation>撤消更改</translation>
 </phrase>
 
 <phrase>
 <original>try to capture automatically</original>
-<translation></translation>
+<translation>尝试自动捕获热键</translation>
 </phrase>
 
 <phrase>
 <original>this hotkey</original>
-<translation></translation>
+<translation>当前热键设定</translation>
 </phrase>
 
 <phrase>
 <original>restore default</original>
-<translation></translation>
+<translation>恢复默认值</translation>
 </phrase>
 
 <phrase>
 <original>export to file</original>
-<translation></translation>
+<translation>导出到文件</translation>
 </phrase>
 
 <phrase>
 <original>import from file</original>
-<translation></translation>
+<translation>从文件导入</translation>
 </phrase>
 
 <phrase>
 <original>delete</original>
-<translation></translation>
+<translation>删除</translation>
 </phrase>
 
 <phrase>
 <original>restore all defaults</original>
-<translation></translation>
+<translation>恢复所有默认值</translation>
 </phrase>
 
 <phrase>
 <original>generate summary</original>
-<translation></translation>
+<translation>生成摘要</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys</original>
-<translation></translation>
+<translation>热键</translation>
 </phrase>
 
 <phrase>
 <original>Import hotkeys</original>
-<translation></translation>
+<translation>导入热键</translation>
 </phrase>
 
 <phrase>
 <original>Export hotkeys</original>
-<translation></translation>
+<translation>导出热键</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Hotkeys</original>
-<translation></translation>
+<translation>PhotoDemon 热键</translation>
 </phrase>
 
 <phrase>
 <original>One or more hotkeys is currently assigned to multiple actions.</original>
-<translation></translation>
+<translation>一个或多个热键当前分配给多个操作。</translation>
 </phrase>
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation></translation>
+<translation>如果继续，PhotoDemon将只保留任何第一次出现的重复热键。</translation>
 </phrase>
 
 <phrase>
 <original>Press OK to proceed.</original>
-<translation></translation>
+<translation>按“确定”继续。</translation>
 </phrase>
 
 <phrase>
 <original>Press cancel to keep editing hotkeys.</original>
-<translation></translation>
+<translation>按“取消”继续编辑热键。</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox tools</original>
-<translation></translation>
+<translation>工具箱</translation>
 </phrase>
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation></translation>
+<translation>请仅对一个操作使用此热键。</translation>
 </phrase>
 
 <phrase>
 <original>(this item)</original>
-<translation></translation>
+<translation>（此项目）</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation></translation>
+<translation>热键必须是唯一的。</translation>
 </phrase>
 
 <phrase>
 <original>Command</original>
-<translation></translation>
+<translation>命令</translation>
 </phrase>
 
 <phrase>
 <original>Hotkey</original>
-<translation></translation>
+<translation>热键</translation>
 </phrase>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>这将覆盖任何热键设定。您确定要继续吗？</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
