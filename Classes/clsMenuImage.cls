@@ -277,7 +277,11 @@ Friend Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
                 
             Else
                 If OS.IsVistaOrLater Then
-                    .hbmpItem = mDIB(imageID).hDIB
+                    If (imageID <= UBound(mDIB)) Then
+                        .hbmpItem = mDIB(imageID).hDIB
+                    Else
+                        PDDebug.LogAction "WARNING! Couldn't find image: " & imageID
+                    End If
                 Else
                     .hbmpItem = HBMMENU_CALLBACK
                     

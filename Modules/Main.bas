@@ -676,8 +676,8 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     Dim debugMenuVisibility As Boolean
     debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
     FormMain.MnuTest.Visible = debugMenuVisibility
-    FormMain.MnuTool(13).Visible = debugMenuVisibility
     FormMain.MnuTool(14).Visible = debugMenuVisibility
+    FormMain.MnuTool(15).Visible = debugMenuVisibility
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     perfCheck.MarkEvent "Prep MRU menus"

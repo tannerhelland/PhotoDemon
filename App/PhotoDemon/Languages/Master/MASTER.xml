@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2024.8.147</langversion>
+		<langversion>2024.12.0</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -12329,7 +12329,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-		<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+		<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -14413,8 +14413,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<phrasecount>2741</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-	<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
+	<!-- As of this build, PhotoDemon contains 5830 phrases. -->
+	<!-- 3089 are duplicates, so only 2741 unique phrases have been written to file. -->
 	<!-- These 2741 phrases contain approximately 11834 total words. -->
 
 	</pdData>
