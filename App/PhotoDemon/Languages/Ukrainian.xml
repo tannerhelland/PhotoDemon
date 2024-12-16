@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.1</langversion>
+<langversion>1.0.2 (2024-12-16)</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -5009,7 +5009,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Straighten</original>
-<translation>Випрямити</translation>
+<translation>Вирівняти</translation>
 </phrase>
 
 <phrase>
@@ -12055,7 +12055,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>undo</original>
-<translation>дії</translation>
+<translation>зміни</translation>
 </phrase>
 
 <phrase>
@@ -12080,12 +12080,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation>Файлові інструменти: створення, завантаження та збереження файлів зображень</translation>
+<translation>Файлові інструменти: створити, завантажити та зберегти файли зображень</translation>
 </phrase>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation>Інструменти скасування/повторення: скасовують зміни, внесені до зображення або шару</translation>
+<translation>Інструменти скасування/повторення: скасувати зміни, внесені до зображення або шару</translation>
 </phrase>
 
 <phrase>
@@ -12110,7 +12110,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Ця опція створить порожнє зображення.  Інші способи створення нових зображень можна знайти у меню Файл -> Імпорт.</translation>
+<translation>Ця опція створить порожнє зображення.  Інші способи створити нові зображення можна знайти у меню Файл -> Імпорт.</translation>
 </phrase>
 
 <phrase>
@@ -12587,7 +12587,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>swap points</original>
-<translation>обмінні точки</translation>
+<translation>поміняти точки місцями</translation>
 </phrase>
 
 <phrase>
@@ -12597,22 +12597,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>clear points</original>
-<translation>чіткі пункти</translation>
+<translation>очистити точки</translation>
 </phrase>
 
 <phrase>
 <original>straighten image</original>
-<translation>випрямити зображення</translation>
+<translation>вирівняти зображення</translation>
 </phrase>
 
 <phrase>
 <original>straighten layer</original>
-<translation>випрямити шар</translation>
+<translation>вирівняти шар</translation>
 </phrase>
 
 <phrase>
 <original>use measurement to</original>
-<translation>використовувати вимірювання для</translation>
+<translation>використати вимірювання для</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
