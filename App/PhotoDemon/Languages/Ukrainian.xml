@@ -2701,7 +2701,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Applying tone-mapping</original>
-<translation>Нанесення тонального мапування</translation>
+<translation>Застосування тонального відображення</translation>
 </phrase>
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
