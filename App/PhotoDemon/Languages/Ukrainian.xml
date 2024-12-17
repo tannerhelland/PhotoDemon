@@ -640,7 +640,7 @@
 
 <phrase>
 <original>Heal selected area</original>
-<translation>Лікувати виділену ділянку</translation>
+<translation>Лікувати виділену область</translation>
 </phrase>
 
 <phrase>
@@ -705,7 +705,7 @@
 
 <phrase>
 <original>Shadows and highlights</original>
-<translation>Тіні та відблиски</translation>
+<translation>Тіні та світло</translation>
 </phrase>
 
 <phrase>
@@ -3401,7 +3401,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Clone stamp</original>
-<translation>Клонований штамп</translation>
+<translation>Штамп (клонування)</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -5184,7 +5184,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>From luminance</original>
-<translation>Від яскравістю</translation>
+<translation>За яскравістю</translation>
 </phrase>
 
 <phrase>
@@ -5224,7 +5224,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation>Інші відкриті зображення на це зображення (як шари)</translation>
+<translation>Інші відкриті зображення в це зображення (як шари)</translation>
 </phrase>
 
 <phrase>
@@ -5534,7 +5534,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Build standalone package</original>
-<translation>Створіть окремий пакет</translation>
+<translation>Створити окремий пакет</translation>
 </phrase>
 
 <phrase>
@@ -7004,7 +7004,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>generate new pattern</original>
-<translation>згенерувати новий шаблон</translation>
+<translation>генерувати новий шаблон</translation>
 </phrase>
 
 <phrase>
@@ -7024,22 +7024,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vary hue</original>
-<translation>різного відтінку</translation>
+<translation>змінити відтінок</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation>змінювати насиченість</translation>
+<translation>змінити насиченість</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation>змінювати яскравість</translation>
+<translation>змінити яскравість</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation>варіювати альфа</translation>
+<translation>змінити альфа</translation>
 </phrase>
 
 <phrase>
@@ -11360,7 +11360,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>generate difference map as a new layer</original>
-<translation>згенерувати карту різниць як новий шар</translation>
+<translation>генерувати різнісну карту як новий шар</translation>
 </phrase>
 
 <phrase>
@@ -12245,12 +12245,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation>Олівець (пензлик з твердим наконечником)</translation>
+<translation>Олівець (твердий наконечник)</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation>Пензлик (пензлик з м'яким наконечником)</translation>
+<translation>Пензлик (м'який наконечник)</translation>
 </phrase>
 
 <phrase>
@@ -12270,32 +12270,32 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Hand tool</original>
-<translation>Ручний інструмент</translation>
+<translation>Інструмент Рука</translation>
 </phrase>
 
 <phrase>
 <original>Zoom tool</original>
-<translation>Інструмент масштабування</translation>
+<translation>Інструмент Масштабування</translation>
 </phrase>
 
 <phrase>
 <original>Move tool</original>
-<translation>Інструмент переміщення</translation>
+<translation>Інструмент Рух</translation>
 </phrase>
 
 <phrase>
 <original>Color selector tool</original>
-<translation>Інструмент вибору кольору</translation>
+<translation>Інструмент Вибір кольору</translation>
 </phrase>
 
 <phrase>
 <original>Measure tool</original>
-<translation>Вимірювальний інструмент</translation>
+<translation>Шнструмент Рулетка (вимірювання)</translation>
 </phrase>
 
 <phrase>
 <original>Crop tool</original>
-<translation>Інструмент обрізання</translation>
+<translation>Інструмент Обрізання</translation>
 </phrase>
 
 <phrase>
@@ -12360,7 +12360,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Search tool</original>
-<translation>Інструмент пошуку</translation>
+<translation>Інструмент Пошук</translation>
 </phrase>
 
 <phrase>
@@ -12370,17 +12370,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Increase brush size</original>
-<translation>Збільшити розмір щітки</translation>
+<translation>Збільшити розмір пензля</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation>Зменшити твердості щітки</translation>
+<translation>Зменшити твердості пензля</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation>Збільшити твердість щітки</translation>
+<translation>Збільшити твердість пензля</translation>
 </phrase>
 
 <phrase>
@@ -12432,17 +12432,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>tile + flip horizontal</original>
-<translation>плитка + фліп по горизонталі</translation>
+<translation>плитка + перевертання по горизонталі</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip vertical</original>
-<translation>плитка + перевернути по вертикалі</translation>
+<translation>плитка + перевертання по вертикалі</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip both</original>
-<translation>плитка + перевернути в обидва боки</translation>
+<translation>плитка + перевертання в обох напрямках</translation>
 </phrase>
 
 <!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12478,7 +12478,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fill source</original>
-<translation>джерело заповнення</translation>
+<translation>джерело заливки</translation>
 </phrase>
 
 <phrase>
@@ -12508,12 +12508,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>custom brush</original>
-<translation>спеціальна щітка</translation>
+<translation>кастомний пензлик</translation>
 </phrase>
 
 <phrase>
 <original>contiguous</original>
-<translation>суміжних</translation>
+<translation>суміжні</translation>
 </phrase>
 
 <phrase>
@@ -12545,7 +12545,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>center offset</original>
-<translation>зміщення центру</translation>
+<translation>зсув центру</translation>
 </phrase>
 
 <phrase>
@@ -12612,7 +12612,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>use measurement to</original>
-<translation>використати вимірювання для</translation>
+<translation>використати вимірювання щоб</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -12629,7 +12629,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>transform quality</original>
-<translation>трансформувати якість</translation>
+<translation>якість</translation>
 </phrase>
 
 <phrase>
@@ -12954,7 +12954,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>line wrap</original>
-<translation>обгортання лінії</translation>
+<translation>перенесення рядків</translation>
 </phrase>
 
 <phrase>
@@ -13034,7 +13034,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>manual only</original>
-<translation>тільки в ручному режимі</translation>
+<translation>тільки вручну</translation>
 </phrase>
 
 <phrase>
@@ -13054,7 +13054,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click here to convert this layer to advanced text.</original>
-<translation>Натисніть тут, щоб перетворити цей шар на розширений текст.</translation>
+<translation>Клікніть тут, щоб перетворити цей шар на розширений текст.</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -13081,7 +13081,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>this hotkey</original>
-<translation>цю гарячу клавішу</translation>
+<translation>ця гаряча клавіша</translation>
 </phrase>
 
 <phrase>
@@ -13111,7 +13111,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>generate summary</original>
-<translation>згенерувати підсумок</translation>
+<translation>генерувати звіт</translation>
 </phrase>
 
 <phrase>
@@ -13176,7 +13176,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Command</original>
-<translation>Командир</translation>
+<translation>Команда</translation>
 </phrase>
 
 <phrase>
@@ -13193,7 +13193,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
-<translation>натисніть тут для отримання детальних інструкцій (англійською мовою)</translation>
+<translation>клікніть тут для отримання детальних інструкцій (англійською мовою)</translation>
 </phrase>
 
 <phrase>
@@ -13491,12 +13491,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>[translation failed]</original>
-<translation>[переклад не вдалося]</translation>
+<translation>[переклад не вдався]</translation>
 </phrase>
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation>[фраза не у файлі] [фраза не у файлі]</translation>
+<translation>[фраза відсутня у файлі] [фраза не у файлі]</translation>
 </phrase>
 
 <phrase>
@@ -13511,7 +13511,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>by %1</original>
-<translation>на %1</translation>
+<translation>%1</translation>
 </phrase>
 
 <phrase>
@@ -13523,7 +13523,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Create macro from session history</original>
-<translation>Створення макросу з історії сеансів</translation>
+<translation>Створити макрос з історії сеансів</translation>
 </phrase>
 
 <phrase>
@@ -13565,7 +13565,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>title bar text</original>
-<translation>текст рядка заголовка</translation>
+<translation>текст панелі заголовка</translation>
 </phrase>
 
 <phrase>
@@ -13595,7 +13595,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recent file menu text</original>
-<translation>текст меню останнього файлу</translation>
+<translation>текст меню останніх файлів</translation>
 </phrase>
 
 <phrase>
@@ -13650,7 +13650,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>app instances</original>
-<translation>екземпляри додатків</translation>
+<translation>екземпляри додатку</translation>
 </phrase>
 
 <phrase>
@@ -13670,17 +13670,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the default file format to</original>
-<translation>при використанні "Зберегти як" встановіть формат файлу за замовчуванням</translation>
+<translation>при використанні "Зберегти як" встановити формат файлу за замовчуванням</translation>
 </phrase>
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>коли використовується "Зберегти"</translation>
+<translation>при використанні "Зберегти"</translation>
 </phrase>
 
 <phrase>
 <original>safe saving</original>
-<translation>безпечне заощадження</translation>
+<translation>безпечне збереження</translation>
 </phrase>
 
 <phrase>
@@ -13695,7 +13695,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>list PhotoDemon as the last-used editing software</original>
-<translation>зазначте PhotoDemon як останнє програмне забезпечення для редагування</translation>
+<translation>зазначити PhotoDemon як останнє програмне забезпечення для редагування</translation>
 </phrase>
 
 <phrase>
@@ -13705,17 +13705,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>при використанні "Зберегти як" встановіть початкову теку на</translation>
+<translation>при використанні "Зберегти як" встановити як початкову теку</translation>
 </phrase>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation>коли використовується "Зберегти як"</translation>
+<translation>при використанні "Зберегти як"</translation>
 </phrase>
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>стискати дані скасування/повторення на наступному рівні</translation>
+<translation>стиснути дані скасування/повторення на наступному рівні</translation>
 </phrase>
 
 <phrase>
@@ -13725,12 +13725,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when generating image and layer thumbnail images</original>
-<translation>під час створення мініатюр зображень і шарів</translation>
+<translation>при створенні мініатюр зображень і шарів</translation>
 </phrase>
 
 <phrase>
 <original>when rendering the image canvas</original>
-<translation>під час рендерингу полотна зображення</translation>
+<translation>при рендерингу полотна зображення</translation>
 </phrase>
 
 <phrase>
@@ -13805,7 +13805,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation>введення з високою роздільною здатністю за допомогою миші</translation>
+<translation>висока роздільна здатність вводу за допомогою миші</translation>
 </phrase>
 
 <phrase>
@@ -13830,7 +13830,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>start over</original>
-<translation>почати все спочатку</translation>
+<translation>почати спочатку</translation>
 </phrase>
 
 <phrase>
@@ -14159,7 +14159,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC насамперед важливий для колориметричного рендерингу, де він допомагає зберегти деталі в темних (тіньових) ділянках зображень.  Для більшості робочих процесів BPC слід увімкнути.</translation>
+<translation>BPC насамперед важливий для колориметричного рендерингу, де він допомагає зберегти деталі в темних (тіньових) областях зображень.  Для більшості робочих процесів BPC слід увімкнути.</translation>
 </phrase>
 
 <phrase>
