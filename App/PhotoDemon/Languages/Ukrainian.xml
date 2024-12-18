@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.1</langversion>
+<langversion>1.0.3 (2024-12-16)</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -135,7 +135,7 @@
 
 <phrase>
 <original>Undo history</original>
-<translation>Скасувати історію</translation>
+<translation>Історія скасувань</translation>
 </phrase>
 
 <phrase>
@@ -640,7 +640,7 @@
 
 <phrase>
 <original>Heal selected area</original>
-<translation>Лікувати виділену ділянку</translation>
+<translation>Лікувати виділену область</translation>
 </phrase>
 
 <phrase>
@@ -705,12 +705,12 @@
 
 <phrase>
 <original>Shadows and highlights</original>
-<translation>Тіні та відблиски</translation>
+<translation>Тіні та світло</translation>
 </phrase>
 
 <phrase>
 <original>Vibrance</original>
-<translation>Сочність</translation>
+<translation>Соковитість</translation>
 </phrase>
 
 <phrase>
@@ -2701,7 +2701,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Applying tone-mapping</original>
-<translation>Нанесення тонального мапування</translation>
+<translation>Застосування тонального відображення</translation>
 </phrase>
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3048,7 +3048,7 @@ Description: %2
 
 <phrase>
 <original>character remapping</original>
-<translation>перерозподіл символів</translation>
+<translation>ремапінг символів</translation>
 </phrase>
 
 <phrase>
@@ -3093,7 +3093,7 @@ Description: %2
 
 <phrase>
 <original>Modify selection</original>
-<translation>Змінити вибір</translation>
+<translation>Модифікувати виділення</translation>
 </phrase>
 
 <phrase>
@@ -3105,7 +3105,7 @@ Description: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon автоматично відкрив для вас веб-сторінку повідомлення про помилку.  Будь ласка, натисніть кнопку "Нове питання", а потім виберіть "Повідомити про помилку".  Дайте якомога повнішу відповідь на запитання і, будь ласка, включіть у звіт наступний номер помилки: %1
+<translation>PhotoDemon автоматично відкрив для вас веб-сторінку повідомлення про помилку.  Будь ласка, клікніть кнопку "Нове питання", а потім виберіть "Повідомити про помилку".  Дайте якомога повнішу відповідь на запитання і, будь ласка, включіть у звіт наступний номер помилки: %1
 
 Закінчивши, натисніть кнопку "Відправити новий випуск".  Дякуємо!</translation>
 </phrase>
@@ -3344,7 +3344,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Click on the first point to complete the polygon selection</original>
-<translation>Натисніть на першу точку, щоб завершити полігональне виділення</translation>
+<translation>Клікніть на першій точці, щоб завершити полігональне виділення</translation>
 </phrase>
 
 <!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -3396,12 +3396,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation>Ctrl+Клікніть, щоб встановити джерело клону</translation>
+<translation>Ctrl+Клік, щоб встановити джерело клону</translation>
 </phrase>
 
 <phrase>
 <original>Clone stamp</original>
-<translation>Клонований штамп</translation>
+<translation>Штамп (клонування)</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -3424,7 +3424,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Ctrl+click to move the active layer here</original>
-<translation>Клацніть Ctrl+, щоб перемістити активний шар сюди</translation>
+<translation>Ctrl+клік, щоб перемістити активний шар сюди</translation>
 </phrase>
 
 <phrase>
@@ -3611,7 +3611,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Тут можна вибрати раніше збережені пресети.  Ви можете зберегти поточні налаштування як новий пресет, натиснувши кнопку Зберегти пресет праворуч.</translation>
+<translation>Тут можна вибрати раніше збережені пресети.  Ви можете зберегти поточні налаштування як новий пресет, клікнувши кнопку Зберегти пресет праворуч.</translation>
 </phrase>
 
 <phrase>
@@ -4404,7 +4404,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation>Клік, щоб відкрити вікно повного вибору кольору.</translation>
+<translation>Клікніть, щоб відкрити повний екран вибору кольору.</translation>
 </phrase>
 
 <phrase>
@@ -4414,7 +4414,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation>Клік, щоб зробити колір фарби головного екрана активним.</translation>
+<translation>Клікніть, щоб зробити колір фарби головного екрана активним.</translation>
 </phrase>
 
 <phrase>
@@ -5009,7 +5009,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Straighten</original>
-<translation>Випрямити</translation>
+<translation>Вирівняти</translation>
 </phrase>
 
 <phrase>
@@ -5184,7 +5184,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>From luminance</original>
-<translation>Від яскравістю</translation>
+<translation>За яскравістю</translation>
 </phrase>
 
 <phrase>
@@ -5224,7 +5224,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation>Інші відкриті зображення на це зображення (як шари)</translation>
+<translation>Інші відкриті зображення в це зображення (як шари)</translation>
 </phrase>
 
 <phrase>
@@ -5264,7 +5264,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Save current selection</original>
-<translation>Зберегти поточний вибір</translation>
+<translation>Зберегти поточне виділення</translation>
 </phrase>
 
 <phrase>
@@ -5534,7 +5534,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Build standalone package</original>
-<translation>Створіть окремий пакет</translation>
+<translation>Створити окремий пакет</translation>
 </phrase>
 
 <phrase>
@@ -6024,12 +6024,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>preserve</original>
-<translation>заповідник</translation>
+<translation>зберегти оригінальний розмір</translation>
 </phrase>
 
 <phrase>
 <original>custom</original>
-<translation>звичай</translation>
+<translation>кастом</translation>
 </phrase>
 
 <!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -6098,7 +6098,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>lightness</original>
-<translation>легкість</translation>
+<translation>світлота</translation>
 </phrase>
 
 <phrase>
@@ -6140,7 +6140,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation>клацніть, щоб відкрити цю теку у провіднику Windows</translation>
+<translation>клікніть, щоб відкрити цю теку у провіднику Windows</translation>
 </phrase>
 
 <!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6157,7 +6157,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>колір для заміни (клацніть правою кнопкою миші на попередньому перегляді, щоб вибрати)</translation>
+<translation>колір для заміни (клікніть правою кнопкою миші на попередньому перегляді, щоб вибрати)</translation>
 </phrase>
 
 <phrase>
@@ -6201,7 +6201,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>cooler</original>
-<translation>кулер</translation>
+<translation>холодніше</translation>
 </phrase>
 
 <phrase>
@@ -6250,12 +6250,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vibrance</original>
-<translation>вібрація</translation>
+<translation>соковитість</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting color vibrance</original>
-<translation>Налаштування вібрації кольору</translation>
+<translation>Налаштування соковитості кольору</translation>
 </phrase>
 
 <!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6302,7 +6302,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>options</original>
-<translation>варіанти</translation>
+<translation>опції</translation>
 </phrase>
 
 <phrase>
@@ -6312,22 +6312,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>left-click to add new nodes or drag existing nodes</original>
-<translation>клацніть лівою кнопкою миші, щоб додати нові вузли або перетягнути існуючі</translation>
+<translation>клікніть лівою кнопкою миші, щоб додати нові вузли або перетягнути існуючі</translation>
 </phrase>
 
 <phrase>
 <original>right-click to remove nodes</original>
-<translation>клацніть правою кнопкою миші, щоб видалити вузли</translation>
+<translation>клікніть правою кнопкою миші, щоб видалити вузли</translation>
 </phrase>
 
 <phrase>
 <original>input</original>
-<translation>вхід</translation>
+<translation>ввід</translation>
 </phrase>
 
 <phrase>
 <original>output</original>
-<translation>вихід</translation>
+<translation>вивід</translation>
 </phrase>
 
 <!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -6339,7 +6339,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>fill histogram curves</original>
-<translation>заповнення кривих гістограми</translation>
+<translation>заповнити криві гістограми</translation>
 </phrase>
 
 <phrase>
@@ -6433,7 +6433,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>set levels automatically</original>
-<translation>встановлювати рівні автоматично</translation>
+<translation>встановити рівні автоматично</translation>
 </phrase>
 
 <phrase>
@@ -6448,12 +6448,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Коли ця кнопка активна, ви можете встановити колір рівня введення тіні, клацнувши правою кнопкою миші на кольорі у вікні попереднього перегляду.</translation>
+<translation>Коли ця кнопка активна, ви можете встановити колір рівня введення тіні, клікнувши правою кнопкою миші на кольорі у вікні попереднього перегляду.</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Коли ця кнопка активна, ви можете встановити колір виділення рівня введення, клацнувши правою кнопкою миші на кольорі у вікні попереднього перегляду.</translation>
+<translation>Коли ця кнопка активна, ви можете встановити колір виділення рівня введення, клікнувши правою кнопкою миші на кольорі у вікні попереднього перегляду.</translation>
 </phrase>
 
 <phrase>
@@ -6487,7 +6487,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>offset</original>
-<translation>зміщення</translation>
+<translation>зсув</translation>
 </phrase>
 
 <phrase>
@@ -7004,7 +7004,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>generate new pattern</original>
-<translation>згенерувати новий шаблон</translation>
+<translation>генерувати новий шаблон</translation>
 </phrase>
 
 <phrase>
@@ -7024,22 +7024,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vary hue</original>
-<translation>різного відтінку</translation>
+<translation>змінити відтінок</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation>змінювати насиченість</translation>
+<translation>змінити насиченість</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation>змінювати яскравість</translation>
+<translation>змінити яскравість</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation>варіювати альфа</translation>
+<translation>змінити альфа</translation>
 </phrase>
 
 <phrase>
@@ -7119,7 +7119,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
-<translation>Клацніть лівою кнопкою миші, щоб додати нові вузли або відредагувати існуючі.  Клацніть правою кнопкою миші, щоб видалити вузол.</translation>
+<translation>Клікніть лівою кнопкою миші, щоб додати нові вузли або відредагувати існуючі.  Клікніть правою кнопкою миші, щоб видалити вузол.</translation>
 </phrase>
 
 <phrase>
@@ -7597,9 +7597,9 @@ The update is automatically processing in the background.  You will receive a ne
 <original>NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.
 
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
-<translation>ПРИМІТКА: якщо ви натиснете кнопку "Зберегти", PhotoDemon збереже це зображення з поточним ім'ям файлу.
+<translation>ПРИМІТКА: якщо ви клікнете кнопку "Зберегти", PhotoDemon збереже це зображення з поточним ім'ям файлу.
 
-Якщо ви хочете зберегти його з іншою назвою, натисніть "Скасувати", а потім скористайтеся пунктом меню Файл -> Зберегти як.</translation>
+Якщо ви хочете зберегти його з іншою назвою, клікніть "Скасувати", а потім скористайтеся пунктом меню Файл -> Зберегти як.</translation>
 </phrase>
 
 <phrase>
@@ -7863,7 +7863,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>selection shape shown</original>
-<translation>показана форма вибору</translation>
+<translation>показана форма виділення</translation>
 </phrase>
 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8156,7 +8156,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation>ви також можете встановити центральне положення, натиснувши на вікно попереднього перегляду</translation>
+<translation>ви також можете встановити центральне положення, клікнувши на вікно попереднього перегляду</translation>
 </phrase>
 
 <phrase>
@@ -9710,7 +9710,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation>натисніть OK, щоб розпочати операцію відновлення</translation>
+<translation>клікніть OK, щоб розпочати операцію відновлення</translation>
 </phrase>
 
 <phrase>
@@ -10090,7 +10090,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation>Перш ніж продовжити, вам потрібно натиснути кнопку "Встановити параметри експорту для цього формату", щоб вказати, які параметри експорту ви хочете використовувати.</translation>
+<translation>Перш ніж продовжити, вам потрібно клікнути кнопку "Встановити параметри експорту для цього формату", щоб вказати, які параметри експорту ви хочете використовувати.</translation>
 </phrase>
 
 <phrase>
@@ -10828,7 +10828,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
-<translation>прозорий колір (клацніть правою кнопкою миші на зображенні, щоб вибрати)</translation>
+<translation>прозорий колір (клікніть правою кнопкою миші на зображенні, щоб вибрати)</translation>
 </phrase>
 
 <phrase>
@@ -11314,7 +11314,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>(You can become a patron, too!  Click here to learn more.)</original>
-<translation>(Ви також можете стати меценатом! Натисніть тут, щоб дізнатися більше)</translation>
+<translation>(Ви також можете стати меценатом! Клікніть тут, щоб дізнатися більше)</translation>
 </phrase>
 
 <!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -11360,7 +11360,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>generate difference map as a new layer</original>
-<translation>згенерувати карту різниць як новий шар</translation>
+<translation>генерувати різнісну карту як новий шар</translation>
 </phrase>
 
 <phrase>
@@ -11735,17 +11735,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Rotating layer</original>
-<translation>Обертовий шар</translation>
+<translation>Повертання шару</translation>
 </phrase>
 
 <phrase>
 <original>Rotation complete.</original>
-<translation>Обертання завершено.</translation>
+<translation>Поворот завершено.</translation>
 </phrase>
 
 <phrase>
 <original>enlarge to fit</original>
-<translation>збільшити до потрібного розміру</translation>
+<translation>збільшити до розміру полотна</translation>
 </phrase>
 
 <phrase>
@@ -11760,24 +11760,24 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Rotate layer</original>
-<translation>Обертання шару</translation>
+<translation>Повернути шар</translation>
 </phrase>
 
 <!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
-<translation>Випрямлення зображення</translation>
+<translation>Вирівнювання зображення</translation>
 </phrase>
 
 <phrase>
 <original>Straightening layer</original>
-<translation>Вирівнюючий шар</translation>
+<translation>Вирівнювання шару</translation>
 </phrase>
 
 <phrase>
 <original>Straighten complete.</original>
-<translation>Випрямлення завершено.</translation>
+<translation>Вирівнювання завершено.</translation>
 </phrase>
 
 <!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11816,7 +11816,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>keep transparency</original>
-<translation>зберігати прозорість</translation>
+<translation>зберегти прозорість</translation>
 </phrase>
 
 <phrase>
@@ -11878,7 +11878,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>leave images open</original>
-<translation>залишати зображення відкритими</translation>
+<translation>залишити зображення відкритими</translation>
 </phrase>
 
 <phrase>
@@ -11888,14 +11888,14 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>close images without prompting</original>
-<translation>закривати зображення без підказки</translation>
+<translation>закрити зображення без підказки</translation>
 </phrase>
 
 <!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Make color transparent</original>
-<translation>Зробіть колір прозорим</translation>
+<translation>Зробити колір прозорим</translation>
 </phrase>
 
 <phrase>
@@ -11905,7 +11905,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>color to erase (right-click preview to select)</original>
-<translation>колір, який потрібно стерти (клацніть правою кнопкою миші на попередньому перегляді, щоб вибрати)</translation>
+<translation>колір, який потрібно стерти (клікніть правою кнопкою миші на попередньому перегляді, щоб вибрати)</translation>
 </phrase>
 
 <phrase>
@@ -11960,12 +11960,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click: show the "New layer" dialog</original>
-<translation>Клацніть: відкрити діалогове вікно "Новий шар"</translation>
+<translation>Клік: відкрити діалогове вікно "Новий шар"</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: add a blank layer</original>
-<translation>Shift + Клацніть: додати порожній шар</translation>
+<translation>Shift + Клік: додати порожній шар</translation>
 </phrase>
 
 <phrase>
@@ -11975,17 +11975,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click: delete this layer</original>
-<translation>Натисніть: видалити цей шар</translation>
+<translation>Клік: видалити цей шар</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation>Клацання: перемістити цей шар угору стека шарів</translation>
+<translation>Клік: перемістити цей шар угору стека шарів</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation>Shift + Клацання: об'єднати цей шар із шаром над ним</translation>
+<translation>Shift + Клік: об'єднати цей шар із шаром над ним</translation>
 </phrase>
 
 <phrase>
@@ -11995,12 +11995,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click: move this layer down the layer stack</original>
-<translation>Клацання: переміщення цього шару вниз стека шарів</translation>
+<translation>Клік: перемістити цей шар вниз стека шарів</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer beneath it</original>
-<translation>Shift + Клацніть: об'єднати цей шар із шаром під ним</translation>
+<translation>Shift + Клік: об'єднати цей шар із шаром під ним</translation>
 </phrase>
 
 <phrase>
@@ -12010,14 +12010,14 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click: add a duplicate of this layer</original>
-<translation>Натисніть: додати дублікат цього шару</translation>
+<translation>Клік: додати дублікат цього шару</translation>
 </phrase>
 
 <!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
-<translation>Варіанти вибору</translation>
+<translation>Опції виділення</translation>
 </phrase>
 
 <!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12055,7 +12055,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>undo</original>
-<translation>дії</translation>
+<translation>зміни</translation>
 </phrase>
 
 <phrase>
@@ -12080,12 +12080,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation>Файлові інструменти: створення, завантаження та збереження файлів зображень</translation>
+<translation>Файлові інструменти: створити, завантажити та зберегти файли зображень</translation>
 </phrase>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation>Інструменти скасування/повторення: скасовують зміни, внесені до зображення або шару</translation>
+<translation>Інструменти скасування/повторення: скасувати зміни, внесені до зображення або шару</translation>
 </phrase>
 
 <phrase>
@@ -12110,7 +12110,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Ця опція створить порожнє зображення.  Інші способи створення нових зображень можна знайти у меню Файл -> Імпорт.</translation>
+<translation>Ця опція створить порожнє зображення.  Інші способи створити нові зображення можна знайти у меню Файл -> Імпорт.</translation>
 </phrase>
 
 <phrase>
@@ -12245,12 +12245,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation>Олівець (пензлик з твердим наконечником)</translation>
+<translation>Олівець (твердий наконечник)</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation>Пензлик (пензлик з м'яким наконечником)</translation>
+<translation>Пензлик (м'який наконечник)</translation>
 </phrase>
 
 <phrase>
@@ -12270,32 +12270,32 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Hand tool</original>
-<translation>Ручний інструмент</translation>
+<translation>Інструмент Рука</translation>
 </phrase>
 
 <phrase>
 <original>Zoom tool</original>
-<translation>Інструмент масштабування</translation>
+<translation>Інструмент Масштабування</translation>
 </phrase>
 
 <phrase>
 <original>Move tool</original>
-<translation>Інструмент переміщення</translation>
+<translation>Інструмент Рух</translation>
 </phrase>
 
 <phrase>
 <original>Color selector tool</original>
-<translation>Інструмент вибору кольору</translation>
+<translation>Інструмент Вибір кольору</translation>
 </phrase>
 
 <phrase>
 <original>Measure tool</original>
-<translation>Вимірювальний інструмент</translation>
+<translation>Шнструмент Рулетка (вимірювання)</translation>
 </phrase>
 
 <phrase>
 <original>Crop tool</original>
-<translation>Інструмент обрізання</translation>
+<translation>Інструмент Обрізання</translation>
 </phrase>
 
 <phrase>
@@ -12360,7 +12360,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Search tool</original>
-<translation>Інструмент пошуку</translation>
+<translation>Інструмент Пошук</translation>
 </phrase>
 
 <phrase>
@@ -12370,17 +12370,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Increase brush size</original>
-<translation>Збільшити розмір щітки</translation>
+<translation>Збільшити розмір пензля</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation>Зменшити твердості щітки</translation>
+<translation>Зменшити твердості пензля</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation>Збільшити твердість щітки</translation>
+<translation>Збільшити твердість пензля</translation>
 </phrase>
 
 <phrase>
@@ -12432,17 +12432,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>tile + flip horizontal</original>
-<translation>плитка + фліп по горизонталі</translation>
+<translation>плитка + перевертання по горизонталі</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip vertical</original>
-<translation>плитка + перевернути по вертикалі</translation>
+<translation>плитка + перевертання по вертикалі</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip both</original>
-<translation>плитка + перевернути в обидва боки</translation>
+<translation>плитка + перевертання в обох напрямках</translation>
 </phrase>
 
 <!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12478,7 +12478,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fill source</original>
-<translation>джерело заповнення</translation>
+<translation>джерело заливки</translation>
 </phrase>
 
 <phrase>
@@ -12508,17 +12508,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>custom brush</original>
-<translation>спеціальна щітка</translation>
+<translation>кастомний пензлик</translation>
 </phrase>
 
 <phrase>
 <original>contiguous</original>
-<translation>суміжних</translation>
+<translation>суміжні</translation>
 </phrase>
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation>Заливка підтримує багато різних стилів.  Клацніть, щоб перемикатися між суцільним кольором, візерунком і градієнтом.</translation>
+<translation>Заливка підтримує багато різних стилів.  Клікніть, щоб перемикатися між суцільним кольором, візерунком і градієнтом.</translation>
 </phrase>
 
 <phrase>
@@ -12545,7 +12545,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>center offset</original>
-<translation>зміщення центру</translation>
+<translation>зсув центру</translation>
 </phrase>
 
 <phrase>
@@ -12587,7 +12587,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>swap points</original>
-<translation>обмінні точки</translation>
+<translation>поміняти точки місцями</translation>
 </phrase>
 
 <phrase>
@@ -12597,22 +12597,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>clear points</original>
-<translation>чіткі пункти</translation>
+<translation>очистити точки</translation>
 </phrase>
 
 <phrase>
 <original>straighten image</original>
-<translation>випрямити зображення</translation>
+<translation>вирівняти зображення</translation>
 </phrase>
 
 <phrase>
 <original>straighten layer</original>
-<translation>випрямити шар</translation>
+<translation>вирівняти шар</translation>
 </phrase>
 
 <phrase>
 <original>use measurement to</original>
-<translation>використовувати вимірювання для</translation>
+<translation>використати вимірювання щоб</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -12629,7 +12629,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>transform quality</original>
-<translation>трансформувати якість</translation>
+<translation>якість</translation>
 </phrase>
 
 <phrase>
@@ -12882,7 +12882,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>click to edit text</original>
-<translation>натисніть, щоб відредагувати текст</translation>
+<translation>клікніть, щоб редагувати текст</translation>
 </phrase>
 
 <phrase>
@@ -12927,7 +12927,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click here to convert this layer to basic text.</original>
-<translation>Натисніть тут, щоб перетворити цей шар в основний текст.</translation>
+<translation>Клікніть тут, щоб перетворити цей шар в основний текст.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -12954,52 +12954,52 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>line wrap</original>
-<translation>обгортання лінії</translation>
+<translation>перенесення рядків</translation>
 </phrase>
 
 <phrase>
 <original>horizontal padding</original>
-<translation>горизонтальна підкладка</translation>
+<translation>горизонтальний відступ</translation>
 </phrase>
 
 <phrase>
 <original>vertical padding</original>
-<translation>вертикальна підкладка</translation>
+<translation>вертикальний відступ</translation>
 </phrase>
 
 <phrase>
 <original>outline text</original>
-<translation>накреслити текст</translation>
+<translation>окреслити текст</translation>
 </phrase>
 
 <phrase>
 <original>fill background</original>
-<translation>заповнити фон</translation>
+<translation>залити фон</translation>
 </phrase>
 
 <phrase>
 <original>outline background</original>
-<translation>окреслити передісторію</translation>
+<translation>окреслити фон</translation>
 </phrase>
 
 <phrase>
 <original>fill text</original>
-<translation>заповнити текст</translation>
+<translation>залити текст</translation>
 </phrase>
 
 <phrase>
 <original>fill and outline</original>
-<translation>заповнення та контур</translation>
+<translation>залити та окреслити</translation>
 </phrase>
 
 <phrase>
 <original>click to edit</original>
-<translation>натисніть, щоб змінити</translation>
+<translation>клікніть, щоб редагувати</translation>
 </phrase>
 
 <phrase>
 <original>box</original>
-<translation>ящик</translation>
+<translation>рамка</translation>
 </phrase>
 
 <phrase>
@@ -13029,12 +13029,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Titlecase</original>
-<translation>Титульний Регістр</translation>
+<translation>Заголовний Регістр</translation>
 </phrase>
 
 <phrase>
 <original>manual only</original>
-<translation>тільки в ручному режимі</translation>
+<translation>тільки вручну</translation>
 </phrase>
 
 <phrase>
@@ -13054,7 +13054,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click here to convert this layer to advanced text.</original>
-<translation>Натисніть тут, щоб перетворити цей шар на розширений текст.</translation>
+<translation>Клікніть тут, щоб перетворити цей шар на розширений текст.</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -13081,7 +13081,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>this hotkey</original>
-<translation>цю гарячу клавішу</translation>
+<translation>ця гаряча клавіша</translation>
 </phrase>
 
 <phrase>
@@ -13111,7 +13111,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>generate summary</original>
-<translation>згенерувати підсумок</translation>
+<translation>генерувати звіт</translation>
 </phrase>
 
 <phrase>
@@ -13176,7 +13176,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Command</original>
-<translation>Командир</translation>
+<translation>Команда</translation>
 </phrase>
 
 <phrase>
@@ -13193,7 +13193,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
-<translation>натисніть тут для отримання детальних інструкцій (англійською мовою)</translation>
+<translation>клікніть тут для отримання детальних інструкцій (англійською мовою)</translation>
 </phrase>
 
 <phrase>
@@ -13491,12 +13491,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>[translation failed]</original>
-<translation>[переклад не вдалося]</translation>
+<translation>[переклад не вдався]</translation>
 </phrase>
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation>[фраза не у файлі] [фраза не у файлі]</translation>
+<translation>[фраза відсутня у файлі] [фраза не у файлі]</translation>
 </phrase>
 
 <phrase>
@@ -13511,7 +13511,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>by %1</original>
-<translation>на %1</translation>
+<translation>%1</translation>
 </phrase>
 
 <phrase>
@@ -13523,7 +13523,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Create macro from session history</original>
-<translation>Створення макросу з історії сеансів</translation>
+<translation>Створити макрос з історії сеансів</translation>
 </phrase>
 
 <phrase>
@@ -13565,7 +13565,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>title bar text</original>
-<translation>текст рядка заголовка</translation>
+<translation>текст панелі заголовка</translation>
 </phrase>
 
 <phrase>
@@ -13595,7 +13595,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>recent file menu text</original>
-<translation>текст меню останнього файлу</translation>
+<translation>текст меню останніх файлів</translation>
 </phrase>
 
 <phrase>
@@ -13650,7 +13650,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>app instances</original>
-<translation>екземпляри додатків</translation>
+<translation>екземпляри додатку</translation>
 </phrase>
 
 <phrase>
@@ -13670,17 +13670,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the default file format to</original>
-<translation>при використанні "Зберегти як" встановіть формат файлу за замовчуванням</translation>
+<translation>при використанні "Зберегти як" встановити формат файлу за замовчуванням</translation>
 </phrase>
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>коли використовується "Зберегти"</translation>
+<translation>при використанні "Зберегти"</translation>
 </phrase>
 
 <phrase>
 <original>safe saving</original>
-<translation>безпечне заощадження</translation>
+<translation>безпечне збереження</translation>
 </phrase>
 
 <phrase>
@@ -13695,7 +13695,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>list PhotoDemon as the last-used editing software</original>
-<translation>зазначте PhotoDemon як останнє програмне забезпечення для редагування</translation>
+<translation>зазначити PhotoDemon як останнє програмне забезпечення для редагування</translation>
 </phrase>
 
 <phrase>
@@ -13705,17 +13705,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>при використанні "Зберегти як" встановіть початкову теку на</translation>
+<translation>при використанні "Зберегти як" встановити як початкову теку</translation>
 </phrase>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation>коли використовується "Зберегти як"</translation>
+<translation>при використанні "Зберегти як"</translation>
 </phrase>
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>стискати дані скасування/повторення на наступному рівні</translation>
+<translation>стиснути дані скасування/повторення на наступному рівні</translation>
 </phrase>
 
 <phrase>
@@ -13725,12 +13725,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when generating image and layer thumbnail images</original>
-<translation>під час створення мініатюр зображень і шарів</translation>
+<translation>при створенні мініатюр зображень і шарів</translation>
 </phrase>
 
 <phrase>
 <original>when rendering the image canvas</original>
-<translation>під час рендерингу полотна зображення</translation>
+<translation>при рендерингу полотна зображення</translation>
 </phrase>
 
 <phrase>
@@ -13805,7 +13805,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation>введення з високою роздільною здатністю за допомогою миші</translation>
+<translation>висока роздільна здатність вводу за допомогою миші</translation>
 </phrase>
 
 <phrase>
@@ -13830,7 +13830,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>start over</original>
-<translation>почати все спочатку</translation>
+<translation>почати спочатку</translation>
 </phrase>
 
 <phrase>
@@ -14159,7 +14159,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC насамперед важливий для колориметричного рендерингу, де він допомагає зберегти деталі в темних (тіньових) ділянках зображень.  Для більшості робочих процесів BPC слід увімкнути.</translation>
+<translation>BPC насамперед важливий для колориметричного рендерингу, де він допомагає зберегти деталі в темних (тіньових) областях зображень.  Для більшості робочих процесів BPC слід увімкнути.</translation>
 </phrase>
 
 <phrase>
@@ -14252,7 +14252,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Click to select a new temporary folder.</original>
-<translation>Клацніть, щоб вибрати нову тимчасову теку.</translation>
+<translation>Клікніть, щоб вибрати нову тимчасову теку.</translation>
 </phrase>
 
 <phrase>
@@ -14401,7 +14401,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Select capture area</original>
-<translation>Виберіть область захоплення</translation>
+<translation>Вибрати область захоплення</translation>
 </phrase>
 
 <phrase>
