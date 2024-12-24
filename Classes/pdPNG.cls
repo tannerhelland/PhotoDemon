@@ -1627,7 +1627,10 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
             rgbValues(7) = CDbl(chrmData(7)) / 100000#
             rgbValues(8) = 1#
             
-            If (Not gammaOK) Then gammaFloat = 1#
+            If (Not gammaOK) Then
+                If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: chromaticity present, but gamma missing; colors may be incorrect!"
+                gammaFloat = 1#
+            End If
             
             'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
             ' With this, we can use our normal color-management pipeline to color-correct this DIB.
