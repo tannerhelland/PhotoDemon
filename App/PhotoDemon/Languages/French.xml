@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.625</langversion>
+<langversion>6.7.627</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -105,7 +105,7 @@
 
 <phrase>
 <original>Export palette</original>
-<translation>Exporter la palette</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1783,17 +1783,17 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>Retour arrière</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Tab</translation>
 </phrase>
 
 <phrase>
 <original>Escape</original>
-<translation></translation>
+<translation>Echapp</translation>
 </phrase>
 
 <phrase>
@@ -2065,7 +2065,7 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>Derrière</translation>
 </phrase>
 
 <phrase>
@@ -2759,7 +2759,7 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <phrase>
 <original>LGPL license</original>
-<translation></translation>
+<translation>LGPL license</translation>
 </phrase>
 
 <phrase>
@@ -5503,7 +5503,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Keyboard shortcuts</original>
-<translation></translation>
+<translation>Raccourcis clavier</translation>
 </phrase>
 
 <phrase>
@@ -5573,37 +5573,37 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>Montrer les extras</translation>
 </phrase>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>Bords de calque</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>Guides intelligents</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>Magnétisme</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>Magnétiser sur</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>Bords de toile</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>Lignes médianes</translation>
 </phrase>
 
 <phrase>
@@ -11236,7 +11236,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>drawing (or other artwork)</original>
-<translation>dessin ( ou autre style d'oeuvre)</translation>
+<translation>dessin (ou autre style d'oeuvre)</translation>
 </phrase>
 
 <phrase>
@@ -12300,7 +12300,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>Crop tool</original>
-<translation></translation>
+<translation>Recadrage</translation>
 </phrase>
 
 <phrase>
@@ -12365,35 +12365,35 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>Search tool</original>
-<translation></translation>
+<translation>Recherche</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush size</original>
-<translation></translation>
+<translation>Diminuer la taile de brosse</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush size</original>
-<translation></translation>
+<translation>Augmenter la taille de brosse</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation></translation>
+<translation>Diminuer la dureté de brosse</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation></translation>
+<translation>Augmenter la dureté de brosse</translation>
 </phrase>
 
 <phrase>
 <original>Toggle brush cursor</original>
-<translation></translation>
+<translation>Commuter le curseur de brosse</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12644,7 +12644,7 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>montrer les distances</translation>
 </phrase>
 
 <phrase>
@@ -13066,132 +13066,132 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>undo all changes</original>
-<translation></translation>
+<translation>annuler tous les changements</translation>
 </phrase>
 
 <phrase>
 <original>all hotkeys</original>
-<translation></translation>
+<translation>tous les raccourcis clavier</translation>
 </phrase>
 
 <phrase>
 <original>undo changes</original>
-<translation></translation>
+<translation>annuler le changement</translation>
 </phrase>
 
 <phrase>
 <original>try to capture automatically</original>
-<translation></translation>
+<translation>tenter de capturer automatiquement</translation>
 </phrase>
 
 <phrase>
 <original>this hotkey</original>
-<translation></translation>
+<translation>cette combinaison de touches</translation>
 </phrase>
 
 <phrase>
 <original>restore default</original>
-<translation></translation>
+<translation>restaurer par défaut</translation>
 </phrase>
 
 <phrase>
 <original>export to file</original>
-<translation></translation>
+<translation>exporter en fichier</translation>
 </phrase>
 
 <phrase>
 <original>import from file</original>
-<translation></translation>
+<translation>importer du fichier</translation>
 </phrase>
 
 <phrase>
 <original>delete</original>
-<translation></translation>
+<translation>supprimer</translation>
 </phrase>
 
 <phrase>
 <original>restore all defaults</original>
-<translation></translation>
+<translation>restaurer tout par défaut</translation>
 </phrase>
 
 <phrase>
 <original>generate summary</original>
-<translation></translation>
+<translation>générer un résumé</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys</original>
-<translation></translation>
+<translation>Touches de raccourci</translation>
 </phrase>
 
 <phrase>
 <original>Import hotkeys</original>
-<translation></translation>
+<translation>Importer les touches de raccourci</translation>
 </phrase>
 
 <phrase>
 <original>Export hotkeys</original>
-<translation></translation>
+<translation>Exporter les touches de raccourci</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Hotkeys</original>
-<translation></translation>
+<translation>Touches de raccourci PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>One or more hotkeys is currently assigned to multiple actions.</original>
-<translation></translation>
+<translation>Une ou plusieurs combinaisons de touches est assignée à des actions différentes</translation>
 </phrase>
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation></translation>
+<translation>Si vous procédez, PhotoDemon gardera seulement la première occurence de n'importe quelle combinaison dupliquée</translation>
 </phrase>
 
 <phrase>
 <original>Press OK to proceed.</original>
-<translation></translation>
+<translation>Cliquer sur OK pour procéder</translation>
 </phrase>
 
 <phrase>
 <original>Press cancel to keep editing hotkeys.</original>
-<translation></translation>
+<translation>Cliquer sur annuler pour continuer d'éditer les touches de raccourci</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox tools</original>
-<translation></translation>
+<translation>Outils de la boite</translation>
 </phrase>
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation></translation>
+<translation>Svp utilisez cette combinaison de touches clavier pour seulement une action</translation>
 </phrase>
 
 <phrase>
 <original>(this item)</original>
-<translation></translation>
+<translation>(cet item)</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation></translation>
+<translation>La combinaison doit être unique</translation>
 </phrase>
 
 <phrase>
 <original>Command</original>
-<translation></translation>
+<translation>Commande</translation>
 </phrase>
 
 <phrase>
 <original>Hotkey</original>
-<translation></translation>
+<translation>Combinaison</translation>
 </phrase>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Ceci va réécrire toute combinaison de raccourci éditée.Êtes vous sûr de continuer?</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -13610,7 +13610,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>distance du magnétisme (en pixels)</translation>
 </phrase>
 
 <phrase>
@@ -13989,7 +13989,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement , impliquant plusieurs copies de métadonnées en un seul fichier. Photodemon peut résoudre les entrées en doublons pour vous</translation>
+<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement , impliquant plusieurs copies de métadonnées en un seul fichier. PhotoDemon peut résoudre les entrées en doublons pour vous</translation>
 </phrase>
 
 <phrase>
@@ -13999,12 +13999,12 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais Photodemon peut toujours tenter de les extraire</translation>
+<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais PhotoDemon peut toujours tenter de les extraire</translation>
 </phrase>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces donnnées, Photodemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
+<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces donnnées, PhotoDemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
 </phrase>
 
 <phrase>
@@ -14019,7 +14019,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Par défaut, Photodemon va vous avertir si vous tentez de fermer une image avec des changements non enregistrés.</translation>
+<translation>Par défaut, PhotoDemon va vous avertir si vous tentez de fermer une image avec des changements non enregistrés.</translation>
 </phrase>
 
 <phrase>
@@ -14079,7 +14079,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. Photodemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
+<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. PhotoDemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
 </phrase>
 
 <phrase>
@@ -14109,7 +14109,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>Photodemon génère beaucoup de miniatures, spécialement quand les images contiennent plusieurs calques. La qualité de ces miniatures peut être abaissée pour améliorer les performances.</translation>
+<translation>PhotoDemon génère beaucoup de miniatures, spécialement quand les images contiennent plusieurs calques. La qualité de ces miniatures peut être abaissée pour améliorer les performances.</translation>
 </phrase>
 
 <phrase>
@@ -14442,7 +14442,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
-<translation>l'ouvrir dans Photodemon (pour poursuivre l'édition)</translation>
+<translation>l'ouvrir dans PhotoDemon (pour poursuivre l'édition)</translation>
 </phrase>
 
 <phrase>
@@ -14496,8 +14496,8 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrasecount>2741</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5830 phrases. -->
+<!-- 3089 are duplicates, so only 2741 unique phrases have been written to file. -->
 <!-- These 2741 phrases contain approximately 11834 total words. -->
 
 </pdData>
