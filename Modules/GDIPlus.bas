@@ -1668,7 +1668,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 'Attempt to convert the EMF to EMF+ format
                 Dim mfHandleDst As Long, convSuccess As Long
                 
-                'For reference: two write EMF+ data to file, use code like the following:
+                'For reference: to write EMF+ data to file, use code like the following:
                 'Dim newEmfPlusFileAndPath As String
                 'newEmfPlusFileAndPath = Files.FileGetPath(srcFilename) & Files.FileGetName(srcFilename, True) & " (EMFPlus).emf"
                 'If GdipConvertToEmfPlusToFile(tmpGraphics, hImage, convSuccess, StrPtr(newEmfPlusFileAndPath), EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
@@ -1698,7 +1698,9 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             
             'Release our temporary settings DIB
             Set tmpSettingsDIB = Nothing
-            
+        
+        Else
+            metafileWasUpsampled = emfPlusAvailable
         End If
         
     End If
