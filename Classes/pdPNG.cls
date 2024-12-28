@@ -1580,14 +1580,13 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
     gammaIndex = Me.GetIndexOfChunk("gAMA")
     chrmIndex = Me.GetIndexOfChunk("cHRM")
     
-    Dim gammaOK As Boolean, chrmOK As Boolean
-    
     'Handle gamma; this allows us to produce the same results as Firefox, Chrome, Edge, Internet Explorer,
     ' and (surprisingly) Windows Photo Viewer on Windows 10.  (For whatever reason, Safari does *not* handle
     ' gAMA chunks; given that PD is Windows-only, I haven't provided a toggle to change this behavior,
     ' at present.)  Note that photo editing software may handle gamma differently - I have *not* tested them
     ' thoroughly, and if they don't manage gamma correctly, I may need to revisit this design entirely.
-    If (gammaIndex >= 0) Then
+    Dim gammaOK As Boolean
+    If (gammaIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() Then
         
         Dim gammaInt As Long
         gammaInt = m_Chunks(gammaIndex).GetGammaData(m_Warnings)
@@ -1604,7 +1603,8 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
     'Ideally, gamma chunks should be accompanied by chromaticity data, to help us know the expected
     ' viewing conditions of the image.  If chromaticity *doesn't* exist, we'll just apply a bare
     ' gamma correction to the raw PNG pixel data.
-    If (chrmIndex >= 0) Then
+    Dim chrmOK As Boolean
+    If (chrmIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() Then
         
         Dim chrmData() As Long
         If m_Chunks(chrmIndex).GetChromaticityData(chrmData, m_Warnings) Then
