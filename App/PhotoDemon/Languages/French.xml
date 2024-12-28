@@ -14165,7 +14165,8 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide a préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à executer, BPC devrait être coché.
+<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide a préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à executer, BPC devrait être coché.</translation>
+</phrase>
 
 <phrase>
 <original>each session</original>
