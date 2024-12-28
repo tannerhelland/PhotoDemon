@@ -249,8 +249,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Canvas User Control (previously a standalone form)
 'Copyright 2002-2024 by Tanner Helland
 'Created: 29/November/02
-'Last updated: 01/April/24
-'Last update: allow drag+dropping image files on the command buttons on an empty canvas view
+'Last updated: 28/December/24
+'Last update: handle new user preference for mouse wheel zoom vs scroll
 '
 'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
 ' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
@@ -1536,6 +1536,33 @@ Public Sub CanvasView_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
     
     If Not IsCanvasInteractionAllowed() Then Exit Sub
     
+    'The user can toggle mousewheel scroll vs zoom behavior from the Tools > Options > Interface panel
+    If UserPrefs.GetZoomWithWheel Then
+        HandleCanvasZoom Button, Shift, x, y, scrollAmount
+    Else
+        HandleCanvasScroll Button, Shift, x, y, scrollAmount
+    End If
+    
+    'NOTE: horizontal scrolling via Shift+Vertical Wheel is handled in the separate _MouseWheelHorizontal event.
+    'NOTE: zooming via Ctrl+Vertical Wheel is handled in the separate _MouseWheelZoom event.
+    
+End Sub
+
+Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+    
+    If Not IsCanvasInteractionAllowed() Then Exit Sub
+    
+    'The user can toggle mousewheel scroll vs zoom behavior from the Tools > Options > Interface panel
+    If UserPrefs.GetZoomWithWheel Then
+        HandleCanvasScroll Button, Shift, x, y, zoomAmount
+    Else
+        HandleCanvasZoom Button, Shift, x, y, zoomAmount
+    End If
+    
+End Sub
+
+Private Sub HandleCanvasScroll(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+
     'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
     ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
     ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
@@ -1548,12 +1575,9 @@ Public Sub CanvasView_MouseWheelVertical(ByVal Button As PDMouseButtonConstants,
         Message "Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM"
     End If
     
-    'NOTE: horizontal scrolling via Shift+Vertical Wheel is handled in the separate _MouseWheelHorizontal event.
-    'NOTE: zooming via Ctrl+Vertical Wheel is handled in the separate _MouseWheelZoom event.
-    
 End Sub
 
-Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+Private Sub HandleCanvasZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
     If (zoomAmount <> 0) Then Tools_Zoom.RelayCanvasZoom Me, PDImages.GetActiveImage(), x, y, (zoomAmount > 0)
 End Sub
 

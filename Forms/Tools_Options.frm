@@ -53,11 +53,22 @@ Begin VB.Form FormOptions
       Width           =   8295
       _ExtentX        =   14631
       _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkZoomMouse 
+         Height          =   360
+         Left            =   90
+         TabIndex        =   45
+         Top             =   1965
+         Width           =   7815
+         _ExtentX        =   13785
+         _ExtentY        =   635
+         Caption         =   "zoom with mouse wheel"
+         Value           =   0   'False
+      End
       Begin PhotoDemon.pdSpinner spnSnapDistance 
          Height          =   375
          Left            =   120
          TabIndex        =   44
-         Top             =   4560
+         Top             =   4800
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   661
@@ -69,7 +80,7 @@ Begin VB.Form FormOptions
       Begin PhotoDemon.pdPictureBox picGrid 
          Height          =   735
          Left            =   150
-         Top             =   5610
+         Top             =   5760
          Width           =   735
          _ExtentX        =   1296
          _ExtentY        =   1296
@@ -78,7 +89,7 @@ Begin VB.Form FormOptions
          Height          =   375
          Left            =   3840
          TabIndex        =   39
-         Top             =   360
+         Top             =   375
          Width           =   2175
          _ExtentX        =   3836
          _ExtentY        =   661
@@ -87,7 +98,7 @@ Begin VB.Form FormOptions
          Height          =   975
          Left            =   120
          TabIndex        =   37
-         Top             =   810
+         Top             =   840
          Width           =   7815
          _ExtentX        =   13785
          _ExtentY        =   1720
@@ -98,7 +109,7 @@ Begin VB.Form FormOptions
          Height          =   345
          Left            =   3840
          TabIndex        =   3
-         Top             =   2400
+         Top             =   2790
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   609
@@ -109,8 +120,8 @@ Begin VB.Form FormOptions
       End
       Begin PhotoDemon.pdLabel lblRecentFileCount 
          Height          =   240
-         Left            =   120
-         Top             =   2430
+         Left            =   135
+         Top             =   2820
          Width           =   3480
          _ExtentX        =   6138
          _ExtentY        =   423
@@ -122,7 +133,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   13
          Left            =   0
-         Top             =   2040
+         Top             =   2415
          Width           =   8100
          _ExtentX        =   14288
          _ExtentY        =   503
@@ -146,7 +157,7 @@ Begin VB.Form FormOptions
          Height          =   810
          Left            =   1080
          TabIndex        =   2
-         Top             =   5580
+         Top             =   5700
          Width           =   3015
          _ExtentX        =   5318
          _ExtentY        =   1429
@@ -157,7 +168,7 @@ Begin VB.Form FormOptions
          Height          =   795
          Left            =   4140
          TabIndex        =   4
-         Top             =   5580
+         Top             =   5700
          Width           =   3015
          _ExtentX        =   5318
          _ExtentY        =   1402
@@ -168,7 +179,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   7260
          TabIndex        =   5
-         Top             =   5640
+         Top             =   5760
          Width           =   465
          _ExtentX        =   820
          _ExtentY        =   1217
@@ -178,7 +189,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   7770
          TabIndex        =   6
-         Top             =   5640
+         Top             =   5760
          Width           =   465
          _ExtentX        =   820
          _ExtentY        =   1217
@@ -188,7 +199,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   2
          Left            =   0
-         Top             =   5160
+         Top             =   5280
          Width           =   8205
          _ExtentX        =   14473
          _ExtentY        =   503
@@ -200,7 +211,7 @@ Begin VB.Form FormOptions
          Height          =   975
          Left            =   120
          TabIndex        =   38
-         Top             =   2850
+         Top             =   3210
          Width           =   7815
          _ExtentX        =   13785
          _ExtentY        =   1508
@@ -222,7 +233,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   23
          Left            =   0
-         Top             =   4080
+         Top             =   4320
          Width           =   8100
          _ExtentX        =   14288
          _ExtentY        =   503
@@ -995,8 +1006,8 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright 2002-2024 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 30/September/20
-'Last update: new options for default folder during Save As
+'Last updated: 28/December/24
+'Last update: handle new user preference for mouse wheel zoom vs scroll
 '
 'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
 ' XML file that actually stores all preferences.
@@ -1204,6 +1215,9 @@ Private Sub cmdBarMini_OKClick()
         g_RecentFiles.NotifyMaxLimitChanged
         g_RecentMacros.MRU_NotifyNewMaxLimit
     End If
+    
+    UserPrefs.SetPref_Boolean "Interface", "wheel-zoom", chkZoomMouse.Value
+    UserPrefs.SetZoomWithWheel chkZoomMouse.Value
     
     UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance.Value
     Snap.SetSnap_Distance spnSnapDistance.Value
@@ -1561,6 +1575,8 @@ Private Sub Form_Load()
     btsMRUStyle.AddItem "compact (filename only)", 0
     btsMRUStyle.AddItem "verbose (filename and path)", 1
     btsMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
+    
+    chkZoomMouse.Value = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
     
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.Clear

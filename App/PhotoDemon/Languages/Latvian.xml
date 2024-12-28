@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).3</langversion>
+<langversion>2028.8 Alfa (Build 25).4</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -12388,7 +12388,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13564,6 +13564,11 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 </phrase>
 
 <phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>virsraksta joslas teksts</translation>
 </phrase>
@@ -14270,7 +14275,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 <translation>Šī jaunā pagaidu mapes atrašanās vieta stāsies spēkā tikai pēc programmas restartēšanas.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 197 phrases. 56 were duplicates of existing phrases, so only 141 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14480,10 +14485,10 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2741</phrasecount>
+<phrasecount>2742</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
-<!-- These 2741 phrases contain approximately 11834 total words. -->
+<!-- As of this build, PhotoDemon contains 5832 phrases. -->
+<!-- 3090 are duplicates, so only 2742 unique phrases have been written to file. -->
+<!-- These 2742 phrases contain approximately 11838 total words. -->
 
 </pdData>

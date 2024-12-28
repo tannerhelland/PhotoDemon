@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2024.12.0</langversion>
+		<langversion>2024.12.8</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -13501,6 +13501,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation></translation>
 </phrase>
@@ -14201,7 +14206,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-		<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
+		<!-- Tools_Options.frm contains 197 phrases. 56 were duplicates of existing phrases, so only 141 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14411,10 +14416,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text generation complete. -->
 
-		<phrasecount>2741</phrasecount>
+		<phrasecount>2742</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5830 phrases. -->
-	<!-- 3089 are duplicates, so only 2741 unique phrases have been written to file. -->
-	<!-- These 2741 phrases contain approximately 11834 total words. -->
+	<!-- As of this build, PhotoDemon contains 5832 phrases. -->
+	<!-- 3090 are duplicates, so only 2742 unique phrases have been written to file. -->
+	<!-- These 2742 phrases contain approximately 11838 total words. -->
 
 	</pdData>
