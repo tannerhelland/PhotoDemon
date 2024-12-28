@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.37</langversion>
+<langversion>1.0.38</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -13526,6 +13526,126 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>siyah nokta dengelemesi kullan</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>ekran görselleştirme amacı</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>geçici dosya konumu</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>zoom with mouse wheel</original>
 <translation></translation>
 </phrase>
@@ -13727,111 +13847,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>viewport</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>siyah nokta dengelemesi kullan</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>ekran görselleştirme amacı</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>geçici dosya konumu</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
 <translation></translation>
 </phrase>
 
@@ -14128,6 +14143,16 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation></translation>
 </phrase>
@@ -14231,7 +14256,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 197 phrases. 56 were duplicates of existing phrases, so only 141 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14441,10 +14466,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2742</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5832 phrases. -->
-<!-- 3090 are duplicates, so only 2742 unique phrases have been written to file. -->
-<!-- These 2742 phrases contain approximately 11838 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>

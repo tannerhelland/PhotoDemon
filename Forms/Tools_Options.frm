@@ -671,6 +671,17 @@ Begin VB.Form FormOptions
       _ExtentY        =   11853
       Begin PhotoDemon.pdCheckBox chkColorManagement 
          Height          =   315
+         Index           =   1
+         Left            =   240
+         TabIndex        =   46
+         Top             =   5040
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   556
+         Caption         =   "use embedded ICC profiles, when available"
+      End
+      Begin PhotoDemon.pdCheckBox chkColorManagement 
+         Height          =   315
          Index           =   0
          Left            =   240
          TabIndex        =   11
@@ -778,6 +789,29 @@ Begin VB.Form FormOptions
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "use custom profiles for each display"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   24
+         Left            =   0
+         Top             =   4560
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "file policies"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdCheckBox chkColorManagement 
+         Height          =   315
+         Index           =   2
+         Left            =   240
+         TabIndex        =   47
+         Top             =   5400
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   556
+         Caption         =   "use format-specific color management data, when available"
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -1292,6 +1326,9 @@ Private Sub cmdBarMini_OKClick()
     
     ColorManagement.SetDisplayBPC chkColorManagement(0).Value
     ColorManagement.SetDisplayRenderingIntentPref cboDisplayRenderIntent.ListIndex
+    UserPrefs.SetPref_Boolean "ColorManagement", "allow-icc-profiles", chkColorManagement(1).Value
+    UserPrefs.SetPref_Boolean "ColorManagement", "allow-legacy-profiles", chkColorManagement(2).Value
+    ColorManagement.UpdateColorManagementPreferences
     
     'Changes to color preferences require us to re-cache any working-space-to-screen transform data.
     CacheDisplayCMMData
@@ -1704,7 +1741,12 @@ Private Sub Form_Load()
     
     cboDisplayRenderIntent.AssignTooltip "If you do not know what this setting controls, set it to ""Perceptual"".  Perceptual rendering intent is the best choice for most users."
     chkColorManagement(0).AssignTooltip "BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON."
-        
+    
+    chkColorManagement(1).Value = ColorManagement.UseEmbeddedICCProfiles()
+    chkColorManagement(1).AssignTooltip "Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data)."
+    chkColorManagement(2).Value = ColorManagement.UseEmbeddedLegacyProfiles()
+    chkColorManagement(2).AssignTooltip "Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried."
+    
     'Update preferences
     cboUpdates(0).Clear
     cboUpdates(0).AddItem "each session", 0

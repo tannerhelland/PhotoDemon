@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.308</langversion>
+<langversion>7.0.309</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -13512,6 +13512,126 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>使用黑點補償</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>顯示渲染目標</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>可顯示</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>關閉顯示色彩管理</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>使用目前系統設定檔進行顯示</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>顯示用的色彩描述檔</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>顯示規則</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>使用自訂設定檔進行顯示</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>高解析度滑鼠輸入</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>重設所有程式設定</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>記憶體使用狀況將顯示在此</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>記憶體診斷</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>暫存檔案位置</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>重新開始</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>應用程式設定資料夾</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>產生偵錯記錄檔</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>自動檢查更新</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>版本更新設定</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>更新選項</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>zoom with mouse wheel</original>
 <translation></translation>
 </phrase>
@@ -13714,111 +13834,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>viewport</original>
 <translation>檢視區</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>使用黑點補償</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>顯示渲染目標</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>可顯示</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>關閉顯示色彩管理</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>使用目前系統設定檔進行顯示</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>顯示用的色彩描述檔</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>顯示規則</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>使用自訂設定檔進行顯示</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>高解析度滑鼠輸入</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>重設所有程式設定</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>記憶體使用狀況將顯示在此</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>記憶體診斷</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>暫存檔案位置</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>重新開始</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>應用程式設定資料夾</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>產生偵錯記錄檔</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>自動檢查更新</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>版本更新設定</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>更新選項</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14116,6 +14131,16 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>每次開啟</translation>
 </phrase>
@@ -14219,7 +14244,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 197 phrases. 56 were duplicates of existing phrases, so only 141 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14429,10 +14454,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2742</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5832 phrases. -->
-<!-- 3090 are duplicates, so only 2742 unique phrases have been written to file. -->
-<!-- These 2742 phrases contain approximately 11838 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>
