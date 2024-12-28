@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.8.43</langversion>
+<langversion>2024.12.4</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -35,7 +35,7 @@
 
 <phrase>
 <original>Select scanner or camera</original>
-<translation>Выбери сканер или камеру</translation>
+<translation>Выбрать сканер или камеру</translation>
 </phrase>
 
 <phrase>
@@ -95,7 +95,7 @@
 
 <phrase>
 <original>Export color lookup</original>
-<translation>Экспорт поиска по цвету</translation>
+<translation>Экспорт поиска цветов</translation>
 </phrase>
 
 <phrase>
@@ -270,7 +270,7 @@
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation>Поворот снмка на 90º против часовой стрелки</translation>
+<translation>Поворот снимка на 90º против часовой стрелки</translation>
 </phrase>
 
 <phrase>
@@ -300,7 +300,7 @@
 
 <phrase>
 <original>Flatten image</original>
-<translation>Сгладить изображение</translation>
+<translation>Выполнить сведение</translation>
 </phrase>
 
 <phrase>
@@ -510,7 +510,7 @@
 
 <phrase>
 <original>Arbitrary layer rotation</original>
-<translation>Произволььное вращение слоя</translation>
+<translation>Произвольное вращение слоя</translation>
 </phrase>
 
 <phrase>
@@ -605,7 +605,7 @@
 
 <phrase>
 <original>Grow selection</original>
-<translation>Расширить выбор</translation>
+<translation>Расширить выделенное</translation>
 </phrase>
 
 <phrase>
@@ -615,12 +615,12 @@
 
 <phrase>
 <original>Border selection</original>
-<translation>Выбор границы</translation>
+<translation>Выделение границ</translation>
 </phrase>
 
 <phrase>
 <original>Feather selection</original>
-<translation>Выбор оперения</translation>
+<translation>Растушевать выделенное</translation>
 </phrase>
 
 <phrase>
@@ -630,22 +630,22 @@
 
 <phrase>
 <original>Erase selected area</original>
-<translation>Стереть выбранную область</translation>
+<translation>Стереть выделенную область</translation>
 </phrase>
 
 <phrase>
 <original>Fill selected area</original>
-<translation>Заливка выбранной области</translation>
+<translation>Заливка выделенной области</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation>Исправить выбранную область</translation>
+<translation>Исправить выделенную область</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation>Границы выбранного контура</translation>
+<translation>Границы выделенного контура</translation>
 </phrase>
 
 <phrase>
@@ -660,7 +660,7 @@
 
 <phrase>
 <original>Export selected area as image</original>
-<translation>Экспортировать выбранную область как изображение</translation>
+<translation>Экспортировать выделенную область как изображение</translation>
 </phrase>
 
 <phrase>
@@ -1195,7 +1195,7 @@
 
 <phrase>
 <original>Unsharp mask</original>
-<translation>Маска без резкости</translation>
+<translation>Контурная резкость</translation>
 </phrase>
 
 <phrase>
@@ -1541,7 +1541,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Calculating film negative values</original>
-<translation>Расчёт отрицательных значений пленки</translation>
+<translation>Расчёт отрицательных значений плёнки</translation>
 </phrase>
 
 <phrase>
@@ -1773,27 +1773,27 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Page Up</original>
-<translation></translation>
+<translation>Page Up</translation>
 </phrase>
 
 <phrase>
 <original>Page Down</original>
-<translation></translation>
+<translation>Page Down</translation>
 </phrase>
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>Backspace</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Tab</translation>
 </phrase>
 
 <phrase>
 <original>Escape</original>
-<translation></translation>
+<translation>Escape</translation>
 </phrase>
 
 <phrase>
@@ -1930,7 +1930,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Normal</original>
-<translation>Обычное</translation>
+<translation>Нормально</translation>
 </phrase>
 
 <phrase>
@@ -1945,32 +1945,32 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Color burn</original>
-<translation>Цветной прожиг</translation>
+<translation>Затемнение основы</translation>
 </phrase>
 
 <phrase>
 <original>Linear burn</original>
-<translation>Линейный прожиг</translation>
+<translation>Линейный затемнитель</translation>
 </phrase>
 
 <phrase>
 <original>Lighten</original>
-<translation>Осветление</translation>
+<translation>Замена светлым</translation>
 </phrase>
 
 <phrase>
 <original>Screen</original>
-<translation>Негативное умножение</translation>
+<translation>Экран</translation>
 </phrase>
 
 <phrase>
 <original>Color dodge</original>
-<translation>Смягчение цвета</translation>
+<translation>Осветление основы</translation>
 </phrase>
 
 <phrase>
 <original>Linear dodge</original>
-<translation>Смягчение цвета(линейное)</translation>
+<translation>Линейный осветлитель(добавить)</translation>
 </phrase>
 
 <phrase>
@@ -2005,12 +2005,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Hard mix</original>
-<translation>Жёсткая смесь</translation>
+<translation>Жёсткое смещение</translation>
 </phrase>
 
 <phrase>
 <original>Difference</original>
-<translation>Различие</translation>
+<translation>Разница</translation>
 </phrase>
 
 <phrase>
@@ -2025,12 +2025,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Divide</original>
-<translation>Разделение</translation>
+<translation>Разделитель</translation>
 </phrase>
 
 <phrase>
 <original>Hue</original>
-<translation>Оттенок</translation>
+<translation>Цветовой тон</translation>
 </phrase>
 
 <phrase>
@@ -2040,12 +2040,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Color</original>
-<translation>Цвет</translation>
+<translation>Цветность</translation>
 </phrase>
 
 <phrase>
 <original>Luminosity</original>
-<translation>Яркость цвета</translation>
+<translation>Яркость</translation>
 </phrase>
 
 <phrase>
@@ -2070,12 +2070,12 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Inherit</original>
-<translation>Унаследовано</translation>
+<translation>Наследовать</translation>
 </phrase>
 
 <phrase>
 <original>Locked</original>
-<translation>Заблокировано</translation>
+<translation>Заблокировать</translation>
 </phrase>
 
 <phrase>
@@ -2383,7 +2383,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Warning</original>
-<translation>ВНИМНИЕ!</translation>
+<translation>ВНИМАНИЕ!</translation>
 </phrase>
 
 <phrase>
@@ -2702,7 +2702,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Applying tone-mapping</original>
-<translation>Сопоставить тона</translation>
+<translation>Коррекция тональной компрессии</translation>
 </phrase>
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3029,12 +3029,12 @@ Description: %2
 
 <phrase>
 <original>background border</original>
-<translation>Линия фоновой рамки</translation>
+<translation>Рамка фона</translation>
 </phrase>
 
 <phrase>
 <original>background border style</original>
-<translation>Стиль линии фоновой рамки</translation>
+<translation>Стиль рамки фона</translation>
 </phrase>
 
 <phrase>
@@ -3074,7 +3074,7 @@ Description: %2
 
 <phrase>
 <original>inflation</original>
-<translation>Раздувание</translation>
+<translation>Выпуклость</translation>
 </phrase>
 
 <phrase>
@@ -3094,7 +3094,7 @@ Description: %2
 
 <phrase>
 <original>Modify selection</original>
-<translation>Изменить выбор</translation>
+<translation>Изменить выделение</translation>
 </phrase>
 
 <phrase>
@@ -3281,27 +3281,27 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Selection inversion complete.</original>
-<translation>"Обратить выделение" завершено.</translation>
+<translation>Инверсия выделенной области завершена</translation>
 </phrase>
 
 <phrase>
 <original>Feathering selection</original>
-<translation>Выбор размытия</translation>
+<translation>Растушёвка выделения</translation>
 </phrase>
 
 <phrase>
 <original>Feathering complete.</original>
-<translation>Размытие завершено.</translation>
+<translation>Растушёвка завершена.</translation>
 </phrase>
 
 <phrase>
 <original>Sharpening selection</original>
-<translation>Резкость выделеного</translation>
+<translation>Резкость выделения</translation>
 </phrase>
 
 <phrase>
 <original>Growing selection</original>
-<translation>Расширить выбор</translation>
+<translation>Расширить выделение</translation>
 </phrase>
 
 <phrase>
@@ -3311,7 +3311,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Shrinking selection</original>
-<translation>Уменьшить выбор</translation>
+<translation>Уменьшить выделение</translation>
 </phrase>
 
 <phrase>
@@ -4220,7 +4220,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>braid</original>
-<translation>Тесьма</translation>
+<translation>Коса</translation>
 </phrase>
 
 <phrase>
@@ -4393,7 +4393,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>none</original>
-<translation>Нет</translation>
+<translation>отсутствует</translation>
 </phrase>
 
 <!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -4574,7 +4574,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Наведите курсор на миниатюру изображения, чтобы увидеть имя и текущее местоположение файла.</translation>
+<translation>Наведи курсор на миниатюру изображения, чтобы увидеть имя и текущее местоположение файла.</translation>
 </phrase>
 
 <!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -5255,17 +5255,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Border</original>
-<translation>Выбор границы</translation>
+<translation>Выделение границ</translation>
 </phrase>
 
 <phrase>
 <original>Feather</original>
-<translation>Оперение</translation>
+<translation>Растушёвка</translation>
 </phrase>
 
 <phrase>
 <original>Save current selection</original>
-<translation>Сохранить текущий выбор</translation>
+<translation>Сохранить текущее выделение</translation>
 </phrase>
 
 <phrase>
@@ -5505,7 +5505,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Keyboard shortcuts</original>
-<translation></translation>
+<translation>Сочетания клавиш</translation>
 </phrase>
 
 <phrase>
@@ -6554,7 +6554,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Как и все инструменты преобразования монохромного изображения в оттенки серого, этот инструмент создаёт размытое изображение.  Чтобы исправить это, воспользуйся инструментом Эффекты -> Резкость -> Маска без резкости. (Для достижения наилучших результатов используй радиус маски без резкости, по крайней мере, такого же размера, как этот радиус.)</translation>
+<translation>Как и все инструменты преобразования монохромного изображения в оттенки серого, этот инструмент создаёт размытое изображение.  Чтобы исправить это, воспользуйся инструментом Эффекты -> Резкость -> Контурная резкость. (Для достижения наилучших результатов используй радиус маски без резкости, по крайней мере, такого же размера, как этот радиус.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6648,7 +6648,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Deep yellow</original>
-<translation>Тёмно-желтый</translation>
+<translation>Тёмно-жёлтый</translation>
 </phrase>
 
 <phrase>
@@ -8951,7 +8951,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>randomize</original>
-<translation>Случайный выбор</translation>
+<translation>Рандомизация</translation>
 </phrase>
 
 <phrase>
@@ -11674,17 +11674,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>optimize for speed</original>
-<translation>Оптимизирован для скорости</translation>
+<translation>Оптимизировать для скорости</translation>
 </phrase>
 
 <phrase>
 <original>when changing aspect ratio, fit image to new size by</original>
-<translation>При изменении соотношения сторон, приведи их к новому размеру следующими способами</translation>
+<translation>При изменении соотношения сторон, привести их к новому размеру следующими способами</translation>
 </phrase>
 
 <phrase>
 <original>resampling</original>
-<translation>Повторная выборка</translation>
+<translation>Передискретизация</translation>
 </phrase>
 
 <phrase>
@@ -11694,12 +11694,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>>Корректировка и обрезка только по мере необходимости</translation>
+<translation>Корректировка и обрезка только по мере необходимости</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>При необходимости обрежь до полного размера.</translation>
+<translation>При необходимости обрезать до полного размера.</translation>
 </phrase>
 
 <phrase>
@@ -11785,7 +11785,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>make the new layer the active layer</original>
-<translation>Сделайть новый слой активным</translation>
+<translation>сделать новый слой активным</translation>
 </phrase>
 
 <phrase>
@@ -12018,7 +12018,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Selection options</original>
-<translation>Параметры выбора</translation>
+<translation>Параметры выделения</translation>
 </phrase>
 
 <!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12276,7 +12276,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Zoom tool</original>
-<translation>Инструмент "Масштабирования"</translation>
+<translation>Инструмент "Масштабирование"</translation>
 </phrase>
 
 <phrase>
@@ -12296,7 +12296,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Crop tool</original>
-<translation></translation>
+<translation>Инструмент "Рамка"</translation>
 </phrase>
 
 <phrase>
@@ -12326,12 +12326,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Basic text tool</original>
-<translation>Основной текстовый инструмент</translation>
+<translation>Инструмент "Основной текст"</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text tool</original>
-<translation>Расширенный текстовый инструмент</translation>
+<translation>Инструмент "Расширенный текст"</translation>
 </phrase>
 
 <phrase>
@@ -12361,32 +12361,32 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Search tool</original>
-<translation></translation>
+<translation>Инструмент "Поиск"</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush size</original>
-<translation></translation>
+<translation>Уменьшить размер кисти</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush size</original>
-<translation></translation>
+<translation>Увеличить размер кисти</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation></translation>
+<translation>Уменьшить жёсткость кисти</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation></translation>
+<translation>Увеличить жёсткость кисти</translation>
 </phrase>
 
 <phrase>
 <original>Toggle brush cursor</original>
-<translation></translation>
+<translation>Изменить курсор кисти</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
@@ -12598,7 +12598,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>clear points</original>
-<translation>Удалить точку</translation>
+<translation>Удалить опорную точку</translation>
 </phrase>
 
 <phrase>
@@ -12640,7 +12640,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>show distances</original>
-<translation>Показывать расстояния</translation>
+<translation>Показать расстояния</translation>
 </phrase>
 
 <phrase>
@@ -12665,12 +12665,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>sample selections from</original>
-<translation>Выборка из</translation>
+<translation>Выделение объекта из</translation>
 </phrase>
 
 <phrase>
 <original>default selection behavior</original>
-<translation>Поведение выбора по умолчанию</translation>
+<translation>Действие при выборе по умолчанию</translation>
 </phrase>
 
 <phrase>
@@ -12716,7 +12716,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>animate</original>
-<translation>Оживить</translation>
+<translation>анимация</translation>
 </phrase>
 
 <phrase>
@@ -12726,57 +12726,57 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fill interior</original>
-<translation>Заполнять внутреннее пространство</translation>
+<translation>заполнить внутреннее пространство</translation>
 </phrase>
 
 <phrase>
 <original>fill exterior</original>
-<translation>Заполнять внешнее пространства</translation>
+<translation>заполнить внешнее пространства</translation>
 </phrase>
 
 <phrase>
 <original>open panel automatically</original>
-<translation>Автооткрытие панели</translation>
+<translation>автооткрытие панели</translation>
 </phrase>
 
 <phrase>
 <original>area</original>
-<translation>Область</translation>
+<translation>область</translation>
 </phrase>
 
 <phrase>
 <original>round corners</original>
-<translation>Закруглённые углы</translation>
+<translation>скругление углов</translation>
 </phrase>
 
 <phrase>
 <original>stroke smoothing</original>
-<translation>Сглаживание линий</translation>
+<translation>сглаживание линий</translation>
 </phrase>
 
 <phrase>
 <original>combine</original>
-<translation>Объединить</translation>
+<translation>объединить</translation>
 </phrase>
 
 <phrase>
 <original>New selection</original>
-<translation>Новый выбор</translation>
+<translation>Новое выделение</translation>
 </phrase>
 
 <phrase>
 <original>Add to selection</original>
-<translation>Добавить к выбору</translation>
+<translation>Добавить к выделенному</translation>
 </phrase>
 
 <phrase>
 <original>Subtract from selection</original>
-<translation>Удалить из выбора</translation>
+<translation>Удалить из выделенного</translation>
 </phrase>
 
 <phrase>
 <original>Intersect with selection</original>
-<translation>Пересечение с выделением</translation>
+<translation>Пересечение с выделенной областью</translation>
 </phrase>
 
 <phrase>
@@ -12791,7 +12791,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>never</original>
-<translation>НЕТ</translation>
+<translation>никогда</translation>
 </phrase>
 
 <phrase>
@@ -12836,7 +12836,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>Этот ползунок позволяет мгновенно настроить размытие. Из соображений производительности он ограничен небольшим радиусом. Чтобы увеличить радиус размытия, используй меню "Выбор > Размытие".</translation>
+<translation>Этот ползунок позволяет мгновенно настроить размытие. Из соображений производительности он ограничен небольшим радиусом. Чтобы увеличить радиус размытия, используй меню "Выбор" > "Размытие".</translation>
 </phrase>
 
 <phrase>
@@ -12856,7 +12856,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation>Этот параметр повышает плавность выделения нарисованного от руки лассо.</translation>
+<translation>Этот параметр повышает плавность выделения лассо, созданного вручную.</translation>
 </phrase>
 
 <phrase>
@@ -12876,7 +12876,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This option controls which criteria the magic wand uses to compare pixels to the target color.</original>
-<translation>Этот параметр определяет, какие критерии использует волшебная палочка для сравнения пикселей с целевым цветом.</translation>
+<translation>Этот параметр определяет, какие критерии использует "Волшебная палочка" для сравнения пикселей с целевым цветом.</translation>
 </phrase>
 
 <!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
@@ -12893,7 +12893,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>always open this panel for new text layers</original>
-<translation>Всегда открывать эту панель для новых текстовых слоев</translation>
+<translation>Всегда открывать эту панель для новых текстовых слоёв</translation>
 </phrase>
 
 <phrase>
@@ -12903,17 +12903,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>alignment</original>
-<translation>Выравнивание</translation>
+<translation>выравнивание</translation>
 </phrase>
 
 <phrase>
 <original>normal</original>
-<translation>Стандартный</translation>
+<translation>нормальный</translation>
 </phrase>
 
 <phrase>
 <original>crisp</original>
-<translation>Острый как бритва</translation>
+<translation>чёткое</translation>
 </phrase>
 
 <phrase>
@@ -12923,7 +12923,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>(This action is non-destructive.)</original>
-<translation>(Это действие не является разрушительным.)</translation>
+<translation>(Это действие безопасно.)</translation>
 </phrase>
 
 <phrase>
@@ -12970,27 +12970,27 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>outline text</original>
-<translation>Контурный текст общий текст</translation>
+<translation>Очертить текст</translation>
 </phrase>
 
 <phrase>
 <original>fill background</original>
-<translation>Заливка фона</translation>
+<translation>Залить фона</translation>
 </phrase>
 
 <phrase>
 <original>outline background</original>
-<translation>Контур фона</translation>
+<translation>Очертить фон</translation>
 </phrase>
 
 <phrase>
 <original>fill text</original>
-<translation>Заливка текста</translation>
+<translation>Залить текст</translation>
 </phrase>
 
 <phrase>
 <original>fill and outline</original>
-<translation>Заливка и контур</translation>
+<translation>Залить и очертить</translation>
 </phrase>
 
 <phrase>
@@ -13062,132 +13062,132 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>undo all changes</original>
-<translation></translation>
+<translation>отменить все изменения</translation>
 </phrase>
 
 <phrase>
 <original>all hotkeys</original>
-<translation></translation>
+<translation>все горячие клавиши</translation>
 </phrase>
 
 <phrase>
 <original>undo changes</original>
-<translation></translation>
+<translation>отменить изменения</translation>
 </phrase>
 
 <phrase>
 <original>try to capture automatically</original>
-<translation></translation>
+<translation>выполнить автозахват</translation>
 </phrase>
 
 <phrase>
 <original>this hotkey</original>
-<translation></translation>
+<translation>эта горячая клавиша</translation>
 </phrase>
 
 <phrase>
 <original>restore default</original>
-<translation></translation>
+<translation>настройки по умолчанию</translation>
 </phrase>
 
 <phrase>
 <original>export to file</original>
-<translation></translation>
+<translation>экспорт в файл</translation>
 </phrase>
 
 <phrase>
 <original>import from file</original>
-<translation></translation>
+<translation>импорт из файла</translation>
 </phrase>
 
 <phrase>
 <original>delete</original>
-<translation></translation>
+<translation>удалить</translation>
 </phrase>
 
 <phrase>
 <original>restore all defaults</original>
-<translation></translation>
+<translation>все настройки по умолчанию</translation>
 </phrase>
 
 <phrase>
 <original>generate summary</original>
-<translation></translation>
+<translation>создать и открыть таблицу</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys</original>
-<translation></translation>
+<translation>Горячие клавиши</translation>
 </phrase>
 
 <phrase>
 <original>Import hotkeys</original>
-<translation></translation>
+<translation>Импорт горячих клавиш</translation>
 </phrase>
 
 <phrase>
 <original>Export hotkeys</original>
-<translation></translation>
+<translation>Экспорт горячих клавиш</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Hotkeys</original>
-<translation></translation>
+<translation>Горячие клавиши PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>One or more hotkeys is currently assigned to multiple actions.</original>
-<translation></translation>
+<translation>В данный момент одной или нескольким горячим клавишам назначено несколько действий.</translation>
 </phrase>
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation></translation>
+<translation>Если продолжить, PhotoDemon сохранит только первое сочетание всех дублирующих горячих клавиш.</translation>
 </phrase>
 
 <phrase>
 <original>Press OK to proceed.</original>
-<translation></translation>
+<translation>Нажми OK, чтобы продолжить.</translation>
 </phrase>
 
 <phrase>
 <original>Press cancel to keep editing hotkeys.</original>
-<translation></translation>
+<translation>Нажми "Отмена", чтобы продолжить редактирование горячих клавиш.</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox tools</original>
-<translation></translation>
+<translation>Настройка панели инструментов</translation>
 </phrase>
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation></translation>
+<translation>Используй эту горячую клавишу только для одного действия.</translation>
 </phrase>
 
 <phrase>
 <original>(this item)</original>
-<translation></translation>
+<translation>(этот пункт)</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation></translation>
+<translation>Горячие клавиши должны быть уникальными</translation>
 </phrase>
 
 <phrase>
 <original>Command</original>
-<translation></translation>
+<translation>Команда</translation>
 </phrase>
 
 <phrase>
 <original>Hotkey</original>
-<translation></translation>
+<translation>Горячая клавиша</translation>
 </phrase>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Будут перезаписаны все изменения внесённые с помощью горячих клавиш. Продолжить?</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -13369,7 +13369,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Automatic translation complete!</original>
-<translation>Автоматический перевод завершен!</translation>
+<translation>Автоматический перевод завершён!</translation>
 </phrase>
 
 <phrase>
@@ -13427,7 +13427,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation>Фразы, которые не соответствуют ссылкам</translation>
+<translation>Фразы, которые не соответствуют источнику</translation>
 </phrase>
 
 <phrase>
@@ -14100,7 +14100,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Некоторые элементы интерфейса имеют собственные украшения (например, тени). На старых ПК можно получить небольшой прирост производительности, приостановив эти украшения.</translation>
+<translation>Некоторые элементы интерфейса имеют собственные оформления (например, тени). На старых ПК можно получить небольшой прирост производительности, приостановив эти оформления.</translation>
 </phrase>
 
 <phrase>
@@ -14483,8 +14483,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2741</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5830 phrases. -->
+<!-- 3089 are duplicates, so only 2741 unique phrases have been written to file. -->
 <!-- These 2741 phrases contain approximately 11834 total words. -->
 
 </pdData>
