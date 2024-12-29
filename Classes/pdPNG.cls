@@ -1629,7 +1629,7 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
             
             If (Not gammaOK) Then
                 If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: chromaticity present, but gamma missing; colors may be incorrect!"
-                gammaFloat = 1#
+                gammaFloat = 2.2
             End If
             
             'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
