@@ -1890,7 +1890,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Before exiting, check for an embedded color profile.  If the image had one, we want to apply it to the
     ' destination image now, if we haven't already.  (Only CMYK images will have been processed already.)
-    If (Not isCMYK) And imgHasIccProfile Then
+    If (Not isCMYK) And imgHasIccProfile And ColorManagement.UseEmbeddedICCProfiles() Then
         
         PDDebug.LogAction "Applying color management to GDI+ image..."
         
@@ -1982,7 +1982,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 '/created dst color profile successfully
                 End If
             
-            '/source profile is gray vs colro
+            '/source profile is gray vs color
             End If
         
         '/source profile object created successfully
