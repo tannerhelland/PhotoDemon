@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.8 Alpha (build 147).3</langversion>
+<langversion>2024.12 (Build 12)</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4278,7 +4278,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
-<translation>Mausrad = VERTIKAL SCROLLEN,  Shift + Mausrad = HORIZONTAL SCROLLEN,  Strg + Mausrad = ZOOMEN</translation>
+<translation>Mausrad = VERTIKALES SCROLLEN,  Shift + Rad = HORIZONTALES SCROLLEN,  Strg + Rad = ZOOM</translation>
 </phrase>
 
 <phrase>
@@ -13563,7 +13563,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>Eingebettete ICC-Profile verwenden, sofern verfügbar</translation>
 </phrase>
 
 <phrase>
@@ -13598,7 +13598,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>display policies</original>
-<translation>Richtlinien anzeigen</translation>
+<translation>Anzeigerichtlinien</translation>
 </phrase>
 
 <phrase>
@@ -13608,12 +13608,12 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>Dateirichtlinien</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>Formatspezifische Farbmanagementdaten verwenden, sofern verfügbar</translation>
 </phrase>
 
 <phrase>
@@ -13683,7 +13683,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>zoom with mouse wheel</original>
-<translation></translation>
+<translation>Zoom mit Mausrad</translation>
 </phrase>
 
 <phrase>
@@ -14182,12 +14182,12 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>Eingebettete ICC-Profile verbessern die Farbtreue. Auch wenn diese Einstellung ausgeschaltet ist, kann PhotoDemon für einige Aufgaben (wie das Handling von CMYK-Daten) weiterhin ICC-Profile verwenden.</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>Einige Bildformate unterstützen sowohl ICC-Profile als auch ihre eigenen Farbmanagementlösungen. PhotoDemon bevorzugt immer ICC-Profile, aber wenn keine eingebettet sind, können auch andere Farbmanagementansätze ausprobiert werden.</translation>
 </phrase>
 
 <phrase>
