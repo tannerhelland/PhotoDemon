@@ -1035,7 +1035,7 @@ Private Function ConstructImage_RGB(ByRef warningStack As pdStringStack, ByVal i
     ' so we need to reference it early (and often).
     Dim iccAvailable As Boolean
     iccAvailable = (Not srcProfile Is Nothing)
-    If iccAvailable Then iccAvailable = srcProfile.HasICCData()
+    If iccAvailable Then iccAvailable = srcProfile.HasICCData() And ColorManagement.UseEmbeddedICCProfiles()
     
     'Note that alpha channels can be explicitly marked (with an ID of -1) or they can simply be "extra" channels
     ' with a positive ID, but no corresponding RGB mapping.
