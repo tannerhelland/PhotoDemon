@@ -840,25 +840,31 @@ Private Function ParseLayerSubBlock(ByRef srcStream As pdStream, ByRef srcWarnin
             If (chunkSize > 4) Then
                 
                 m_NumVectorShapes = srcStream.ReadLong()
-                ReDim m_Shapes(0 To m_NumVectorShapes - 1) As pdPSPShape
-                If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Layer reports " & m_NumVectorShapes & " shapes"
+                If (m_NumVectorShapes > 0) Then
                 
-                'Future expansions fields are explicitly allowed.  Skip to the end of the chunk.
-                srcStream.SetPosition streamPosAtEntry + chunkSize, FILE_BEGIN
-                
-                'Attempt to parse [n] vector shapes
-                Dim i As Long
-                For i = 0 To m_NumVectorShapes - 1
-                    Set m_Shapes(i) = New pdPSPShape
-                    If (m_Shapes(i).LoadShape(srcStream, srcWarnings, srcHeader) >= psp_Failure) Then
-                        InternalError funcName, "failed to parse shape #" & (i + 1), srcWarnings
-                        ParseLayerSubBlock = psp_Failure
-                        Exit Function
-                    Else
-                        If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Parsed vector shape #" & (i + 1) & " successfully"
-                    End If
-                Next i
-                
+                    ReDim m_Shapes(0 To m_NumVectorShapes - 1) As pdPSPShape
+                    If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Layer reports " & m_NumVectorShapes & " shapes"
+                    
+                    'Future expansions fields are explicitly allowed.  Skip to the end of the chunk.
+                    srcStream.SetPosition streamPosAtEntry + chunkSize, FILE_BEGIN
+                    
+                    'Attempt to parse [n] vector shapes
+                    Dim i As Long
+                    For i = 0 To m_NumVectorShapes - 1
+                        Set m_Shapes(i) = New pdPSPShape
+                        If (m_Shapes(i).LoadShape(srcStream, srcWarnings, srcHeader) >= psp_Failure) Then
+                            InternalError funcName, "failed to parse shape #" & (i + 1), srcWarnings
+                            ParseLayerSubBlock = psp_Failure
+                            Exit Function
+                        Else
+                            If PSP_DEBUG_VERBOSE Then PDDebug.LogAction "Parsed vector shape #" & (i + 1) & " successfully"
+                        End If
+                    Next i
+                    
+                Else
+                    InternalError funcName, "no vector shapes in block?", srcWarnings
+                End If
+                    
             Else
                 InternalError funcName, "empty vector block?", srcWarnings
                 ParseLayerSubBlock = psp_Success
