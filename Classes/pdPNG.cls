@@ -1003,9 +1003,12 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
     'If the PNG contained ICC profile data, retrieve it now; otherwise, assume sRGB.  (Note that a
     ' transform may be generated either way, as LittleCMS can be used for fast swizzling.)
     Dim imgHasEmbeddedICC As Boolean
-    imgHasEmbeddedICC = (Me.GetIndexOfChunk("iCCP") >= 0)
+    imgHasEmbeddedICC = (Me.GetIndexOfChunk("iCCP") >= 0) And ColorManagement.UseEmbeddedICCProfiles()
     
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, dstTransform As pdLCMSTransform, srcImgProfileGood As Boolean
+    
+    'The PrepICCData function will mark this as TRUE if the embedded profile passes validation
+    srcImgProfileGood = False
     PrepICCData srcProfile, dstProfile, dstTransform, srcImgProfileGood
     If srcImgProfileGood Then
     
@@ -1629,7 +1632,8 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
             
             If (Not gammaOK) Then
                 If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: chromaticity present, but gamma missing; colors may be incorrect!"
-                gammaFloat = 2.2
+                '(Temporarily commented out while awaiting user feedback on https://github.com/tannerhelland/PhotoDemon/issues/612 )
+                'gammaFloat = 2.2
             End If
             
             'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
@@ -6070,8 +6074,14 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
     ' ICC handling under some scenarios.
     Dim iccRequired As Boolean: iccRequired = True
     
+    'Users can set a preference for ignoring embedded profiles (this allows recovery of images with broken or faulty ICC)
     Dim iccIndex As Long
-    iccIndex = Me.GetIndexOfChunk("iCCP")
+    If ColorManagement.UseEmbeddedICCProfiles() Then
+        iccIndex = Me.GetIndexOfChunk("iCCP")
+    Else
+        iccIndex = -1
+    End If
+    
     If (iccIndex > 0) Then
         srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndex).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndex).BorrowData().GetStreamSize())
         

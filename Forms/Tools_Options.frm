@@ -1745,6 +1745,7 @@ Private Sub Form_Load()
     chkColorManagement(1).Value = ColorManagement.UseEmbeddedICCProfiles()
     chkColorManagement(1).AssignTooltip "Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data)."
     'DISABLED PENDING IMPLEMENTATION
+    chkColorManagement(1).Value = True
     chkColorManagement(1).Enabled = False
     
     chkColorManagement(2).Value = ColorManagement.UseEmbeddedLegacyProfiles()
