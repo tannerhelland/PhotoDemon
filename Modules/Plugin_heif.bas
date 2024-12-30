@@ -804,7 +804,7 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
             
             'Apply the color profile to the loaded data
             If (Not embeddedProfile Is Nothing) Then
-            If embeddedProfile.HasICCData() Then
+            If embeddedProfile.HasICCData() And ColorManagement.UseEmbeddedICCProfiles() Then
                 
                 If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "Applying color profile to image..."
                 
@@ -885,7 +885,7 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
     dstImage.SetActiveLayerByIndex idxPrimaryImage
     
     'If a color profile was applied, tag the pdImage accordingly
-    If (Not embeddedProfile Is Nothing) Then
+    If (Not embeddedProfile Is Nothing) And ColorManagement.UseEmbeddedICCProfiles() Then
         
         If embeddedProfile.HasICCData() Then
             
