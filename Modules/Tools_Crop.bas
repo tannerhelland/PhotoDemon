@@ -30,6 +30,9 @@ Private m_CropRectF As RectF
 
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
+    'Update the status bar with the curent crop rectangle (if any)
+    dstCanvas.SetSelectionState ValidateCropRectF
+    
     'Skip if the current rect is invalid
     If (Not ValidateCropRectF()) Then Exit Sub
     
@@ -200,21 +203,38 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         
 End Sub
 
+'Only returns usable data when IsValidCropActive() is TRUE
+Public Function GetCropRectF() As RectF
+    GetCropRectF = m_CropRectF
+End Function
+
+'Check before using anything from GetCropRectF, above
+Public Function IsValidCropActive() As Boolean
+    IsValidCropActive = ValidateCropRectF
+End Function
+
 Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
+    
     With m_CropRectF
         If (newX < m_InitImgX) Then
-            .Width = m_InitImgX - newX
             .Left = newX
+            .Width = m_InitImgX - newX
         Else
+            .Left = m_InitImgX
             .Width = newX - m_InitImgX
         End If
         If (newY < m_InitImgY) Then
-            .Height = m_InitImgY - newY
             .Top = newY
+            .Height = m_InitImgY - newY
         Else
+            .Top = m_InitImgY
             .Height = newY - m_InitImgY
         End If
     End With
+    
+    'Lock position and height to the nearest (rounded?) edge of the image
+    PDMath.GetIntClampedRectF m_CropRectF
+    
 End Sub
 
 Private Sub ResetCropRectF(Optional ByVal initX As Single = 0!, Optional ByVal initY As Single = 0!)

@@ -577,13 +577,6 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 .Top = Int((canvasRect_ActualPixels.Height * 0.5) - (.Height * 0.5))
             End With
             
-            'NEW IN 7.0: convert our calculated RectFs to their nearest integer-only estimates.
-            ' This should solve some obnoxious, persistent issues with edge handling during rendering.
-            ' (I have suspended this feature pending further testing.)
-            'PDMath.GetNearestIntRectF canvasRect_ActualPixels
-            'PDMath.GetNearestIntRectF canvasRect_ImageCoords
-            'PDMath.GetNearestIntRectF imageRect_CanvasCoords
-            
             'imageRect_CanvasCoords now contains a RECTF of the image, with zoom applied, centered over the
             ' canvas.  Its (.Top, .Left) coordinate pair represents the (0, 0) position of the image, when the
             ' scrollbars are at (0, 0).  If these values lie outside the canvas rect, we want to reset them to
