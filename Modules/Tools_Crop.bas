@@ -20,15 +20,18 @@ Private m_LMBDown As Boolean
 
 'Populated in _MouseDown
 Private Const INVALID_X_COORD As Double = DOUBLE_MAX, INVALID_Y_COORD As Double = DOUBLE_MAX
-Private m_InitCanvasX As Double, m_InitCanvasY As Double
+Private m_InitImgX As Double, m_InitImgY As Double
 
 'Populate in _MouseMove
-Private m_LastCanvasX As Double, m_LastCanvasY As Double
+Private m_LastImgX As Double, m_LastImgY As Double
+
+'Current crop rect, always *in image coordinates*
+Private m_CropRectF As RectF
 
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
-    'Because coords are stored in canvas coordinate space, rendering the UI is easy.
-    
+    'Skip if the current rect is invalid
+    If (Not ValidateCropRectF()) Then Exit Sub
     
     'Clone a pair of UI pens from the main rendering module.  (Note that we clone them because we need
     ' to modify some rendering properties, and we don't want to fuck up the central cache.)
@@ -53,10 +56,14 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
     cSurface.SetSurfacePixelOffset P2_PO_Normal
     
+    'Convert the crop rectangle to canvas coordinates
+    Dim cropRectCanvas As RectF
+    Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_CropRectF, cropRectCanvas, False
+    
     'We now want to add all lines to a path, which we'll render all at once
     Dim cropOutline As pd2DPath
     Set cropOutline = New pd2DPath
-    cropOutline.AddRectangle_Absolute m_InitCanvasX, m_InitCanvasY, m_LastCanvasX, m_LastCanvasY
+    cropOutline.AddRectangle_RectF cropRectCanvas
     
     'Stroke the path
     PD2D.DrawPath cSurface, basePenInactive, cropOutline
@@ -69,20 +76,26 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
 End Sub
 
-
 Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Single, ByVal canvasY As Single)
     
     'Cache initial x/y positions
     m_LMBDown = ((Button And pdLeftButton) = pdLeftButton)
     
     If m_LMBDown Then
-        m_InitCanvasX = canvasX
-        m_InitCanvasY = canvasY
-        m_LastCanvasX = canvasX
-        m_LastCanvasY = canvasY
+        
+        'Translate the canvas coordinates to image coordinates
+        Dim imgX As Double, imgY As Double
+        Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
+        ResetCropRectF imgX, imgY
+        
+        m_InitImgX = imgX
+        m_InitImgY = imgY
+        m_LastImgX = imgX
+        m_LastImgY = imgY
+        
     Else
-        m_InitCanvasX = INVALID_X_COORD
-        m_InitCanvasY = INVALID_Y_COORD
+        m_InitImgX = INVALID_X_COORD
+        m_InitImgY = INVALID_Y_COORD
     End If
     
 End Sub
@@ -92,8 +105,14 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
     'Cache current x/y positions
     If m_LMBDown Then
         
-        m_LastCanvasX = canvasX
-        m_LastCanvasY = canvasY
+        'Convert the current x/y position from canvas to image coordinates
+        Dim imgX As Double, imgY As Double
+        Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
+        
+        'Move coordinates around to ensure positive width/height
+        UpdateCropRectF imgX, imgY
+        m_LastImgX = imgX
+        m_LastImgY = imgY
         
         'TODO: apply aspect ratio, if any
         
@@ -110,6 +129,10 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     ' a viewport redraw, if any, will wipe all UI elements we may have rendered over the canvas.)
     If ((Button And pdLeftButton) = pdLeftButton) Then m_LMBDown = False
     
+    'Convert the current x/y position from canvas to image coordinates
+    Dim imgX As Double, imgY As Double
+    Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
+        
     'Double-click commits the crop, so we may need to flag something here?  idk yet...
     If clickEventAlsoFiring Then
         
@@ -119,8 +142,8 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         'ElseIf ((Button And pdRightButton) <> 0) Then
         '    zoomIn = False
         'Else
-        '    m_InitCanvasX = INVALID_X_COORD
-        '    m_InitCanvasY = INVALID_Y_COORD
+        '    m_InitImgX = INVALID_X_COORD
+        '    m_InitImgY = INVALID_Y_COORD
         '    Exit Sub
         'End If
         '
@@ -130,24 +153,19 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     ' (Commit happens in a separate step.)
     Else
         
-        'Bail if initial coordinates are bad
-        If (m_InitCanvasX = INVALID_X_COORD) Or (m_InitCanvasY = INVALID_Y_COORD) Then Exit Sub
+        'Update the crop rectangle against these (final) coordinates
+        UpdateCropRectF imgX, imgY
+        m_LastImgX = imgX
+        m_LastImgY = imgY
         
-        'TODO: update coords?
-        m_LastCanvasX = canvasX
-        m_LastCanvasY = canvasY
-        
-        'Start by solving for the size of the crop region, in image coordinates.
-        'Dim rectImageCoords As RectF
-        'FillZoomRect_ImageCoords srcCanvas, srcImage, rectImageCoords
-        '
-        ''Failsafe check for DBZ errors
-        'If (rectImageCoords.Width <= 0!) Or (rectImageCoords.Height <= 0!) Then Exit Sub
+        'Bail if coordinates are bad
+        If (m_InitImgX = INVALID_X_COORD) Or (m_InitImgY = INVALID_Y_COORD) Then Exit Sub
+        If (Not ValidateCropRectF()) Then Exit Sub
         
         'We now need to retrieve the current viewport rect in screen space (actual pixels)
-        Dim viewportWidth As Double, viewportHeight As Double
-        viewportWidth = FormMain.MainCanvas(0).GetCanvasWidth
-        viewportHeight = FormMain.MainCanvas(0).GetCanvasHeight
+        'Dim viewportWidth As Double, viewportHeight As Double
+        'viewportWidth = FormMain.MainCanvas(0).GetCanvasWidth
+        'viewportHeight = FormMain.MainCanvas(0).GetCanvasHeight
         
         'Calculate a width and height ratio in advance, and note that we know width/height
         ' are non-zero (thanks to a check above).
@@ -177,7 +195,42 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     End If
     
     'Reset x/y trackers
-    m_InitCanvasX = INVALID_X_COORD
-    m_InitCanvasY = INVALID_Y_COORD
+    'm_InitImgX = INVALID_X_COORD
+    'm_InitImgY = INVALID_Y_COORD
         
 End Sub
+
+Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
+    With m_CropRectF
+        If (newX < m_InitImgX) Then
+            .Width = m_InitImgX - newX
+            .Left = newX
+        Else
+            .Width = newX - m_InitImgX
+        End If
+        If (newY < m_InitImgY) Then
+            .Height = m_InitImgY - newY
+            .Top = newY
+        Else
+            .Height = newY - m_InitImgY
+        End If
+    End With
+End Sub
+
+Private Sub ResetCropRectF(Optional ByVal initX As Single = 0!, Optional ByVal initY As Single = 0!)
+    With m_CropRectF
+        .Left = initX
+        .Top = initY
+        .Width = 0!
+        .Height = 0!
+    End With
+End Sub
+
+'Returns TRUE if the current crop rect is valid; if FALSE, do *not* attempt to crop
+Private Function ValidateCropRectF() As Boolean
+    ValidateCropRectF = True
+    With m_CropRectF
+        If (.Left = INVALID_X_COORD) Or (.Top = INVALID_Y_COORD) Then ValidateCropRectF = False
+        If (.Width <= 0) Or (.Height <= 0) Then ValidateCropRectF = False
+    End With
+End Function
