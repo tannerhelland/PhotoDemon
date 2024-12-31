@@ -146,6 +146,7 @@ Private Declare Function resvg_get_node_transform Lib "resvg" (ByVal resvg_rende
 Private Declare Function resvg_get_node_bbox Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef dst_resvg_path_bbox As resvg_rect) As Long
 Private Declare Sub resvg_tree_destroy Lib "resvg" (ByVal resvg_render_tree As Long)
 Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
+Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 
 'Note: node rendering needs custom resvg modifications to change the way fit_to is passed
 'Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByVal srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
