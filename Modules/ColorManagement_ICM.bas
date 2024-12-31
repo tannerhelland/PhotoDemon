@@ -154,7 +154,7 @@ Private m_Hasher As pdCrypto
 
 'As of PD 2024.12, users can opt to disable both traditional color management, and format-specific color management
 ' (e.g. PNG gAMA/cHRM data).
-Private m_CMPrefsRetrieved As Boolean, m_UseEmbeddedICCProfiles As Boolean, m_UseEmbeddedLegacyProfiles  As Boolean
+Private m_UseEmbeddedICCProfiles As Boolean, m_UseEmbeddedLegacyProfiles   As Boolean
 
 Public Sub UpdateColorManagementPreferences()
     m_UseEmbeddedICCProfiles = UserPrefs.GetPref_Boolean("ColorManagement", "allow-icc-profiles", True)

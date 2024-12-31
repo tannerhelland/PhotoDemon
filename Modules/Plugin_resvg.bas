@@ -148,9 +148,6 @@ Private Declare Sub resvg_tree_destroy Lib "resvg" (ByVal resvg_render_tree As L
 Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 
-'Note: node rendering needs custom resvg modifications to change the way fit_to is passed
-'Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByVal srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
-
 'A single persistent SVG options handle is maintained for the life of a session.
 ' (Initializing this object is expensive because it needs to scan system fonts.)
 Private m_Options As Long
