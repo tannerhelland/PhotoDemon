@@ -1668,7 +1668,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 'Attempt to convert the EMF to EMF+ format
                 Dim mfHandleDst As Long, convSuccess As Long
                 
-                'For reference: two write EMF+ data to file, use code like the following:
+                'For reference: to write EMF+ data to file, use code like the following:
                 'Dim newEmfPlusFileAndPath As String
                 'newEmfPlusFileAndPath = Files.FileGetPath(srcFilename) & Files.FileGetName(srcFilename, True) & " (EMFPlus).emf"
                 'If GdipConvertToEmfPlusToFile(tmpGraphics, hImage, convSuccess, StrPtr(newEmfPlusFileAndPath), EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
@@ -1698,7 +1698,9 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             
             'Release our temporary settings DIB
             Set tmpSettingsDIB = Nothing
-            
+        
+        Else
+            metafileWasUpsampled = emfPlusAvailable
         End If
         
     End If
@@ -1888,7 +1890,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Before exiting, check for an embedded color profile.  If the image had one, we want to apply it to the
     ' destination image now, if we haven't already.  (Only CMYK images will have been processed already.)
-    If (Not isCMYK) And imgHasIccProfile Then
+    If (Not isCMYK) And imgHasIccProfile And ColorManagement.UseEmbeddedICCProfiles() Then
         
         PDDebug.LogAction "Applying color management to GDI+ image..."
         
@@ -1980,7 +1982,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 '/created dst color profile successfully
                 End If
             
-            '/source profile is gray vs colro
+            '/source profile is gray vs color
             End If
         
         '/source profile object created successfully

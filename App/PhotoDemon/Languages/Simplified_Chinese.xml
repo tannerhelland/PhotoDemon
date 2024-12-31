@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，2024.12）</langname>
-<langversion>2024.12.12</langversion>
+<langversion>2024.12.14</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on December 12, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -12382,7 +12382,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>切换画笔光标</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13558,6 +13558,131 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>使用黑点补偿</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>显示渲染目标</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>可用显示器</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>关闭显示颜色管理</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>使用每个显示器的当前系统配置文件</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>显示策略</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>为每个显示使用自定义配置文件</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>高分辨率鼠标输入</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>重置所有程序设置</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>内存的使用将会显示在这里</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>内存使用情况：</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>临时文件位置：</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>重置为默认值：</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>应用程序设置文件夹</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>生成调试日志</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>（免责声明）</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>自动检查更新</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>选择更新版本</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>更新选项</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>更新准备就绪时通知</translation>
+</phrase>
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>标题栏</translation>
 </phrase>
@@ -13755,111 +13880,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>viewport</original>
 <translation>可视窗口</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>使用黑点补偿</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>显示渲染目标</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>可用显示器</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>关闭显示颜色管理</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>使用每个显示器的当前系统配置文件</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>显示策略</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>为每个显示使用自定义配置文件</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>高分辨率鼠标输入</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>重置所有程序设置</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>内存的使用将会显示在这里</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>内存使用情况：</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>临时文件位置：</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>重置为默认值：</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>应用程序设置文件夹</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>生成调试日志</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>（免责声明）</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>自动检查更新</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>选择更新版本</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>更新选项</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>更新准备就绪时通知</translation>
 </phrase>
 
 <phrase>
@@ -14157,6 +14177,16 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>每次启动</translation>
 </phrase>
@@ -14264,7 +14294,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹目录将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14474,11 +14504,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2741</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
-<!-- These 2741 phrases contain approximately 11834 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 <special-translations>
 

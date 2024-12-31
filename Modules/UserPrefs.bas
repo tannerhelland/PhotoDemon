@@ -91,6 +91,7 @@ End Enum
 
 Private m_GenerateDebugLogs As PD_DebugLogBehavior, m_EmergencyDebug As Boolean
 Private m_UIFontName As String
+Private m_ZoomWithWheel As Boolean
 
 'Prior to v7.0, each dialog stored its preset data to a unique XML file.
 ' This causes a lot of HDD thrashing as each main window panel retrieves its preset data separately.
@@ -350,6 +351,15 @@ End Function
 Public Function GetUIFontName() As String
     GetUIFontName = m_UIFontName
 End Function
+
+'By default, Ctrl+Mousewheel zooms.  The user can change this behavior from the Tools > Options > Interface panel.
+Public Function GetZoomWithWheel() As Boolean
+    GetZoomWithWheel = m_ZoomWithWheel
+End Function
+
+Public Sub SetZoomWithWheel(ByVal newValue As Boolean)
+    m_ZoomWithWheel = newValue
+End Sub
 
 'Initialize key program directories.  If this function fails, PD will fail to load.
 Public Function InitializePaths() As Boolean
@@ -630,6 +640,8 @@ Public Sub LoadUserSettings()
         Snap.ToggleSnapOptions pdst_Centerline, True, UserPrefs.GetPref_Boolean("Interface", "snap-centerline", False)
         Snap.ToggleSnapOptions pdst_Layer, True, UserPrefs.GetPref_Boolean("Interface", "snap-layer", True)
         Snap.SetSnap_Distance UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
+        
+        m_ZoomWithWheel = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
         
         'Users can supply a (secret!) "UIFont" setting in the "Interface" segment if they
         ' want to override PD's default font object.

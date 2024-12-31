@@ -158,6 +158,10 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
     
     'Prepare the channel's decompression buffer
     m_ContentSize = srcHeader.ch_UncompressedSize
+    If (m_ContentSize = 0) Then
+        okToProceed = False
+        GoTo MajorChannelError
+    End If
     ReDim m_ChannelContents(0 To m_ContentSize - 1) As Byte
     
     'Bitmap type is an internal PSP struct; we can usually infer this from other data,
@@ -244,7 +248,7 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
             
         'Per the spec, PSP's LZ77 scheme is the same as PNG's - DEFLATE to the rescue!
         Case PSP_COMP_LZ77
-            Compression.DecompressPtrToPtr VarPtr(m_ChannelContents(0)), srcHeader.ch_UncompressedSize, srcStream.Peek_PointerOnly(-1, srcHeader.ch_CompressedSize), srcHeader.ch_CompressedSize, cf_Zlib
+            Compression.DecompressPtrToPtr VarPtr(m_ChannelContents(0)), srcHeader.ch_UncompressedSize, srcStream.Peek_PointerOnly(-1, srcHeader.ch_CompressedSize), srcHeader.ch_CompressedSize, cf_Zlib, True
             okToProceed = psp_Success
             
         'NOTE: you may notice that JPEG compression is missing.  That's on purpose, because JPEG
@@ -280,7 +284,9 @@ Friend Function LoadChannel(ByRef srcStream As pdStream, ByRef srcWarnings As pd
         End If
         
     End If
-    
+
+MajorChannelError:
+
     'Our work here is done!
     LoadChannel = okToProceed
     

@@ -55,7 +55,7 @@ Private Const WM_SETTEXT = &HC
 
 'Constants for changing extended window style
 Private Const WS_EX_APPWINDOW As Long = &H40000
-Private Const WS_EX_LAYERED As Long = &H80000
+'Private Const WS_EX_LAYERED As Long = &H80000      'No longer used due to problems under Wine
 Private Const WS_EX_COMPOSITED As Long = &H2000000
 Private Const WS_CHILD As Long = &H40000000
 Private Const WS_POPUP As Long = &H80000000

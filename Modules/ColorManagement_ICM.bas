@@ -152,6 +152,23 @@ Private m_PreAlphaManagementRequired As Boolean
 'To improve cache access, we generate unique hashes for each loaded profile.
 Private m_Hasher As pdCrypto
 
+'As of PD 2024.12, users can opt to disable both traditional color management, and format-specific color management
+' (e.g. PNG gAMA/cHRM data).
+Private m_UseEmbeddedICCProfiles As Boolean, m_UseEmbeddedLegacyProfiles   As Boolean
+
+Public Sub UpdateColorManagementPreferences()
+    m_UseEmbeddedICCProfiles = UserPrefs.GetPref_Boolean("ColorManagement", "allow-icc-profiles", True)
+    m_UseEmbeddedLegacyProfiles = UserPrefs.GetPref_Boolean("ColorManagement", "allow-legacy-profiles", True)
+End Sub
+
+Public Function UseEmbeddedICCProfiles() As Boolean
+    UseEmbeddedICCProfiles = m_UseEmbeddedICCProfiles
+End Function
+
+Public Function UseEmbeddedLegacyProfiles() As Boolean
+    UseEmbeddedLegacyProfiles = m_UseEmbeddedLegacyProfiles
+End Function
+
 Public Function GetDisplayBPC() As Boolean
     GetDisplayBPC = UserPrefs.GetPref_Boolean("ColorManagement", "DisplayBPC", True)
 End Function

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1733</langversion>
+<langversion>8.9.1735</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -12388,7 +12388,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13564,6 +13564,131 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>gebruik zwartpuntcompensatie</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>renderintentie beeldscherm</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>beschikbare weergaven</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>weergave-kleurenbeheer uitschakelen</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>gebruik de huidige systeemprofielen voor elke weergave</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>kleurenprofiel voor deze weergave</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Beleid weergeven</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>gebruik aangepaste profielen voor elke weergave</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Reset alle programma instellingen</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>geheugengebruik zal hier worden weergegeven</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>geheugen diagnostiek</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>locatie van tijdelijk bestand</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>begin opnieuw</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer opgevuld in run-time)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatisch controleren op updates</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>toestaan updates van deze tracks</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>updateopties</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
+</phrase>
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation></translation>
 </phrase>
@@ -13761,111 +13886,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <phrase>
 <original>viewport</original>
 <translation>viewport</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>gebruik zwartpuntcompensatie</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>renderintentie beeldscherm</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>beschikbare weergaven</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>weergave-kleurenbeheer uitschakelen</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>gebruik de huidige systeemprofielen voor elke weergave</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>kleurenprofiel voor deze weergave</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Beleid weergeven</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>gebruik aangepaste profielen voor elke weergave</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Reset alle programma instellingen</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>geheugengebruik zal hier worden weergegeven</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>geheugen diagnostiek</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>locatie van tijdelijk bestand</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>begin opnieuw</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer opgevuld in run-time)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatisch controleren op updates</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>toestaan updates van deze tracks</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>updateopties</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
 </phrase>
 
 <phrase>
@@ -14163,6 +14183,16 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>elke sessie</translation>
 </phrase>
@@ -14270,7 +14300,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Deze nieuwe tijdelijke maplocatie zal geen effect hebben voordat je het programma herstart hebt</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14480,10 +14510,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2741</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
-<!-- These 2741 phrases contain approximately 11834 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>

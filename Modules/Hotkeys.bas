@@ -54,12 +54,10 @@ End Enum
     Private Const cmt_Ctrl = 0, cmt_Alt = 1, cmt_Shift = 2, cmt_NumEntries = 3
 #End If
 
-Private Const HOTKEY_FILENAME As String = "HotkeysUser.xml"
 Private m_CommonMenuText() As String
 
 Private Declare Function GetKeyNameTextW Lib "user32" (ByVal lParam As Long, ByVal lpString As Long, ByVal cchSize As Long) As Long
 Private Declare Function MapVirtualKeyW Lib "user32" (ByVal uCode As Long, ByVal uMapType As Long) As Long
-Private Declare Function ToUnicode Lib "user32" (ByVal wVirtKey As Long, ByVal wScanCode As Long, ByVal ptrToKeyStateBuffer As Long, ByVal ptrToOutBufferW As Long, ByVal sizeOfOutBufferInWChars As Long, ByVal wFlags As Long) As Long
 
 'Add a new hotkey to the collection.  While the hotKeyAction parameter is marked as OPTIONAL, that's purely to
 ' allow the preceding constant (shift modifiers, which are often null) to be optional.
@@ -628,7 +626,7 @@ Public Function GetCharFromKeyCode(ByVal srcKeyCode As Long, Optional ByRef outK
         Case Else
             
             'Convert the keycode to a scancode
-            Dim retCode As Long, retCode2 As Long
+            Dim retCode As Long
             Const MAPVK_VK_TO_VSC As Long = 0
             retCode = MapVirtualKeyW(srcKeyCode, MAPVK_VK_TO_VSC)
             

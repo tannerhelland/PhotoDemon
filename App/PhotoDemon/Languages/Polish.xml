@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.32</langversion>
+<langversion>9.0.34</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -12388,7 +12388,7 @@ Dziękujemy!</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13562,6 +13562,131 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>Użyj czarnego punktu kompensacji</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>Metoda renderowania</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>Dostępne ekrany</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>Wyłącz zarządzanie kolorem ekranu</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>Korzystaj z aktualnych profili systemowych dla każdego ekranu</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>Profil kolorów dla tego ekranu</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Profile ekranu</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>Użyj własnych profili dla każdego ekranu</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>Wejście myszy o wysokiej rozdzielczości</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Zresetuj wszystkie ustawienia programu</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Wykorzystanie pamięci zostanie wyświetlone tutaj</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Diagnostyka pamięci</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Lokalizacja tymczasowych plików</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>Rozpocznij od nowa</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>Folder ustawień aplikacji</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>Twórz raporty błędów</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(zastrzeżenie wypełniane w czasie wykonywania)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>Automatycznie sprawdzaj aktualizacje</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>Zezwól na aktualizacje tych wersji</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Opcje aktualizacji</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>Powiadamiaj o aktualizacjach gotowych do pobrania</translation>
+</phrase>
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>Tekst paska tytułu</translation>
 </phrase>
@@ -13759,111 +13884,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>viewport</original>
 <translation>Okno edycji (płótno)</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>Użyj czarnego punktu kompensacji</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>Metoda renderowania</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>Dostępne ekrany</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>Wyłącz zarządzanie kolorem ekranu</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>Korzystaj z aktualnych profili systemowych dla każdego ekranu</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>Profil kolorów dla tego ekranu</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Profile ekranu</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>Użyj własnych profili dla każdego ekranu</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>Wejście myszy o wysokiej rozdzielczości</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Zresetuj wszystkie ustawienia programu</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Wykorzystanie pamięci zostanie wyświetlone tutaj</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Diagnostyka pamięci</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Lokalizacja tymczasowych plików</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>Rozpocznij od nowa</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>Folder ustawień aplikacji</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>Twórz raporty błędów</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(zastrzeżenie wypełniane w czasie wykonywania)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>Automatycznie sprawdzaj aktualizacje</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>Zezwól na aktualizacje tych wersji</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Opcje aktualizacji</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>Powiadamiaj o aktualizacjach gotowych do pobrania</translation>
 </phrase>
 
 <phrase>
@@ -14161,6 +14181,16 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>W każdej sesji</translation>
 </phrase>
@@ -14268,7 +14298,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 <translation>Nowa lokalizacja folderu tymczasowego zostanie zastosowana dopiero po ponownym uruchomieniu programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14478,10 +14508,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2741</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
-<!-- These 2741 phrases contain approximately 11834 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>

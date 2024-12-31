@@ -661,8 +661,9 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     'Allow main form components to load any control-specific preferences they may utilize
     FormMain.MainCanvas(0).ReadUserPreferences
     
-    'Prep the color management pipeline
+    'Prep the color management pipeline and any associated color management settings
     ColorManagement.CacheDisplayCMMData
+    ColorManagement.UpdateColorManagementPreferences
     
     
     '*************************************************************************************************************************************
