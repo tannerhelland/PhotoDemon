@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.617</langversion>
+<langversion>6.7.630</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -105,7 +105,7 @@
 
 <phrase>
 <original>Export palette</original>
-<translation>Exporter la palette</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1782,6 +1782,21 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 </phrase>
 
 <phrase>
+<original>Backspace</original>
+<translation>Retour arrière</translation>
+</phrase>
+
+<phrase>
+<original>Tab</original>
+<translation>Tab</translation>
+</phrase>
+
+<phrase>
+<original>Escape</original>
+<translation>Echapp</translation>
+</phrase>
+
+<phrase>
 <original>Ctrl</original>
 <translation>Ctrl</translation>
 </phrase>
@@ -1796,7 +1811,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Shift</translation>
 </phrase>
 
-<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Hotkeys.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2050,7 +2065,7 @@ Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImag
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>Derrière</translation>
 </phrase>
 
 <phrase>
@@ -2692,6 +2707,8 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
+<!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
 <translation>JPEG XL (JXL) est un remplacement plus moderne pour le format d'image JPEG. PhotoDemon ne supporte pas nativement les images JPEG XL, mais il peut télécharger un plugin open source qui ajoute le support pour le JPEG XL.</translation>
@@ -2741,11 +2758,16 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 </phrase>
 
 <phrase>
+<original>LGPL license</original>
+<translation>LGPL license</translation>
+</phrase>
+
+<phrase>
 <original>Mozilla Public License 2.0</original>
 <translation>Mozilla Licence Publique 2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -5480,6 +5502,11 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
+<original>Keyboard shortcuts</original>
+<translation>Raccourcis clavier</translation>
+</phrase>
+
+<phrase>
 <original>Options</original>
 <translation>Options</translation>
 </phrase>
@@ -5545,6 +5572,46 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
+<original>Show extras</original>
+<translation>Montrer les extras</translation>
+</phrase>
+
+<phrase>
+<original>Layer edges</original>
+<translation>Bords de calque</translation>
+</phrase>
+
+<phrase>
+<original>Smart guides</original>
+<translation>Guides intelligents</translation>
+</phrase>
+
+<phrase>
+<original>Snap</original>
+<translation>Magnétisme</translation>
+</phrase>
+
+<phrase>
+<original>Snap to</original>
+<translation>Magnétiser sur</translation>
+</phrase>
+
+<phrase>
+<original>Canvas edges</original>
+<translation>Bords de toile</translation>
+</phrase>
+
+<phrase>
+<original>Centerlines</original>
+<translation>Lignes médianes</translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>Calques</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>Fenêtre</translation>
 </phrase>
@@ -5582,11 +5649,6 @@ La valeur finale doit être entre  %3 and %4.</translation>
 <phrase>
 <original>Tool options</original>
 <translation>Options des outils</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>Calques</translation>
 </phrase>
 
 <phrase>
@@ -5747,7 +5809,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 403 phrases. 217 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10786,6 +10848,33 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>page format</original>
+<translation>format de page</translation>
+</phrase>
+
+<phrase>
+<original>lossless</original>
+<translation>sans perte</translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation>avec perte</translation>
+</phrase>
+
+<phrase>
+<original>single page (composited image)</original>
+<translation>une seule page (image composite)</translation>
+</phrase>
+
+<phrase>
+<original>multipage (one page per layer)</original>
+<translation>multipage (une page par calque)</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation>Formats intégrés de l'icone</translation>
 </phrase>
@@ -10971,17 +11060,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>lent, fichier plus petit</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation>sans perte</translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation>avec perte</translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -11128,22 +11207,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 <translation>compression monochrome</translation>
 </phrase>
 
-<phrase>
-<original>page format</original>
-<translation>format de page</translation>
-</phrase>
-
-<phrase>
-<original>single page (composited image)</original>
-<translation>une seule page (image composite)</translation>
-</phrase>
-
-<phrase>
-<original>multipage (one page per layer)</original>
-<translation>multipage (une page par calque)</translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>image type</original>
@@ -11172,7 +11236,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter?</translation>
 
 <phrase>
 <original>drawing (or other artwork)</original>
-<translation>dessin ( ou autre style d'oeuvre)</translation>
+<translation>dessin (ou autre style d'oeuvre)</translation>
 </phrase>
 
 <phrase>
@@ -12235,6 +12299,11 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
+<original>Crop tool</original>
+<translation>Recadrage</translation>
+</phrase>
+
+<phrase>
 <original>Rectangle selection tool</original>
 <translation>Sélection rectangulaire</translation>
 </phrase>
@@ -12294,7 +12363,37 @@ Vous pouvez alors si besoin
 <translation>Pot de peinture</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<phrase>
+<original>Search tool</original>
+<translation>Recherche</translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush size</original>
+<translation>Diminuer la taile de brosse</translation>
+</phrase>
+
+<phrase>
+<original>Increase brush size</original>
+<translation>Augmenter la taille de brosse</translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush hardness</original>
+<translation>Diminuer la dureté de brosse</translation>
+</phrase>
+
+<phrase>
+<original>Increase brush hardness</original>
+<translation>Augmenter la dureté de brosse</translation>
+</phrase>
+
+<phrase>
+<original>Toggle brush cursor</original>
+<translation>Commuter le curseur de brosse</translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12544,8 +12643,8 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>montrer les bords du calque</translation>
+<original>show distances</original>
+<translation>montrer les distances</translation>
 </phrase>
 
 <phrase>
@@ -12966,6 +13065,138 @@ Vous pouvez alors si besoin
 <!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
+<original>undo all changes</original>
+<translation>annuler tous les changements</translation>
+</phrase>
+
+<phrase>
+<original>all hotkeys</original>
+<translation>tous les raccourcis clavier</translation>
+</phrase>
+
+<phrase>
+<original>undo changes</original>
+<translation>annuler le changement</translation>
+</phrase>
+
+<phrase>
+<original>try to capture automatically</original>
+<translation>tenter de capturer automatiquement</translation>
+</phrase>
+
+<phrase>
+<original>this hotkey</original>
+<translation>cette combinaison de touches</translation>
+</phrase>
+
+<phrase>
+<original>restore default</original>
+<translation>restaurer par défaut</translation>
+</phrase>
+
+<phrase>
+<original>export to file</original>
+<translation>exporter en fichier</translation>
+</phrase>
+
+<phrase>
+<original>import from file</original>
+<translation>importer du fichier</translation>
+</phrase>
+
+<phrase>
+<original>delete</original>
+<translation>supprimer</translation>
+</phrase>
+
+<phrase>
+<original>restore all defaults</original>
+<translation>restaurer tout par défaut</translation>
+</phrase>
+
+<phrase>
+<original>generate summary</original>
+<translation>générer un résumé</translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys</original>
+<translation>Touches de raccourci</translation>
+</phrase>
+
+<phrase>
+<original>Import hotkeys</original>
+<translation>Importer les touches de raccourci</translation>
+</phrase>
+
+<phrase>
+<original>Export hotkeys</original>
+<translation>Exporter les touches de raccourci</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Hotkeys</original>
+<translation>Touches de raccourci PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>One or more hotkeys is currently assigned to multiple actions.</original>
+<translation>Une ou plusieurs combinaisons de touches est assignée à des actions différentes</translation>
+</phrase>
+
+<phrase>
+<original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
+<translation>Si vous procédez, PhotoDemon gardera seulement la première occurence de n'importe quelle combinaison dupliquée</translation>
+</phrase>
+
+<phrase>
+<original>Press OK to proceed.</original>
+<translation>Cliquer sur OK pour procéder</translation>
+</phrase>
+
+<phrase>
+<original>Press cancel to keep editing hotkeys.</original>
+<translation>Cliquer sur annuler pour continuer d'éditer les touches de raccourci</translation>
+</phrase>
+
+<phrase>
+<original>Toolbox tools</original>
+<translation>Outils de la boite</translation>
+</phrase>
+
+<phrase>
+<original>Please use this hotkey on just one action</original>
+<translation>Svp utilisez cette combinaison de touches clavier pour seulement une action</translation>
+</phrase>
+
+<phrase>
+<original>(this item)</original>
+<translation>(cet item)</translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys must be unique.</original>
+<translation>La combinaison doit être unique</translation>
+</phrase>
+
+<phrase>
+<original>Command</original>
+<translation>Commande</translation>
+</phrase>
+
+<phrase>
+<original>Hotkey</original>
+<translation>Combinaison</translation>
+</phrase>
+
+<phrase>
+<original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
+<translation>Ceci va réécrire toute combinaison de raccourci éditée.Êtes vous sûr de continuer?</translation>
+</phrase>
+
+<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+
+<phrase>
 <original>click here for detailed instructions (in English)</original>
 <translation>clquez ici pour des instructions plus détaillées (en Anglais)</translation>
 </phrase>
@@ -13338,6 +13569,131 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>utiliser la compensation de point noir</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>afficher l'intention de rendu</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>affichages disponibles</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>désactiver la gestion des couleurs de l'affichage</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>utiliser les profils système actuels pour chaque affichage</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>profil de couleur pour cet affichage</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>afficher les stratégies</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>utiliser des profils personnalisés pour chaque affichage</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>entrée de souris haute résolution</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>réinitialiser tous les paramètres du programme</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>utilisation de la mémoire sera affichée ici</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostics de mémoire</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>emplacement des fichiers temporaires</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>recommencer</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>dossier des paramètres de l'application</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>générer des journaux de débogage</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer peuplé au moment de l'exécution)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>vérification automatique des mises à jour</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>permettre des mises à jour selon ces canaux</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>options de mise à jour</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>avertir lorsqu'une mise à jour est prête</translation>
+</phrase>
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>texte de la barre de titre</translation>
 </phrase>
@@ -13375,6 +13731,11 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 <phrase>
 <original>canvas background color</original>
 <translation>couleur d'arrière plan de la zone de travail</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>distance du magnétisme (en pixels)</translation>
 </phrase>
 
 <phrase>
@@ -13533,111 +13894,6 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 </phrase>
 
 <phrase>
-<original>use black point compensation</original>
-<translation>utiliser la compensation de point noir</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>afficher l'intention de rendu</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>affichages disponibles</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>désactiver la gestion des couleurs de l'affichage</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>utiliser les profils système actuels pour chaque affichage</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>profil de couleur pour cet affichage</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>afficher les stratégies</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>utiliser des profils personnalisés pour chaque affichage</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>entrée de souris haute résolution</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>réinitialiser tous les paramètres du programme</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>utilisation de la mémoire sera affichée ici</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostics de mémoire</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>emplacement des fichiers temporaires</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>recommencer</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>dossier des paramètres de l'application</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>générer des journaux de débogage</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer peuplé au moment de l'exécution)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>vérification automatique des mises à jour</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>permettre des mises à jour selon ces canaux</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>options de mise à jour</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>avertir lorsqu'une mise à jour est prête</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Préférences de sauvegarde</translation>
 </phrase>
@@ -13753,7 +14009,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement , impliquant plusieurs copies de métadonnées en un seul fichier. Photodemon peut résoudre les entrées en doublons pour vous</translation>
+<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement , impliquant plusieurs copies de métadonnées en un seul fichier. PhotoDemon peut résoudre les entrées en doublons pour vous</translation>
 </phrase>
 
 <phrase>
@@ -13763,12 +14019,12 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais Photodemon peut toujours tenter de les extraire</translation>
+<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais PhotoDemon peut toujours tenter de les extraire</translation>
 </phrase>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces donnnées, Photodemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
+<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces donnnées, PhotoDemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
 </phrase>
 
 <phrase>
@@ -13783,7 +14039,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Par défaut, Photodemon va vous avertir si vous tentez de fermer une image avec des changements non enregistrés.</translation>
+<translation>Par défaut, PhotoDemon va vous avertir si vous tentez de fermer une image avec des changements non enregistrés.</translation>
 </phrase>
 
 <phrase>
@@ -13843,7 +14099,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. Photodemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
+<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. PhotoDemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
 </phrase>
 
 <phrase>
@@ -13873,7 +14129,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>Photodemon génère beaucoup de miniatures, spécialement quand les images contiennent plusieurs calques. La qualité de ces miniatures peut être abaissée pour améliorer les performances.</translation>
+<translation>PhotoDemon génère beaucoup de miniatures, spécialement quand les images contiennent plusieurs calques. La qualité de ces miniatures peut être abaissée pour améliorer les performances.</translation>
 </phrase>
 
 <phrase>
@@ -13929,11 +14185,17 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide a préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à executer, BPC devrait être coché.
+<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide a préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à executer, BPC devrait être coché.</translation>
+</phrase>
 
 <phrase>
-<original>each session</original>
-<translation>chaque session</translation>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14048,7 +14310,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>Ce nouvel emplacement de dossier temporaire ne prendra effet qu'après le redémarrage du programme.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14206,7 +14468,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
-<translation>l'ouvrir dans Photodemon (pour poursuivre l'édition)</translation>
+<translation>l'ouvrir dans PhotoDemon (pour poursuivre l'édition)</translation>
 </phrase>
 
 <phrase>
@@ -14258,10 +14520,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5690 phrases. -->
-<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>

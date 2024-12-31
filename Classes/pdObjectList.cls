@@ -630,7 +630,7 @@ End Function
 Private Function HandleMsg_WM_KEYDOWN(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long, ByRef eatMsg As Boolean) As Long
 
     'The only keypresses we currently care about are ENTER and ESCAPE
-    If (wParam = pdnk_Enter) Or (wParam = pdnk_Escape) Then
+    If (wParam = pdnk_Enter) Or (wParam = pdnk_Escape) Or (wParam = pdnk_Space) Then
     
         'See if this form 1) is a raised dialog, and 2) contains a command bar
         If Interface.IsModalDialogActive() Then

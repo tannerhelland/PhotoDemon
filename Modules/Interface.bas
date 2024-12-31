@@ -84,6 +84,11 @@ End Enum
 ' pixel measurements at run-time, using the current screen resolution as our guide.
 Private m_DPIRatio As Double
 
+'System DPI is used frequently for UI positioning calculations.  Because it's costly to constantly retrieve it via APIs,
+' this module prefers to cache it only when the value changes.  Call the CacheSystemDPI() sub to update the value when
+' appropriate, and the corresponding GetSystemDPI() function to retrieve the cached value.
+Private m_CurrentSystemDPI As Single
+
 'When a modal dialog is displayed, a reference to it is saved in this variable.
 ' If subsequent modal dialogs are displayed (for example, if a tool dialog displays a
 ' color selection dialog), the previous modal dialog is given ownership over the new dialog.
@@ -105,11 +110,6 @@ Private m_PrevMessage As String
 
 'Same as m_PrevMessage, but with all translations and/or custom parsing applied
 Private m_LastFullMessage As String
-
-'System DPI is used frequently for UI positioning calculations.  Because it's costly to constantly retrieve it via APIs, this module
-' prefers to cache it only when the value changes.  Call the CacheSystemDPI() sub to update the value when appropriate, and the
-' corresponding GetSystemDPI() function to retrieve the cached value.
-Private m_CurrentSystemDPI As Single
 
 'Syncing the entire program's UI to current image settings is a time-consuming process.  To try and shortcut it whenever possible,
 ' we track the last sync operation we performed.  If we receive a duplicate sync request, we can safely ignore it.
@@ -148,12 +148,21 @@ End Sub
 
 'Get/set system DPI *as a ratio*, e.g. 96 DPI ("100%") should be cached as 1.0.  This gives us an easy modifier for calculating
 ' new window layouts and sizes.
-Public Sub CacheSystemDPI(ByVal newDPI As Single)
+Public Sub CacheSystemDPIRatio(ByVal newDPI As Single)
     m_CurrentSystemDPI = newDPI
+    If (m_CurrentSystemDPI = 0!) Then m_CurrentSystemDPI = 1!
 End Sub
 
-Public Function GetSystemDPI() As Single
-    GetSystemDPI = m_CurrentSystemDPI
+Public Function GetSystemDPIRatio() As Single
+    If (m_CurrentSystemDPI = 0!) Then m_CurrentSystemDPI = 1!
+    GetSystemDPIRatio = m_CurrentSystemDPI
+End Function
+
+'Returns the last session's DPI, as a *ratio* (e.g. 96 DPI is returned as 1.0, 150% DPI is returned as 1.5)
+Public Function GetLastSessionDPI_Ratio() As Single
+    GetLastSessionDPI_Ratio = UserPrefs.GetPref_Float("Toolbox", "LastSessionDPI", Interface.GetSystemDPIRatio())
+    If (GetLastSessionDPI_Ratio < 1!) Then GetLastSessionDPI_Ratio = 1!
+    If (GetLastSessionDPI_Ratio > 4!) Then GetLastSessionDPI_Ratio = 4!
 End Function
 
 'PD's canvas uses interactive elements (like clickable "nodes") in many different contexts.  To ensure uniform
@@ -224,7 +233,7 @@ Public Sub SyncInterfaceToCurrentImage()
     If (Not PDImages.IsImageActive()) Then
     
         'Because this set of UI changes is immutable, there is no reason to repeat it if it was the last synchronization we performed.
-        If Not (m_LastUISync_HadNoImages = PD_BOOL_TRUE) Then
+        If (m_LastUISync_HadNoImages <> PD_BOOL_TRUE) Then
             SetUIMode_NoImages
             m_LastUISync_HadNoImages = PD_BOOL_TRUE
         End If
@@ -391,18 +400,18 @@ Public Sub SyncUI_CurrentLayerSettings()
     nonDestructiveResizeActive = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier <> 1#) Or (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier <> 1#)
     
     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
-    Menus.SetMenuEnabled "layer_resetsize", nonDestructiveResizeActive
+    If (Menus.IsMenuEnabled("layer_resetsize") <> nonDestructiveResizeActive) Then Menus.SetMenuEnabled "layer_resetsize", nonDestructiveResizeActive
     
     If (g_CurrentTool = NAV_MOVE) Then
         toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True)
     End If
     
     'Layer visibility
-    Menus.SetMenuChecked "layer_show", PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility()
+    If (Menus.IsMenuChecked("layer_show") <> PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility()) Then Menus.SetMenuChecked "layer_show", PDImages.GetActiveImage.GetActiveLayer.GetLayerVisibility()
     
     'Layer rasterization depends on the current layer type
-    Menus.SetMenuEnabled "layer_rasterizecurrent", PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
-    Menus.SetMenuEnabled "layer_rasterizeall", (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
+    If (Menus.IsMenuEnabled("layer_rasterizecurrent") <> PDImages.GetActiveImage.GetActiveLayer.IsLayerVector) Then Menus.SetMenuEnabled "layer_rasterizecurrent", PDImages.GetActiveImage.GetActiveLayer.IsLayerVector
+    If (Menus.IsMenuEnabled("layer_rasterizeall") <> (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)) Then Menus.SetMenuEnabled "layer_rasterizeall", (PDImages.GetActiveImage.GetNumOfVectorLayers > 0)
     
 End Sub
 
@@ -514,7 +523,7 @@ End Sub
 'Whenever PD returns to a "no images loaded" state, this function should be called.  (There are a number of specialized UI decisions
 ' required by this this state, and it's important to keep those options in one place.)
 Private Sub SetUIMode_NoImages()
-        
+    
     'Start by forcibly disabling every conceivable UI group that requires an underlying image
     SetUIGroupState PDUI_Save, False
     SetUIGroupState PDUI_SaveAs, False
@@ -568,7 +577,7 @@ Private Sub SetUIMode_NoImages()
     
     'Forcibly blank out the current message if no images are loaded
     Message vbNullString
-        
+    
 End Sub
 
 'Whenever PD enters an "at least one valid image loaded" state, this function should be called.  Note that this function does not
@@ -732,6 +741,12 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'View (top-menu level)
         Case PDUI_View
             Menus.SetMenuEnabled "view_top", newState
+            Menus.SetMenuChecked "show_layeredges", Drawing.Get_ShowLayerEdges()
+            Menus.SetMenuChecked "show_smartguides", Drawing.Get_ShowSmartGuides()
+            Menus.SetMenuChecked "snap_global", Snap.GetSnap_Global()
+            Menus.SetMenuChecked "snap_canvasedge", Snap.GetSnap_CanvasEdge()
+            Menus.SetMenuChecked "snap_centerline", Snap.GetSnap_Centerline()
+            Menus.SetMenuChecked "snap_layer", Snap.GetSnap_Layer()
             
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus.
         ' (This flag is very useful for items that require at least one open image to operate.)

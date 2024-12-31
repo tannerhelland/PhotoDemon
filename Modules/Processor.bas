@@ -1952,7 +1952,7 @@ Private Function Process_EffectsMenu(ByVal processID As String, Optional raiseDi
         If raiseDialog Then ShowPDDialog vbModal, FormOutlineEffect Else FormOutlineEffect.ApplyOutlineEffect processParameters
         Process_EffectsMenu = True
         
-    ElseIf Strings.StringsEqual(processID, "Palette", True) Then
+    ElseIf Strings.StringsEqual(processID, "Palette", True) Or Strings.StringsEqual(processID, "Palettize", True) Then
         If raiseDialog Then ShowPDDialog vbModal, FormPalettize Else FormPalettize.ApplyPalettizeEffect processParameters
         Process_EffectsMenu = True
         

@@ -5,11 +5,11 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（夜间更新版，9.2 build 311）</langname>
-<langversion>9.2 build 311.2</langversion>
+<langname>简体中文（夜间更新版，2024.12）</langname>
+<langversion>2024.12.14</langversion>
 <langstatus>完成</langstatus>
 
-<author>Charltsing（QQ 564955427） revised on March 15, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
+<author>Charltsing（QQ 564955427） revised on December 12, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -595,22 +595,22 @@
 
 <phrase>
 <original>Remove selection</original>
-<translation>删除选择</translation>
+<translation>删除选区</translation>
 </phrase>
 
 <phrase>
 <original>Invert selection</original>
-<translation>反向选择</translation>
+<translation>反选</translation>
 </phrase>
 
 <phrase>
 <original>Grow selection</original>
-<translation>增加选择</translation>
+<translation>增加选区</translation>
 </phrase>
 
 <phrase>
 <original>Shrink selection</original>
-<translation>缩小选择</translation>
+<translation>缩小选区</translation>
 </phrase>
 
 <phrase>
@@ -620,12 +620,12 @@
 
 <phrase>
 <original>Feather selection</original>
-<translation>羽化选项</translation>
+<translation>羽化选区</translation>
 </phrase>
 
 <phrase>
 <original>Sharpen selection</original>
-<translation>锐化选项</translation>
+<translation>锐化选区</translation>
 </phrase>
 
 <phrase>
@@ -1782,6 +1782,21 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
+<original>Backspace</original>
+<translation>Backspace</translation>
+</phrase>
+
+<phrase>
+<original>Tab</original>
+<translation>Tab</translation>
+</phrase>
+
+<phrase>
+<original>Escape</original>
+<translation>Escape</translation>
+</phrase>
+
+<phrase>
 <original>Ctrl</original>
 <translation>Ctrl</translation>
 </phrase>
@@ -1796,7 +1811,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>Shift</translation>
 </phrase>
 
-<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Hotkeys.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2050,7 +2065,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>背后</translation>
 </phrase>
 
 <phrase>
@@ -2687,6 +2702,8 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
+<!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
 <translation>JPEG XL(JXL)是JPEG图像格式的升级版本。 PhotoDemon 本身不支持JPEG XL图像，但它可以下载一个免费的开源插件来添加JPEG XL支持。</translation>
@@ -2735,11 +2752,16 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
+<original>LGPL license</original>
+<translation>LGPL 许可证</translation>
+</phrase>
+
+<phrase>
 <original>Mozilla Public License 2.0</original>
 <translation>Mozilla公共许可证2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -5476,6 +5498,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Keyboard shortcuts</original>
+<translation>键盘快捷键</translation>
+</phrase>
+
+<phrase>
 <original>Options</original>
 <translation>选项</translation>
 </phrase>
@@ -5541,6 +5568,46 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Show extras</original>
+<translation>显示额外内容</translation>
+</phrase>
+
+<phrase>
+<original>Layer edges</original>
+<translation>图层边缘</translation>
+</phrase>
+
+<phrase>
+<original>Smart guides</original>
+<translation>智能参考线</translation>
+</phrase>
+
+<phrase>
+<original>Snap</original>
+<translation>对齐</translation>
+</phrase>
+
+<phrase>
+<original>Snap to</original>
+<translation>对齐到</translation>
+</phrase>
+
+<phrase>
+<original>Canvas edges</original>
+<translation>画布边界</translation>
+</phrase>
+
+<phrase>
+<original>Centerlines</original>
+<translation>中心线</translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>图层</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>窗口</translation>
 </phrase>
@@ -5578,11 +5645,6 @@ The final value must be between %3 and %4.</original>
 <phrase>
 <original>Tool options</original>
 <translation>工具选项</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>图层</translation>
 </phrase>
 
 <phrase>
@@ -5701,7 +5763,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>This copy of PhotoDemon is up to date.</original>
-<translation>PhotoDemon这个拷贝最新的。</translation>
+<translation>这个PhotoDemon版本是最新的。</translation>
 </phrase>
 
 <phrase>
@@ -5742,7 +5804,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>语言切换成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 403 phrases. 217 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10781,6 +10843,33 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>page format</original>
+<translation>页面格式</translation>
+</phrase>
+
+<phrase>
+<original>lossless</original>
+<translation>无损</translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation>有损</translation>
+</phrase>
+
+<phrase>
+<original>single page (composited image)</original>
+<translation>单页（合成图像）</translation>
+</phrase>
+
+<phrase>
+<original>multipage (one page per layer)</original>
+<translation>多页面（每层一个页面）</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation>图标用途</translation>
 </phrase>
@@ -10966,17 +11055,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>慢速，文件较小</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation>无损</translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation>有损</translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -11123,22 +11202,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>单色压缩</translation>
 </phrase>
 
-<phrase>
-<original>page format</original>
-<translation>页面格式</translation>
-</phrase>
-
-<phrase>
-<original>single page (composited image)</original>
-<translation>单页（合成图像）</translation>
-</phrase>
-
-<phrase>
-<original>multipage (one page per layer)</original>
-<translation>多页面（每层一个页面）</translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>image type</original>
@@ -12224,6 +12288,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Crop tool</original>
+<translation>剪裁工具</translation>
+</phrase>
+
+<phrase>
 <original>Rectangle selection tool</original>
 <translation>矩形选择工具</translation>
 </phrase>
@@ -12283,7 +12352,37 @@ Would you like to save your batch list before exiting?</original>
 <translation>油漆桶工具</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<phrase>
+<original>Search tool</original>
+<translation>搜索工具</translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush size</original>
+<translation>减小画笔大小</translation>
+</phrase>
+
+<phrase>
+<original>Increase brush size</original>
+<translation>增加画笔大小</translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush hardness</original>
+<translation>降低笔刷硬度</translation>
+</phrase>
+
+<phrase>
+<original>Increase brush hardness</original>
+<translation>增加笔刷硬度</translation>
+</phrase>
+
+<phrase>
+<original>Toggle brush cursor</original>
+<translation>切换画笔光标</translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12533,8 +12632,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>显示图层边框</translation>
+<original>show distances</original>
+<translation>显示距离</translation>
 </phrase>
 
 <phrase>
@@ -12955,6 +13054,138 @@ Would you like to save your batch list before exiting?</original>
 <!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
+<original>undo all changes</original>
+<translation>撤消所有更改</translation>
+</phrase>
+
+<phrase>
+<original>all hotkeys</original>
+<translation>所有热键</translation>
+</phrase>
+
+<phrase>
+<original>undo changes</original>
+<translation>撤消更改</translation>
+</phrase>
+
+<phrase>
+<original>try to capture automatically</original>
+<translation>尝试自动捕获热键</translation>
+</phrase>
+
+<phrase>
+<original>this hotkey</original>
+<translation>当前热键设定</translation>
+</phrase>
+
+<phrase>
+<original>restore default</original>
+<translation>恢复默认值</translation>
+</phrase>
+
+<phrase>
+<original>export to file</original>
+<translation>导出到文件</translation>
+</phrase>
+
+<phrase>
+<original>import from file</original>
+<translation>从文件导入</translation>
+</phrase>
+
+<phrase>
+<original>delete</original>
+<translation>删除</translation>
+</phrase>
+
+<phrase>
+<original>restore all defaults</original>
+<translation>恢复所有默认值</translation>
+</phrase>
+
+<phrase>
+<original>generate summary</original>
+<translation>生成摘要</translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys</original>
+<translation>热键</translation>
+</phrase>
+
+<phrase>
+<original>Import hotkeys</original>
+<translation>导入热键</translation>
+</phrase>
+
+<phrase>
+<original>Export hotkeys</original>
+<translation>导出热键</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Hotkeys</original>
+<translation>PhotoDemon 热键</translation>
+</phrase>
+
+<phrase>
+<original>One or more hotkeys is currently assigned to multiple actions.</original>
+<translation>一个或多个热键当前分配给多个操作。</translation>
+</phrase>
+
+<phrase>
+<original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
+<translation>如果继续，PhotoDemon将只保留任何第一次出现的重复热键。</translation>
+</phrase>
+
+<phrase>
+<original>Press OK to proceed.</original>
+<translation>按“确定”继续。</translation>
+</phrase>
+
+<phrase>
+<original>Press cancel to keep editing hotkeys.</original>
+<translation>按“取消”继续编辑热键。</translation>
+</phrase>
+
+<phrase>
+<original>Toolbox tools</original>
+<translation>工具箱</translation>
+</phrase>
+
+<phrase>
+<original>Please use this hotkey on just one action</original>
+<translation>请仅对一个操作使用此热键。</translation>
+</phrase>
+
+<phrase>
+<original>(this item)</original>
+<translation>（此项目）</translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys must be unique.</original>
+<translation>热键必须是唯一的。</translation>
+</phrase>
+
+<phrase>
+<original>Command</original>
+<translation>命令</translation>
+</phrase>
+
+<phrase>
+<original>Hotkey</original>
+<translation>热键</translation>
+</phrase>
+
+<phrase>
+<original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
+<translation>这将覆盖任何热键设定。您确定要继续吗？</translation>
+</phrase>
+
+<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+
+<phrase>
 <original>click here for detailed instructions (in English)</original>
 <translation>点击这里查看详细说明（英文）</translation>
 </phrase>
@@ -13327,6 +13558,131 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>使用黑点补偿</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>显示渲染目标</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>可用显示器</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>关闭显示颜色管理</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>使用每个显示器的当前系统配置文件</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>显示策略</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>为每个显示使用自定义配置文件</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>高分辨率鼠标输入</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>重置所有程序设置</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>内存的使用将会显示在这里</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>内存使用情况：</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>临时文件位置：</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>重置为默认值：</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>应用程序设置文件夹</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>生成调试日志</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>（免责声明）</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>自动检查更新</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>选择更新版本</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>更新选项</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>更新准备就绪时通知</translation>
+</phrase>
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>标题栏</translation>
 </phrase>
@@ -13364,6 +13720,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>canvas background color</original>
 <translation>画布背景色</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>对齐捕获距离（像素）</translation>
 </phrase>
 
 <phrase>
@@ -13519,111 +13880,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>viewport</original>
 <translation>可视窗口</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>使用黑点补偿</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>显示渲染目标</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>可用显示器</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>关闭显示颜色管理</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>使用每个显示器的当前系统配置文件</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>显示策略</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>为每个显示使用自定义配置文件</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>高分辨率鼠标输入</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>重置所有程序设置</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>内存的使用将会显示在这里</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>内存使用情况：</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>临时文件位置：</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>重置为默认值：</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>应用程序设置文件夹</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>生成调试日志</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>（免责声明）</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>自动检查更新</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>选择更新版本</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>更新选项</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>更新准备就绪时通知</translation>
 </phrase>
 
 <phrase>
@@ -13921,6 +14177,16 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>每次启动</translation>
 </phrase>
@@ -14028,7 +14294,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹目录将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14238,11 +14504,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5690 phrases. -->
-<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 <special-translations>
 

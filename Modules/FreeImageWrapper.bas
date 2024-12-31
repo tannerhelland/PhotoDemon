@@ -59,7 +59,7 @@ Private Declare Function GetCurrentObject Lib "gdi32" (ByVal hDC As Long, ByVal 
 '--------------------------------------------------------------------------------
 
 ' Load / Save flag constants
-Public Const FIF_LOAD_NOPIXELS = &H8000              ' load the image header only (not supported by all plugins)
+Public Const FIF_LOAD_NOPIXELS = &H8000&              ' load the image header only (not supported by all plugins)
 
 Public Const BMP_DEFAULT As Long = 0
 Public Const BMP_SAVE_RLE As Long = 1
@@ -87,7 +87,7 @@ Public Const JPEG_QUALITYBAD As Long = &H800         ' save with bad quality (10
 Public Const JPEG_PROGRESSIVE As Long = &H2000       ' save as a progressive-JPEG (use 'OR' to combine with other save flags)
 Public Const JPEG_SUBSAMPLING_411 As Long = &H1000   ' save with high 4x1 chroma subsampling (4:1:1)
 Public Const JPEG_SUBSAMPLING_420 As Long = &H4000   ' save with medium 2x2 medium chroma subsampling (4:2:0) - default value
-Public Const JPEG_SUBSAMPLING_422 As Long = &H8000   ' save with low 2x1 chroma subsampling (4:2:2)
+Public Const JPEG_SUBSAMPLING_422 As Long = &H8000&   ' save with low 2x1 chroma subsampling (4:2:2)
 Public Const JPEG_SUBSAMPLING_444 As Long = &H10000  ' save with no chroma subsampling (4:4:4)
 Public Const JPEG_OPTIMIZE As Long = &H20000         ' on saving, compute optimal Huffman coding tables (can reduce a few percent of file size)
 Public Const JPEG_BASELINE As Long = &H40000         ' save basic JPEG, without metadata or any markers
@@ -115,7 +115,7 @@ Public Const TIFF_NONE As Long = &H800               ' save without any compress
 Public Const TIFF_CCITTFAX3 As Long = &H1000         ' save using CCITT Group 3 fax encoding
 Public Const TIFF_CCITTFAX4 As Long = &H2000         ' save using CCITT Group 4 fax encoding
 Public Const TIFF_LZW As Long = &H4000               ' save using LZW compression
-Public Const TIFF_JPEG As Long = &H8000              ' save using JPEG compression
+Public Const TIFF_JPEG As Long = &H8000&             ' save using JPEG compression
 Public Const TIFF_LOGLUV As Long = &H10000           ' save using LogLuv compression
 
 Public Enum FREE_IMAGE_FORMAT
@@ -189,7 +189,7 @@ Public Enum FREE_IMAGE_LOAD_OPTIONS
    FILO_TARGA_LOAD_RGB888 = TARGA_LOAD_RGB888     ' if set, the loader converts RGB555 and ARGB8888 -> RGB888
 End Enum
 #If False Then
-   Const FILO_LOAD_NOPIXELS = &H8000
+   Const FILO_LOAD_NOPIXELS = &H8000&
    Const FILO_LOAD_DEFAULT = 0
    Const FILO_GIF_DEFAULT = GIF_DEFAULT
    Const FILO_GIF_PLAYBACK = GIF_PLAYBACK

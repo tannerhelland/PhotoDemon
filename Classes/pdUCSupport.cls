@@ -574,6 +574,12 @@ Friend Sub RequestAutoDropMouseMessages(ByVal newState As Boolean)
     If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetAutoDropOfDelayedEvents newState
 End Sub
 
+'INSIDE A KEY EVENT (the only place this is valid), you can call this function to retrieve
+' the unprocessed key code and scan code from the keyboardproc.
+Friend Sub GetLastKeyAndScanCode(ByRef dstKeyCode As Long, ByRef dstScanCode As Long)
+    If (Not m_KeyEvents Is Nothing) Then m_KeyEvents.GetLastKeyAndScanCode dstKeyCode, dstScanCode
+End Sub
+
 'Return the number of "pending" mouse move events.  Only relevant if high-resolution input tracking has been manually activated.
 Friend Function GetNumMouseEventsPending() As Long
     If (Not m_MouseEvents Is Nothing) Then GetNumMouseEventsPending = m_MouseEvents.GetNumMouseMovePointsRemaining()
@@ -837,7 +843,7 @@ Private Sub m_KeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCod
     
     'Handle navigation keys separately (unless the keypress was already eaten by the attached control)
     If (Not markEventHandled) And m_ControlCanGetFocus Then
-        If (vkCode = pdnk_Enter) Or (vkCode = pdnk_Escape) Or (vkCode = pdnk_Tab) Then RaiseEvent KeyDownSystem(Shift, vkCode, markEventHandled)
+        If (vkCode = pdnk_Enter) Or (vkCode = pdnk_Escape) Or (vkCode = pdnk_Space) Or (vkCode = pdnk_Tab) Then RaiseEvent KeyDownSystem(Shift, vkCode, markEventHandled)
     End If
     
 End Sub

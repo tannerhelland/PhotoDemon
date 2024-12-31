@@ -453,7 +453,6 @@ Private Sub cmdMerge_Click()
         
         'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If (LenB(translatedText) = 0) Then
-            Debug.Print sPos
             If (InStr(1, origText, vbCrLf) > 0) Then
                 translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
             End If
@@ -469,6 +468,7 @@ Private Sub cmdMerge_Click()
             
             phrasesFound = phrasesFound + 1
         Else
+            Debug.Print "Couldn't find translation for: " & origText
             phrasesMissed = phrasesMissed + 1
         End If
     
@@ -512,11 +512,12 @@ Private Sub cmdMerge_Click()
     fPath = m_OldLanguagePath
     
     If cDialog.GetSaveFileName(fPath, , True, "XML - PhotoDemon Language File|*.xml", 1, , "Save the merged language file (XML)", "xml", Me.hWnd) Then
-    
-        If Files.FileExists(fPath) Then
-            MsgBox "File already exists!  Too dangerous to overwrite - please perform the merge again."
-            Exit Sub
-        End If
+        
+        'Worried about breaking something?  Enable strict overwrite checking:
+        'If Files.FileExists(fPath) Then
+        '    MsgBox "File already exists!  Too dangerous to overwrite - please perform the merge again."
+        '    Exit Sub
+        'End If
         
         'Use pdXML to write out a UTF-8 encoded XML file
         m_XML.LoadXMLFromString m_NewLanguageText
@@ -730,8 +731,9 @@ Private Sub cmdMergeAll_Click()
                 'Old PhotoDemon language files used manually inserted & characters for keyboard accelerators.
                 ' Accelerators are now handled automatically on a per-language basis.  To ensure work isn't lost
                 ' when upgrading these old files, strip any accelerators from the incoming text.
-                If (InStr(1, origText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(origText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
-                If (InStr(1, translatedText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(translatedText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                ' (As of 2024, this change is no longer necessary.)
+                'If (InStr(1, origText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then origText = Replace$(origText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
+                'If (InStr(1, translatedText, AMPERSAND_CHAR, vbBinaryCompare) <> 0) Then translatedText = Replace$(translatedText, AMPERSAND_CHAR, vbNullString, 1, -1, vbBinaryCompare)
                 
                 If (LenB(translatedText) > 0) Then m_PhraseCollection.AddItem origText, translatedText
                 
@@ -2146,7 +2148,7 @@ Private Sub Form_Load()
     
     Set m_XML = New pdXML
     Set m_enUSPhrases = New pdStringHash
-        
+    
     'Build a blacklist of phrases that are in the software, but do not need to be translated.
     ' (These are complex phrases that may include things like proper nouns or mathematical terms,
     ' but the automatic text generator has no way of knowing that the text is non-translatable.)
@@ -2236,13 +2238,6 @@ Private Sub Form_Load()
         
         'Forcibly merge all translation files with the latest English text
         Call cmdMergeAll_Click
-        
-        'Update the master langupdate.XML file, and generate new compressed language copies in their
-        ' dedicated upload folders
-        'NOTE: as of 23 October 2017 (just prior to 7.0's release), this feature has been disabled.
-        ' PD no longer attempts to patch language files separately, which greatly simplifies the core
-        ' program's update code and network access requirements.
-        'Call cmdLangVersions_Click
         
         'If the program is running in silent mode, unload it now
         Unload Me

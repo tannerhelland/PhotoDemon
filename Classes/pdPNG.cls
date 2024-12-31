@@ -1003,9 +1003,12 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
     'If the PNG contained ICC profile data, retrieve it now; otherwise, assume sRGB.  (Note that a
     ' transform may be generated either way, as LittleCMS can be used for fast swizzling.)
     Dim imgHasEmbeddedICC As Boolean
-    imgHasEmbeddedICC = (Me.GetIndexOfChunk("iCCP") >= 0)
+    imgHasEmbeddedICC = (Me.GetIndexOfChunk("iCCP") >= 0) And ColorManagement.UseEmbeddedICCProfiles()
     
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, dstTransform As pdLCMSTransform, srcImgProfileGood As Boolean
+    
+    'The PrepICCData function will mark this as TRUE if the embedded profile passes validation
+    srcImgProfileGood = False
     PrepICCData srcProfile, dstProfile, dstTransform, srcImgProfileGood
     If srcImgProfileGood Then
     
@@ -1580,14 +1583,13 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
     gammaIndex = Me.GetIndexOfChunk("gAMA")
     chrmIndex = Me.GetIndexOfChunk("cHRM")
     
-    Dim gammaOK As Boolean, chrmOK As Boolean
-    
     'Handle gamma; this allows us to produce the same results as Firefox, Chrome, Edge, Internet Explorer,
     ' and (surprisingly) Windows Photo Viewer on Windows 10.  (For whatever reason, Safari does *not* handle
     ' gAMA chunks; given that PD is Windows-only, I haven't provided a toggle to change this behavior,
     ' at present.)  Note that photo editing software may handle gamma differently - I have *not* tested them
     ' thoroughly, and if they don't manage gamma correctly, I may need to revisit this design entirely.
-    If (gammaIndex >= 0) Then
+    Dim gammaOK As Boolean
+    If (gammaIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() Then
         
         Dim gammaInt As Long
         gammaInt = m_Chunks(gammaIndex).GetGammaData(m_Warnings)
@@ -1604,7 +1606,8 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
     'Ideally, gamma chunks should be accompanied by chromaticity data, to help us know the expected
     ' viewing conditions of the image.  If chromaticity *doesn't* exist, we'll just apply a bare
     ' gamma correction to the raw PNG pixel data.
-    If (chrmIndex >= 0) Then
+    Dim chrmOK As Boolean
+    If (chrmIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() Then
         
         Dim chrmData() As Long
         If m_Chunks(chrmIndex).GetChromaticityData(chrmData, m_Warnings) Then
@@ -1627,7 +1630,11 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
             rgbValues(7) = CDbl(chrmData(7)) / 100000#
             rgbValues(8) = 1#
             
-            If (Not gammaOK) Then gammaFloat = 1#
+            If (Not gammaOK) Then
+                If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: chromaticity present, but gamma missing; colors may be incorrect!"
+                '(Temporarily commented out while awaiting user feedback on https://github.com/tannerhelland/PhotoDemon/issues/612 )
+                'gammaFloat = 2.2
+            End If
             
             'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
             ' With this, we can use our normal color-management pipeline to color-correct this DIB.
@@ -6067,8 +6074,14 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
     ' ICC handling under some scenarios.
     Dim iccRequired As Boolean: iccRequired = True
     
+    'Users can set a preference for ignoring embedded profiles (this allows recovery of images with broken or faulty ICC)
     Dim iccIndex As Long
-    iccIndex = Me.GetIndexOfChunk("iCCP")
+    If ColorManagement.UseEmbeddedICCProfiles() Then
+        iccIndex = Me.GetIndexOfChunk("iCCP")
+    Else
+        iccIndex = -1
+    End If
+    
     If (iccIndex > 0) Then
         srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndex).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndex).BorrowData().GetStreamSize())
         

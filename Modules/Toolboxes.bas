@@ -43,17 +43,17 @@ End Type
 Public Enum PD_Toolbox
     [_First] = 0
     PDT_LeftToolbox = 0
-    PDT_BottomToolbox = 1
+    PDT_TopToolbox = 1
     PDT_RightToolbox = 2
     [_Last] = 2
     [_Count] = 3
 End Enum
 
 #If False Then
-    Private Const PDT_LeftToolbox = 0, PDT_BottomToolbox = 1, PDT_RightToolbox = 2
+    Private Const PDT_LeftToolbox = 0, PDT_TopToolbox = 1, PDT_RightToolbox = 2
 #End If
 
-'At present, PD tracks three toolbars in a hard-coded order: the main toolbox (left), the options toolbox (bottom), and the
+'At present, PD tracks three toolbars in a hard-coded order: the main toolbox (left), the options toolbox (top), and the
 ' layer toolbox (right).
 Private m_Toolboxes() As PD_Toolbox_Data
 
@@ -84,10 +84,8 @@ Public Sub LoadToolboxData()
             newSize = UserPrefs.GetPref_Long("Toolbox", GetToolboxName(i) & "Size", .DefaultSize)
             
             Dim lastDPI As Single
-            lastDPI = UserPrefs.GetPref_Float("Toolbox", "LastSessionDPI", 1#)
-            If (lastDPI < 1#) Then lastDPI = 1#
-            If (lastDPI > 4#) Then lastDPI = 4#
-            newSize = newSize * (Interface.GetSystemDPI() / lastDPI)
+            lastDPI = Interface.GetLastSessionDPI_Ratio()
+            newSize = newSize * (Interface.GetSystemDPIRatio() / lastDPI)
             
             'Apply a failsafe size check to the previous session's adjusted value
             If (newSize < .MinSize) Then newSize = .MinSize
@@ -112,7 +110,7 @@ Public Sub SaveToolboxData()
             End With
         Next i
         
-        UserPrefs.SetPref_Float "Toolbox", "LastSessionDPI", Interface.GetSystemDPI()
+        UserPrefs.SetPref_Float "Toolbox", "LastSessionDPI", Interface.GetSystemDPIRatio()
         
     End If
 
@@ -153,15 +151,15 @@ Private Sub FillDefaultToolboxValues()
                     .MinSize = FixDPI(48)
                     .MaxSize = FixDPI(188)
                 
-                'The bottom toolbox is unique in not being user-sizable.  It is a fixed height with individual
+                'The top toolbox is unique in not being user-sizable.  It is a fixed height with individual
                 ' drop-down panels that can extend portions of the toolbox vertically.  This base height could
                 ' theoretically vary by tool, but for now it is fixed to ensure a more aesthetically pleasing
                 ' layout (and simpler UI design).
-                Case PDT_BottomToolbox
-                    Const BOTTOM_TOOLBOX_HEIGHT As Long = 59
-                    .DefaultSize = FixDPI(BOTTOM_TOOLBOX_HEIGHT)
-                    .MinSize = FixDPI(BOTTOM_TOOLBOX_HEIGHT)
-                    .MaxSize = FixDPI(BOTTOM_TOOLBOX_HEIGHT)
+                Case PDT_TopToolbox
+                    Const TOP_TOOLBOX_HEIGHT As Long = 59
+                    .DefaultSize = FixDPI(TOP_TOOLBOX_HEIGHT)
+                    .MinSize = FixDPI(TOP_TOOLBOX_HEIGHT)
+                    .MaxSize = FixDPI(TOP_TOOLBOX_HEIGHT)
                 
                 Case PDT_RightToolbox
                     .DefaultSize = FixDPI(190)
@@ -179,8 +177,9 @@ Private Function GetToolboxName(ByVal toolID As PD_Toolbox) As String
     Select Case toolID
         Case PDT_LeftToolbox
             GetToolboxName = "LeftToolbox"
-        Case PDT_BottomToolbox
-            GetToolboxName = "BottomToolbox"
+        Case PDT_TopToolbox
+            GetToolboxName = "BottomToolbox"    'For backward compatibility, this is left as "bottom" despite
+                                                ' now appearing at the top.
         Case PDT_RightToolbox
             GetToolboxName = "RightToolbox"
     End Select
@@ -217,8 +216,8 @@ Public Sub CalculateNewToolboxRects(ByRef mainFormClientRect As winRect, ByRef d
     End If
     
     'Top toolbox goes next.  It is sandwiched between the other two toolboxes.
-    If m_Toolboxes(PDT_BottomToolbox).IsVisibleNow Then
-        With m_Toolboxes(PDT_BottomToolbox)
+    If m_Toolboxes(PDT_TopToolbox).IsVisibleNow Then
+        With m_Toolboxes(PDT_TopToolbox)
             .toolRect.x1 = mainFormClientRect.x1
             .toolRect.x2 = mainFormClientRect.x2
             .toolRect.y1 = mainFormClientRect.y1
@@ -262,7 +261,7 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
             
             If (toolID = PDT_LeftToolbox) Then
                 g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, .MinSize, , .MaxSize
-            ElseIf (toolID = PDT_BottomToolbox) Then
+            ElseIf (toolID = PDT_TopToolbox) Then
                 g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, , .MinSize, , .MaxSize
             ElseIf (toolID = PDT_RightToolbox) Then
                 g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, .MinSize, , .MaxSize
@@ -341,9 +340,9 @@ Public Sub ToggleToolboxVisibility(ByVal whichToolbar As PD_Toolbox, Optional By
             FormMain.MnuWindowToolbox(0).Checked = (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             SetToolboxVisibilityPreference whichToolbar, (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
-        Case PDT_BottomToolbox
+        Case PDT_TopToolbox
             FormMain.MnuWindow(1).Checked = (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
-            SetToolboxVisibilityPreference PDT_BottomToolbox, (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
+            SetToolboxVisibilityPreference PDT_TopToolbox, (Not m_Toolboxes(whichToolbar).IsVisiblePreference)
             
             'Because this toolbox's visibility is also tied to the current tool, we wrap a different function.  This function
             ' will show/hide the toolbox as necessary.

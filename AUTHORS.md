@@ -8,15 +8,12 @@ Ongoing development is supported by PhotoDemon's [Patreon members](https://www.p
 
 Super Patrons:
 
-* [EFF.ORG](https://www.eff.org/)
-* [Jason Brown](https://statslog.com/)
-* Jessica H
 * Johannes Nendel
 
 Patrons:
 
+* Tim Parsons
 * Frank Reibold
-* James Proctor
 * Jim Schmidt
 
 ### 3rd-party libraries
@@ -29,9 +26,11 @@ The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these
 * [FreeImage](https://freeimage.sourceforge.io/)
 * [libavif](https://github.com/AOMediaCodec/libavif)
 * [libdeflate](https://github.com/ebiggers/libdeflate)
+* [libjxl](https://github.com/libjxl/libjxl)
 * [libwebp](https://developers.google.com/speed/webp)
 * [LittleCMS](http://www.littlecms.com)
 * [LZ4](https://lz4.github.io/lz4/)
+* [pdfium](https://pdfium.googlesource.com/pdfium/)
 * [Photoshop-Plugin-Host](https://github.com/spetric/Photoshop-Plugin-Host)
 * [resvg](https://github.com/RazrFalcon/resvg)
 * [ZStandard](https://github.com/facebook/zstd)
@@ -83,6 +82,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [John Desrosiers](https://johndesrosiers.com)
 * [Jose de TECNORAMA](https://www.tecnorama.es/)
 * Joseph Greco
+* [Kenji Hoshimoto (Hosiken)](http://hosiken.jp/)
 * [Kroc Camen](http://camendesign.com)
 * [LaVolpe](http://www.vbforums.com/showthread.php?t=606736)
 * [Leandro Ascierto](http://leandroascierto.com/blog/clsmenuimage/)
@@ -92,6 +92,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Manuel Augusto Santos](https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303)
 * Mariozo
 * [martin19](https://github.com/martin19)
+* Miguel Chamorro
 * [Ming](http://ufoym.com/)
 * Mohammad Reza Karimi
 * [Nguyen Van Hùng](https://github.com/vhreal1302)

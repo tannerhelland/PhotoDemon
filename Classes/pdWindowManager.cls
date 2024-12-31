@@ -55,7 +55,7 @@ Private Const WM_SETTEXT = &HC
 
 'Constants for changing extended window style
 Private Const WS_EX_APPWINDOW As Long = &H40000
-Private Const WS_EX_LAYERED As Long = &H80000
+'Private Const WS_EX_LAYERED As Long = &H80000      'No longer used due to problems under Wine
 Private Const WS_EX_COMPOSITED As Long = &H2000000
 Private Const WS_CHILD As Long = &H40000000
 Private Const WS_POPUP As Long = &H80000000
@@ -587,7 +587,7 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
         If (tmpDPIModifier > 4#) Then tmpDPIModifier = 4#
         
         'Calculate a difference between the old and new DPIs, and apply that modifier to our saved values, as necessary
-        tmpDPIModifier = Interface.GetSystemDPI() / tmpDPIModifier
+        tmpDPIModifier = Interface.GetSystemDPIRatio() / tmpDPIModifier
         
         If (tmpDPIModifier <> 1) Then
             With tmpRect
@@ -687,7 +687,7 @@ Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
         .UpdateTag "WindowRight", tmpRect.x2, "WindowEntry", "id", windowName
         .UpdateTag "WindowBottom", tmpRect.y2, "WindowEntry", "id", windowName
         .UpdateTag "WindowState", frmReference.WindowState, "WindowEntry", "id", windowName
-        .UpdateTag "WindowDPI", Interface.GetSystemDPI, "WindowEntry", "id", windowName
+        .UpdateTag "WindowDPI", Interface.GetSystemDPIRatio, "WindowEntry", "id", windowName
     End With
     
     'Write the data out to file
@@ -711,12 +711,10 @@ Friend Sub RegisterMainForm(ByRef parentForm As Form)
     
     If PDMain.IsProgramRunning() Then
     
-        'Apply any unique styles to the parent window
+        'Apply any unique styles to the parent window.  (PD uses complex nested windows for toolbars,
+        ' and setting the WS_EX_COMPOSITED bit reduces flickering on older versions of Windows.)
         Dim newWinStyle As Long
         newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED
-        
-        'On Vista+, layered windows consume a bit more resources but they play very nicely with DWM
-        If OS.IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
         SetWindowLong m_MainWindowHWnd, GWL_EXSTYLE, newWinStyle
         
         'Enforce minimum size handling.  (Note that this will subclass the main window, which allows us to handle

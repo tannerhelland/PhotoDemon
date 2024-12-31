@@ -433,7 +433,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         Dim hdrICCSuccess As Boolean: hdrICCSuccess = False
         
         'If an ICC profile exists, attempt to use it
-        If FreeImage_HasICCProfile(fi_hDIB) Then
+        If FreeImage_HasICCProfile(fi_hDIB) And ColorManagement.UseEmbeddedICCProfiles() Then
             
             FI_DebugMsg "HDR image identified.  ICC profile found; attempting to convert automatically...", suppressDebugData
             hdrICCSuccess = GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB)
@@ -508,7 +508,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         
         'If the image is grayscale, and it has an ICC profile, we need to apply that prior to continuing.
         ' (Grayscale images have grayscale ICC profiles which the default ICC profile handler can't address.)
-        If (fi_BPP = 8) And FreeImage_HasICCProfile(fi_hDIB) Then
+        If (fi_BPP = 8) And FreeImage_HasICCProfile(fi_hDIB) And ColorManagement.UseEmbeddedICCProfiles() Then
             
             'In the future, 8-bpp RGB/A conversion could be handled here.
             ' (Note that you need to up-sample the source image prior to conversion, however, as LittleCMS doesn't work with palettes.)
@@ -557,7 +557,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     
     If (Not dstDIBFinished) And (dstDIB.GetColorManagementState = cms_NoManagement) And profileOK Then
         
-        If (Not srcIccProfile Is Nothing) Then
+        If (Not srcIccProfile Is Nothing) And ColorManagement.UseEmbeddedICCProfiles() Then
         
             FI_DebugMsg "Applying final color management operation...", suppressDebugData
             

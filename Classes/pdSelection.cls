@@ -162,6 +162,8 @@ Private Const ANT_DASH_SIZE As Single = 4!
 Private Const ANT_DASH_SPEED_SLOW As Long = 200     'Frame time for marching ants animation, in ms; 200 = 5 fps (which is plenty)
 Private Const ANT_DASH_SPEED_NORMAL As Long = 67    '15 fps (which is plenty)
 Private Const ANT_DASH_SPEED_FAST As Long = 33      '30 fps (which is overkill)
+Private Const ANT_DASH_SPEED_MIN As Long = 16       '60 fps (potentially nonsense)
+Private Const ANT_DASH_ADAPTIVE_SPEED As Boolean = True     'New experiment: auto-determine ant speed based on render performance
 Private m_AntDashes() As Single, m_AntDashOffset As Single
 
 'When in outline or marching ant rendering mode, the current on-screen outline (e.g. the selection outline *already transformed*
@@ -1271,6 +1273,36 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
     x = Int(x + 0.5)
     y = Int(y + 0.5)
     
+    'For operations only involving a single point of transformation (e.g. resizing a selection by node-dragging),
+    ' we can apply snapping *now*, to the mouse coordinate itself.
+    '
+    'For operations that transform multiple points (like moving an entire selection), we need to snap points
+    ' *besides* the mouse pointer (e.g. the selection edges, or other polygon points which are not located at
+    ' the mouse position), so we must wait to snap until the transform has been applied to the underlying
+    ' selection object.
+    Dim srcPtF As PointFloat, snappedPtF As PointFloat
+    If Snap.GetSnap_Any() Then
+        
+        Dim okToSnap As Boolean
+        If m_TransformModeActive Then
+            okToSnap = okToSnap Or ((m_SelectionShape = ss_Rectangle) And ((m_CurrentPOI <> poi_Interior) And (m_CurrentPOI <> poi_Undefined)))
+            okToSnap = okToSnap Or ((m_SelectionShape = ss_Circle) And ((m_CurrentPOI <> poi_Interior) And (m_CurrentPOI <> poi_Undefined)))
+            okToSnap = okToSnap Or ((m_SelectionShape = ss_Polygon) And ((m_CurrentPOI <> poi_Interior) And (m_CurrentPOI <> poi_Undefined)))
+        Else
+            okToSnap = okToSnap Or (m_SelectionShape = ss_Rectangle)
+            okToSnap = okToSnap Or (m_SelectionShape = ss_Circle)
+        End If
+        
+        If okToSnap Then
+            srcPtF.x = x
+            srcPtF.y = y
+            Snap.SnapPointByMoving srcPtF, snappedPtF
+            x = snappedPtF.x
+            y = snappedPtF.y
+        End If
+        
+    End If
+    
     'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
     ' versus drawing a new one from scratch.)
     If m_TransformModeActive Then
@@ -1345,6 +1377,14 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                             .Bottom = .Top + m_CornersLocked.Height
                         End With
                         
+                        'We now need to apply "snap" settings, if any
+                        If Snap.GetSnap_Any() Then
+                            Dim srcRectF_Orig As RectF, dstRectF_Snapped As RectF
+                            PDMath.GetRectF_FromRectFRB m_CornersUnlocked, srcRectF_Orig
+                            Snap.SnapRectByMoving srcRectF_Orig, dstRectF_Snapped
+                            PDMath.GetRectFRB_FromRectF dstRectF_Snapped, m_CornersUnlocked
+                        End If
+                        
                 End Select
                 
                 'If a transform mode is active, re-mark the selection as being transformable
@@ -1369,12 +1409,40 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                         'Failsafe check for rapid clicks
                         If (m_NumOfPolygonPoints - 1 <= UBound(m_PolygonPointsBackup)) Then
                             
-                            'Rebuild the main polygon array by copying all points from the backup array, and applying the current
-                            ' x/y transformation distance to them.
-                            For i = 0 To m_NumOfPolygonPoints - 1
-                                m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + (x - m_MoveXDist)
-                                m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + (y - m_MoveYDist)
-                            Next i
+                            'Apply snap, as relevant
+                            Dim xOffset As Long, yOffset As Long
+                            xOffset = (x - m_MoveXDist)
+                            yOffset = (y - m_MoveYDist)
+                            
+                            If Snap.GetSnap_Any() Then
+                                
+                                'Make a local copy of all points, as they would appear if moved to the new position
+                                Dim snapPoints() As PointFloat
+                                ReDim snapPoints(0 To UBound(m_PolygonPoints)) As PointFloat
+                                For i = 0 To m_NumOfPolygonPoints - 1
+                                    snapPoints(i).x = m_PolygonPointsBackup(i).x + xOffset
+                                    snapPoints(i).y = m_PolygonPointsBackup(i).y + yOffset
+                                Next i
+                                
+                                'Snap this list of points to its best-fit location
+                                xOffset = 0
+                                yOffset = 0
+                                Snap.SnapPointListByMoving snapPoints, m_NumOfPolygonPoints, xOffset, yOffset
+                                
+                                'Relay the snapped points back to the main polygon point collection
+                                For i = 0 To m_NumOfPolygonPoints - 1
+                                    m_PolygonPoints(i).x = snapPoints(i).x + xOffset
+                                    m_PolygonPoints(i).y = snapPoints(i).y + yOffset
+                                Next i
+                            
+                            'Rebuild the main polygon array by copying all points from the backup array,
+                            ' and applying the current x/y transformation distance to them.
+                            Else
+                                For i = 0 To m_NumOfPolygonPoints - 1
+                                    m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + xOffset
+                                    m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + yOffset
+                                Next i
+                            End If
                             
                         End If
                     
@@ -1426,7 +1494,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 m_IsTransformable = True
             
             'Wand selections are not technically transformable, but we allow the user to click-drag to
-            ' move the initiaion point
+            ' move the initiation point.
             Case ss_Wand
                 
                 If (m_CornersUnlocked.Left <> x) Or (m_CornersUnlocked.Top <> y) Then
@@ -2508,7 +2576,7 @@ Private Sub CreateSelectionMask()
                         Else
                             m_WandImage.ResetDIB 0
                         End If
-                        
+                        m_WandImage.SetInitialAlphaPremultiplicationState True
                         m_parentPDImage.GetCompositedImage m_WandImage
                     
                     'In layer mode, however, we want to use the wand image *not* to store a copy of the
@@ -2522,6 +2590,7 @@ Private Sub CreateSelectionMask()
                         Else
                             m_WandImage.ResetDIB 0
                         End If
+                        m_WandImage.SetInitialAlphaPremultiplicationState True
                         
                     End If
                     
@@ -3028,6 +3097,9 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
             If (selCorners(0).x = selCorners(1).x) Then Exit Sub
             If (selCorners(0).y = selCorners(2).y) Then Exit Sub
         End If
+        
+        'Draw smart guides "beneath" the selection nodes
+        If (dstCanvas.IsMouseDown(pdLeftButton) And Drawing.Get_ShowSmartGuides()) Then Drawing.DrawSmartGuides dstCanvas, srcImage
         
         'Transform those corners into the destination viewport coordinate space
         Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, selCorners, False
@@ -4884,6 +4956,11 @@ Private Sub m_AntTimer_Timer()
     'Disallow animations if an external object has forcibly suspended them
     If m_AnimationsAllowed Then
         
+        'If rendering the outline takes too long (entirely possible on old PCs + complex magic wand selections),
+        ' we want to reduce animation frame rate to compensate.
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+        
         'Advance the current offset
         m_AntDashOffset = m_AntDashOffset + 1!
         If (m_AntDashOffset >= ANT_DASH_SIZE * 2) Then m_AntDashOffset = 0!
@@ -4899,10 +4976,45 @@ Private Sub m_AntTimer_Timer()
         End If
         
         If okayToRender Then
+            
             Dim tmpViewportParams As PD_ViewportParams
             tmpViewportParams = Viewport.GetDefaultParamObject()
             tmpViewportParams.curPOI = poi_ReuseLast
             Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0), VarPtr(tmpViewportParams)
+            
+            'If the rendering took longer than the timer frequency, reduce timer frequency to compensate
+            Dim timeTakenMS As Double
+            timeTakenMS = (VBHacks.GetTimerDifferenceNow(startTime) * 1000#)
+            
+            If ANT_DASH_ADAPTIVE_SPEED Then
+                
+                'Compare the render time to the current timer interval.
+                Dim intervalChange As Long, curInterval As Double
+                curInterval = m_AntTimer.Interval
+                
+                'We are now going to modify the timer in 5% increments (but with a little extra math
+                ' to ensure that at least 1 ms of time is added/removed, as relevant).  Note that
+                ' built-in Windows power management features can prevent these changes from mattering,
+                ' but we'll potentially keep toying with the frame rate until a nice balance of
+                ' responsiveness and fluidity is reached.
+                
+                'If render time exceeds 75% of the timer interval, slow the animation to compensate.
+                If (timeTakenMS > curInterval * 0.75) Then
+                    intervalChange = Int(curInterval * 1.05 - curInterval + 0.5)
+                    If (intervalChange < 1) Then intervalChange = 1
+                
+                'If render time takes less than 25% of the timer interval, increase animation fluidity
+                ElseIf (timeTakenMS < curInterval * 0.25) Then
+                    intervalChange = Int(curInterval - curInterval * 0.95 + 0.5)
+                    If (intervalChange > -1) Then intervalChange = -1
+                    If (curInterval <= ANT_DASH_SPEED_MIN) Then intervalChange = 0
+                End If
+                
+                'If a change was made, assign the new timer interval
+                If (intervalChange <> 0) Then m_AntTimer.Interval = curInterval + intervalChange
+                
+            End If
+            
         Else
             m_AntTimer.StopTimer
         End If

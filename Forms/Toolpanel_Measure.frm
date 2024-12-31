@@ -324,8 +324,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Measurement Tool Panel
 'Copyright 2013-2024 by Tanner Helland
 'Created: 11/July/18
-'Last updated: 09/November/21
-'Last update: convert to new flyout-driven UI
+'Last updated: 28/May/24
+'Last update: support for percent as a measurement unit
 '
 'PD's measurement tool is pretty straightforward: measure the distance and angle between two points,
 ' and relay those values to the user.  Can't beat that for simplicity!
@@ -416,7 +416,6 @@ Public Sub UpdateUIText()
             
             Dim newUnit As PD_MeasurementUnit
             newUnit = FormMain.MainCanvas(0).GetRulerUnit()
-            measurementUnitText = Units.GetNameOfUnit(newUnit, True)
             
             'Ensure the display elements are visible
             If (Not lblValue(4).Visible) Then
@@ -429,7 +428,7 @@ Public Sub UpdateUIText()
             'Repeat the same steps that we used for pixels, but this time, perform an additional conversion
             ' into the target unit space
             If Tools_Measure.GetDistanceInPx(measureValue) Then
-                lblValue(4).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, measureValue, PDImages.GetActiveImage.GetDPI), "0.0##") & " " & measurementUnitText
+                lblValue(4).Caption = Units.GetValueFormattedForUnit_FromPixel(newUnit, measureValue, PDImages.GetActiveImage.GetDPI, PDImages.GetActiveImage.Width, True)
             Else
                 lblValue(4).Caption = m_NullTextString
             End If
@@ -444,10 +443,10 @@ Public Sub UpdateUIText()
             End If
             
             'Width
-            lblValue(6).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.x - secondPoint.x), PDImages.GetActiveImage.GetDPI), "0.0##") & " " & measurementUnitText
+            lblValue(6).Caption = Units.GetValueFormattedForUnit_FromPixel(newUnit, Abs(firstPoint.x - secondPoint.x), PDImages.GetActiveImage.GetDPI, PDImages.GetActiveImage.Width, True)
             
             'Height
-            lblValue(7).Caption = Format$(Units.ConvertPixelToOtherUnit(newUnit, Abs(firstPoint.y - secondPoint.y), PDImages.GetActiveImage.GetDPI), "0.0##") & " " & measurementUnitText
+            lblValue(7).Caption = Units.GetValueFormattedForUnit_FromPixel(newUnit, Abs(firstPoint.y - secondPoint.y), PDImages.GetActiveImage.GetDPI, PDImages.GetActiveImage.Height, True)
         
         'If the current unit is "pixels", hide the extra info area
         Else

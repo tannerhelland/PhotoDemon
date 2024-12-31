@@ -189,6 +189,50 @@ Public Function GetNumOfAvailableUnits() As Long
     GetNumOfAvailableUnits = MU_MAX
 End Function
 
+'Given a measurement in pixels, convert it to some other unit of measurement.  Note that at least two parameters are required:
+' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
+' optional parameters may also be necessary: a pixel resolution, expressed as PPI (needed for absolute measurements like inches
+' or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.
+Public Function GetValueFormattedForUnit_FromPixel(ByVal curUnit As PD_MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double = 0#, Optional ByVal initPixelValue As Double = 0#, Optional ByVal appendUnitAsText As Boolean = False) As String
+    
+    If (curUnit <> mu_Pixels) Then srcPixelValue = Units.ConvertPixelToOtherUnit(curUnit, srcPixelValue, srcPixelResolution, initPixelValue)
+    
+    Select Case curUnit
+    
+        Case mu_Percent
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
+        
+        Case mu_Pixels
+            GetValueFormattedForUnit_FromPixel = CStr(Int(srcPixelValue + 0.5))
+        
+        Case mu_Inches
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0##")
+        
+        Case mu_Centimeters
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
+            
+        Case mu_Millimeters
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
+            
+        Case mu_Points
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
+        
+        Case mu_Picas
+            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
+        
+    End Select
+    
+    If appendUnitAsText Then
+        If (curUnit = mu_Percent) Then
+            Const PERCENT_SIGN As String = "%"
+            GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit_FromPixel & PERCENT_SIGN
+        Else
+            GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit_FromPixel & " " & Units.GetNameOfUnit(curUnit, True)
+        End If
+    End If
+        
+End Function
+
 'Returns TRUE if the current user's locale settings prefer METRIC (not imperial)
 Public Function LocaleUsesMetric() As Boolean
     

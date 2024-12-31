@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2024 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 05/September/23
-'Last update: switch JPEG-XL support to on-demand (instead of trying to ship it with PD)
+'Last updated: 16/July/24
+'Last update: prototype libheif support
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' Current builds require a number of third-party libraries for full feature availability.  (Some of these
@@ -29,7 +29,7 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST UPDATE THIS.  PhotoDemon iterates plugins in order,
 ' so if you do not update this count, the plugin at the end of the chain (probably zstd) won't be
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 14
+Private Const CORE_PLUGIN_COUNT As Long = 15
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using for..next loops (during initialization).
@@ -40,6 +40,7 @@ Public Enum PD_PluginCore
     CCP_FreeImage
     CCP_libavif
     CCP_libdeflate
+    CCP_libheif
     CCP_libjxl
     CCP_libwebp
     CCP_LittleCMS
@@ -52,8 +53,8 @@ End Enum
 
 #If False Then
     Private Const CCP_libavif = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
-    Private Const CCP_libjxl = 0, CCP_libwebp = 0, CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pdfium = 0, CCP_pspiHost = 0
-    Private Const CCP_resvg = 0, CCP_zstd = 0
+    Private Const CCP_libheif = 0, CCP_libjxl = 0, CCP_libwebp = 0, CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pdfium = 0
+    Private Const CCP_pspiHost = 0, CCP_resvg = 0, CCP_zstd = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -62,16 +63,17 @@ Private Const EXPECTED_CHARLS_VERSION As String = "2.4.2"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.70"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
-Private Const EXPECTED_LIBAVIF_VERSION As String = "1.0.4"
-Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.19"
-Private Const EXPECTED_LIBJXL_VERSION As String = "0.10.0"
+Private Const EXPECTED_LIBAVIF_VERSION As String = "1.1.1"
+Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.23"
+Private Const EXPECTED_LIBHEIF_VERSION As String = "1.17.6"
+Private Const EXPECTED_LIBJXL_VERSION As String = "0.11.1"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
-Private Const EXPECTED_PDFIUM_VERSION As String = "123.0.6309"
+Private Const EXPECTED_PDFIUM_VERSION As String = "126.0.6447"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
-Private Const EXPECTED_RESVG_VERSION As String = "0.40.0"
-Private Const EXPECTED_WEBP_VERSION As String = "1.3.2"
-Private Const EXPECTED_ZSTD_VERSION As String = "10505"
+Private Const EXPECTED_RESVG_VERSION As String = "0.44.0"
+Private Const EXPECTED_WEBP_VERSION As String = "1.4.0"
+Private Const EXPECTED_ZSTD_VERSION As String = "10506"
 
 'To simplify handling throughout this module, plugin existence, allowance, and successful initialization are tracked internally.
 ' Note that not all of these specific states are retrievable externally; in general, callers should use the simplified
@@ -182,7 +184,15 @@ Public Sub ReportPluginLoadSuccess()
         If m_PluginInitialized(i) Then
             successfulPluginCount = successfulPluginCount + 1
         Else
-            PDDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
+            
+            'Optional plugins are still considered "successfully loaded" if they simply haven't been
+            ' enabled for this PD instance
+            If IsPluginAvailableOnDemand(i) Then
+                successfulPluginCount = successfulPluginCount + 1
+            Else
+                PDDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & GetPluginName(i) & ") was not initialized."
+            End If
+            
         End If
     Next i
     
@@ -195,7 +205,7 @@ End Sub
 Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
-            GetPluginFilename = "charls-2-x86.dll"
+            GetPluginFilename = "charls-2.dll"
         Case CCP_ExifTool
             GetPluginFilename = "exiftool.exe"
         Case CCP_EZTwain
@@ -206,6 +216,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginFilename = "avifdec.exe"
         Case CCP_libdeflate
             GetPluginFilename = "libdeflate.dll"
+        Case CCP_libheif
+            GetPluginFilename = "libheif.dll"
         Case CCP_libjxl
             GetPluginFilename = "djxl.exe"
         Case CCP_LittleCMS
@@ -239,6 +251,8 @@ Public Function GetPluginName(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginName = "libavif"
         Case CCP_libdeflate
             GetPluginName = "libdeflate"
+        Case CCP_libheif
+            GetPluginName = "libheif"
         Case CCP_libjxl
             GetPluginName = "libjxl"
         Case CCP_LittleCMS
@@ -286,6 +300,9 @@ Public Function GetPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
         Case CCP_libdeflate
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_libdeflate.GetCompressorVersion()
         
+        Case CCP_libheif
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_Heif.GetVersion()
+            
         Case CCP_libjxl
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_jxl.GetLibJXLVersion()
         
@@ -333,7 +350,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
     Select Case pluginEnumID
         
         Case CCP_CharLS
-            dstStringStack.AddString "charls-2-x86.LICENSE.md"
+            dstStringStack.AddString "charls-2.LICENSE.md"
         
         Case CCP_ExifTool
             dstStringStack.AddString "exiftool-README.txt"
@@ -351,6 +368,11 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
         Case CCP_libdeflate
             dstStringStack.AddString "libdeflate-LICENSE.txt"
         
+        Case CCP_libheif
+            dstStringStack.AddString "libde265.dll"
+            dstStringStack.AddString "libx265.dll"
+            dstStringStack.AddString "libheif-LICENSE.txt"
+            
         Case CCP_libjxl
             dstStringStack.AddString "cjxl.exe"
             dstStringStack.AddString "jxlinfo.exe"
@@ -414,6 +436,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As PD_PluginCore) As
             IsPluginCurrentlyEnabled = m_avifExportEnabled Or m_avifImportEnabled
         Case CCP_libdeflate
             IsPluginCurrentlyEnabled = m_LibDeflateEnabled
+        Case CCP_libheif
+            IsPluginCurrentlyEnabled = Plugin_Heif.IsLibheifEnabled()
         Case CCP_libjxl
             IsPluginCurrentlyEnabled = Plugin_jxl.IsJXLImportAvailable()
         Case CCP_libwebp
@@ -451,6 +475,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As PD_PluginCore, ByVal newEna
             m_avifImportEnabled = newEnabledState
         Case CCP_libdeflate
             m_LibDeflateEnabled = newEnabledState
+        Case CCP_libheif
+            Plugin_Heif.ForciblySetAvailability newEnabledState
         Case CCP_libjxl
             Plugin_jxl.ForciblySetAvailability newEnabledState
         Case CCP_libwebp
@@ -527,7 +553,11 @@ Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As PD_PluginCore) As 
     Select Case pluginEnumID
         Case CCP_libavif
             IsPluginUnavailableOnXP = True
+        Case CCP_libheif
+            IsPluginUnavailableOnXP = True
         Case CCP_libjxl
+            IsPluginUnavailableOnXP = True
+        Case CCP_pdfium
             IsPluginUnavailableOnXP = True
         Case CCP_resvg
             IsPluginUnavailableOnXP = True
@@ -551,6 +581,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As PD_PluginCore) As St
             ExpectedPluginVersion = EXPECTED_LIBAVIF_VERSION
         Case CCP_libdeflate
             ExpectedPluginVersion = EXPECTED_LIBDEFLATE_VERSION
+        Case CCP_libheif
+            ExpectedPluginVersion = EXPECTED_LIBHEIF_VERSION
         Case CCP_libjxl
             ExpectedPluginVersion = EXPECTED_LIBJXL_VERSION
         Case CCP_libwebp
@@ -585,6 +617,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginHomepage = "https://github.com/AOMediaCodec/libavif"
         Case CCP_libdeflate
             GetPluginHomepage = "https://github.com/ebiggers/libdeflate"
+        Case CCP_libheif
+            GetPluginHomepage = "https://github.com/strukturag/libheif"
         Case CCP_libjxl
             GetPluginHomepage = "https://github.com/libjxl/libjxl"
         Case CCP_libwebp
@@ -619,6 +653,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As PD_PluginCore) As Str
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_libdeflate
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
+        Case CCP_libheif
+            GetPluginLicenseName = g_Language.TranslateMessage("LGPL license")
         Case CCP_libjxl
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_libwebp
@@ -653,6 +689,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As PD_PluginCore) As Stri
             GetPluginLicenseURL = "https://github.com/AOMediaCodec/libavif/blob/master/LICENSE"
         Case CCP_libdeflate
             GetPluginLicenseURL = "https://github.com/ebiggers/libdeflate/blob/master/COPYING"
+        Case CCP_libheif
+            GetPluginLicenseURL = "https://github.com/strukturag/libheif#License-1-ov-file"
         Case CCP_libjxl
             GetPluginLicenseURL = "https://github.com/libjxl/libjxl/blob/main/LICENSE"
         Case CCP_libwebp
@@ -728,6 +766,9 @@ Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolea
                 m_CompressorsInitialized = initializationSuccessful
             End If
         
+        Case CCP_libheif
+            initializationSuccessful = Plugin_Heif.InitializeEngine(PluginManager.GetPluginPath)
+        
         Case CCP_libjxl
             initializationSuccessful = Plugin_jxl.InitializeLibJXL(PluginManager.GetPluginPath)
             
@@ -778,6 +819,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As PD_PluginCore, ByVal plug
         Case CCP_libdeflate
             m_LibDeflateEnabled = pluginState
         
+        Case CCP_libheif
+            Plugin_Heif.ForciblySetAvailability pluginState
+            
         Case CCP_libjxl
             Plugin_jxl.ForciblySetAvailability pluginState
         
@@ -850,8 +894,12 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As PD_PluginCore) As Boo
     
     'The plugin file is missing.  Let's see if we can find it.
     Else
-    
-        PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
+        
+        If (Not IsPluginAvailableOnDemand(pluginEnumID)) Then
+            PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
+        Else
+            PDDebug.LogAction "Optional plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") is not installed."
+        End If
     
         Dim extraFiles As pdStringStack
         Set extraFiles = New pdStringStack
@@ -895,7 +943,9 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As PD_PluginCore) As Boo
         
         'If the plugin file doesn't exist in the base folder either, we're SOL.  Exit now.
         Else
-            PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
+            If (Not IsPluginAvailableOnDemand(pluginEnumID)) Then
+                PDDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
+            End If
             DoesPluginFileExist = False
         End If
     
@@ -931,6 +981,9 @@ Public Sub TerminateAllPlugins()
     
     Plugin_resvg.ReleaseEngine
     PDDebug.LogAction "resvg released"
+    
+    Plugin_Heif.ReleaseEngine
+    PDDebug.LogAction "libheif released"
     
     Plugin_FreeImage.ReleaseFreeImage
     ImageFormats.SetFreeImageEnabled False

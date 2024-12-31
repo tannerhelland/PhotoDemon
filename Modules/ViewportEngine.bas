@@ -129,6 +129,9 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             'Flip the viewport buffer over to the canvas control.  Any additional rendering must now happen there.
             GDI.BitBltWrapper dstCanvas.hDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
             
+            'Some canvas UI options are universal, rendered atop *any* tool
+            If Drawing.Get_ShowLayerEdges() Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+            
             'Lastly, do any tool-specific rendering directly onto the canvas itself.
             
             'Various tools do their own custom UI rendering atop the canvas

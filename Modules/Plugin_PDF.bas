@@ -207,6 +207,14 @@ End Function
 
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     
+    'I don't currently know how to build pdfium in an XP-compatible way.
+    ' As a result, its support is limited to Win Vista and above.
+    If (Not OS.IsVistaOrLater) Then
+        InitializeEngine = False
+        PDDebug.LogAction "pdfium does not currently work on Windows XP"
+        Exit Function
+    End If
+        
     m_LibFullPath = pathToDLLFolder & "pdfium.dll"
     m_LibHandle = VBHacks.LoadLib(m_LibFullPath)
     m_LibAvailable = (m_LibHandle <> 0)

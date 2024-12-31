@@ -53,10 +53,34 @@ Begin VB.Form FormOptions
       Width           =   8295
       _ExtentX        =   14631
       _ExtentY        =   11853
+      Begin PhotoDemon.pdCheckBox chkZoomMouse 
+         Height          =   360
+         Left            =   90
+         TabIndex        =   45
+         Top             =   1965
+         Width           =   7815
+         _ExtentX        =   13785
+         _ExtentY        =   635
+         Caption         =   "zoom with mouse wheel"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdSpinner spnSnapDistance 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   44
+         Top             =   4800
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   661
+         DefaultValue    =   8
+         Min             =   1
+         Max             =   255
+         Value           =   8
+      End
       Begin PhotoDemon.pdPictureBox picGrid 
          Height          =   735
          Left            =   150
-         Top             =   4530
+         Top             =   5760
          Width           =   735
          _ExtentX        =   1296
          _ExtentY        =   1296
@@ -65,7 +89,7 @@ Begin VB.Form FormOptions
          Height          =   375
          Left            =   3840
          TabIndex        =   39
-         Top             =   360
+         Top             =   375
          Width           =   2175
          _ExtentX        =   3836
          _ExtentY        =   661
@@ -74,7 +98,7 @@ Begin VB.Form FormOptions
          Height          =   975
          Left            =   120
          TabIndex        =   37
-         Top             =   810
+         Top             =   840
          Width           =   7815
          _ExtentX        =   13785
          _ExtentY        =   1720
@@ -85,7 +109,7 @@ Begin VB.Form FormOptions
          Height          =   345
          Left            =   3840
          TabIndex        =   3
-         Top             =   2400
+         Top             =   2790
          Width           =   1935
          _ExtentX        =   3413
          _ExtentY        =   609
@@ -96,8 +120,8 @@ Begin VB.Form FormOptions
       End
       Begin PhotoDemon.pdLabel lblRecentFileCount 
          Height          =   240
-         Left            =   120
-         Top             =   2430
+         Left            =   135
+         Top             =   2820
          Width           =   3480
          _ExtentX        =   6138
          _ExtentY        =   423
@@ -109,7 +133,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   13
          Left            =   0
-         Top             =   2040
+         Top             =   2415
          Width           =   8100
          _ExtentX        =   14288
          _ExtentY        =   503
@@ -133,7 +157,7 @@ Begin VB.Form FormOptions
          Height          =   810
          Left            =   1080
          TabIndex        =   2
-         Top             =   4500
+         Top             =   5700
          Width           =   3015
          _ExtentX        =   5318
          _ExtentY        =   1429
@@ -144,7 +168,7 @@ Begin VB.Form FormOptions
          Height          =   795
          Left            =   4140
          TabIndex        =   4
-         Top             =   4500
+         Top             =   5700
          Width           =   3015
          _ExtentX        =   5318
          _ExtentY        =   1402
@@ -155,7 +179,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   7260
          TabIndex        =   5
-         Top             =   4560
+         Top             =   5760
          Width           =   465
          _ExtentX        =   820
          _ExtentY        =   1217
@@ -165,7 +189,7 @@ Begin VB.Form FormOptions
          Height          =   690
          Left            =   7770
          TabIndex        =   6
-         Top             =   4560
+         Top             =   5760
          Width           =   465
          _ExtentX        =   820
          _ExtentY        =   1217
@@ -175,7 +199,7 @@ Begin VB.Form FormOptions
          Height          =   285
          Index           =   2
          Left            =   0
-         Top             =   4080
+         Top             =   5280
          Width           =   8205
          _ExtentX        =   14473
          _ExtentY        =   503
@@ -187,7 +211,7 @@ Begin VB.Form FormOptions
          Height          =   975
          Left            =   120
          TabIndex        =   38
-         Top             =   2850
+         Top             =   3210
          Width           =   7815
          _ExtentX        =   13785
          _ExtentY        =   1508
@@ -204,6 +228,18 @@ Begin VB.Form FormOptions
          Caption         =   "canvas background color:"
          ForeColor       =   4210752
          Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   23
+         Left            =   0
+         Top             =   4320
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "snap distance (in pixels)"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -635,6 +671,17 @@ Begin VB.Form FormOptions
       _ExtentY        =   11853
       Begin PhotoDemon.pdCheckBox chkColorManagement 
          Height          =   315
+         Index           =   1
+         Left            =   240
+         TabIndex        =   46
+         Top             =   5040
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   556
+         Caption         =   "use embedded ICC profiles, when available"
+      End
+      Begin PhotoDemon.pdCheckBox chkColorManagement 
+         Height          =   315
          Index           =   0
          Left            =   240
          TabIndex        =   11
@@ -742,6 +789,29 @@ Begin VB.Form FormOptions
          _ExtentX        =   13970
          _ExtentY        =   582
          Caption         =   "use custom profiles for each display"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   24
+         Left            =   0
+         Top             =   4560
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "file policies"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdCheckBox chkColorManagement 
+         Height          =   315
+         Index           =   2
+         Left            =   240
+         TabIndex        =   47
+         Top             =   5400
+         Width           =   8055
+         _ExtentX        =   14208
+         _ExtentY        =   556
+         Caption         =   "use format-specific color management data, when available"
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -970,8 +1040,8 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright 2002-2024 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 30/September/20
-'Last update: new options for default folder during Save As
+'Last updated: 28/December/24
+'Last update: handle new user preference for mouse wheel zoom vs scroll
 '
 'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
 ' XML file that actually stores all preferences.
@@ -1180,10 +1250,15 @@ Private Sub cmdBarMini_OKClick()
         g_RecentMacros.MRU_NotifyNewMaxLimit
     End If
     
+    UserPrefs.SetPref_Boolean "Interface", "wheel-zoom", chkZoomMouse.Value
+    UserPrefs.SetZoomWithWheel chkZoomMouse.Value
+    
+    UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance.Value
+    Snap.SetSnap_Distance spnSnapDistance.Value
+    
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
     UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)
-    
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
     Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
     
@@ -1251,6 +1326,9 @@ Private Sub cmdBarMini_OKClick()
     
     ColorManagement.SetDisplayBPC chkColorManagement(0).Value
     ColorManagement.SetDisplayRenderingIntentPref cboDisplayRenderIntent.ListIndex
+    UserPrefs.SetPref_Boolean "ColorManagement", "allow-icc-profiles", chkColorManagement(1).Value
+    UserPrefs.SetPref_Boolean "ColorManagement", "allow-legacy-profiles", chkColorManagement(2).Value
+    ColorManagement.UpdateColorManagementPreferences
     
     'Changes to color preferences require us to re-cache any working-space-to-screen transform data.
     CacheDisplayCMMData
@@ -1408,6 +1486,7 @@ Private Sub LoadAllPreferences()
     csCanvasColor.Color = UserPrefs.GetCanvasColor()
     tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
     btsMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
+    spnSnapDistance.Value = UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
     csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
@@ -1533,6 +1612,8 @@ Private Sub Form_Load()
     btsMRUStyle.AddItem "compact (filename only)", 0
     btsMRUStyle.AddItem "verbose (filename and path)", 1
     btsMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
+    
+    chkZoomMouse.Value = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
     
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.Clear
@@ -1660,7 +1741,12 @@ Private Sub Form_Load()
     
     cboDisplayRenderIntent.AssignTooltip "If you do not know what this setting controls, set it to ""Perceptual"".  Perceptual rendering intent is the best choice for most users."
     chkColorManagement(0).AssignTooltip "BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON."
-        
+    
+    chkColorManagement(1).Value = ColorManagement.UseEmbeddedICCProfiles()
+    chkColorManagement(1).AssignTooltip "Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data)."
+    chkColorManagement(2).Value = ColorManagement.UseEmbeddedLegacyProfiles()
+    chkColorManagement(2).AssignTooltip "Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried."
+    
     'Update preferences
     cboUpdates(0).Clear
     cboUpdates(0).AddItem "each session", 0

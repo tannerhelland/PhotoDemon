@@ -295,7 +295,7 @@ Friend Function GetUniqueID() As String
         Dim tmpString As String
         tmpString = OS.GetArbitraryGUID()
         m_uniqueHash = cCrypto.QuickHashString(tmpString, Len(tmpString))
-        If (Len(m_uniqueHash) > 12) Then m_uniqueHash = Left$(m_uniqueHash, 12)
+        If (Len(m_uniqueHash) > 16) Then m_uniqueHash = Left$(m_uniqueHash, 16)
     End If
     
     GetUniqueID = m_uniqueHash
@@ -1571,8 +1571,13 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     'If this is a vector layer, rasterize it
     If imgLayers(targetLayerIndex).IsLayerVector Then Layers.RasterizeLayer targetLayerIndex
     
-    'Before doing anything else, null-pad the layer we will be processing.
-    ' (At present, this function only operates on a single layer.)
+    'Before doing anything else, backup the current layer's position and dimensions, then null-pad
+    ' the layer.  (This simplifies the process of deleting selection areas that may lie outside
+    ' the current layer's dimensions - but note that for layers with affine transforms, we fall back
+    ' to a simple expand-process-autocrop function.)
+    Dim isLayerAffineTransformed As Boolean, origLayerRectF As RectF
+    isLayerAffineTransformed = imgLayers(targetLayerIndex).AffineTransformsActive(False)
+    If (Not isLayerAffineTransformed) Then imgLayers(targetLayerIndex).GetLayerBoundaryRect origLayerRectF
     imgLayers(targetLayerIndex).ConvertToNullPaddedLayer Me.Width, Me.Height
     
     'Selections can be one of several types.  Right now, we don't give special handling to simple
@@ -1648,8 +1653,13 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     MainSelection.GetCompositeMaskDIB.UnwrapArrayFromDIB selData
     imgLayers(targetLayerIndex).GetLayerDIB.UnwrapArrayFromDIB dstImageData
     
-    'Shrink the layer to its maximum relevant size
-    imgLayers(targetLayerIndex).CropNullPaddedLayer
+    'Shrink the layer to its maximum relevant size, either using the original layer rect (if the layer
+    ' *wasn't affine-transformed) or via auto-crop.
+    If (Not isLayerAffineTransformed) Then
+        imgLayers(targetLayerIndex).CropNullPaddedLayerToRect origLayerRectF
+    Else
+        imgLayers(targetLayerIndex).CropNullPaddedLayer
+    End If
     
     'Notify ourselves of the change
     PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, targetLayerIndex

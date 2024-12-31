@@ -151,6 +151,11 @@ Private m_File As pdFSO
 'If silent mode has been activated via command line, this will be set to TRUE.
 Private m_SilentMode As Boolean
 
+'I previously built PD automatic update files only on an extremely old desktop PC.
+' These days it's more convenient for me to build it wherever I'm working,
+' which means the repo may not be in the same location.
+Private m_basePath As String
+
 Private Sub cmdAction_Click(Index As Integer)
     
     Select Case Index
@@ -174,43 +179,43 @@ End Sub
 'The nightly build is unique, because we generate it directly from the current PD development folder.  As such, it uses a
 ' different series of assembly steps (compared to the stable and beta builds).
 Private Sub AssembleNightlyBuild()
-
+    
     'This list of relevant files is hardcoded to match the nightly build script's instructions for 7zip.
     Dim nightlyList As pdStringStack
     Set nightlyList = New pdStringStack
     
-    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.exe"
-    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\README.md"
-    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\LICENSE.md"
-    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\AUTHORS.md"
-    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\CODE_OF_CONDUCT.md"
-    nightlyList.AddString "C:\PhotoDemon v4\PhotoDemon\Donate to PhotoDemon.url"
+    nightlyList.AddString m_basePath & "PhotoDemon\PhotoDemon.exe"
+    nightlyList.AddString m_basePath & "PhotoDemon\README.md"
+    nightlyList.AddString m_basePath & "PhotoDemon\LICENSE.md"
+    nightlyList.AddString m_basePath & "PhotoDemon\AUTHORS.md"
+    nightlyList.AddString m_basePath & "PhotoDemon\CODE_OF_CONDUCT.md"
+    nightlyList.AddString m_basePath & "PhotoDemon\Donate to PhotoDemon.url"
     
     'For the /App subfolder, we forcibly restrict which extensions are allowed, to avoid copying any backup files
     ' or other unwanted entries.
-    m_File.RetrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\App\", nightlyList, True, False, "exe|txt|TXT|dll|xml|pdrc"
+    m_File.RetrieveAllFiles m_basePath & "PhotoDemon\App\", nightlyList, True, False, "exe|txt|TXT|dll|xml|pdrc"
     
     'Manually remove any files we don't want to include in nightly downloads
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\avifdec.exe", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\avifenc.exe", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\brotlicommon.dll", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\brotlidec.dll", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\brotlienc.dll", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\cjxl.exe", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\djxl.exe", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\jxl.dll", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\jxl_threads.dll", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\jxlinfo.exe", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.brotli", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.giflib", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.highway", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libjpeg-turbo", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libjxl", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libpng", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libwebp", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.sjpeg", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.skcms", True
-    nightlyList.RemoveStringByText "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.zlib", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\avifdec.exe", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\avifenc.exe", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\brotlicommon.dll", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\brotlidec.dll", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\brotlienc.dll", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\cjxl.exe", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\djxl.exe", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\jxl.dll", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\jxl_threads.dll", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\jxlinfo.exe", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.brotli", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.giflib", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.highway", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libjpeg-turbo", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libjxl", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libpng", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.libwebp", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.sjpeg", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.skcms", True
+    nightlyList.RemoveStringByText m_basePath & "PhotoDemon\App\PhotoDemon\Plugins\libjxl-LICENSE.zlib", True
     
     'Make a copy of the current file list for post-compression verification
     Dim verifyFiles As pdStringStack
@@ -222,20 +227,20 @@ Private Sub AssembleNightlyBuild()
     Set nightlyPackage = New pdPackager
     nightlyPackage.PrepareNewPackage 4, PD_PATCH_IDENTIFIER
     
-    nightlyPackage.AutoAddNodesFromStringStack nightlyList, "C:\PhotoDemon v4\PhotoDemon\", , True
+    nightlyPackage.AutoAddNodesFromStringStack nightlyList, m_basePath & "PhotoDemon\", , True
     
     'We also want to add the update patching program itself
-    nightlyPackage.AutoAddNodeFromFile "C:\PhotoDemon v4\PhotoDemon\Support\Update Patcher 2.0\PD_Update_Patcher.exe", 99, "\PD_Update_Patcher.exe"
+    nightlyPackage.AutoAddNodeFromFile m_basePath & "PhotoDemon\Support\Update Patcher 2.0\PD_Update_Patcher.exe", 99, "\PD_Update_Patcher.exe"
     
     'Write the completed package out to the updates folder
-    nightlyPackage.WritePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz2", , True
+    nightlyPackage.WritePackageToFile m_basePath & "PhotoDemon\no_sync\PD_Updates\nightly.pdz2", , True
     
     'Next, we're going to extract all packaged files to a temp folder.  This serves two purposes: it lets us verify that the packaging went
     ' as expected, and it also gives us a dedicated folder we can scan for assembling version and checksum data.
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
-    nightlyPackage.ReadPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly.pdz2", PD_PATCH_IDENTIFIER
-    nightlyPackage.AutoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly_auto_extract_test\"
+    nightlyPackage.ReadPackageFromFile m_basePath & "PhotoDemon\no_sync\PD_Updates\nightly.pdz2", PD_PATCH_IDENTIFIER
+    nightlyPackage.AutoExtractAllFiles m_basePath & "PhotoDemon\no_sync\PD_Updates\nightly_auto_extract_test\"
     Debug.Print "Verified nightly build file extraction in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     'We now want to manually verify file contents, to ensure they are byte-for-byte identical
@@ -248,7 +253,7 @@ Private Sub AssembleNightlyBuild()
     
     Dim testFilePath As String
     Do While verifyFiles.PopString(testFilePath)
-        If (Not Files.FilesEqual(testFilePath, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\nightly_auto_extract_test\" & cFSO.GenerateRelativePath("C:\PhotoDemon v4\PhotoDemon\", testFilePath))) Then
+        If (Not Files.FilesEqual(testFilePath, m_basePath & "PhotoDemon\no_sync\PD_Updates\nightly_auto_extract_test\" & cFSO.GenerateRelativePath(m_basePath & "PhotoDemon\", testFilePath))) Then
             failedFiles.AddString testFilePath
         End If
     Loop
@@ -276,29 +281,29 @@ Private Sub AssembleStableAndBetaBuilds()
     
     'Build the stable update file directly from its folder.
     cPackage.PrepareNewPackage 4, PD_PATCH_IDENTIFIER
-    cPackage.AutoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable\", 0
-    cPackage.AutoAddNodeFromFile "C:\PhotoDemon v4\PhotoDemon\Support\Update Patcher 2.0\PD_Update_Patcher.exe", 99, "\PD_Update_Patcher.exe"
-    cPackage.WritePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable.pdz2", , True
+    cPackage.AutoAddNodesFromFolder m_basePath & "PhotoDemon\no_sync\PD_Updates\stable\", 0
+    cPackage.AutoAddNodeFromFile m_basePath & "PhotoDemon\Support\Update Patcher 2.0\PD_Update_Patcher.exe", 99, "\PD_Update_Patcher.exe"
+    cPackage.WritePackageToFile m_basePath & "PhotoDemon\no_sync\PD_Updates\stable.pdz2", , True
     
     'Repeat the above steps for the beta update folder
     Set cPackage = New pdPackager
     cPackage.PrepareNewPackage 4, PD_PATCH_IDENTIFIER
-    cPackage.AutoAddNodesFromFolder "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta\", 0
-    cPackage.AutoAddNodeFromFile "C:\PhotoDemon v4\PhotoDemon\Support\Update Patcher 2.0\PD_Update_Patcher.exe", 99, "\PD_Update_Patcher.exe"
-    cPackage.WritePackageToFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta.pdz2", , True
+    cPackage.AutoAddNodesFromFolder m_basePath & "PhotoDemon\no_sync\PD_Updates\beta\", 0
+    cPackage.AutoAddNodeFromFile m_basePath & "PhotoDemon\Support\Update Patcher 2.0\PD_Update_Patcher.exe", 99, "\PD_Update_Patcher.exe"
+    cPackage.WritePackageToFile m_basePath & "PhotoDemon\no_sync\PD_Updates\beta.pdz2", , True
     
     'Want to test extraction, to verify everything was stored correctly?  Use these lines:
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
     Set cPackage = New pdPackager
-    cPackage.ReadPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta.pdz2", PD_PATCH_IDENTIFIER
-    cPackage.AutoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\beta_auto_extract_test\"
+    cPackage.ReadPackageFromFile m_basePath & "PhotoDemon\no_sync\PD_Updates\beta.pdz2", PD_PATCH_IDENTIFIER
+    cPackage.AutoExtractAllFiles m_basePath & "PhotoDemon\no_sync\PD_Updates\beta_auto_extract_test\"
     Debug.Print "Verified beta build file extraction in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
     VBHacks.GetHighResTime startTime
     Set cPackage = New pdPackager
-    cPackage.ReadPackageFromFile "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable.pdz2", PD_PATCH_IDENTIFIER
-    cPackage.AutoExtractAllFiles "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_Updates\stable_auto_extract_test\"
+    cPackage.ReadPackageFromFile m_basePath & "PhotoDemon\no_sync\PD_Updates\stable.pdz2", PD_PATCH_IDENTIFIER
+    cPackage.AutoExtractAllFiles m_basePath & "PhotoDemon\no_sync\PD_Updates\stable_auto_extract_test\"
     Debug.Print "Verified stable build file extraction in " & VBHacks.GetTimeDiffNowAsString(startTime)
     
 End Sub
@@ -308,14 +313,14 @@ Private Sub MakeVersionFile()
     
     'Retrieve stable, beta, developer build versions
     Dim vStable As String, vBeta As String, vDev As String
-    vStable = GetFileVersion_Modified("C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\stable\PhotoDemon.exe")
-    vBeta = GetFileVersion_Modified("C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\beta\PhotoDemon.exe")
-    vDev = GetFileVersion_Modified("C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\nightly_auto_extract_test\PhotoDemon.exe")
+    vStable = GetFileVersion_Modified(m_basePath & "PhotoDemon\no_sync\PD_updates\stable\PhotoDemon.exe")
+    vBeta = GetFileVersion_Modified(m_basePath & "PhotoDemon\no_sync\PD_updates\beta\PhotoDemon.exe")
+    vDev = GetFileVersion_Modified(m_basePath & "PhotoDemon\no_sync\PD_updates\nightly_auto_extract_test\PhotoDemon.exe")
     
     'We now want to write these version numbers out to file - specifically, the YAML file that describes
     ' the PhotoDemon update server homepage.
     Dim targetFile As String
-    targetFile = "C:\PhotoDemon v4\PhotoDemon-Updates-v2\_config.yml"
+    targetFile = m_basePath & "PhotoDemon-Updates-v2\_config.yml"
     
     Dim srcYML As String
     If Files.FileLoadAsString(targetFile, srcYML) Then
@@ -369,28 +374,28 @@ Private Sub MakeVersionFile()
     
     'For each build, we're going to generate some key pieces of information.  Start with the stable build.
     xmlOutput.writeTagWithAttribute "update", "track", "stable", "", True
-    AddVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\stable\"
+    AddVersionGroupToXML xmlOutput, m_basePath & "PhotoDemon\no_sync\PD_updates\stable\"
     xmlOutput.closeTag "update"
     xmlOutput.writeBlankLine
     
     'Next comes beta (which is often the same as the stable release)
     xmlOutput.writeTagWithAttribute "update", "track", "beta", "", True
-    AddVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\beta\"
+    AddVersionGroupToXML xmlOutput, m_basePath & "PhotoDemon\no_sync\PD_updates\beta\"
     xmlOutput.closeTag "update"
     xmlOutput.writeBlankLine
     
     'Last comes nightly.  Note that the nightly files will be out of date unless Step 1 (AssembleNightlyBuild) has been run during this session.
     xmlOutput.writeTagWithAttribute "update", "track", "nightly", "", True
-    AddVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\nightly\"
+    AddVersionGroupToXML xmlOutput, m_basePath & "PhotoDemon\no_sync\PD_updates\nightly\"
     xmlOutput.closeTag "update"
     xmlOutput.writeBlankLine
     
     'Also, write out release announcement links.  These are stored in a custom local XML file.
-    AddReleaseAnnouncementLinks xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\release_announcements.xml"
+    AddReleaseAnnouncementLinks xmlOutput, m_basePath & "PhotoDemon\no_sync\PD_updates\release_announcements.xml"
     
     'Write the XML out to file
     Dim dstFile As String
-    dstFile = "C:\PhotoDemon v4\pdupdate2.xml"
+    dstFile = m_basePath & "pdupdate2.xml"
     
     xmlOutput.writeXMLToFile dstFile
     
@@ -442,18 +447,12 @@ Private Sub AddVersionGroupToXML(ByRef xmlOutput As pdXML, ByRef srcPath As Stri
         'Retrieve the file's version (if any)
         vString = GetFileVersion_Modified(curFile)
         
-        'If version isn unavailable, we must fall back to checksums for updating files.
+        'If version isn't available, we must fall back to checksums for updating files.
         If (StrComp(vString, "unknown", vbBinaryCompare) <> 0) Then
             xmlOutput.writeTagWithAttribute "version", "component", m_File.GenerateRelativePath(srcPath, curFile), vString
         End If
         
-        'Checksums are always written out to file
-        'TODO!
-        'xmlOutput.writeTagWithAttribute "checksum", "component", m_File.GenerateRelativePath(srcPath, curFile), cPackager.checkSumArbitraryFile(curFile)
-        
     Loop
-    
-    
     
 End Sub
 
@@ -473,6 +472,12 @@ End Function
 Private Sub Form_Load()
     
     Set m_File = New pdFSO
+    
+    If Files.PathExists("C:\PhotoDemon v4", False) Then
+        m_basePath = "C:\PhotoDemon v4\"
+    Else
+        m_basePath = "C:\tanner-dev\"
+    End If
     
     'Initialize compression engines
     Compression.InitializeCompressionEngine PD_CE_Zstd, App.Path & "\"

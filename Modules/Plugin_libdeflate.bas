@@ -181,15 +181,15 @@ End Sub
 
 'libdeflate doesn't export a version function, but this class was last tested against the v1.19 release.
 Public Function GetCompressorVersion() As String
-    GetCompressorVersion = "1.19"
+    GetCompressorVersion = "1.23"
 End Function
 
 Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib) As Boolean
     CompressPtrToPtr = LibDeflateCompress(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel, cmpFormat)
 End Function
 
-Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib, Optional ByVal allowFallbacks As Boolean = True) As Boolean
-    DecompressPtrToPtr = LibDeflateDecompress(constDstPtr, constDstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cmpFormat, allowFallbacks)
+Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib, Optional ByVal allowFallbacks As Boolean = True, Optional ByVal suppressErrors As Boolean = False) As Boolean
+    DecompressPtrToPtr = LibDeflateDecompress(constDstPtr, constDstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cmpFormat, allowFallbacks, suppressErrors)
 End Function
 
 Public Function GetCrc32(ByVal srcPtr As Long, ByVal srcLen As Long, Optional ByVal startValue As Long = 0&, Optional ByVal calcStartForMe As Boolean = True) As Long
@@ -303,7 +303,7 @@ Private Function LibDeflateCompress(ByVal constDstPtr As Long, ByRef dstSizeInBy
     
 End Function
 
-Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib, Optional ByVal allowFallbacks As Boolean = True) As Boolean
+Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, Optional ByVal cmpFormat As PD_CompressionFormat = cf_Zlib, Optional ByVal allowFallbacks As Boolean = True, Optional ByVal suppressErrors As Boolean = False) As Boolean
     
     'Allocate a decompressor
     ' LIBDEFLATEAPI struct libdeflate_decompressor * libdeflate_alloc_decompressor(void)
@@ -327,7 +327,7 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
         ' lost/ignored, but this may produce enough data for the caller to proceed normally.
         If (lReturn <> ld_Success) And allowFallbacks Then
             
-            InternalError "LibDeflateDecompress", "full decompress failed; attempting partial decompress instead..."
+            If (Not suppressErrors) Then InternalError "LibDeflateDecompress", "full decompress failed (" & lReturn & "); attempting partial decompress instead..."
             
             Dim bytesWritten As Long
             If (cmpFormat = cf_Zlib) Then
@@ -339,10 +339,14 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
             End If
             
             If (constDstSizeInBytes = bytesWritten) Then
-                lReturn = 0
-                InternalError "LibDeflateDecompress", "Partial decompression successful."
+                lReturn = ld_Success
+                If (Not suppressErrors) Then InternalError "LibDeflateDecompress", "Partial decompression successful."
             Else
-                InternalError "LibDeflateDecompress", "Partial decompression failed; source data is likely corrupt. (" & lReturn & ", " & bytesWritten & ")"
+                If (lReturn = ld_Success) Then
+                    If (Not suppressErrors) Then InternalError "LibDeflateDecompress", "Partial decompression worked but bytes written is unexpected (" & bytesWritten & " written vs " & constDstSizeInBytes & " expected)"
+                Else
+                    If (Not suppressErrors) Then InternalError "LibDeflateDecompress", "Partial decompression failed; source data is likely corrupt. (" & lReturn & ", " & bytesWritten & ")"
+                End If
             End If
             
         End If
@@ -350,8 +354,8 @@ Private Function LibDeflateDecompress(ByVal constDstPtr As Long, ByVal constDstS
         'If compression still failed, we're outta luck.
         LibDeflateDecompress = (lReturn = 0)
         If (Not LibDeflateDecompress) Then
-            InternalError "LibDeflateDecompress", "operation failed; return was " & lReturn & " " & GetDecompressErrorText(lReturn)
-            InternalError "LibDeflateDecompress", "FYI inputs were: " & constDstPtr & ", " & constDstSizeInBytes & ", " & constSrcPtr & ", " & constSrcSizeInBytes
+            If (Not suppressErrors) Then InternalError "LibDeflateDecompress", "operation failed; return was " & lReturn & " " & GetDecompressErrorText(lReturn)
+            If (Not suppressErrors) Then InternalError "LibDeflateDecompress", "FYI inputs were: " & constDstPtr & ", " & constDstSizeInBytes & ", " & constSrcPtr & ", " & constSrcSizeInBytes
         End If
         
         ' Make sure we free the compressor before exiting

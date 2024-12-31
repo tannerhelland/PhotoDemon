@@ -74,9 +74,9 @@ Public Enum OS_CSIDL
     CSIDL_DESKTOPDIRECTORY = &H10
     CSIDL_DRIVES = &H11
     CSIDL_FAVORITES = &H6
-    CSIDL_FLAG_CREATE = &H8000
+    CSIDL_FLAG_CREATE = &H8000&
     CSIDL_FLAG_DONT_VERIFY = &H4000
-    CSIDL_FLAG_MASK = &HFF00
+    CSIDL_FLAG_MASK = &HFF00&
     CSIDL_FLAG_NO_ALIAS = &H1000
     CSIDL_FLAG_PER_USER_INIT = &H800
     CSIDL_FONTS = &H14
@@ -113,7 +113,7 @@ End Enum
 
 #If False Then
     Private Const CSIDL_ADMINTOOLS = &H30, CSIDL_ALTSTARTUP = &H1D, CSIDL_APPDATA = &H1A, CSIDL_BITBUCKET = &HA, CSIDL_CDBURN_AREA = &H3B, CSIDL_COMMON_ADMINTOOLS = &H2F, CSIDL_COMMON_ALTSTARTUP = &H1E, CSIDL_COMMON_APPDATA = &H23, CSIDL_COMMON_DESKTOPDIRECTORY = &H19, CSIDL_COMMON_DOCUMENTS = &H2E, CSIDL_COMMON_FAVORITES = &H1F, CSIDL_COMMON_MUSIC = &H35, CSIDL_COMMON_OEM_LINKS = &H3A, CSIDL_COMMON_PICTURES = &H36, CSIDL_COMMON_PROGRAMS = &H17, CSIDL_COMMON_STARTMENU = &H16, CSIDL_COMMON_STARTUP = &H18, CSIDL_COMMON_TEMPLATES = &H2D, CSIDL_COMMON_VIDEO = &H37, CSIDL_COMPUTERSNEARME = &H3D, CSIDL_CONNECTIONS = &H31
-    Private Const CSIDL_CONTROLS = &H3, CSIDL_COOKIES = &H21, CSIDL_DESKTOP = &H0, CSIDL_DESKTOPDIRECTORY = &H10, CSIDL_DRIVES = &H11, CSIDL_FAVORITES = &H6, CSIDL_FLAG_CREATE = &H8000, CSIDL_FLAG_DONT_VERIFY = &H4000, CSIDL_FLAG_MASK = &HFF00, CSIDL_FLAG_NO_ALIAS = &H1000, CSIDL_FLAG_PER_USER_INIT = &H800, CSIDL_FONTS = &H14, CSIDL_HISTORY = &H22, CSIDL_INTERNET = &H1, CSIDL_INTERNET_CACHE = &H20, CSIDL_LOCAL_APPDATA = &H1C, CSIDL_MYDOCUMENTS = &HC, CSIDL_MYMUSIC = &HD, CSIDL_MYPICTURES = &H27, CSIDL_MYVIDEO = &HE, CSIDL_NETHOOD = &H13, CSIDL_NETWORK = &H12, CSIDL_PERSONAL = &H5, CSIDL_PRINTERS = &H4, CSIDL_PRINTHOOD = &H1B
+    Private Const CSIDL_CONTROLS = &H3, CSIDL_COOKIES = &H21, CSIDL_DESKTOP = &H0, CSIDL_DESKTOPDIRECTORY = &H10, CSIDL_DRIVES = &H11, CSIDL_FAVORITES = &H6, CSIDL_FLAG_CREATE = &H8000&, CSIDL_FLAG_DONT_VERIFY = &H4000&, CSIDL_FLAG_MASK = &HFF00&, CSIDL_FLAG_NO_ALIAS = &H1000, CSIDL_FLAG_PER_USER_INIT = &H800, CSIDL_FONTS = &H14, CSIDL_HISTORY = &H22, CSIDL_INTERNET = &H1, CSIDL_INTERNET_CACHE = &H20, CSIDL_LOCAL_APPDATA = &H1C, CSIDL_MYDOCUMENTS = &HC, CSIDL_MYMUSIC = &HD, CSIDL_MYPICTURES = &H27, CSIDL_MYVIDEO = &HE, CSIDL_NETHOOD = &H13, CSIDL_NETWORK = &H12, CSIDL_PERSONAL = &H5, CSIDL_PRINTERS = &H4, CSIDL_PRINTHOOD = &H1B
     Private Const CSIDL_PROFILE = &H28, CSIDL_PROGRAM_FILES = &H26, CSIDL_PROGRAM_FILES_COMMON = &H2B, CSIDL_PROGRAM_FILES_COMMONX86 = &H2C, CSIDL_PROGRAM_FILESX86 = &H2A, CSIDL_PROGRAMS = &H2, CSIDL_RECENT = &H8, CSIDL_RESOURCES = &H38, CSIDL_RESOURCES_LOCALIZED = &H39, CSIDL_SENDTO = &H9, CSIDL_STARTMENU = &HB, CSIDL_STARTUP = &H7, CSIDL_SYSTEM = &H25, CSIDL_SYSTEMX86 = &H29, CSIDL_TEMPLATES = &H15, CSIDL_WINDOWS = &H24
 #End If
 
@@ -276,9 +276,11 @@ End Type
 Private Declare Function CloseHandle Lib "kernel32" (ByVal Handle As Long) As Long
 Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
-Private Declare Function GetKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
+Private Declare Function GetKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
+Private Declare Function GetModuleHandleW Lib "kernel32" (ByVal lpModuleName As Long) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Sub GetNativeSystemInfo Lib "kernel32" (ByRef lpSystemInfo As OS_SystemInfo)
 Private Declare Sub GetSystemTimeAsFileTime Lib "kernel32" (ByRef dstTime As Currency)
 Private Declare Function GetTempPathW Lib "kernel32" (ByVal nBufferLength As Long, ByVal lpStrBuffer As Long) As Long
@@ -346,6 +348,9 @@ End Enum
 #End If
 
 Private m_ThemingAvailable As PD_ThemingAvailable
+
+'Used to detect if we're running under Wine or not.  (Added in 2024-05 to try and solve Wine-specific problems.)
+Private m_InsideWine As Boolean, m_LookedForWineAlready As Boolean
 
 'Function for returning this application's current memory usage.  Note that this function will return warped
 ' values inside the IDE (because the reported total is for *all* of VB6, including the IDE itself).
@@ -635,7 +640,7 @@ End Function
 'PD will attempt to forcibly enable DEP on Win 7+ (when compiled, obviously).
 ' This may decrease issues with garbage 3rd-party virus and malware scanners.
 Public Function EnableProcessDEP() As Boolean
-    If (OS.IsWin7OrLater And OS.IsProgramCompiled) Then
+    If (OS.IsWin7OrLater And OS.IsProgramCompiled And (Not OS.IsWinActuallyWine)) Then
         Const PROCESS_DEP_ENABLE As Long = &H1&
         SetProcessDEPPolicy PROCESS_DEP_ENABLE
     End If
@@ -734,9 +739,9 @@ End Function
 ' during screen recording to increase the odds of "catching" mouse clicks, but it's not mission-critical.)
 Public Function IsVirtualKeyDown(ByVal vKey As Long, Optional ByVal incStateSinceLastQuery As Boolean = False) As Boolean
     If incStateSinceLastQuery Then
-        IsVirtualKeyDown = (GetAsyncKeyState(vKey) And &H8001) <> 0
+        IsVirtualKeyDown = (GetAsyncKeyState(vKey) And &H8001&) <> 0
     Else
-        IsVirtualKeyDown = (GetAsyncKeyState(vKey) And &H8000) <> 0
+        IsVirtualKeyDown = (GetAsyncKeyState(vKey) And &H8000&) <> 0
     End If
 End Function
 
@@ -750,41 +755,93 @@ Public Function IsVirtualKeyDown_Synchronous(ByVal vKey As Long, Optional ByVal 
     If useToggleState Then
         IsVirtualKeyDown_Synchronous = (GetKeyState(vKey) And &H1) <> 0
     Else
-        IsVirtualKeyDown_Synchronous = (GetKeyState(vKey) And &H8000) <> 0
+        IsVirtualKeyDown_Synchronous = (GetKeyState(vKey) And &H8000&) <> 0
     End If
 End Function
 
 'Check for a version >= the specified version.
 Public Function IsVistaOrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsVistaOrLater = (m_OSVI.dwMajorVersion >= 6)
+    If OS.IsWinActuallyWine Then
+        IsVistaOrLater = False
+    Else
+        IsVistaOrLater = (m_OSVI.dwMajorVersion >= 6)
+    End If
 End Function
 
 Public Function IsWin7OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin7OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 1))
+    If OS.IsWinActuallyWine Then
+        IsWin7OrLater = False
+    Else
+        IsWin7OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 1))
+    End If
 End Function
 
 Public Function IsWin8OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin8OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 2))
+    If OS.IsWinActuallyWine Then
+        IsWin8OrLater = False
+    Else
+        IsWin8OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 2))
+    End If
 End Function
 
 Public Function IsWin81OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin81OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 3))
+    If OS.IsWinActuallyWine Then
+        IsWin81OrLater = False
+    Else
+        IsWin81OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 3))
+    End If
 End Function
 
 ' (NOTE: the Win-10 check requires a manifest, so don't rely on it in the IDE.  Also, MS doesn't guarantee that this
 ' check will remain valid forever, though it does work as of Windows 10-1703.)
 Public Function IsWin10OrLater() As Boolean
     If (Not m_VersionInfoCached) Then CacheOSVersion
-    IsWin10OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 4))
+    If OS.IsWinActuallyWine Then
+        IsWin10OrLater = False
+    Else
+        IsWin10OrLater = (m_OSVI.dwMajorVersion > 6) Or ((m_OSVI.dwMajorVersion = 6) And (m_OSVI.dwMinorVersion >= 4))
+    End If
 End Function
 
 Public Function GetWin10Build() As Long
     If (Not m_VersionInfoCached) Then CacheOSVersion
     GetWin10Build = m_OSVI.dwBuildNumber
+End Function
+
+'Are we running inside Wine?  Thanks to StackOverflow for the implementation idea:
+' https://stackoverflow.com/questions/7372388/determine-whether-a-program-is-running-under-wine-at-runtime
+'
+'PD doesn't officially support Wine, but I've found that lying to PD and claiming that Wine is actually XP
+' produces a reasonably usable version of the app.
+Public Function IsWinActuallyWine() As Boolean
+    
+    'Cache check once, on first call
+    If (Not m_LookedForWineAlready) Then
+        
+        m_LookedForWineAlready = True
+        
+        Dim modName As String
+        modName = "ntdll.dll"
+        
+        Dim hMod As Long
+        hMod = GetModuleHandleW(StrPtr(modName))
+        If (hMod <> 0) Then
+            Dim hProc As Long
+            hProc = GetProcAddress(hMod, "wine_get_version")
+            m_InsideWine = (hProc <> 0)
+        Else
+            PDDebug.LogAction "WARNING: couldn't find ntdll?"
+            m_InsideWine = False
+        End If
+        
+    End If
+    
+    IsWinActuallyWine = m_InsideWine
+    
 End Function
 
 'Return the number of logical cores on this system
@@ -1114,7 +1171,7 @@ Public Function UniqueSessionID() As String
         Dim tmpString As String
         tmpString = GetArbitraryGUID()
         m_SessionID = cCrypto.QuickHashString(tmpString, Len(tmpString))
-        If (Len(m_SessionID) > 12) Then m_SessionID = Left$(m_SessionID, 12)
+        If (Len(m_SessionID) > 16) Then m_SessionID = Left$(m_SessionID, 16)
     End If
     
     UniqueSessionID = m_SessionID
@@ -1124,7 +1181,7 @@ End Function
 'Generate a unique temp file name.  (I use arbitrary GUIDs to generate these, instead of the old GetTempFileName()
 ' kernel function - this is because that API has some annoying caveats, per https://msdn.microsoft.com/en-us/library/windows/desktop/aa364991(v=vs.85).aspx)
 '
-'Returns: valid filename (with prepended path and trailing ".tmp") if successful; null-string if unsuccessful
+'Returns: valid filename (with prepended temp path and trailing ".tmp") if successful; null-string if unsuccessful
 Public Function UniqueTempFilename(Optional ByRef customPrefix As String = "PD_", Optional ByRef customExtension As String = "tmp") As String
     
     Dim tmpFolder As String

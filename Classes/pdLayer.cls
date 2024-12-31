@@ -1925,6 +1925,57 @@ Friend Function CropNullPaddedLayer() As Boolean
     
 End Function
 
+'Assuming the current layer DIB is null-padded (a term I use to describe a layer that has been forced to the size of the
+' image by surrounding it with transparent pixels), crop the DIB to some arbitrary rect.  Layer offsets and size will be
+' automatically calculated.
+'
+'IMPORTANT NOTE: if you call this function without first null-padding the layer DIB, weird shit may happen.  That is not
+'                 an intended use-case, so don't attempt it!
+'
+'Returns TRUE if layer was trimmed successfully, FALSE if it was not.  (False should only occur if an invalid rect
+' is passed, or the layer wasn't null-padded first.)
+Friend Function CropNullPaddedLayerToRect(ByRef srcRectF As RectF) As Boolean
+    
+    'Make sure the source DIB isn't empty; (this should never happen, but I'm trying to be better about catching
+    ' edge error conditions).
+    If (m_LayerDIB.GetDIBDC = 0) Or (m_LayerDIB.GetDIBWidth <= 0) Or (m_LayerDIB.GetDIBHeight <= 0) Or (m_LayerDIB.GetDIBColorDepth <> 32) Then
+        PDDebug.LogAction "Request for layer null padding trim denied - layer DIB does not currently exist!"
+        CropNullPaddedLayerToRect = False
+        Exit Function
+    End If
+    
+    'Validate the incoming rect
+    If (srcRectF.Width <= 0!) Or (srcRectF.Height <= 0!) Then
+        PDDebug.LogAction "Invalid rect passed to CropNullPaddedLayerToRect"
+        CropNullPaddedLayerToRect = False
+        Exit Function
+    End If
+    
+    'The target rect appears valid.  Use its values to crop the image to the relevant size.
+    Dim newWidth As Long, newHeight As Long
+    newWidth = Int(srcRectF.Width + 0.5!)
+    newHeight = Int(srcRectF.Height + 0.5!)
+    
+    Dim tmpCropDIB As pdDIB
+    Set tmpCropDIB = New pdDIB
+    tmpCropDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+    GDI.BitBltWrapper tmpCropDIB.GetDIBDC, 0, 0, newWidth, newHeight, m_LayerDIB.GetDIBDC, Int(srcRectF.Left + 0.5!), Int(srcRectF.Top + 0.5!), vbSrcCopy
+    tmpCropDIB.SetInitialAlphaPremultiplicationState m_LayerDIB.GetAlphaPremultiplication
+    
+    'Replace the current layer DIB with our temporary DIB
+    Set m_LayerDIB = tmpCropDIB
+    
+    'Modify our layer offsets to reflect our new size
+    myLayerData.l_OffsetX = Int(srcRectF.Left + 0.5!)
+    myLayerData.l_OffsetY = Int(srcRectF.Top + 0.5!)
+    
+    'TODO: synchronize layer mask here, if one exists
+    
+    'Return TRUE, so that the calling function knows to redraw the screen with the new size and offsets
+    CropNullPaddedLayerToRect = True
+    
+End Function
+
 'Null-pad this layer (with transparent pixels) against the size of our parent pdImage.  Note that the parent pdImage's dimensions
 ' must be explicitly passed, because layers do not maintain a link to their parent.
 Friend Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long, Optional ByVal applyCanvasTransformsFirst As Boolean = True)
@@ -2278,7 +2329,7 @@ End Function
 'INPUTS: current mouse coords, already translated into the IMAGE coordinate space (not the canvas coordinate space!)
 '
 'OUTPUT: index of the POI, if any.  If the mouse is not over a POI, -1 is returned.
-Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) As PD_PointOfInterest
+Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long, Optional ByVal checkEdgeCenters As Boolean = True) As PD_PointOfInterest
     
     'MouseAccuracy in PD is a global value, but because we are working in image coordinates, we must compensate for the
     ' current zoom value.  (Otherwise, when zoomed out the user would be forced to work with tighter accuracy!)
@@ -2352,17 +2403,24 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
                     CheckForPointOfInterest = poi_CornerSE
                 ElseIf (closestPoint = 3) Then
                     CheckForPointOfInterest = poi_CornerSW
+                
+                'Detecting hover on rotation nodes can be disabled (the user can toggle this in the Move Tool settings);
+                ' if it's disabled, we want to ignore hits on that point.
                 ElseIf (closestPoint = 4) Then
-                    CheckForPointOfInterest = poi_EdgeE
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeE Else CheckForPointOfInterest = poi_Undefined
                 ElseIf (closestPoint = 5) Then
-                    CheckForPointOfInterest = poi_EdgeS
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeS Else CheckForPointOfInterest = poi_Undefined
                 ElseIf (closestPoint = 6) Then
-                    CheckForPointOfInterest = poi_EdgeW
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeW Else CheckForPointOfInterest = poi_Undefined
                 ElseIf (closestPoint = 7) Then
-                    CheckForPointOfInterest = poi_EdgeN
+                    If checkEdgeCenters Then CheckForPointOfInterest = poi_EdgeN Else CheckForPointOfInterest = poi_Undefined
                 End If
                 
-                Exit Function
+                If (CheckForPointOfInterest <> poi_Undefined) Then
+                    Exit Function
+                Else
+                    closestPoint = poi_Undefined
+                End If
                 
             End If
             
@@ -2563,6 +2621,8 @@ End Function
 ' and if *those* change (but the layer is unchanged), we still need to regenerate the function.
 Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) As Long
     
+    On Error GoTo BadHash
+    
     'First, generate a hash of relevant internals.
     Dim tmpHash As Long
     
@@ -2579,13 +2639,16 @@ Friend Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
     'Finally, hash any parameters we were passed.
     If (UBound(allParams) >= LBound(allParams)) Then
     
-        Dim i As Long
+        Dim i As Long, tmpLong As Long
         For i = LBound(allParams) To UBound(allParams)
-            tmpHash = tmpHash Xor allParams(i) * ((i + 1) * 127)
+            tmpLong = Int(allParams(i))
+            If (tmpLong >= 100000000#) Then tmpLong = tmpLong \ 4 'Safety against overflow on unpredictable inputs
+            tmpHash = tmpHash Xor tmpLong * ((i + 1) * 7)
         Next i
     
     End If
     
+BadHash:
     GetViewportHash_Theoretical = tmpHash
     
 End Function

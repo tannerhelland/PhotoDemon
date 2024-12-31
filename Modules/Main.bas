@@ -374,8 +374,8 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Now that resources are available, extract any default program assets.  (This is only done
     ' once for each group of assets; once extracted, PD will never attempt to extract them again,
-    ' unless the user does a full preferences reset - this is to avoid ever overwriting changes
-    ' the user may have made to said files.)
+    ' unless the user does a full preferences reset - this is to avoid overwriting changes the
+    ' user may have made to said files.)
     g_Resources.ExtractDefaultAssets
     
     
@@ -445,7 +445,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     g_Displays.RefreshDisplays
     
     'While here, also cache various display-related settings; this is faster than constantly retrieving them via APIs
-    Interface.CacheSystemDPI g_Displays.GetWindowsDPI
+    Interface.CacheSystemDPIRatio g_Displays.GetWindowsDPI
     
     
     '*************************************************************************************************************************************
@@ -551,6 +551,21 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     
     '*************************************************************************************************************************************
+    ' Load keyboard shortcuts (either PD's default collection, or a standalone file with user edits)
+    '*************************************************************************************************************************************
+    
+    'In late 2024, this step was moved earlier in the load process.  PD needs to have hotkey data
+    ' available before toolboxes are loaded, because the toolbox pulls hotkey data from the hotkey
+    ' manager in order to show relevant shortcuts in tooltips.
+    
+    'Initialize hotkeys.  (User-customized hotkeys will be loaded from file; if they don't exist,
+    ' this function will generate a default hotkey list.)
+    perfCheck.MarkEvent "Initialize hotkey manager"
+    LogStartupEvent "Initializing hotkeys..."
+    Hotkeys.InitializeHotkeys
+    
+    
+    '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
     '*************************************************************************************************************************************
     
@@ -580,7 +595,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Retrieve tool window visibility and mark those menus as well
     FormMain.MnuWindowToolbox(0).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_LeftToolbox)
-    FormMain.MnuWindow(1).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_BottomToolbox)
+    FormMain.MnuWindow(1).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_TopToolbox)
     FormMain.MnuWindow(2).Checked = Toolboxes.GetToolboxVisibilityPreference(PDT_RightToolbox)
     
     'Retrieve two additional settings for the image tabstrip menu: when to display it, and its alignment
@@ -646,8 +661,9 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     'Allow main form components to load any control-specific preferences they may utilize
     FormMain.MainCanvas(0).ReadUserPreferences
     
-    'Prep the color management pipeline
+    'Prep the color management pipeline and any associated color management settings
     ColorManagement.CacheDisplayCMMData
+    ColorManagement.UpdateColorManagementPreferences
     
     
     '*************************************************************************************************************************************
@@ -661,16 +677,12 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     Dim debugMenuVisibility As Boolean
     debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
     FormMain.MnuTest.Visible = debugMenuVisibility
-    FormMain.MnuTool(13).Visible = debugMenuVisibility
     FormMain.MnuTool(14).Visible = debugMenuVisibility
-    
-    'Initialize PD's default set of hotkeys
-    ' TODO: after initialization, load any user-created custom hotkeys
-    perfCheck.MarkEvent "Initialize hotkey manager"
-    Hotkeys.InitializeDefaultHotkeys
+    FormMain.MnuTool(15).Visible = debugMenuVisibility
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     perfCheck.MarkEvent "Prep MRU menus"
+    LogStartupEvent "Initializing recent file lists..."
     Set g_RecentFiles = New pdRecentFiles
     g_RecentFiles.LoadListFromFile
     
@@ -680,6 +692,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Load and draw all menu icons
     perfCheck.MarkEvent "Load all menu icons"
+    LogStartupEvent "Loading UI icons..."
     IconsAndCursors.LoadMenuIcons False
     
     'Finally, apply all of our various UI features
@@ -688,9 +701,11 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     perfCheck.MarkEvent "Final interface sync"
+    LogStartupEvent "Final interface sync before main screen appears..."
     Interface.SyncInterfaceToCurrentImage
     
     'Minimize UI memory usage
+    LogStartupEvent "Minimizing sprite cache..."
     UIImages.MinimizeCacheMemory
     
     'If we made it all the way here, startup can be considered successful!

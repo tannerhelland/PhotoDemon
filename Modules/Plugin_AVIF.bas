@@ -133,6 +133,8 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
         Else
             InternalError funcName, "load failed; output follows:"
             PDDebug.LogAction outputString
+            PDDebug.LogAction "For reference, here's stderr: "
+            PDDebug.LogAction cShell.GetStdErrDataAsString()
         End If
         
     Else
@@ -544,8 +546,8 @@ Private Function DownloadLatestLibAVIF() As Boolean
     Const EXPECTED_NUM_FILES As Long = 3
     
     'Current libavif build is 1.0.4, downloaded from https://github.com/AOMediaCodec/libavif/releases/tag/v1.0.4
-    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 23881536
-    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.0.4/libavif-1.0.4.pdz"
+    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 25052480
+    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.1.1/libavif-1.1.1.pdz"
     DownloadLatestLibAVIF = Updates.DownloadPluginUpdate(CCP_libavif, UPDATE_URL, EXPECTED_NUM_FILES, EXPECTED_TOTAL_EXTRACT_SIZE)
     
 End Function

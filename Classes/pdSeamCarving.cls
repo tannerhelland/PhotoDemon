@@ -827,7 +827,9 @@ Friend Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 
                 'Update the source width, in case this function must be called again
                 srcWidth = m_SourceImage.GetDIBWidth
-            
+                
+                If Interface.UserPressedESC() Then Exit Do
+                
             Loop While m_SourceImage.GetDIBWidth < newWidth
             
             'Update the temp image (which may be used by subsequent vertical resize functions)
@@ -884,6 +886,8 @@ Friend Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
                 
                 'Update the source height, in case this function must be called again
                 srcHeight = m_SourceImage.GetDIBHeight
+                
+                If Interface.UserPressedESC() Then Exit Do
             
             Loop While m_SourceImage.GetDIBHeight < newHeight
             
@@ -892,7 +896,6 @@ Friend Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
     
     
     End Select
-    
     
     'Now that all seam carves have been carried out, generate a final destination image
     ' (and make sure it is marked with correct premultiplication status)

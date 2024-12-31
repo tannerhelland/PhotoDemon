@@ -291,15 +291,12 @@ Private Sub Form_Load()
         GeneratePatron actualText, , True
     End If
     
-    GeneratePatron "EFF.ORG", "https://www.eff.org/"
-    GeneratePatron "Jason Brown", "https://statslog.com/"
-    GeneratePatron "Jessica H"
     GeneratePatron "Johannes Nendel"
     
     m_superPatronEndIndex = m_numOfPatrons
     GeneratePatron vbNullString
     
-    'Regular patrons (TODO someday soon, I hope!)
+    'Regular patrons
     actualText = g_Language.TranslateMessage("PATRONS")
     If OS.IsWin7OrLater Then
         uncSpecial = ChrW$(&H2605) & ChrW$(&H2605)    'Stars
@@ -308,8 +305,8 @@ Private Sub Form_Load()
         GeneratePatron actualText, , True
     End If
     
+    GeneratePatron "Tim Parsons"
     GeneratePatron "Frank Reibold"
-    GeneratePatron "James Proctor"
     GeneratePatron "Jim Schmidt"
     GeneratePatron vbNullString
     
@@ -343,7 +340,7 @@ Private Sub Form_Load()
     GenerateContributor "Charltsing", "https://www.cnblogs.com/Charltsing/"
     GenerateContributor "ChenLin"
     GenerateContributor "Chiahong Hong", "https://github.com/ChiahongHong"
-    GenerateContributor "Clément Mariage", "https:/www.medexprim.com"
+    GenerateContributor "Clement Mariage", "https:/www.medexprim.com"
     GenerateContributor "Cody Robertson"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
     GenerateContributor "DarkAlchy"
@@ -376,6 +373,7 @@ Private Sub Form_Load()
     GenerateContributor "John Desrosiers", "https://johndesrosiers.com"
     GenerateContributor "Jose de TECNORAMA", "https://www.tecnorama.es/"
     GenerateContributor "Joseph Greco"
+    GenerateContributor "Kenji Hoshimoto (Hosiken)", "http://hosiken.jp/"
     GenerateContributor "Kroc Camen", "http://camendesign.com"
     GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
     GenerateContributor "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
@@ -387,6 +385,7 @@ Private Sub Form_Load()
     GenerateContributor "Manuel Augusto Santos", "https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303"
     GenerateContributor "Mariozo"
     GenerateContributor "martin19", "https://github.com/martin19"
+    GenerateContributor "Miguel Chamorro"
     GenerateContributor "Ming", "http://ufoym.com/"
     GenerateContributor "Mohammad Reza Karimi"
     GenerateContributor "Nguyen Van Hung", "https://github.com/vhreal1302"

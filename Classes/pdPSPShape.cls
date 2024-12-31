@@ -557,6 +557,12 @@ Friend Function CreateTextLayerNow(ByRef dstImage As pdImage, ByRef dstLayer As 
     dstImage.GetLayerByID(newLayerID).SetLayerOffsetX m_TextAttributes.ta_DeformationMatrix(2)
     dstImage.GetLayerByID(newLayerID).SetLayerOffsetY (m_TextAttributes.ta_DeformationMatrix(5) - srcFontMetrics.tmAscent)   'boundaryRect.Bottom    ' approxFontHeight  'Note: offset is to BASELINE; gotta fix this
     
+    'Trial-and-error leads me to believe that in PSP v6 files, center-aligned text now positions along
+    ' the text-box's center line.  (TBD - determining if something similar happens for right-aligned text.)
+    If m_FileIsPSPv8 Then
+        If (convertedTextAlignment = StringAlignmentCenter) Then dstImage.GetLayerByID(newLayerID).SetLayerOffsetX m_TextAttributes.ta_DeformationMatrix(2) - ((boundaryRect.Right - boundaryRect.Left) + 2) \ 2
+    End If
+    
     'Apply other font properties
     dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontFace, tmpFont.GetFontFace()
     dstImage.GetLayerByID(newLayerID).SetTextLayerProperty ptp_FontSize, fontSizeInPixels
@@ -1812,7 +1818,7 @@ Private Function BuildBrush_Gradient(ByRef srcStream As pdStream, ByRef srcWarni
         lastColorIndex = 0
         
         For i = 1 To numOpacityStops - 1
-                
+            
             'For each opacity stop, loop through the RGBA array until we find the first point
             ' with a position *after* the current one.
             For j = lastColorIndex To numColorStops - 1
@@ -1836,32 +1842,44 @@ Private Function BuildBrush_Gradient(ByRef srcStream As pdStream, ByRef srcWarni
                     Else
                     
                         'Figure out what the RGBA value is at this opacity point's position
-                        opacityScaleFactor = tmpGradientList(j).PointPosition - tmpGradientList(j - 1).PointPosition
-                        If (opacityScaleFactor <> 0!) Then opacityScaleFactor = (tmpOpacityList(i).PointPosition - tmpGradientList(j - 1).PointPosition) / opacityScaleFactor Else opacityScaleFactor = 1!
                         
-                        Dim newRGBA As RGBQuad
-                        newRGBA.Blue = CSng(Colors.ExtractBlue(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractBlue(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
-                        newRGBA.Green = CSng(Colors.ExtractGreen(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractGreen(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
-                        newRGBA.Red = CSng(Colors.ExtractRed(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractRed(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
+                        '(Failsafe only)
+                        If (j > 0) Then
                         
-                        'Create a new point representing what we need to insert
-                        Dim tmpGradientPoint As GradientPoint
-                        tmpGradientPoint.PointRGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
-                        tmpGradientPoint.PointPosition = tmpOpacityList(i).PointPosition
-                        tmpGradientPoint.PointOpacity = tmpOpacityList(i).PointOpacity
-                        
-                        'Insert the new point into the collection
-                        If (numColorStops > UBound(tmpGradientList)) Then ReDim Preserve tmpGradientList(0 To numColorStops * 2) As GradientPoint
-                        For k = numColorStops To j + 1 Step -1
-                            tmpGradientList(k) = tmpGradientList(k - 1)
-                        Next k
-                        tmpGradientList(j) = tmpGradientPoint
-                        numColorStops = numColorStops + 1
-                        lastColorIndex = j + 1
-                        
-                        'Resume with the next opacity point
-                        Exit For
-                        
+                            opacityScaleFactor = tmpGradientList(j).PointPosition - tmpGradientList(j - 1).PointPosition
+                            If (opacityScaleFactor <> 0!) Then opacityScaleFactor = (tmpOpacityList(i).PointPosition - tmpGradientList(j - 1).PointPosition) / opacityScaleFactor Else opacityScaleFactor = 1!
+                            If (opacityScaleFactor < 0!) Then opacityScaleFactor = 0!
+                            If (opacityScaleFactor > 1!) Then opacityScaleFactor = 1!
+                            
+                            Dim newRGBA As RGBQuad
+                            newRGBA.Blue = CSng(Colors.ExtractBlue(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractBlue(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
+                            newRGBA.Green = CSng(Colors.ExtractGreen(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractGreen(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
+                            newRGBA.Red = CSng(Colors.ExtractRed(tmpGradientList(j).PointRGB)) * opacityScaleFactor + CSng(Colors.ExtractRed(tmpGradientList(j - 1).PointRGB)) * (1! - opacityScaleFactor)
+                            
+                            'Create a new point representing what we need to insert
+                            Dim tmpGradientPoint As GradientPoint
+                            tmpGradientPoint.PointRGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
+                            tmpGradientPoint.PointPosition = tmpOpacityList(i).PointPosition
+                            tmpGradientPoint.PointOpacity = tmpOpacityList(i).PointOpacity
+                            
+                            'Insert the new point into the collection
+                            If (numColorStops > UBound(tmpGradientList)) Then ReDim Preserve tmpGradientList(0 To numColorStops * 2) As GradientPoint
+                            For k = numColorStops To j + 1 Step -1
+                                tmpGradientList(k) = tmpGradientList(k - 1)
+                            Next k
+                            tmpGradientList(j) = tmpGradientPoint
+                            numColorStops = numColorStops + 1
+                            lastColorIndex = j + 1
+                            
+                            'Resume with the next opacity point
+                            Exit For
+                            
+                        'This is the very first point in the gradient list.  This case shouldn't trigger,
+                        ' but if it does, simply copy the first gradient point into place.
+                        Else
+                            
+                        End If
+                            
                     End If
                     
                 End If

@@ -152,6 +152,23 @@ Private m_PreAlphaManagementRequired As Boolean
 'To improve cache access, we generate unique hashes for each loaded profile.
 Private m_Hasher As pdCrypto
 
+'As of PD 2024.12, users can opt to disable both traditional color management, and format-specific color management
+' (e.g. PNG gAMA/cHRM data).
+Private m_UseEmbeddedICCProfiles As Boolean, m_UseEmbeddedLegacyProfiles   As Boolean
+
+Public Sub UpdateColorManagementPreferences()
+    m_UseEmbeddedICCProfiles = UserPrefs.GetPref_Boolean("ColorManagement", "allow-icc-profiles", True)
+    m_UseEmbeddedLegacyProfiles = UserPrefs.GetPref_Boolean("ColorManagement", "allow-legacy-profiles", True)
+End Sub
+
+Public Function UseEmbeddedICCProfiles() As Boolean
+    UseEmbeddedICCProfiles = m_UseEmbeddedICCProfiles
+End Function
+
+Public Function UseEmbeddedLegacyProfiles() As Boolean
+    UseEmbeddedLegacyProfiles = m_UseEmbeddedLegacyProfiles
+End Function
+
 Public Function GetDisplayBPC() As Boolean
     GetDisplayBPC = UserPrefs.GetPref_Boolean("ColorManagement", "DisplayBPC", True)
 End Function
@@ -344,7 +361,7 @@ Public Function AddProfileToCache(ByRef srcProfile As pdICCProfile, Optional ByV
     'Profiles are quickly hashed; subsequent profile requests rely on this hash to return correct data
     If (m_Hasher Is Nothing) Then Set m_Hasher = New pdCrypto
     Dim profHash As String
-    profHash = m_Hasher.QuickHash_AsString(srcProfile.GetICCDataPointer, srcProfile.GetICCDataSize, , PDCA_MD5)
+    profHash = m_Hasher.QuickHash_AsString(srcProfile.GetICCDataPointer, srcProfile.GetICCDataSize, 16, PDCA_MD5)
     
     'Regardless of whether this profile already exists in our cache, we will return its hash value.  (This gives the
     ' caller a unique way to retrieve the profile in the future.)

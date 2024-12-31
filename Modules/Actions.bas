@@ -1248,6 +1248,11 @@ Private Function Launch_ByName_MenuTools(ByRef srcMenuName As String, Optional B
         
         Case "tools_screenrecord"
             ShowPDDialog vbModal, FormScreenVideoPrefs
+        
+        Case "tools_hotkeys"
+            FormMain.HotkeyManager.Enabled = False
+            ShowPDDialog vbModal, FormHotkeys
+            FormMain.HotkeyManager.Enabled = True
             
         Case "tools_options"
             ShowPDDialog vbModal, FormOptions
@@ -1299,6 +1304,7 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
     If (Not PDImages.IsImageActive()) Then Exit Function
     
     Dim cmdFound As Boolean: cmdFound = True
+    Dim newState As Boolean
     
     Select Case srcMenuName
     
@@ -1344,16 +1350,33 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
                 If FormMain.MainCanvas(0).IsZoomEnabled Then FormMain.MainCanvas(0).SetZoomDropDownIndex 21
                 
         Case "view_rulers"
-            Dim newRulerState As Boolean
-            newRulerState = Not FormMain.MainCanvas(0).GetRulerVisibility()
-            FormMain.MnuView(6).Checked = newRulerState
-            FormMain.MainCanvas(0).SetRulerVisibility newRulerState
+            newState = Not FormMain.MainCanvas(0).GetRulerVisibility()
+            FormMain.MnuView(6).Checked = newState
+            FormMain.MainCanvas(0).SetRulerVisibility newState
             
         Case "view_statusbar"
-            Dim newStatusBarState As Boolean
-            newStatusBarState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
-            FormMain.MnuView(7).Checked = newStatusBarState
-            FormMain.MainCanvas(0).SetStatusBarVisibility newStatusBarState
+            newState = Not FormMain.MainCanvas(0).GetStatusBarVisibility()
+            FormMain.MnuView(7).Checked = newState
+            FormMain.MainCanvas(0).SetStatusBarVisibility newState
+        
+        Case "show_layeredges"
+            Drawing.ToggleShowOptions pdst_LayerEdges
+            Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage, FormMain.MainCanvas(0)
+            
+        Case "show_smartguides"
+            Drawing.ToggleShowOptions pdst_SmartGuides
+            
+        Case "snap_global"
+            Snap.ToggleSnapOptions pdst_Global
+            
+        Case "snap_canvasedge"
+            Snap.ToggleSnapOptions pdst_CanvasEdge
+            
+        Case "snap_centerline"
+            Snap.ToggleSnapOptions pdst_Centerline
+            
+        Case "snap_layer"
+            Snap.ToggleSnapOptions pdst_Layer
             
         Case Else
             cmdFound = False
@@ -1387,7 +1410,7 @@ Private Function Launch_ByName_MenuWindow(ByRef srcMenuName As String, Optional 
                 toolbar_Toolbox.UpdateButtonSize tbs_Large
                 
         Case "window_tooloptions"
-            Toolboxes.ToggleToolboxVisibility PDT_BottomToolbox
+            Toolboxes.ToggleToolboxVisibility PDT_TopToolbox
             
         Case "window_layers"
             Toolboxes.ToggleToolboxVisibility PDT_RightToolbox
@@ -1968,6 +1991,7 @@ Public Sub BuildActionDatabase()
     AddAction "effects_animation_speed", "Animation playback speed"
     AddAction "effects_customfilter", "Custom filter", True, True
     AddAction "effects_8bf", "Photoshop (8bf) plugin", True, True
+    
     'AddAction "tools_language"
     AddAction "tools_languageeditor", vbNullString
     AddAction "tools_theme", vbNullString
@@ -1985,6 +2009,7 @@ Public Sub BuildActionDatabase()
     'AddAction "tools_themepackage"
     'AddAction "tools_standalonepackage"
     'AddAction "effects_developertest"
+    
     AddAction "view_fit", vbNullString
     AddAction "view_zoomin", vbNullString
     AddAction "view_zoomout", vbNullString
@@ -2000,6 +2025,13 @@ Public Sub BuildActionDatabase()
     AddAction "zoom_1_16", vbNullString
     AddAction "view_rulers", vbNullString
     AddAction "view_statusbar", vbNullString
+    AddAction "show_layeredges", vbNullString
+    AddAction "show_smartguides", vbNullString
+    AddAction "snap_global", vbNullString
+    AddAction "snap_canvasedge", vbNullString
+    AddAction "snap_centerline", vbNullString
+    AddAction "snap_layer", vbNullString
+    
     'AddAction "window_toolbox"
     AddAction "window_displaytoolbox", vbNullString
     AddAction "window_displaytoolcategories", vbNullString

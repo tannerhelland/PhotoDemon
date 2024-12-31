@@ -146,9 +146,7 @@ Private Declare Function resvg_get_node_transform Lib "resvg" (ByVal resvg_rende
 Private Declare Function resvg_get_node_bbox Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef dst_resvg_path_bbox As resvg_rect) As Long
 Private Declare Sub resvg_tree_destroy Lib "resvg" (ByVal resvg_render_tree As Long)
 Private Declare Sub resvg_render Lib "resvg" (ByVal resvg_render_tree As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
-
-'Note: node rendering needs custom resvg modifications to change the way fit_to is passed
-'Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByVal srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
+Private Declare Sub resvg_render_node Lib "resvg" (ByVal resvg_render_tree As Long, ByVal ptrToConstUtf8ID As Long, ByRef srcTransform As resvg_transform, ByVal surfaceWidth As Long, ByVal surfaceHeight As Long, ByVal ptrToSurface As Long)
 
 'A single persistent SVG options handle is maintained for the life of a session.
 ' (Initializing this object is expensive because it needs to scan system fonts.)
@@ -171,7 +169,7 @@ Public Function GetVersion() As String
     'resvg does not provide an externally accessible version string by default.
     ' I do not expect users to custom-build it, so we return a hard-coded version
     ' against the copy supplied with a default PD install.
-    GetVersion = "0.40.0"
+    GetVersion = "0.44.0"
     
 End Function
 

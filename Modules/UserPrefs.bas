@@ -5,7 +5,7 @@ Attribute VB_Name = "UserPrefs"
 'Created: 03/November/12
 'Last updated: 21/February/22
 'Last update: revert nightly builds to default to "nightly build" update track (I've gotten much better
-'             at disciplined nightly build development, and they are far more stable than the used to be).
+'             at disciplined nightly build development, and they are far more stable than they used to be).
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all
 ' persistent user settings.
@@ -49,18 +49,20 @@ Private m_ThemePath As String
 Private m_LanguagePath As String
 
 '/Data subfolders come next.  Note that some of these can be modified at run-time by user behavior -
-' e.g. PhotoDemon does not currently ship with a prebuilt collection, so its palette path changes as the
-' user loads/saves palettes from standalone palette files.  Similarly, some features support additional
-' user paths - like 8bf plugins, which have a default folder in the /Data subfolder, but users can also
-' add their own paths through the 8bf dialog, and those paths are tracked and stored separate from this
-' module (which just exists to ensure a core set of default folders exist on every install).
+' e.g. PhotoDemon does not currently ship with a prebuilt palette collection, so its palette path
+' changes as the user loads/saves palettes from standalone palette files.
+'
+'Similarly, some features support additional user paths - like 8bf plugins, which have a default folder
+' in the /Data subfolder, but users can also add their own paths through the 8bf dialog; those paths
+' are tracked and stored separate from this module (which just exists to ensure a core set of default
+' folders exist on every PD install).
 Private m_PreferencesPath As String, m_TempPath As String
 Private m_MacroPath As String, m_IconPath As String
 Private m_ColorProfilePath As String, m_UserLanguagePath As String
 Private m_LUTPathDefault As String, m_LUTPathUser As String
 Private m_GradientPathDefault As String, m_GradientPathUser As String
 Private m_PalettePath As String, m_SelectionPath As String
-Private m_8bfPath As String
+Private m_8bfPath As String, m_HotkeyPath As String
 
 Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private m_DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
@@ -89,6 +91,7 @@ End Enum
 
 Private m_GenerateDebugLogs As PD_DebugLogBehavior, m_EmergencyDebug As Boolean
 Private m_UIFontName As String
+Private m_ZoomWithWheel As Boolean
 
 'Prior to v7.0, each dialog stored its preset data to a unique XML file.
 ' This causes a lot of HDD thrashing as each main window panel retrieves its preset data separately.
@@ -210,6 +213,15 @@ End Function
 Public Sub SetGradientPath(ByRef newPath As String)
     m_GradientPathUser = Files.PathAddBackslash(Files.FileGetPath(newPath))
     SetPref_String "Paths", "Gradients", m_GradientPathUser
+End Sub
+
+Public Function GetHotkeyPath() As String
+    GetHotkeyPath = m_HotkeyPath
+End Function
+
+Public Sub SetHotkeyPath(ByRef newPath As String)
+    m_HotkeyPath = Files.PathAddBackslash(Files.FileGetPath(newPath))
+    SetPref_String "Paths", "Hotkeys", m_HotkeyPath
 End Sub
 
 Public Function GetLUTPath(Optional ByVal useDefaultLocation As Boolean = False) As String
@@ -339,6 +351,15 @@ End Function
 Public Function GetUIFontName() As String
     GetUIFontName = m_UIFontName
 End Function
+
+'By default, Ctrl+Mousewheel zooms.  The user can change this behavior from the Tools > Options > Interface panel.
+Public Function GetZoomWithWheel() As Boolean
+    GetZoomWithWheel = m_ZoomWithWheel
+End Function
+
+Public Sub SetZoomWithWheel(ByVal newValue As Boolean)
+    m_ZoomWithWheel = newValue
+End Sub
 
 'Initialize key program directories.  If this function fails, PD will fail to load.
 Public Function InitializePaths() As Boolean
@@ -478,6 +499,9 @@ Public Function InitializePaths() As Boolean
     m_GradientPathUser = m_GradientPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step
     If (Not Files.PathExists(m_GradientPathDefault)) Then Files.PathCreate m_GradientPathDefault
     
+    m_HotkeyPath = m_DataPath & "Hotkeys\"
+    If (Not Files.PathExists(m_HotkeyPath)) Then Files.PathCreate m_HotkeyPath
+    
     m_LUTPathDefault = m_DataPath & "3DLUTs\"
     m_LUTPathUser = m_LUTPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step
     If (Not Files.PathExists(m_LUTPathDefault)) Then Files.PathCreate m_LUTPathDefault
@@ -608,6 +632,16 @@ Public Sub LoadUserSettings()
         m_GenerateDebugLogs = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
         Tools.SetToolSetting_HighResMouse UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True)
         m_CanvasColor = Colors.GetRGBLongFromHex(UserPrefs.GetPref_String("Interface", "CanvasColor", "#a0a0a0"))
+        
+        Drawing.ToggleShowOptions pdst_LayerEdges, True, UserPrefs.GetPref_Boolean("Interface", "show-layeredges", False)
+        Drawing.ToggleShowOptions pdst_SmartGuides, True, UserPrefs.GetPref_Boolean("Interface", "show-smartguides", True)
+        Snap.ToggleSnapOptions pdst_Global, True, UserPrefs.GetPref_Boolean("Interface", "snap-global", True)
+        Snap.ToggleSnapOptions pdst_CanvasEdge, True, UserPrefs.GetPref_Boolean("Interface", "snap-canvas-edge", True)
+        Snap.ToggleSnapOptions pdst_Centerline, True, UserPrefs.GetPref_Boolean("Interface", "snap-centerline", False)
+        Snap.ToggleSnapOptions pdst_Layer, True, UserPrefs.GetPref_Boolean("Interface", "snap-layer", True)
+        Snap.SetSnap_Distance UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
+        
+        m_ZoomWithWheel = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
         
         'Users can supply a (secret!) "UIFont" setting in the "Interface" segment if they
         ' want to override PD's default font object.

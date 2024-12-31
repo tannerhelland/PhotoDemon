@@ -1284,14 +1284,16 @@ End Function
 ' using big-endian storage.
 Friend Function WriteString_UnicodeBE(ByRef srcString As String, Optional ByVal addTrailingNull As Boolean = False) As Boolean
     
+    WriteString_UnicodeBE = True
+    
     'There's no good way to do this, but since performance isn't a huge deal in PD's current use-cases,
     ' just write each char one at a time.
     Dim i As Long
     For i = 1 To Len(srcString)
-        WriteString_UnicodeBE = Me.WriteInt_BE(AscW(Mid$(srcString, i, 1)))
+        WriteString_UnicodeBE = WriteString_UnicodeBE And Me.WriteInt_BE(AscW(Mid$(srcString, i, 1)))
     Next i
     
-    If addTrailingNull Then WriteString_UnicodeBE = Me.WriteInt(0)
+    If addTrailingNull Then WriteString_UnicodeBE = WriteString_UnicodeBE And Me.WriteInt(0)
     
 End Function
 

@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Color Wheel" color selector
 'Copyright 2015-2024 by Tanner Helland
 'Created: 19/October/15
-'Last updated: 15/February/16
-'Last update: implement theming and a few new features
+'Last updated: 29/April/24
+'Last update: better behavior on high DPI systems
 '
 'In 7.0, a "color selector" panel was added to the right-side toolbar.  Unlike PD's single-color color selector,
 ' this control is designed to provide a quick, on-canvas-friendly mechanism for rapidly switching colors.  The basic
@@ -578,6 +578,11 @@ Private Sub CreateColorWheel()
     m_HueRadiusInner = m_HueRadiusOuter - Interface.FixDPIFloat(m_WheelWidth)
     If (m_HueRadiusInner < 5) Then m_HueRadiusInner = 5
     
+    'At high DPIs, the outer wheel (on the primary toolbar) can dominate overall wheel size.
+    ' To prevent this, limit outer diameter to a ratio of total object size.
+    If ((m_HueRadiusOuter - m_HueRadiusInner) > wheelDiameter / 6) Then m_HueRadiusInner = wheelDiameter * (1 / 3)
+    If (m_HueRadiusInner >= m_HueRadiusOuter - 5) Then m_HueRadiusInner = m_HueRadiusOuter - 5
+    
     'We're now going to cheat a bit and use a 2D drawing hack to solve for the alpha bytes of our wheel.  The wheel image is
     ' already a black square, and atop that we're going to draw a white circle at the outer radius size, and a black circle
     ' at the inner radius size.  Both will be antialiased.  Black pixels will then be made transparent, while white pixels
@@ -690,8 +695,9 @@ End Sub
 ' hue changes, because the hue value determines the square's appearance.
 Private Sub CreateSVSquare()
     
-    'The SV square is a square that fits (inclusively) within the color wheel.  Basic geometry tells us that one side of the square
-    ' is equal to hypotenuse * sin(45), and we know the hypotenuse already because it's the inner radius of the hue wheel.
+    'The SV square is a square that fits (inclusively) within the color wheel.
+    ' Basic geometry tells us that one side of the square is equal to hypotenuse * sin(45),
+    ' and we know the hypotenuse already because it's the inner radius of the hue wheel.
     m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI * 0.25): m_SVRectF.Height = m_SVRectF.Width
     
     If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB

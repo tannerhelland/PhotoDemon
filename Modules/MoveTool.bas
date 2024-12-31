@@ -3,12 +3,14 @@ Attribute VB_Name = "Tools_Move"
 'PhotoDemon Move/Size Tool Manager
 'Copyright 2014-2024 by Tanner Helland
 'Created: 24/May/14
-'Last updated: 22/December/22
-'Last update: add some trivial key-handling bits for the Hand tool (which is a different tool, but it has
-'             so few features that it's easier to just condense things here)
+'Last updated: 06/May/24
+'Last update: move rendering layer boundaries to universal "View > Show" menu; start work on new
+'             "show distances" feature for the move tool, specifically.
 '
 'This module interfaces between the layer move/size UI and actual layer backend.  Look in the relevant
 ' tool panel form for more details on how the UI relays relevant tool data here.
+'
+'As of 2024, This module also handles move-related duties like snapping to various features.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -17,19 +19,30 @@ Attribute VB_Name = "Tools_Move"
 
 Option Explicit
 
-'The move/size tool exposes a number of UI-only options (like drawing borders around active layers).
+'The move/size tool exposes a number of UI-only options (like drawing distances between objects).
 ' To improve viewport performance, we cache those settings locally, and the viewport queries us instead
 ' of directly querying the associated UI elements.
-Private m_DrawLayerBorders As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
+Private m_DrawDistances As Boolean, m_DrawCornerNodes As Boolean, m_DrawRotateNodes As Boolean
+
+'Set to TRUE when LMB mouse is actively down; FALSE when LMB is not
+Private m_LMBDown As Boolean
 
 'Same goes for various selection-related move settings (for moving selected pixels).  These are simple
 ' flags whose value is relayed from the Move/Size options panel.
 Private m_SelectionDefaultCut As Boolean, m_SelectionSampleMerged As Boolean
 
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal srcIsTextLayer As Boolean = False)
-    If (Tools_Move.GetDrawLayerBorders() Or srcIsTextLayer) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+    
+    'Layer boundary rendering now exists as a standalone option in the View > Show menu
+    ' (rather than being tied to the move tool, specifically).
+    'If (Tools_Move.GetDrawLayerBorders() Or srcIsTextLayer) Then Drawing.DrawLayerBoundaries dstCanvas, srcImage, srcImage.GetActiveLayer
+    
+    'Tool-specific UI elements
     If (Tools_Move.GetDrawLayerCornerNodes() Or srcIsTextLayer) Then Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
     If (Tools_Move.GetDrawLayerRotateNodes() Or srcIsTextLayer) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+    If (m_LMBDown And Drawing.Get_ShowSmartGuides()) Then Drawing.DrawSmartGuides dstCanvas, srcImage
+    If ((g_CurrentTool = NAV_MOVE) And Tools_Move.GetDrawDistances) Then Drawing.DrawLayerDistances dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
+    
 End Sub
 
 Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
@@ -142,6 +155,8 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
     'Failsafe check only
     If (Not PDImages.IsImageActive) Then Exit Sub
     
+    m_LMBDown = True
+    
     'See if a selection is active.  If it is, we need to see if the user has clicked within the selected region.
     ' (If they have, we will allow them to move just the *selected* pixels.)
     Dim useSelectedPixels As Boolean: useSelectedPixels = False
@@ -196,7 +211,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
         'If a selection is active, the only valid transform is movement.  Otherwise, the transform may
         ' be moving or resizing or rotating or some combination of these.
         Dim curPOI As PD_PointOfInterest
-        curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY)
+        curPOI = PDImages.GetActiveImage.GetActiveLayer.CheckForPointOfInterest(imgX, imgY, Tools_Move.GetDrawLayerRotateNodes())
         
         'Give preferential treatment to corner and edge nodes; if neither of these are selected,
         ' we then allow the selected area to "take over".
@@ -293,9 +308,16 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
 End Function
 
 Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfMouseMovements As Long)
-
+    
+    m_LMBDown = False
+    
     'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-    If (numOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
+    ' (Note Aug 2024: this line previously only triggered after this check:
+    ' If (numOfMouseMovements > 0) Then
+    ' This check breaks "move selected pixels" behavior as reported here: https://github.com/tannerhelland/PhotoDemon/issues/584
+    ' I have now removed the check, but am leaving this comment pending additional testing to see if any
+    ' unexpected interactions occur.
+    Tools.TransformCurrentLayer imgX, imgY, PDImages.GetActiveImage(), PDImages.GetActiveImage.GetActiveLayer, FormMain.MainCanvas(0), (Shift And vbShiftMask), True
     
     'Reset the generic tool mouse tracking function
     Tools.TerminateGenericToolTracking
@@ -303,8 +325,8 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
 End Sub
 
 'Relay functions for layer move/size node and border rendering
-Public Function GetDrawLayerBorders() As Boolean
-    GetDrawLayerBorders = m_DrawLayerBorders
+Public Function GetDrawDistances() As Boolean
+    GetDrawDistances = m_DrawDistances
 End Function
 
 Public Function GetDrawLayerCornerNodes() As Boolean
@@ -315,8 +337,8 @@ Public Function GetDrawLayerRotateNodes() As Boolean
     GetDrawLayerRotateNodes = m_DrawRotateNodes
 End Function
 
-Public Sub SetDrawLayerBorders(ByVal newState As Boolean)
-    m_DrawLayerBorders = newState
+Public Sub SetDrawDistances(ByVal newState As Boolean)
+    m_DrawDistances = newState
 End Sub
 
 Public Sub SetDrawLayerCornerNodes(ByVal newState As Boolean)

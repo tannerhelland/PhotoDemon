@@ -1,8 +1,8 @@
 ## Download
 
-| Stable (9.0) | Nightly (9.2-a) | Source code |
+| Stable (2024.12) | Nightly | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download ZIP (14 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v9.0/PhotoDemon-9.0.zip) | [Download ZIP (15 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (17 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
+| [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2024.12/PhotoDemon-2024.12.zip) | [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (24 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
 
 ## About PhotoDemon
 
@@ -18,7 +18,7 @@ PhotoDemon is a portable photo editor.  It is 100% free and [100% open-source](h
 
 ![Screenshot](https://photodemon.org/media/images/photodemon_9.0.png)
 
-PhotoDemon provides a comprehensive photo editor in a 15 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in an 20 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 
@@ -39,12 +39,12 @@ No installer is provided or required.  Aside from a temporary folder – which y
 Complex editing actions can be recorded as macros (similar to Office software).  A built-in batch processor lets you apply macros to entire folders of images.
 
 ### Usability is paramount
-Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
+Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  Small touches like real-time effect previews, save/load presets on all tools, unlimited Undo/Redo, customizable hotkeys, mouse wheel and X-button support, and descriptive icons make it fast and easy to use.
 
 ### Pro-grade features and tools
-* Extensive file format support, including Adobe Photoshop (PSD), Corel PaintShop Pro (PSP), GIMP (XCF), and all major camera RAW formats
+* Extensive file format support, including Adobe Photoshop (PSD), Corel PaintShop Pro (PSP), GIMP (XCF), and major camera RAW formats
 * Advanced multi-layer support, including editable text layers and non-destructive layer modifications 
-* Color-managed workflow, including full support for embedded ICC profiles
+* Color-managed workflow, including support for embedded ICC profiles
 * On-canvas tools: digital paintbrushes, clone and pattern brushes, advanced selection tools, interactive gradients, and more
 * Adjustment tools: levels, curves, HDR, shadow/highlight recovery, white balance, and many more
 * Filters and effects: perspective correction, edge enhancement, noise removal, content-aware fill and resize, unsharp masking, gradient and palette mapping, and many more
@@ -61,36 +61,9 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 
 [Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2022/09/08/photodemon-9-0.html).
 
-### File formats
+PhotoDemon 2024.12 just released, so there's not much new in nightly builds.
 
-- Comprehensive import and export support for [JPEG XL images](https://en.wikipedia.org/wiki/JPEG_XL), including full support for all color models in both lossy and lossless modes.
-- Import support for [satellite topography (HGT) images](https://www2.jpl.nasa.gov/srtm/faq.html#data)
-- Icon (ICO) export now provides [much higher-quality downsampling](https://github.com/tannerhelland/PhotoDemon/commit/6c3dc5ae7b33791d3cb2c7611409679f3a4c3e40) and a new `use merged image` option allows you to automatically generate icon frames from a merged multi-layer image.
-- Windows metafiles (EMF, WMF) now provide an import dialog where you can choose custom rasterization dimensions.
-- Bug-fixes and performance improvements to [multi-page TIFF export](https://github.com/tannerhelland/PhotoDemon/issues/508), with special thanks to [hi5](https://github.com/hi5).
-- Improved compatibility with vector layers and masks in [Photoshop (PSD) images](https://github.com/tannerhelland/PhotoDemon/commit/8a7bd8120aad2ce73922fb4b277fce3fe7f6a663).
-
-### Image and Layer tools
-
-- [The Advanced Text Tool supports new features](https://github.com/tannerhelland/PhotoDemon/pull/431), including justified text alignment, custom fill + stroke order, and new antialiasing settings.
-- [Multiple image files can now be added by a single Add Layer action](https://github.com/tannerhelland/PhotoDemon/commit/ad020a5bd82f817855f1babc37187b584559ca4d), which is helpful for creating new animations from static image collections.
-- The `[Effects > Transform > Perspective]` tool now supports [custom forshortening values in both x- and y-directions](https://github.com/tannerhelland/PhotoDemon/commit/27f6d12242fad25e14b0226831d88fdd4ee7dc31).
-
-### Adjustments and Effects
-
-- [Improved support for Photoshop (8bf) filters](https://github.com/tannerhelland/PhotoDemon/commit/4d3c2a8319bdfc0ecbc0f0c0e07a6904fb36830d), with special thanks to [0xC0000054](https://github.com/0xC0000054).
-
-### User interface 
-
-- [Automatic file-type detection from typed file extensions](https://github.com/tannerhelland/PhotoDemon/commit/ff684a1656078d14df9a0b19db210a79e590d71b) is now provided when saving to new formats, with special thanks to [hi5](https://github.com/hi5).
-- [Improved right-click menus](https://github.com/tannerhelland/PhotoDemon/pull/516) in the primary Layers toolbox.
-- [Improved Windows XP support](https://github.com/tannerhelland/PhotoDemon/commit/8b339413e4604a568c829df9f42e52aacd786d51), including better coverage of 3rd-party libraries that have XP-specific limitations.
-
-### Batch processing
-
-- Batch conversion of [SVG images to raster formats](https://github.com/tannerhelland/PhotoDemon/commit/13c466f1aaef58afe623a56f47da6b3975541329) is now supported.
-- Batch conversion of [Windows metafiles (EMF, WMF)](https://github.com/tannerhelland/PhotoDemon/commit/18812e6ef7d552b3da6ce430cbb0613316e8e63e) is now supported.
-- A new "import size override" allows you to specify custom dimensions for vector images (SVG, EMF, WMF) involved in a batch process
+Check back in a few weeks!
 
 ### Other
 
@@ -100,9 +73,7 @@ For a full list of changes, [visit the project's commit log](https://github.com/
 
 Ongoing PhotoDemon development is made possible by donations from users.
 
-My [Patreon campaign](https://www.patreon.com/photodemon) is one way to donate. Donating through Patreon comes with extra benefits, like in-depth updates on new PhotoDemon features. To learn more, visit [PhotoDemon’s Patreon page](https://www.patreon.com/photodemon).
-
-I am also extremely grateful for one-time donations.  A secure donation page is available at [photodemon.org/donate](https://photodemon.org/donate/).  **Thank you!**
+My [Patreon campaign](https://www.patreon.com/photodemon) is one way to donate.  I am also extremely grateful for one-time donations.  A secure donation page is available at [photodemon.org/donate](https://photodemon.org/donate/).  **Thank you!**
 
 If you can contribute in other ways (language translations, bug reports, pull requests, etc), please [create a new issue at GitHub](https://github.com/tannerhelland/PhotoDemon/issues).  A full list of (wonderful!) contributors is available in [AUTHORS.md](https://github.com/tannerhelland/PhotoDemon/blob/main/AUTHORS.md).
 
@@ -110,6 +81,6 @@ If you can contribute in other ways (language translations, bug reports, pull re
 
 PhotoDemon is BSD-licensed.  This allows you to use its source code in any application, commercial or otherwise, if you supply proper attribution.  Proper attribution includes a **notice of copyright** and **disclaimer of warranty**.
 
-PhotoDemon uses some 3rd-party open-source libraries.  These libraries are found in the /App/PhotoDemon/Plugins folder.  These libraries have their own licenses, separate from PhotoDemon.
+PhotoDemon uses some 3rd-party libraries.  These libraries are found in the `/App/PhotoDemon/Plugins` folder.  These libraries have their own licenses, separate from PhotoDemon.
 
 Full licensing details are available in [LICENSE.md](https://github.com/tannerhelland/PhotoDemon/blob/main/LICENSE.md).

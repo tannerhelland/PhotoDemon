@@ -894,7 +894,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         ' (as is possible with some esoteric formats), we may be able to use ExifTool to manually retrieve
         ' the full profile data.
         If (Not ppMayBeNeeded) Then
-            If (LenB(PDImages.GetImageByID(parentImageID).GetColorProfile_Original) = 0) Then ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
+            If (LenB(PDImages.GetImageByID(parentImageID).GetColorProfile_Original) = 0) Then ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) And ColorManagement.UseEmbeddedICCProfiles()
         End If
         
     End If
@@ -917,7 +917,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         End If
         
         'NON-FORMAT-SPECIFIC tags:
-        If (LenB(PDImages.GetImageByID(parentImageID).GetColorProfile_Original) = 0) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) And (Not PDImages.GetImageByID(parentImageID).ImgStorage.DoesKeyExist("Tone-mapping")) Then
+        If (LenB(PDImages.GetImageByID(parentImageID).GetColorProfile_Original) = 0) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) And (Not PDImages.GetImageByID(parentImageID).ImgStorage.DoesKeyExist("Tone-mapping")) And ColorManagement.UseEmbeddedICCProfiles() Then
             
             'ExifTool pulled an ICC profile from this image file, but our original image load function
             ' did not.  This may be an esoteric format or one with broken formatting.  Let's see if we

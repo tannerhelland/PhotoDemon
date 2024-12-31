@@ -390,7 +390,7 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
         With imgRectCurUnit
         
             Select Case m_RulerUnit
-            
+                
                 'Pixels are the primary unit, and we can just use coordinates as-is
                 Case mu_Pixels
                     .Left = m_imgCoordRectF.Left
@@ -400,10 +400,10 @@ Private Sub UpdateControlLayout(Optional ByVal redrawImmediately As Boolean = Fa
                 
                 'Other units require conversion
                 Case Else
-                    .Left = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Left, curImgDPI)
-                    .Top = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Top, curImgDPI)
-                    .Width = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Width, curImgDPI)
-                    .Height = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Height, curImgDPI)
+                    .Left = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Left, curImgDPI, PDImages.GetActiveImage.Width)
+                    .Top = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Top, curImgDPI, PDImages.GetActiveImage.Height)
+                    .Width = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Width, curImgDPI, PDImages.GetActiveImage.Width)
+                    .Height = Units.ConvertPixelToOtherUnit(m_RulerUnit, m_imgCoordRectF.Height, curImgDPI, PDImages.GetActiveImage.Height)
                     
             End Select
             
@@ -797,7 +797,7 @@ Private Function GetConvertedValue(ByVal srcValue As Double) As Long
     If (m_RulerUnit = mu_Pixels) Then
         GetConvertedValue = Int(srcValue)
     Else
-        If (m_LastDPI <> 0#) Then GetConvertedValue = Int(Units.ConvertOtherUnitToPixels(m_RulerUnit, srcValue, m_LastDPI) + 0.5)
+        If (m_LastDPI <> 0#) Then GetConvertedValue = Int(Units.ConvertOtherUnitToPixels(m_RulerUnit, srcValue, m_LastDPI, IIf(m_Orientation = pdo_Horizontal, PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height)) + 0.5)
     End If
 
 End Function

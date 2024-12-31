@@ -707,10 +707,14 @@ Attribute m_Flyout.VB_VarHelpID = -1
 Private m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
+'While the dialog is loading, we need to suspend relaying changes to the active layer.
+' (Otherwise, we may accidentally relay last-used settings from a previous image to the current one!)
+Private m_suspendSettingRelay As Boolean
+
 Private Sub bsText_BrushChanged()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -747,7 +751,7 @@ End Sub
 Private Sub bsTextBackground_BrushChanged()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -784,7 +788,7 @@ End Sub
 Private Sub btnFontStyles_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -893,7 +897,7 @@ End Sub
 Private Sub btsHAlignJustify_Click(ByVal buttonIndex As Long)
 
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -930,7 +934,7 @@ End Sub
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -973,7 +977,7 @@ Private Sub btsHinting_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, n
 End Sub
 
 Private Sub btsStretch_Click(ByVal buttonIndex As Long)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     Tools.SetToolBusyState True
     PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_StretchToFit, btsStretch.ListIndex
     Tools.SetToolBusyState False
@@ -1001,7 +1005,7 @@ End Sub
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1038,7 +1042,7 @@ End Sub
 Private Sub cboCharCase_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1075,7 +1079,7 @@ End Sub
 Private Sub cboCharMirror_Click()
 
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1112,7 +1116,7 @@ End Sub
 Private Sub cboTextFontFace_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1149,7 +1153,7 @@ End Sub
 Private Sub cboTextRenderingHint_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1186,7 +1190,7 @@ End Sub
 Private Sub cboWordWrap_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1223,7 +1227,7 @@ End Sub
 Private Sub chkBackground_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1259,7 +1263,7 @@ End Sub
 Private Sub chkBackgroundBorder_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1295,7 +1299,7 @@ End Sub
 Private Sub chkFillFirst_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1332,7 +1336,7 @@ End Sub
 Private Sub chkFillText_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1360,7 +1364,7 @@ End Sub
 Private Sub btsHinting_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1397,7 +1401,7 @@ End Sub
 Private Sub chkOutlineText_Click()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1480,6 +1484,8 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
 End Sub
 
 Private Sub Form_Load()
+    
+    m_suspendSettingRelay = True
     
     'Disable any layer updates as a result of control changes during the load process
     Tools.SetToolBusyState True
@@ -1574,6 +1580,8 @@ Private Sub Form_Load()
     
     Tools.SetToolBusyState False
     
+    m_suspendSettingRelay = False
+    
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -1631,7 +1639,7 @@ End Sub
 Private Sub psText_PenChanged(ByVal isFinalChange As Boolean)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1668,7 +1676,7 @@ End Sub
 Private Sub psTextBackground_PenChanged(ByVal isFinalChange As Boolean)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1713,7 +1721,7 @@ End Sub
 Private Sub sldTextFontSize_Change()
 
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1750,7 +1758,7 @@ End Sub
 Private Sub sltCharInflation_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1787,7 +1795,7 @@ End Sub
 Private Sub sltCharOrientation_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1824,7 +1832,7 @@ End Sub
 Private Sub sltCharSpacing_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1888,7 +1896,7 @@ End Sub
 Private Sub tudJitter_Change(Index As Integer)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1917,7 +1925,7 @@ End Sub
 Private Sub sldLineSpacing_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -1962,7 +1970,7 @@ End Sub
 Private Sub tudMargin_Change(Index As Integer)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -2054,7 +2062,7 @@ End Sub
 Private Sub txtTextTool_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
-    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True

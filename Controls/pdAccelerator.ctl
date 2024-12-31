@@ -413,6 +413,10 @@ End Function
 
 Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Boolean
     
+    'Returning TRUE means we handled the keypress and do *not* want to forward it down the chain
+    HandleActualKeypress = False
+    If (Not Me.Enabled) Then Exit Function
+    
     'Translate modifier states (shift, control, alt/menu) to their masked VB equivalent
     Dim retShiftConstants As ShiftConstants
     If m_CtrlDown Then retShiftConstants = retShiftConstants Or vbCtrlMask
@@ -516,32 +520,31 @@ Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
             ' that are full transitions from "Unpressed" to "Pressed" or vice-versa.  (The byte masks here
             ' all come from MSDN - check the link above for details!)
             '
-            'TODO: some hotkeys (like brush size up/down) would actually benefit from key repeat behavior.
-            ' This line needs to be revisited accordingly!
-            If ((lParam >= 0) And ((lParam And &H40000000) = 0)) Or ((lParam < 0) And ((lParam And &H40000000) <> 0)) Then
-                
-                'We now want to check two things simultaneously.  First, we want to update Ctrl/Alt/Shift
-                ' key state tracking.  (This is handled by a separate function.)  If something other than
-                ' Ctrl/Alt/Shift was pressed, *and* this is a keydown event, let's look for hotkey matches.
-                '
-                '(How do we detect keydown vs keyup events?  The first bit (e.g. "bit 31" per MSDN) of lParam
-                ' defines key state: 0 means the key is being pressed, 1 means the key is being released.
-                ' Note the similarity to the transition check, above.)
-                If (lParam >= 0) And (Not UpdateCtrlAltShiftState(wParam, lParam)) Then
-                
-                    'Before proceeding with further checks, see if PD is even allowed to process accelerators
-                    ' in its current state (e.g. if a modal dialog is active, we don't want to raise events)
-                    If CanIAccumulateAnAccelerator Then
+            '(Update 2024: some hotkeys (like brush size up/down) actually benefit from key repeat behavior.
+            ' To enable this, I removed the old transition state check.  If for some reason we need to enable
+            ' it in the future, use the boolean calculation below.)
+            'Dim keyTransitionState As Boolean
+            'keyTransitionState = ((lParam >= 0) And ((lParam And &H40000000) = 0)) Or ((lParam < 0) And ((lParam And &H40000000) <> 0))
+            
+            'We now want to check two things simultaneously.  First, we want to update Ctrl/Alt/Shift
+            ' key state tracking.  (This is handled by a separate function.)  If something other than
+            ' Ctrl/Alt/Shift was pressed, *and* this is a keydown event, let's look for hotkey matches.
+            '
+            '(How do we detect keydown vs keyup events?  The first bit (e.g. "bit 31" per MSDN) of lParam
+            ' defines key state: 0 means the key is being pressed, 1 means the key is being released.
+            ' Note the similarity to the transition check, above.)
+            If (lParam >= 0) And (Not UpdateCtrlAltShiftState(wParam, lParam)) Then
+            
+                'Before proceeding with further checks, see if PD is even allowed to process accelerators
+                ' in its current state (e.g. if a modal dialog is active, we don't want to raise events)
+                If CanIAccumulateAnAccelerator Then
                     
-                        'All checks have passed.  We'll handle the actual keycode evaluation matching in another function.
-                        msgEaten = HandleActualKeypress(nCode, wParam, lParam)
-                        
-                    End If
-                
-                '/Ctrl/Alt/Shift was pressed
+                    'All checks have passed.  We'll handle the actual keycode evaluation matching in another function.
+                    msgEaten = HandleActualKeypress(nCode, wParam, lParam)
+                    
                 End If
             
-            '/Key is not in a transitionary state
+            '/Ctrl/Alt/Shift was pressed
             End If
             
         '/nCode negative

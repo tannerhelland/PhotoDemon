@@ -1624,20 +1624,24 @@ Begin VB.Form FormMain
          Index           =   10
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Options..."
+         Caption         =   "Keyboard shortcuts..."
          Index           =   11
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Third-party libraries..."
+         Caption         =   "Options..."
          Index           =   12
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "-"
+         Caption         =   "Third-party libraries..."
          Index           =   13
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Developers"
+         Caption         =   "-"
          Index           =   14
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "Developers"
+         Index           =   15
          Begin VB.Menu MnuDevelopers 
             Caption         =   "Theme editor..."
             Index           =   0
@@ -1728,6 +1732,42 @@ Begin VB.Form FormMain
       Begin VB.Menu MnuView 
          Caption         =   "Show status bar"
          Index           =   7
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Show extras"
+         Index           =   8
+         Begin VB.Menu MnuShow 
+            Caption         =   "Layer edges"
+            Index           =   0
+         End
+         Begin VB.Menu MnuShow 
+            Caption         =   "Smart guides"
+            Index           =   1
+         End
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "-"
+         Index           =   9
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap"
+         Index           =   10
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap to"
+         Index           =   11
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Canvas edges"
+            Index           =   0
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Centerlines"
+            Index           =   1
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Layers"
+            Index           =   2
+         End
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -2102,8 +2142,8 @@ Private Sub Form_Load()
         PDDebug.LogAction "Program initialization complete.  Second baseline memory measurement:"
         PDDebug.LogAction vbNullString, PDM_Mem_Report
         
-        'Before setting focus to the main form, active a focus tracker; it catches some cases that VB's
-        ' built-in focus events do not.
+        'Before setting focus to the main form, activate a focus tracker.
+        ' (PD uses this class to catch some focus cases that VB's built-in focus events do not.)
         Set m_FocusDetector = New pdFocusDetector
         m_FocusDetector.StartFocusTracking FormMain.hWnd
         
@@ -2368,7 +2408,7 @@ Public Sub UpdateMainLayout(Optional ByVal resizeToolboxesToo As Boolean = True)
     If resizeToolboxesToo Then
         Toolboxes.PositionToolbox PDT_LeftToolbox, toolbar_Toolbox.hWnd, FormMain.hWnd
         Toolboxes.PositionToolbox PDT_RightToolbox, toolbar_Layers.hWnd, FormMain.hWnd
-        Toolboxes.PositionToolbox PDT_BottomToolbox, toolbar_Options.hWnd, FormMain.hWnd
+        Toolboxes.PositionToolbox PDT_TopToolbox, toolbar_Options.hWnd, FormMain.hWnd
     End If
     
     'Similarly, we can drop the canvas into place using the helpful rect provided by the toolbox module.
@@ -3733,6 +3773,26 @@ Private Sub MnuSharpen_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuShow_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "show_layeredges"
+        Case 1
+            Actions.LaunchAction_ByName "show_smartguides"
+    End Select
+End Sub
+
+Private Sub MnuSnap_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "snap_canvasedge"
+        Case 1
+            Actions.LaunchAction_ByName "snap_centerline"
+        Case 2
+            Actions.LaunchAction_ByName "snap_layer"
+    End Select
+End Sub
+
 Private Sub MnuSpecificZoom_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -3804,8 +3864,10 @@ Private Sub mnuTool_Click(Index As Integer)
         Case 10
             '(separator)
         Case 11
-            Actions.LaunchAction_ByName "tools_options"
+            Actions.LaunchAction_ByName "tools_hotkeys"
         Case 12
+            Actions.LaunchAction_ByName "tools_options"
+        Case 13
             Actions.LaunchAction_ByName "tools_3rdpartylibs"
     End Select
 End Sub
@@ -3821,13 +3883,21 @@ Private Sub MnuView_Click(Index As Integer)
         Case 3
             Actions.LaunchAction_ByName "view_zoomout"
         Case 4
-            'zoom-to-value top-level menu
+            'zoom-to-value top-level
         Case 5
             '(separator)
         Case 6
             Actions.LaunchAction_ByName "view_rulers"
         Case 7
             Actions.LaunchAction_ByName "view_statusbar"
+        Case 8
+            'show extras top-level
+        Case 9
+            '(separator)
+        Case 10
+            Actions.LaunchAction_ByName "snap_global"
+        Case 11
+            'snap-to top-level
     End Select
 End Sub
 

@@ -3,8 +3,10 @@ Attribute VB_Name = "Compression"
 'Unified Compression Interface for PhotoDemon
 'Copyright 2016-2024 by Tanner Helland
 'Created: 02/December/16
-'Last updated: 24/November/20
-'Last update: remove old workarounds for libdeflate lacking 0-mode compression; v1.7 now supports this
+'Last updated: 30/December/24
+'Last update: allow some error suppression; PSP files use weird length markers and libdeflate is flawless at catching them,
+'             but a bunch of bad length errors get thrown and we log them all (unhelpfully) so let's suppress *just*
+'             that specific case
 'Dependencies: - standalone plugin modules for whatever compression engines you want to use.  This module
 '              simply wraps those dedicated wrappers in a more convenient format.
 '
@@ -280,7 +282,7 @@ End Function
 'All decompression functions ultimately wrap this function.  You can also use it directly, but you *must* size your destination buffer
 ' correctly to avoid hard crashes.  Also, you *must* pass in the byte-accurate destination buffer size as dstSizeInBytes;
 ' most decompressors do not store this value independently.
-Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, ByVal cmpFormat As PD_CompressionFormat) As Boolean
+Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInBytes As Long, ByVal constSrcPtr As Long, ByVal constSrcSizeInBytes As Long, ByVal cmpFormat As PD_CompressionFormat, Optional ByVal suppressErrors As Boolean = False) As Boolean
     
     DecompressPtrToPtr = False
     
@@ -288,7 +290,7 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
         Case cf_None
             'Do nothing; the failsafe catch at the end of this function handles this case for us
         Case cf_Zlib
-            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Zlib)
+            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Zlib, True, suppressErrors)
         Case cf_Zstd
             DecompressPtrToPtr = (Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
         Case cf_Lz4
@@ -296,9 +298,9 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
         Case cf_Lz4hc
             DecompressPtrToPtr = (Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
         Case cf_Deflate
-            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Deflate)
+            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Deflate, True, suppressErrors)
         Case cf_Gzip
-            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Gzip)
+            DecompressPtrToPtr = Plugin_libdeflate.DecompressPtrToPtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, cf_Gzip, True, suppressErrors)
     End Select
     
     'If compression failed, perform a direct source-to-dst copy

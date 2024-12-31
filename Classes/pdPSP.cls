@@ -2238,7 +2238,7 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
                     If m_Layers(numLayersFound).ConstructMatchingDIB(m_ParentPalette, m_ParentPaletteCount, m_ImageHeader) Then
                         
                         'Apply color-management, if any
-                        If (Not m_ICCProfile Is Nothing) Then
+                        If (Not m_ICCProfile Is Nothing) And ColorManagement.UseEmbeddedICCProfiles() Then
                             If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Color-managing layer contents..."
                             ColorManagement.ConvertDIBToSRGB m_Layers(numLayersFound).GetLayerDIB, m_ICCProfile
                         End If
@@ -2271,7 +2271,7 @@ Private Function Step6_LoadLayers(ByRef srcFile As String) As PD_PSPResult
                         If m_Layers(numLayersFound).ConstructMatchingDIB_Vector(m_ParentPalette, m_ParentPaletteCount, m_ImageHeader) Then
                             
                             'Apply color-management, if any
-                            If (Not m_ICCProfile Is Nothing) Then
+                            If (Not m_ICCProfile Is Nothing) And ColorManagement.UseEmbeddedICCProfiles() Then
                                 If PSP_DEBUG_VERBOSE Then PDDebug.LogAction vbTab & "Color-managing layer contents..."
                                 ColorManagement.ConvertDIBToSRGB m_Layers(numLayersFound).GetLayerDIB, m_ICCProfile
                             End If

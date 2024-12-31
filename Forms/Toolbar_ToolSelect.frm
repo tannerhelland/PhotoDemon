@@ -26,6 +26,7 @@ Begin VB.Form toolbar_Toolbox
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
+   OLEDropMode     =   1  'Manual
    ScaleHeight     =   654
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   156
@@ -41,6 +42,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "file"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -51,6 +53,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -61,6 +64,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -71,6 +75,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -81,6 +86,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -91,6 +97,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -101,6 +108,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -111,6 +119,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -121,6 +130,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -132,6 +142,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -143,6 +154,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -154,6 +166,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -165,6 +178,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -176,6 +190,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -187,6 +202,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -198,6 +214,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -209,6 +226,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
       AutoToggle      =   -1  'True
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -219,6 +237,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -229,6 +248,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -239,6 +259,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -250,6 +271,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "undo"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -261,6 +283,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "layout"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -272,6 +295,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "select"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -283,6 +307,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "text"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdTitle ttlCategories 
       Height          =   240
@@ -294,6 +319,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   3201
       _ExtentY        =   423
       Caption         =   "paint"
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -304,6 +330,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblRecording 
       Height          =   720
@@ -315,6 +342,7 @@ Begin VB.Form toolbar_Toolbox
       _ExtentY        =   1270
       Alignment       =   2
       Caption         =   "macro recording in progress..."
+      CustomDragDropEnabled=   -1  'True
       Layout          =   1
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
@@ -326,6 +354,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -336,6 +365,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -346,6 +376,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -356,6 +387,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -366,6 +398,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -376,6 +409,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
    End
 End
 Attribute VB_Name = "toolbar_Toolbox"
@@ -502,7 +536,12 @@ Private m_ActiveToolPanel As PD_ToolPanels
 
 'Sometimes, external functions need to get a list of valid tool names.  (The search bar, for example.)
 ' We store a list of localized tool names and corresponding action strings internally.
-Private m_ToolNames As pdStringStack, m_ToolActions As pdStringStack
+Private Type PD_ToolboxAction
+    ta_ToolName As String
+    ta_ToolAction As String
+End Type
+
+Private m_ToolActions() As PD_ToolboxAction, m_numToolActions As Long
 
 Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
         
@@ -540,6 +579,30 @@ Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
 End Sub
 
+Private Sub cmdFile_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub cmdFile_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
+End Sub
+
+Private Sub cmdTools_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub cmdTools_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
+End Sub
+
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
+End Sub
+
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
@@ -548,6 +611,14 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         m_lastUsedSettings.SetParentForm Nothing
     End If
     
+End Sub
+
+Private Sub lblRecording_CustomDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub lblRecording_CustomDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub
 
 'When the mouse leaves this toolbox, reset it to an arrow (so other forms don't magically acquire the west/east resize cursor, as the mouse is
@@ -619,9 +690,9 @@ Private Sub Form_Load()
     m_ShowCategoryLabels = UserPrefs.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
     m_ButtonSize = UserPrefs.GetPref_Long("Core", "Toolbox Button Size", tbs_Small)
     
-    'Ensure our tool name and action stacks exist
-    Set m_ToolNames = New pdStringStack
-    Set m_ToolActions = New pdStringStack
+    'Reset a stack of tool names, actions, and associated hotkeys
+    m_numToolActions = 0
+    ReDim m_ToolActions(0) As PD_ToolboxAction
     
     'Initialize a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -1109,11 +1180,11 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             
             'Hand and zoom tools do not provide additional options
             Case NAV_DRAG, NAV_ZOOM
-                Toolboxes.SetToolboxVisibility PDT_BottomToolbox, False
+                Toolboxes.SetToolboxVisibility PDT_TopToolbox, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
             Case Else
-                Toolboxes.SetToolboxVisibilityByPreference PDT_BottomToolbox
+                Toolboxes.SetToolboxVisibilityByPreference PDT_TopToolbox
                 
         End Select
         
@@ -1352,115 +1423,132 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdFile(FILE_SAVEAS_FLAT).AssignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
         
     'Layout tool buttons are next
-    Dim shortcutText As String
-    shortcutText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "H")
+    Dim shortcutText As String, hotkeyText As String
+    shortcutText = g_Language.TranslateMessage("Hand (click-and-drag image scrolling)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_hand", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(NAV_DRAG).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Zoom") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "Z")
+    shortcutText = g_Language.TranslateMessage("Zoom")
+    If Hotkeys.GetHotkeyText_FromAction("tool_zoom", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(NAV_ZOOM).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Move and resize image layers") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "M")
+    shortcutText = g_Language.TranslateMessage("Move and resize image layers")
+    If Hotkeys.GetHotkeyText_FromAction("tool_move", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(NAV_MOVE).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Select colors from the image") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "I")
+    shortcutText = g_Language.TranslateMessage("Select colors from the image")
+    If Hotkeys.GetHotkeyText_FromAction("tool_colorselect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(COLOR_PICKER).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Measure angles and distances") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "I")
+    shortcutText = g_Language.TranslateMessage("Measure angles and distances")
+    If Hotkeys.GetHotkeyText_FromAction("tool_colorselect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(ND_MEASURE).AssignTooltip shortcutText
     
     '...then selections...
-    shortcutText = g_Language.TranslateMessage("Rectangular Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "S")
+    shortcutText = g_Language.TranslateMessage("Rectangular Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_rect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_RECT).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Elliptical (Oval) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "S")
+    shortcutText = g_Language.TranslateMessage("Elliptical (Oval) Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_rect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_CIRC).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Polygon Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
+    shortcutText = g_Language.TranslateMessage("Polygon Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_polygon", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_POLYGON).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Lasso (Freehand) Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "L")
+    shortcutText = g_Language.TranslateMessage("Lasso (Freehand) Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_polygon", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_LASSO).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Magic Wand Selection") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "W")
+    shortcutText = g_Language.TranslateMessage("Magic Wand Selection")
+    If Hotkeys.GetHotkeyText_FromAction("tool_select_wand", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(SELECT_WAND).AssignTooltip shortcutText
     
     '...then vector tools...
-    shortcutText = g_Language.TranslateMessage("Basic Text") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    shortcutText = g_Language.TranslateMessage("Basic Text")
+    If Hotkeys.GetHotkeyText_FromAction("tool_text_basic", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(TEXT_BASIC).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Advanced Text") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "T")
+    shortcutText = g_Language.TranslateMessage("Advanced Text")
+    If Hotkeys.GetHotkeyText_FromAction("tool_text_basic", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(TEXT_ADVANCED).AssignTooltip shortcutText
     
     '...then paint tools...
-    shortcutText = g_Language.TranslateMessage("Pencil (hard-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "P")
+    shortcutText = g_Language.TranslateMessage("Pencil (hard-tipped brush)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_pencil", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_PENCIL).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Paintbrush (soft-tipped brush)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "B")
+    shortcutText = g_Language.TranslateMessage("Paintbrush (soft-tipped brush)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_paintbrush", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_SOFTBRUSH).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Eraser") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "E")
+    shortcutText = g_Language.TranslateMessage("Eraser")
+    If Hotkeys.GetHotkeyText_FromAction("tool_erase", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_ERASER).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Clone stamp") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "C")
+    shortcutText = g_Language.TranslateMessage("Clone stamp")
+    If Hotkeys.GetHotkeyText_FromAction("tool_clone", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_CLONE).AssignTooltip shortcutText
     
-    shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "F")
+    shortcutText = g_Language.TranslateMessage("Paint bucket (fill with color)")
+    If Hotkeys.GetHotkeyText_FromAction("tool_paintbucket", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_FILL).AssignTooltip shortcutText
-    shortcutText = g_Language.TranslateMessage("Gradient") & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", "G")
+    shortcutText = g_Language.TranslateMessage("Gradient")
+    If Hotkeys.GetHotkeyText_FromAction("tool_gradient", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(PAINT_GRADIENT).AssignTooltip shortcutText
     
-    'And finally, tool names and their corresponding action strings
-    m_ToolNames.ResetStack
+    'And finally, tool names and their corresponding action strings.  (These are supplied to the
+    ' hotkey manager, which is why we use slightly different organization, combining some tools that
+    ' are designed to share hotkeys.)
+    ReDim m_ToolActions(0) As PD_ToolboxAction
+    m_numToolActions = 0
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Hand tool")
-    m_ToolActions.AddString "tool_hand"
+    AddToolboxAction g_Language.TranslateMessage("Hand tool"), "tool_hand"
+    AddToolboxAction g_Language.TranslateMessage("Zoom tool"), "tool_zoom"
+    AddToolboxAction g_Language.TranslateMessage("Move tool"), "tool_move"
+    AddToolboxAction g_Language.TranslateMessage("Color selector tool") & ", " & g_Language.TranslateMessage("Measure tool"), "tool_colorselect"
+    AddToolboxAction g_Language.TranslateMessage("Crop tool"), "tool_crop"
+    AddToolboxAction g_Language.TranslateMessage("Rectangle selection tool") & ", " & g_Language.TranslateMessage("Ellipse selection tool"), "tool_select_rect"
+    AddToolboxAction g_Language.TranslateMessage("Polygon selection tool") & ", " & g_Language.TranslateMessage("Lasso selection tool"), "tool_select_polygon"
+    AddToolboxAction g_Language.TranslateMessage("Magic wand selection tool"), "tool_select_wand"
+    AddToolboxAction g_Language.TranslateMessage("Basic text tool") & ", " & g_Language.TranslateMessage("Advanced text tool"), "tool_text_basic"
+    AddToolboxAction g_Language.TranslateMessage("Pencil tool"), "tool_pencil"
+    AddToolboxAction g_Language.TranslateMessage("Paintbrush tool"), "tool_paintbrush"
+    AddToolboxAction g_Language.TranslateMessage("Erase tool"), "tool_erase"
+    AddToolboxAction g_Language.TranslateMessage("Clone stamp tool"), "tool_clone"
+    AddToolboxAction g_Language.TranslateMessage("Paint bucket tool"), "tool_paintbucket"
+    AddToolboxAction g_Language.TranslateMessage("Gradient tool"), "tool_gradient"
+    AddToolboxAction g_Language.TranslateMessage("Search tool"), "tool_search"
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Zoom tool")
-    m_ToolActions.AddString "tool_zoom"
+    'Tool modifiers; UI setting changes only!
+    AddToolboxAction g_Language.TranslateMessage("Decrease brush size"), "tool_active_sizedown"
+    AddToolboxAction g_Language.TranslateMessage("Increase brush size"), "tool_active_sizeup"
+    AddToolboxAction g_Language.TranslateMessage("Decrease brush hardness"), "tool_active_hardnessdown"
+    AddToolboxAction g_Language.TranslateMessage("Increase brush hardness"), "tool_active_hardnessup"
+    AddToolboxAction g_Language.TranslateMessage("Toggle brush cursor"), "tool_active_togglecursor"
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Move tool")
-    m_ToolActions.AddString "tool_move"
+End Sub
+
+Private Sub AddToolboxAction(ByRef translatedName As String, ByRef toolAction As String)
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Color selector tool")
-    m_ToolActions.AddString "tool_colorselect"
+    If (m_numToolActions = 0) Then
+        Const INIT_TOOL_ACTIONS As Long = 16
+        ReDim m_ToolActions(0 To INIT_TOOL_ACTIONS - 1) As PD_ToolboxAction
+    End If
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Measure tool")
-    m_ToolActions.AddString "tool_measure"
+    If (m_numToolActions > UBound(m_ToolActions)) Then ReDim Preserve m_ToolActions(0 To m_numToolActions * 2 - 1) As PD_ToolboxAction
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Rectangle selection tool")
-    m_ToolActions.AddString "tool_select_rect"
+    With m_ToolActions(m_numToolActions)
+        .ta_ToolName = translatedName
+        .ta_ToolAction = toolAction
+    End With
     
-    m_ToolNames.AddString g_Language.TranslateMessage("Ellipse selection tool")
-    m_ToolActions.AddString "tool_select_ellipse"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Polygon selection tool")
-    m_ToolActions.AddString "tool_select_polygon"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Lasso selection tool")
-    m_ToolActions.AddString "tool_select_lasso"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Magic wand selection tool")
-    m_ToolActions.AddString "tool_select wand"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Basic text tool")
-    m_ToolActions.AddString "tool_text_basic"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Advanced text tool")
-    m_ToolActions.AddString "tool_text_advanced"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Pencil tool")
-    m_ToolActions.AddString "tool_pencil"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Paintbrush tool")
-    m_ToolActions.AddString "tool_paintbrush"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Erase tool")
-    m_ToolActions.AddString "tool_erase"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Clone stamp tool")
-    m_ToolActions.AddString "tool_clone"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Paint bucket tool")
-    m_ToolActions.AddString "tool_paintbucket"
-    
-    m_ToolNames.AddString g_Language.TranslateMessage("Gradient tool")
-    m_ToolActions.AddString "tool_gradient"
+    m_numToolActions = m_numToolActions + 1
     
 End Sub
 
 Public Sub GetListOfToolNamesAndActions(ByRef dstNames As pdStringStack, ByRef dstActions As pdStringStack)
+    
     Set dstNames = New pdStringStack
-    dstNames.CloneStack m_ToolNames
     Set dstActions = New pdStringStack
-    dstActions.CloneStack m_ToolActions
+    
+    If (m_numToolActions > 0) Then
+        Dim i As Long
+        For i = 0 To m_numToolActions - 1
+            dstNames.AddString m_ToolActions(i).ta_ToolName
+            dstActions.AddString m_ToolActions(i).ta_ToolAction
+        Next i
+    End If
+    
 End Sub
 
 'You *must* call this function before shutdown.  This function will forcibly free cached toolbox windows.
@@ -1530,4 +1618,12 @@ Public Sub FreeAllToolpanels()
         
     Next i
     
+End Sub
+
+Private Sub ttlCategories_CustomDragDrop(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+    Loading.LoadFromDragDrop Data, Effect, Button, Shift
+End Sub
+
+Private Sub ttlCategories_CustomDragOver(Index As Integer, Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+    Loading.HelperForDragOver Data, Effect, Button, Shift, x, y, State
 End Sub

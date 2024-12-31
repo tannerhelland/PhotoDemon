@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1725</langversion>
+<langversion>8.9.1735</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1782,6 +1782,21 @@ Deze afbeelding bevat %2 unieke kleur-ondoorzichtigheidswaarden (RGBA).</transla
 </phrase>
 
 <phrase>
+<original>Backspace</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Tab</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Escape</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Ctrl</original>
 <translation>Ctrl</translation>
 </phrase>
@@ -1796,7 +1811,7 @@ Deze afbeelding bevat %2 unieke kleur-ondoorzichtigheidswaarden (RGBA).</transla
 <translation>Verschuiving</translation>
 </phrase>
 
-<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Hotkeys.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2691,6 +2706,8 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 
 <!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
+<!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
 <translation></translation>
@@ -2739,11 +2756,16 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 </phrase>
 
 <phrase>
+<original>LGPL license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mozilla Public License 2.0</original>
 <translation>Mozilla Openbare Licentie 2.0</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 28 phrases. 22 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -5481,6 +5503,11 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
+<original>Keyboard shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Options</original>
 <translation>Opties</translation>
 </phrase>
@@ -5546,6 +5573,46 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
+<original>Show extras</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layer edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Smart guides</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Snap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Snap to</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Canvas edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>Lagen</translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>Venster</translation>
 </phrase>
@@ -5583,11 +5650,6 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 <phrase>
 <original>Tool options</original>
 <translation>Gereedschapsopties</translation>
-</phrase>
-
-<phrase>
-<original>Layers</original>
-<translation>Lagen</translation>
 </phrase>
 
 <phrase>
@@ -5748,7 +5810,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 216 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- MainWindow.frm contains 403 phrases. 217 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -10787,6 +10849,33 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>page format</original>
+<translation>paginaformaat</translation>
+</phrase>
+
+<phrase>
+<original>lossless</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>lossy</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>single page (composited image)</original>
+<translation>enkele pagina (samengestelde afbeelding)</translation>
+</phrase>
+
+<phrase>
+<original>multipage (one page per layer)</original>
+<translation>>multipage (één pagina per laag)</translation>
+</phrase>
+
+<!-- File_Save_HEIF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
 <original>icon purpose</original>
 <translation>icoon doel</translation>
 </phrase>
@@ -10972,17 +11061,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>traag, kleiner bestand</translation>
 </phrase>
 
-<phrase>
-<original>lossless</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>lossy</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_JXL.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
@@ -11129,22 +11208,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>monochrome compressie</translation>
 </phrase>
 
-<phrase>
-<original>page format</original>
-<translation>paginaformaat</translation>
-</phrase>
-
-<phrase>
-<original>single page (composited image)</original>
-<translation>enkele pagina (samengestelde afbeelding)</translation>
-</phrase>
-
-<phrase>
-<original>multipage (one page per layer)</original>
-<translation>>multipage (één pagina per laag)</translation>
-</phrase>
-
-<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>image type</original>
@@ -12230,6 +12294,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>Crop tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Rectangle selection tool</original>
 <translation></translation>
 </phrase>
@@ -12289,7 +12358,37 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<phrase>
+<original>Search tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Decrease brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Increase brush hardness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toggle brush cursor</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12539,8 +12638,8 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>toon laaggrenzen</translation>
+<original>show distances</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12961,6 +13060,138 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
+<original>undo all changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>undo changes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>try to capture automatically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>this hotkey</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>restore default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>export to file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>import from file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>restore all defaults</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate summary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Import hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Hotkeys</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>One or more hotkeys is currently assigned to multiple actions.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Press OK to proceed.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Press cancel to keep editing hotkeys.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Toolbox tools</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please use this hotkey on just one action</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(this item)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hotkeys must be unique.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Command</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hotkey</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+
+<phrase>
 <original>click here for detailed instructions (in English)</original>
 <translation>klik hier voor gedetailleerde instructies (in het Engels)</translation>
 </phrase>
@@ -13333,6 +13564,131 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>gebruik zwartpuntcompensatie</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>renderintentie beeldscherm</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>beschikbare weergaven</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>weergave-kleurenbeheer uitschakelen</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>gebruik de huidige systeemprofielen voor elke weergave</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>kleurenprofiel voor deze weergave</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Beleid weergeven</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>gebruik aangepaste profielen voor elke weergave</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Reset alle programma instellingen</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>geheugengebruik zal hier worden weergegeven</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>geheugen diagnostiek</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>locatie van tijdelijk bestand</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>begin opnieuw</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer opgevuld in run-time)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatisch controleren op updates</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>toestaan updates van deze tracks</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>updateopties</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
+</phrase>
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation></translation>
 </phrase>
@@ -13369,6 +13725,11 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>canvas background color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
 <translation></translation>
 </phrase>
 
@@ -13525,111 +13886,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <phrase>
 <original>viewport</original>
 <translation>viewport</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>gebruik zwartpuntcompensatie</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>renderintentie beeldscherm</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>beschikbare weergaven</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>weergave-kleurenbeheer uitschakelen</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>gebruik de huidige systeemprofielen voor elke weergave</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>kleurenprofiel voor deze weergave</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Beleid weergeven</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>gebruik aangepaste profielen voor elke weergave</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Reset alle programma instellingen</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>geheugengebruik zal hier worden weergegeven</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>geheugen diagnostiek</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>locatie van tijdelijk bestand</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>begin opnieuw</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer opgevuld in run-time)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatisch controleren op updates</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>toestaan updates van deze tracks</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>updateopties</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
 </phrase>
 
 <phrase>
@@ -13927,6 +14183,16 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>each session</original>
 <translation>elke sessie</translation>
 </phrase>
@@ -14034,7 +14300,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Deze nieuwe tijdelijke maplocatie zal geen effect hebben voordat je het programma herstart hebt</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 194 phrases. 55 were duplicates of existing phrases, so only 139 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14244,10 +14510,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2695</phrasecount>
+<phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5690 phrases. -->
-<!-- 2995 are duplicates, so only 2695 unique phrases have been written to file. -->
-<!-- These 2695 phrases contain approximately 11694 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>
