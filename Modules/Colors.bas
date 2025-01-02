@@ -773,6 +773,22 @@ Public Function GetRGBALongFromHex(ByVal srcHex As String) As Long
     
 End Function
 
+'Given a hex color representation, return a matching RGBA quad (4 bytes in BGRA order).
+' NOTE: this function does not handle alpha, so incoming hex values must be 1, 3, or 6 chars long
+' NOTE: that this function DOES NOT validate the incoming string; as a purely internal function, it's assumed you
+'       won't send it gibberish!
+Public Function GetRGBQuadFromHex(ByVal srcHex As String) As RGBQuad
+    
+    Dim tmpLong As Long
+    tmpLong = Colors.GetRGBLongFromHex(srcHex)
+    
+    GetRGBQuadFromHex.Red = Colors.ExtractRed(tmpLong)
+    GetRGBQuadFromHex.Green = Colors.ExtractGreen(tmpLong)
+    GetRGBQuadFromHex.Blue = Colors.ExtractBlue(tmpLong)
+    GetRGBQuadFromHex.Alpha = 255
+    
+End Function
+
 'Given an RGB triplet (Long-type), return a matching hex representation.
 Public Function GetHexStringFromRGB(ByVal srcRGB As Long) As String
     srcRGB = Colors.ConvertSystemColor(srcRGB)
