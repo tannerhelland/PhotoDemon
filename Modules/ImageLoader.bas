@@ -1550,6 +1550,9 @@ Private Function LoadPCX(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             'PCX files do not support color management
             dstDIB.SetColorManagementState cms_ProfileConverted
             
+            'Premultiply alpha (none should exist, so this is kind of a null-step)
+            dstDIB.SetAlphaPremultiplication True
+            
         End If
     
     '/File is not PCX format
