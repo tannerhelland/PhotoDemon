@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PCX (ZSoft "PiCture eXchange") Image Decoder
 'Copyright 2025-2025 by Tanner Helland
 'Created: 02/January/25
-'Last updated: 03/January/25
-'Last update: wrap up initial build (import only)
+'Last updated: 04/January/25
+'Last update: add a small bit of helper code for recovering badly encoded PCX files
 '
 'The PCX file format is nearly as old as I am!  PhotoDemon originally handled PCX files via the 3rd-party
 ' FreeImage library, but FreeImage doesn't support some valid PCX files and has unreliable behavior on
@@ -28,6 +28,7 @@ Attribute VB_Exposed = False
 '
 'The end result is a fast and lightweight parser that covers many PCX cases that FreeImage does not,
 ' and that provides *better* coverage than Photoshop (and coverage of all features that Photoshop does, too).
+' The new decoder is also capable of recovering some "broken" PCX files, which is kinda nice.
 '
 'Encoding support is not planned at present, but this may be revisited (as always) if users complain.
 '
@@ -98,6 +99,11 @@ Private m_OpenFilename As String
 Private m_EquivalentColorDepth As Long
 Private m_HasAlpha As Boolean
 Private m_IsGrayscale As Boolean
+
+'PCX uses simple RLE encoding.  Each scanline is encoded individually.  The spec is explicit that RLE runs
+' should *NOT* cross scanlines, but as with many older image formats, there are images in the wild that
+' ignore this.  Instead of just throwing those files out, let's try and rescue them.
+Private m_BadRLECount() As Long, m_BadRLEValue() As Long
 
 'PCX files use a simple but well-defined header (https://en.wikipedia.org/wiki/PCX#PCX_file_format).
 ' This makes validation straightforward.
@@ -402,6 +408,20 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             End If
         End If
         
+        'The PCX spec explicitly disallows RLE runs from crossing scanlines.  (This makes a lot of
+        ' sense for the era in which PCX was designed - you only wanted a one-line buffer for pixel
+        ' values as you loaded them, to minimize memory requirements.)  Unfortunately, like any
+        ' old image format there are images "in the wild" that don't follow this rule.  We'll try
+        ' and rescue them by noting bad runs and overflowing them onto the next line.  Note,
+        ' however, that this solution is *not* foolproof - for security reasons, we'll never
+        ' overflow multiple lines at once, which means that tiny images with RLE runs that span
+        ' more than two lines will *not* load correctly (which I'm fine with).
+        '
+        'Note also that these arrays are explicitly allocated with an extra trailing line, so we
+        ' don't need to check boundaries when writing "next line" values to the array.
+        ReDim m_BadRLECount(0 To imgHeight) As Long
+        ReDim m_BadRLEValue(0 To imgHeight) As Long
+        
         'Start iterating scanlines.  We'll build the image one line at a time as we go.
         Dim x As Long, y As Long, j As Long, curChannel As Long, maxChannels As Long
         maxChannels = m_Header.pcx_NumChannels - 1
@@ -429,6 +449,22 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             xOffset = 0
             srcBytesRead = 0
             
+            'Before iterating x values, pre-fill the start of the line with any "leftover" RLE
+            ' runs from the previous line.  (This will only occur on broken PCX files, but I'd
+            ' like to try and recover them if I can.)
+            If (m_BadRLECount(y) > 0) Then
+                
+                Dim amtToFill As Long
+                amtToFill = PDMath.Min2Int(m_BadRLECount(y), imgStrideInBytes - 1)
+                
+                For x = xOffset To xOffset + amtToFill - 1
+                    uncompressedBytes(x) = m_BadRLEValue(y)
+                Next x
+                
+                xOffset = amtToFill
+                
+            End If
+            
             'Keep decoding until a full scanline has been processed.  (Per the spec, RLE runs cannot
             ' extend across scanlines; we enforce this strictly.)
             Do While (xOffset < imgStrideInBytes)
@@ -452,6 +488,11 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                     
                     'Failsafe check for RLE runs that would cross into the next scanline.
                     If (xOffset + runLength > imgStrideInBytes) Then
+                        
+                        'Store the bad run amount and value for the *next* line; we'll try to
+                        ' rescue the encoding there.
+                        m_BadRLECount(y + 1) = (xOffset + runLength) - imgStrideInBytes
+                        m_BadRLEValue(y + 1) = curByte
                         
                         'This RLE runs breaks spec and extends to the next line.  Decoding from this
                         ' point forward may not work, but you could theoretically attempt to fix this
