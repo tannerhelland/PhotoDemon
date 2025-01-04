@@ -53,7 +53,7 @@ Option Explicit
 
 'To aid debugging, you can activate "verbose" output; this dumps additional diagnostic information
 ' to PD's primary debug log.
-Private Const PCX_DEBUG_VERBOSE As Boolean = True
+Private Const PCX_DEBUG_VERBOSE As Boolean = False
 
 'The full header is copied into this struct at validation time.
 Private Type PD_PCXHeader

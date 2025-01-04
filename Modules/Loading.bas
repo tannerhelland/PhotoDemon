@@ -662,6 +662,13 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cORA.IsFileORA(imagePath) Then loadSuccessful = cORA.LoadORA(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
+        Case "PCX"
+            Dim cPCX As pdPCX
+            Set cPCX = New pdPCX
+            If cPCX.IsFilePCX(imagePath, False, True) Then loadSuccessful = cPCX.LoadPCX_FromFile(imagePath, tmpPDImage, targetDIB)
+            Set cPCX = Nothing
+            If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+        
         Case "PDF"
             Dim cPDF As pdPDF
             Set cPDF = New pdPDF
