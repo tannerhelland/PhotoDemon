@@ -1542,10 +1542,9 @@ Private Function LoadPCX(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             
             dstImage.SetOriginalFileFormat PDIF_PCX
             dstImage.NotifyImageChanged UNDO_Everything
-            'TODO
-            'dstImage.SetOriginalGrayscale True
-            'dstImage.SetOriginalAlpha False
-            'dstImage.SetOriginalColorDepth ???
+            dstImage.SetOriginalGrayscale cReader.IsGrayscale()
+            dstImage.SetOriginalAlpha cReader.HasAlpha()
+            dstImage.SetOriginalColorDepth cReader.EquivalentColorDepth
             
             'PCX files do not support color management
             dstDIB.SetColorManagementState cms_ProfileConverted
@@ -2247,7 +2246,7 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         'Mark any other image-level properties
         dstImage.SetOriginalColorDepth cReader.GetOriginalColorDepth()
-        dstImage.SetOriginalGrayscale cReader.isGrayscale()
+        dstImage.SetOriginalGrayscale cReader.IsGrayscale()
         dstImage.SetOriginalAlpha cReader.GetOriginalAlphaState()
         
         'Before exiting, ensure all color management data has been added to PD's central cache

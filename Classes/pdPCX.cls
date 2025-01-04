@@ -93,6 +93,12 @@ Private m_Stream As pdStream
 ' IsFilePCX on the current filename they want loaded.
 Private m_OpenFilename As String
 
+'These properties are filled after loading, and primarily exist as helpers so PD can store basic data
+' if the user chooses "use original esttings" at export time.
+Private m_EquivalentColorDepth As Long
+Private m_HasAlpha As Boolean
+Private m_IsGrayscale As Boolean
+
 'PCX files use a simple but well-defined header (https://en.wikipedia.org/wiki/PCX#PCX_file_format).
 ' This makes validation straightforward.
 Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireValidFileExtension As Boolean = True, Optional ByVal leaveStreamOpenIfValid As Boolean = True) As Boolean
@@ -260,7 +266,12 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         If (m_Header.pcx_VersionNumber < 2) Or (m_Header.pcx_VersionNumber = 3) Then Palettes.GetStockPalette_EGA m_Palette, False
         
         'Untested, but as a failsafe: if a PCX specifies a grayscale palette, explicitly populate that now
-        If (m_Header.pcx_PaletteMode = 2) Then Palettes.GetPalette_GrayscaleEx m_Palette, 16
+        If (m_Header.pcx_PaletteMode = 2) Then
+            Palettes.GetPalette_GrayscaleEx m_Palette, 16
+            m_IsGrayscale = True
+        Else
+            m_IsGrayscale = False
+        End If
         
         'PCX files use max/min dimensions; convert these to 0-based
         Dim imgWidth As Long, imgHeight As Long, imgStrideInBytes As Long
@@ -270,8 +281,33 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         
         If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Preparing to decode PCX image (" & imgWidth & "x" & imgHeight & ") @ " & m_Header.pcx_BitsPerPixel & "x" & m_Header.pcx_NumChannels
         
+        'PCX uses a strange hybrid of "planes" and "bit-depths" that is unlike other, more modern formats.
+        ' We need to multiply these together to arrive at an "actual" bit-depth (although note that it
+        ' doesn't always map cleanly - for example, PCX supports a "1-bit, 3-plane" encoding that's
+        ' equivalent to "3-bits-per-pixel" - an oddity not supported by other formats).
         Dim actualBPP As Long
         actualBPP = m_Header.pcx_BitsPerPixel * m_Header.pcx_NumChannels
+        m_HasAlpha = False
+        
+        Select Case actualBPP
+            Case 1
+                m_EquivalentColorDepth = 1
+            Case 2
+                m_EquivalentColorDepth = 2
+            Case 3, 4
+                m_EquivalentColorDepth = 4
+            Case 8
+                m_EquivalentColorDepth = 8
+            Case 24
+                m_EquivalentColorDepth = 24
+            
+            'Technically, PCX does *not* support alpha, but it does support an arbitrary number of
+            ' color planes, so we'll load 8-bit, 4-channel PCX without complaint (and treat the fourth
+            ' channel as alpha).
+            Case 32
+                m_EquivalentColorDepth = 32
+                m_HasAlpha = True
+        End Select
         
         'Note the current file position and store it; we'll forcibly calculate correct offsets
         ' for each line as we go.
@@ -696,6 +732,19 @@ BadPCXFile:
     InternalError FUNC_NAME, "abandoned load due to critical error"
     LoadPCX_FromFile = False
     
+End Function
+
+'The next three functions are only valid *after* a call to LoadPCX.
+Friend Function EquivalentColorDepth() As Long
+    EquivalentColorDepth = m_EquivalentColorDepth
+End Function
+
+Friend Function HasAlpha() As Boolean
+    HasAlpha = m_HasAlpha
+End Function
+
+Friend Function IsGrayscale() As Boolean
+    IsGrayscale = m_IsGrayscale
 End Function
 
 'Clear m_Header
