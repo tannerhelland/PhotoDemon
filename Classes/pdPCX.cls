@@ -85,7 +85,7 @@ Private m_HeaderValid As Boolean
 
 'Current palette, if any; will contain the contents of the EGA palette by default,
 ' but can be overridden by a trailing palette if the file defines one.
-Private m_Palette(0 To 255) As RGBQuad
+Private m_Palette() As RGBQuad
 
 'Byte-by-byte access is provided, as always, by a pdStream instance.
 Private m_Stream As pdStream
@@ -258,6 +258,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         '  a trailing palette at the end of the file.)
         Dim i As Long, palOffset As Long
         palOffset = 0
+        ReDim m_Palette(0 To 255) As RGBQuad
         
         For i = 0 To 15
             m_Palette(i).Red = m_Header.pcx_EGAPalette(palOffset)
@@ -273,7 +274,8 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         
         'Untested, but as a failsafe: if a PCX specifies a grayscale palette, explicitly populate that now
         If (m_Header.pcx_PaletteMode = 2) Then
-            Palettes.GetPalette_GrayscaleEx m_Palette, 16
+            If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Palette marked as grayscale; replacing colors now..."
+            Palettes.GetPalette_GrayscaleEx m_Palette, 16, True
             m_IsGrayscale = True
         Else
             m_IsGrayscale = False
@@ -722,11 +724,11 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                             Do While (x < imgWidth)
                                 
                                 curByte = uncompressedBytes(xOffset)
-                                dstPixelsRGBQuad(x) = m_Palette(curByte And &HF)
+                                dstPixelsRGBQuad(x) = m_Palette((curByte \ 16) And &HF)
                                 x = x + 1
                                 
                                 If (x <= imgWidth) Then
-                                    dstPixelsRGBQuad(x) = m_Palette((curByte \ 16) And &HF)
+                                    dstPixelsRGBQuad(x) = m_Palette(curByte And &HF)
                                     x = x + 1
                                 End If
                                 
@@ -775,17 +777,23 @@ BadPCXFile:
     
 End Function
 
-'The next three functions are only valid *after* a call to LoadPCX.
+'The next four functions are only valid *after* a call to LoadPCX.
 Friend Function EquivalentColorDepth() As Long
     EquivalentColorDepth = m_EquivalentColorDepth
+End Function
+
+Friend Function GetDPI(ByRef dstXDPI As Single, ByRef dstYDPI As Single) As Boolean
+    GetDPI = (m_Header.pcx_XScreenResolution <> 0) And (m_Header.pcx_YScreenResolution <> 0)
+    dstXDPI = m_Header.pcx_XScreenResolution
+    dstYDPI = m_Header.pcx_YScreenResolution
 End Function
 
 Friend Function HasAlpha() As Boolean
     HasAlpha = m_HasAlpha
 End Function
 
-Friend Function IsGrayscale() As Boolean
-    IsGrayscale = m_IsGrayscale
+Friend Function HasGrayscale() As Boolean
+    HasGrayscale = m_IsGrayscale
 End Function
 
 'Clear m_Header

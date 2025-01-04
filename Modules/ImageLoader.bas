@@ -1542,9 +1542,13 @@ Private Function LoadPCX(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             
             dstImage.SetOriginalFileFormat PDIF_PCX
             dstImage.NotifyImageChanged UNDO_Everything
-            dstImage.SetOriginalGrayscale cReader.IsGrayscale()
+            dstImage.SetOriginalGrayscale cReader.HasGrayscale()
             dstImage.SetOriginalAlpha cReader.HasAlpha()
             dstImage.SetOriginalColorDepth cReader.EquivalentColorDepth
+            
+            'DPI is not always reliable in PCX files, but we attempt to recover it anyway
+            Dim srcXDPI As Single, srcYDPI As Single
+            If cReader.GetDPI(srcXDPI, srcYDPI) Then dstImage.SetDPI srcXDPI, srcYDPI
             
             'PCX files do not support color management
             dstDIB.SetColorManagementState cms_ProfileConverted

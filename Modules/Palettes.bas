@@ -1118,14 +1118,14 @@ Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
     Next i
 End Sub
 
-Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades As Long)
+Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades As Long, Optional ByVal dontSizeArray As Boolean = False)
     
     If (numShades > 256) Then numShades = 256
     
     Dim maxVal As Long
     maxVal = numShades - 1
     
-    ReDim dstPalette(0 To maxVal) As RGBQuad
+    If (Not dontSizeArray) Then ReDim dstPalette(0 To maxVal) As RGBQuad
     
     Dim i As Long, finalGray As Long
     For i = 0 To maxVal
