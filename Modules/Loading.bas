@@ -858,6 +858,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "Internal MBM parser"
         Case id_ORAParser
             GetDecoderName = "Internal OpenRaster parser"
+        Case id_PCXParser
+            GetDecoderName = "Internal PCX parser"
         Case id_PNGParser
             GetDecoderName = "Internal PNG parser"
         Case id_PSDParser
