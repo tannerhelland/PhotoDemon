@@ -15,23 +15,33 @@ Attribute VB_Exposed = False
 'PCX (ZSoft "PiCture eXchange") Image Decoder
 'Copyright 2025-2025 by Tanner Helland
 'Created: 02/January/25
-'Last updated: 02/January/25
-'Last update: initial build
+'Last updated: 03/January/25
+'Last update: wrap up initial build (import only)
 '
-'The PCX file format is almost as old as I am!  PhotoDemon originally handled PCX files via the 3rd-party
+'The PCX file format is nearly as old as I am!  PhotoDemon originally handled PCX files via the 3rd-party
 ' FreeImage library, but FreeImage doesn't support some valid PCX files and has unreliable behavior on
 ' others (including modern exported ones from well-known software like GIMP).
 '
-'So in 2025, I wrote my own PCX decoder.  It definitely falls on the "quick-and-dirty" side of things,
-' but it's chock full of error-handling (and safety asserts) and I've tested it rigorously on a variety
-' of image dimensions (tiny to enormous), including both legacy files and exports from other modern software.
+'So in 2025, I wrote my own PCX decoder.  It definitely falls on the "quick-and-dirty" side, but it's full of
+' detailed error-handling (and safety asserts) and I've tested it rigorously on a variety of image dimensions
+' (tiny to enormous), including both legacy files and exports from other modern software.
 '
-'The end result is a fast and lightweight parser that covers many PCX cases that FreeImage does not.
+'The end result is a fast and lightweight parser that covers many PCX cases that FreeImage does not,
+' and that provides *better* coverage than Photoshop (and coverage of all features that Photoshop does, too).
 '
 'Encoding support is not planned at present, but this may be revisited (as always) if users complain.
 '
 'A full copy of the PCX spec is available here (and is what I used in writing this class):
 ' https://www.fileformat.info/format/pcx/spec/a10e75307b3a4cc49c3bbe6db4c41fa2/view.htm
+'
+'A number of other articles were used in developing this class.  Thank you to the authors:
+' https://moddingwiki.shikadi.net/wiki/PCX_Format
+' https://www.fileformat.info/format/pcx/egff.htm
+' https://en.wikipedia.org/wiki/PCX#PCX_file_format
+' http://fileformats.archiveteam.org/wiki/PCX
+' https://www.fysnet.net/pcxfile.htm
+' http://cd.textfiles.com/clipart1996/
+' https://stackoverflow.com/questions/48172059/is-is-possible-to-determine-from-the-header-of-a-1-bit-pcx-if-the-palette-shoul
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -171,6 +181,7 @@ Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireVal
             'Validate channel count
             If IsFilePCX Then
                 IsFilePCX = (.pcx_NumChannels = 1) Or (.pcx_NumChannels = 3) Or (.pcx_NumChannels = 4)
+                If (Not IsFilePCX) Then IsFilePCX = (.pcx_BitsPerPixel = 1) And (.pcx_NumChannels = 2)
                 If (Not IsFilePCX) And PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Bad channel count: " & .pcx_NumChannels
             End If
             
@@ -210,6 +221,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     Const FUNC_NAME As String = "LoadPCX_FromFile"
     LoadPCX_FromFile = False
     
+    'This exists only as a failsafe; potential encoding errors are explicitly handled via other means
     On Error GoTo BadPCXFile
     
     'Validate the file as necessary
@@ -223,14 +235,15 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
     
     If needToValidate Then needToValidate = Not Me.IsFilePCX(srcFile, True, True)
     
-    'If the underlying stream is open and the header validated successfully, proceed!
+    'If the underlying stream is open and the header validated successfully, attempt a full load
     If m_HeaderValid Then
         
-        'Just in case, forcibly reset the file pointer to offset 128 (where pixel data begins)
+        'Forcibly reset the file pointer to offset 128 (where the header ends and pixel data begins).
         m_Stream.SetPosition 128, FILE_BEGIN
         
         'Construct a default palette object using the contents of the file header.
-        ' (We may overwrite this with other data later, as necessary.)
+        ' (We may overwrite this with other data later, as necessary - later PCX files can store
+        '  a trailing palette at the end of the file.)
         Dim i As Long, palOffset As Long
         palOffset = 0
         
@@ -246,8 +259,11 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         ' with a stock EGA palette instead.
         If (m_Header.pcx_VersionNumber < 2) Or (m_Header.pcx_VersionNumber = 3) Then Palettes.GetStockPalette_EGA m_Palette, False
         
-        'Calculate image dimensions, in pixels
-        Dim imgWidth As Long, imgHeight As Long, imgStrideInBytes As Long, NumChannels As Long
+        'Untested, but as a failsafe: if a PCX specifies a grayscale palette, explicitly populate that now
+        If (m_Header.pcx_PaletteMode = 2) Then Palettes.GetPalette_GrayscaleEx m_Palette, 16
+        
+        'PCX files use max/min dimensions; convert these to 0-based
+        Dim imgWidth As Long, imgHeight As Long, imgStrideInBytes As Long
         imgWidth = (m_Header.pcx_XMax - m_Header.pcx_XMin) + 1
         imgHeight = (m_Header.pcx_YMax - m_Header.pcx_YMin) + 1
         imgStrideInBytes = m_Header.pcx_BytesPerScanline * m_Header.pcx_NumChannels
@@ -266,7 +282,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         Dim xFinal As Long
         xFinal = imgWidth - 1
         
-        'Before decoding, we need to grab the trailing palette (if any).
+        'Before decoding, we may need to grab a trailing palette (if any).
         If (m_Header.pcx_VersionNumber = 5) Then
         
             'Here are the direct instructions from the spec on retrieving a 256-color palette:
@@ -290,8 +306,8 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             
         End If
         
-        'Palettes in PCX files are complex, and require further processing.
-        ' (This link was very helpful for this: https://moddingwiki.shikadi.net/wiki/PCX_Format)
+        'Palettes in PCX files are complex, and may require further processing.
+        ' (This link was very helpful: https://moddingwiki.shikadi.net/wiki/PCX_Format)
         If (actualBPP < 24) Then
             
             If PCX_DEBUG_VERBOSE Then
@@ -302,23 +318,16 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 PDDebug.LogAction "Performing palette maintenance..."
             End If
             
-            'Monochrome image handling depends several criteria.
+            'Photoshop always loads monochrome PCX files as pure black-and-white, regardless of
+            ' the current palette.  I'm okay mimicking that behavior too.
             If (actualBPP = 1) Then
-            
-                'First, if the version is "3 = v2.8 without palette", ignore the embedded (likely EGA)
-                ' palette and assume monochrome colors.
-                'If (m_Header.pcx_VersionNumber = 3) Then
-                '
-                'ACTUALLY - further testing shows that Photoshop always seems to load as pure black-and-white?
-                    m_Palette(0) = Colors.GetRGBQuadFromHex("#000000")
-                    m_Palette(1) = Colors.GetRGBQuadFromHex("#FFFFFF")
-                'End If
-            
+                m_Palette(0) = Colors.GetRGBQuadFromHex("#000000")
+                m_Palette(1) = Colors.GetRGBQuadFromHex("#FFFFFF")
             End If
             
         End If
-            
-        'Prepare the destination DIB (we'll fill its contents as we go).
+        
+        'Prepare a destination DIB (we'll fill its contents as we go).
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank imgWidth, imgHeight, 32, 0, 255
         
@@ -329,17 +338,15 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         Dim uncompressedBytes() As Byte
         ReDim uncompressedBytes(0 To imgStrideInBytes - 1) As Byte
         
+        Dim compressedBytes() As Byte
+        ReDim compressedBytes(0 To imgStrideInBytes * 2 - 1) As Byte
+        
         Dim shuffledBytes() As Byte
         ReDim shuffledBytes(0 To imgWidth - 1) As Byte
         
-        Dim compressedBytes() As Byte
-        ReDim compressedBytes(0 To imgStrideInBytes * 2 - 1) As Byte
-    
-        'Some bit-depths are easier to handle with lookup tables.
-        ' (In effect, we pre-convert each scanline to 8-bpp.)
+        'VB6's lack of bit shift functions means some bit-depths are easier to handle via lookup tables.
         Dim bitFlags() As Byte
         If (actualBPP < 8) Then
-            
             If (m_Header.pcx_BitsPerPixel = 1) Then
                 ReDim bitFlags(0 To 7) As Byte
                 bitFlags(0) = 2 ^ 7
@@ -357,7 +364,6 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 bitFlags(2) = 2 ^ 2
                 bitFlags(3) = 1
             End If
-            
         End If
         
         'Start iterating scanlines.  We'll build the image one line at a time as we go.
@@ -366,16 +372,16 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         
         For y = 0 To imgHeight - 1
             
-            'Start by decoding the current line in the source data.  This consists of decompressing
-            ' the RLE data into our (uncompressed bytes) array, then parsing that into specific pixel info.
+            'Start by decompressing the current scanline.  This step will migrate data from its simple
+            ' RLE format to an "uncompressed bytes" array.
             
-            'For speed purposes, pull a worst-case number of bytes from the source data into a local array.
-            ' (This is much faster than complex function calls on every RLE byte.)
+            'For speed purposes, pull a worst-case number of compressed bytes into memory.
+            ' (Operating on this will be much faster than touching the file on every RLE byte.)
             Dim worstCaseBytes As Long
             worstCaseBytes = imgStrideInBytes * 2
             
-            'If our worst-case size extends past the end of the file, fill our "worst-case" array with white
-            ' (in case this is actually a malformed file) then grab as many bytes as we can.
+            'If our worst-case size extends past the end of the file, default any remaining bytes with
+            ' white (in case this is actually a malformed file) then pull the data in from file.
             If (worstCaseBytes > maxStreamSize - initFileOffset) Then
                 VBHacks.FillMemory VarPtr(compressedBytes(0)), imgStrideInBytes * 2, 255
                 worstCaseBytes = maxStreamSize - initFileOffset
@@ -387,19 +393,20 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             xOffset = 0
             srcBytesRead = 0
             
+            'Keep decoding until a full scanline has been processed.  (Per the spec, RLE runs cannot
+            ' extend across scanlines; we enforce this strictly.)
             Do While (xOffset < imgStrideInBytes)
                 
                 Dim curByte As Byte
                 curByte = compressedBytes(srcBytesRead)
                 srcBytesRead = srcBytesRead + 1
                 
-                'If the first two bits in this byte are 1, (e.g. 0b11000000 mask) then
-                ' the remaining bytes indicate a run count for the byte that follows.
-                ' The run count must be non-zero or the file is invalid.
+                'If the first two bits in this byte are 1 (e.g. 0b11000000 mask),
+                ' the remaining bits indicate a run count for the byte that follows.
                 Const PCX_RLE_MARKER As Byte = &HC0, PCX_RLE_MASK As Byte = &H3F
                 If ((curByte And PCX_RLE_MARKER) = PCX_RLE_MARKER) Then
                     
-                    'Calculate run length for the next byte
+                    'Mask off the actual run length
                     Dim runLength As Long
                     runLength = curByte And PCX_RLE_MASK
                     
@@ -407,11 +414,19 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                     curByte = compressedBytes(srcBytesRead)
                     srcBytesRead = srcBytesRead + 1
                     
-                    'Failsafe check for overruns
-                    If (xOffset + runLength > imgStrideInBytes) Then runLength = imgStrideInBytes - xOffset
+                    'Failsafe check for RLE runs that would cross into the next scanline.
+                    If (xOffset + runLength > imgStrideInBytes) Then
+                        
+                        'This RLE runs breaks spec and extends to the next line.  Decoding from this
+                        ' point forward may not work, but you could theoretically attempt to fix this
+                        ' by prepending the run to the next line, then going from there.
+                        runLength = imgStrideInBytes - xOffset
+                        If PCX_DEBUG_VERBOSE Then InternalError FUNC_NAME, "RLE overrun on line " & y
+                        
+                    End If
                     
-                    'Failsafe check for null runs (invalid)
-                    If (runLength = 0) Then
+                    'Failsafe check for null run lengths
+                    If (runLength <= 0) Then
                         
                         'Technically, a run of 0 shouldn't be valid - but some files "in the wild"
                         ' contain these and Photoshop loads them without complaint.
@@ -419,7 +434,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                         
                     Else
                         
-                        'Write the run, advance the offset accordingly, and continue!
+                        'Write the run, advance the destination offset accordingly, and continue!
                         For x = xOffset To xOffset + runLength - 1
                             uncompressedBytes(x) = curByte
                         Next x
@@ -428,7 +443,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                         
                     xOffset = xOffset + runLength
                     
-                'If the two high bytes are not set, copy over this byte as-is
+                'If the two high bytes are not set, copy over this byte as-is (it's not a run).
                 Else
                     uncompressedBytes(xOffset) = curByte
                     xOffset = xOffset + 1
@@ -438,33 +453,33 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             
             'uncompressedBytes() now contains the full data required for this scanline,
             ' *without* RLE compression but with no further processing.  Note also that there
-            ' may be dummy bytes between channels based on the difference between imgWidth
+            ' may be trailing dummy bytes based on the difference between imgWidth
             ' (which is pixel-precise) and imgBytesPerScanline (which *must* be even regardless
-            ' of image dimensions).
-            
-            'We will start copying bytes from position [0] in the source array
+            ' of image dimensions, per the spec).
             Dim srcOffset As Long
             srcOffset = 0
             
+            '24- and 32-bpp data (which we'll load, even though it's technically "not allowed"),
+            ' require no additional processing, so we'll access direct bytes in the image instead
+            ' of palette quads.
             Dim useBareBytes As Boolean
-            If (actualBPP >= 24) Then
-                useBareBytes = True
-            End If
+            If (actualBPP >= 24) Then useBareBytes = True
             
-            'Point a VB array at the target line in the image
+            'Point a VB array at the target scanline in the final layer
             If useBareBytes Then
                 dstDIB.WrapArrayAroundScanline dstPixels, tmpSA1D, y
             Else
                 dstDIB.WrapRGBQuadArrayAroundScanline dstPixelsRGBQuad, tmpSA1D, y
             End If
-        
-            'Separate handling by bit-depth
+            
+            'From here, pixel placement is separated by bit-depth
             If (actualBPP >= 24) Then
                 
-                'We now want to iterate channels, and copy data into the final pixel buffer
+                '24-bpp mode is easy: iterate channels, and simply copy data into the final pixel buffer
+                ' as we go!
                 For curChannel = 0 To maxChannels
                     
-                    'R/B channels need to be swizzled as we go
+                    'R/B channels need to be swizzled
                     Dim channelOffset As Long
                     If (curChannel = 0) Or (curChannel = 2) Then
                         channelOffset = 2 - curChannel
@@ -472,7 +487,6 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                         channelOffset = curChannel
                     End If
                     
-                    'For 24-bit data, just copy it as-is into the destination buffer, but remember the channel offsets!
                     xOffset = curChannel * m_Header.pcx_BytesPerScanline
                     x = 0
                     Do While (x < imgWidth)
@@ -481,23 +495,22 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                     Loop
                     
                 Next curChannel
-                
+            
+            '8-bpp data can be copied directly from that palette (which was constructed as BGRA)
             ElseIf (actualBPP = 8) Then
                 
-                'Copy data directly from the master palette as we go
                 x = 0
                 Do While (x < imgWidth)
                     dstPixelsRGBQuad(x) = m_Palette(uncompressedBytes(x))
                     x = x + 1
                 Loop
             
-            ElseIf (actualBPP = 1) Or (actualBPP = 2) Or (actualBPP = 4) Then
+            'Lower color depths are more tedious to handle
+            ElseIf (actualBPP >= 1) And (actualBPP <= 4) Then
                 
-                'Monochrome format is easy!
+                'Okay, I lied - monochrome mode is easy!
                 If (actualBPP = 1) Then
                     
-                    'Count pixels and iterate as we go (so we can ignore dead space at the end
-                    ' of individual scanlines).
                     x = 0: xOffset = 0
                     Do While (x < imgWidth)
                         
@@ -527,17 +540,19 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                         
                     Loop
                 
-                '2- and 4-byte images can actually be encoded two ways:
-                ' 1) as 2x1 and 4x1-bit planes, respectively, or...
-                ' 2) as 1x2 and 1x4-bit planes, respectively.
+                '2-, 3- (!!!), and 4-byte images can actually be encoded two ways:
+                ' 1) as 2x1, and 4x1-bit planes, respectively, or...
+                ' 2) as 1x2, 1x3, and 1x4-bit planes, respectively.
                 '
-                'These two cases require separate handling, with the first case in particular
+                'These two modes require separate handling, with the first case in particular
                 ' requiring us to iterate the full scanline of uncompressed bytes and shuffle
                 ' them into useable palette indices *before* matching them.
-                ElseIf (actualBPP = 2) Or (actualBPP = 4) Then
+                ElseIf (actualBPP >= 2) Or (actualBPP <= 4) Then
                     
+                    'Multi-plane mode requires use of another buffer before palette matching
                     If (m_Header.pcx_NumChannels > 1) Then
                         
+                        'Black out the shuffled storage before proceeding
                         curChannel = 0
                         VBHacks.FillMemory VarPtr(shuffledBytes(0)), UBound(shuffledBytes) + 1, 0
                         
@@ -549,10 +564,8 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                         x = 0: xOffset = 0
                         Do While (x < imgWidth) And (curChannel <= maxChannels)
                             
-                            'Pull the full byte from the post-RLE stream
+                            'Pull the full byte from the post-RLE stream and iterate bits
                             curByte = uncompressedBytes(xOffset)
-                            
-                            'Iterate bits (but stop once the scanline is complete)
                             For j = 0 To 7
                                 
                                 If (x < imgWidth) And (curChannel <= maxChannels) Then
@@ -565,6 +578,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                                         shuffledBytes(x) = shuffledBytes(x) Or powFlag
                                     End If
                                     
+                                    'Update the power flag as we rotate through channels
                                     x = x + 1
                                     If (x >= imgWidth) Then
                                         x = 0
@@ -583,27 +597,26 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                             
                         Loop
                         
-                        'With all bytes shuffled, we can now do standard palette lookup
+                        'With all bytes shuffled, we can now do standard palette lookup to assign
+                        ' pixel values.
                         x = 0
                         Do While (x < imgWidth)
                             dstPixelsRGBQuad(x) = m_Palette(shuffledBytes(x))
                             x = x + 1
                         Loop
                     
-                    '"Normal" low-bit palette indices
+                    '"Normal" low-bit palette indices work like any other image format
                     Else
                         
                         If (actualBPP = 2) Then
                             
-                            'Count pixels and iterate as we go (so we can ignore dead space at the end
-                            ' of individual scanlines).
                             x = 0: xOffset = 0
                             Do While (x < imgWidth)
                                 
                                 'Pull the full byte from the post-RLE stream
                                 curByte = uncompressedBytes(xOffset)
                                 
-                                'Iterate bits (but stop once the scanline is complete)
+                                'Iterate bit-pairs
                                 For j = 0 To 3
                                     
                                     If (x < imgWidth) Then
@@ -627,18 +640,35 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                             Loop
                         
                         ElseIf (actualBPP = 4) Then
-                            'TODO
+                            
+                            x = 0: xOffset = 0
+                            Do While (x < imgWidth)
+                                
+                                curByte = uncompressedBytes(xOffset)
+                                dstPixelsRGBQuad(x) = m_Palette(curByte And &HF)
+                                x = x + 1
+                                
+                                If (x <= imgWidth) Then
+                                    dstPixelsRGBQuad(x) = m_Palette((curByte \ 16) And &HF)
+                                    x = x + 1
+                                End If
+                                
+                                xOffset = xOffset + 1
+                                
+                            Loop
+                            
                         End If
                         
                     End If
                     
+                '/end (actualBPP >= 2) Or (actualBPP <= 4) case
                 End If
                 
             Else
-                '/bad bit-depth; this branch is a failsafe only
+                '/bad bit-depth number; this branch is a failsafe only
             End If
             
-            'Unwrap the temporary destination array
+            'Unwrap the safearray from the target scanline in the finished image
             If useBareBytes Then
                 dstDIB.UnwrapArrayFromDIB dstPixels
             Else
@@ -647,41 +677,13 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             
             'Reset the stream pointer to its correct location for the next scanline
             initFileOffset = initFileOffset + srcBytesRead
+            
             If (Not m_Stream.SetPosition(initFileOffset, FILE_BEGIN)) Then
                 InternalError FUNC_NAME, "WARNING: EOF reached prematurely - pixels beyond this point not guaranteed!"
                 Exit For
             End If
             
         Next y
-        
-'        'How we retrieve pixels depends on color-depth, obviously.  We're going to do this
-'        ' in two passes to simplify the process of handling multiple color-depths and RLE decoding.
-'        Dim pxScanline() As Byte, scanlineSize As Long
-'        If (m_Header.pcx_BitsPerPixel = 1) Then
-'            scanlineSize = (imgWidth + 7) \ 8
-'        ElseIf (pxBitCount = 2) Then
-'            scanlineSize = (imgWidth + 3) \ 4
-'        ElseIf (pxBitCount = 4) Then
-'            scanlineSize = (imgWidth + 1) \ 2
-'        ElseIf (pxBitCount = 8) Then
-'            scanlineSize = imgWidth
-'        ElseIf (pxBitCount = 12) Then
-'            scanlineSize = imgWidth * 2  '16-bit alignment; 4-bits go unused
-'        ElseIf (pxBitCount = 16) Then
-'            scanlineSize = imgWidth * 2
-'        ElseIf (pxBitCount = 24) Then
-'            scanlineSize = imgWidth * 3
-'        ElseIf (pxBitCount = 32) Then
-'            scanlineSize = imgWidth * 4
-'        Else
-'            InternalError FUNC_NAME, "bad bitcount: " & pxBitCount
-'            GoTo NextFrame
-'        End If
-'
-'        If (scanlineSize <= 0) Then
-'            InternalError FUNC_NAME, "bad scanline size: " & scanlineSize
-'            GoTo NextFrame
-'        End If
         
         LoadPCX_FromFile = True
         
