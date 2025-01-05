@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 (Build 12)</langversion>
+<langversion>2024.12 (Build 28)</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -205,7 +205,7 @@
 
 <phrase>
 <original>Content-aware fill</original>
-<translation>Content-abhängige Füllung</translation>
+<translation>Content-Aware Fill (Inhaltsbasierte Füllung)</translation>
 </phrase>
 
 <phrase>
@@ -5224,7 +5224,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation>Andere offene Bilder in dieses Bild (als Layer)</translation>
+<translation>Andere geöffnete Bilder in dieses Bild (als Layer)</translation>
 </phrase>
 
 <phrase>
@@ -11415,7 +11415,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Initializing content-aware resize engine</original>
-<translation>Initialisieren von Content-abhängiger Größenänderungs-Engine</translation>
+<translation>Initialisieren der Content-abhängigen Größenänderungs-Engine</translation>
 </phrase>
 
 <phrase>
