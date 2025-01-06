@@ -777,6 +777,26 @@ BadPCXFile:
     
 End Function
 
+'Export data to a compatible PCX file
+Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As String) As Boolean
+
+    Const FUNC_NAME As String = "SavePCX_ToFile"
+    SavePCX_ToFile = False
+    
+    'This exists only as a failsafe; potential encoding errors are explicitly handled via other means
+    On Error GoTo SaveFailed
+    
+    
+    'SavePCX_FromFile = True
+    
+    Exit Function
+    
+SaveFailed:
+    InternalError FUNC_NAME, "abandoned save due to critical error"
+    SavePCX_ToFile = False
+    
+End Function
+
 'The next four functions are only valid *after* a call to LoadPCX.
 Friend Function EquivalentColorDepth() As Long
     EquivalentColorDepth = m_EquivalentColorDepth
