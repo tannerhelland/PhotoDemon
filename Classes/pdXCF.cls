@@ -443,8 +443,8 @@ Friend Function GetOriginalDPI() As Single
 End Function
 
 'This function is ONLY VALID AFTER A SUCCESSFUL CALL TO LoadXCF_FromFile!
-Friend Function IsGrayscale() As Boolean
-    IsGrayscale = (m_imageColorMode = xcf_Grayscale)
+Friend Function HasGrayscale() As Boolean
+    HasGrayscale = (m_imageColorMode = xcf_Grayscale)
 End Function
 
 'Validate and load a candidate XCF file

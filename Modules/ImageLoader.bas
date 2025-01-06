@@ -2250,7 +2250,7 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         'Mark any other image-level properties
         dstImage.SetOriginalColorDepth cReader.GetOriginalColorDepth()
-        dstImage.SetOriginalGrayscale cReader.IsGrayscale()
+        dstImage.SetOriginalGrayscale cReader.HasGrayscale()
         dstImage.SetOriginalAlpha cReader.GetOriginalAlphaState()
         
         'Before exiting, ensure all color management data has been added to PD's central cache
