@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileMenu"
 '***************************************************************************
 'File Menu Handler
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 15/Apr/01
 'Last updated: 15/August/23
 'Last update: after a "Save As" dialog is raised, look for manually edited file extensions and use valid target

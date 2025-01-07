@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box View control (e.g. the list part of a list box, not including the scroll bar)
-'Copyright 2015-2024 by Tanner Helland
+'Copyright 2015-2025 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 18/February/16
 'Last update: continued work on initial build
@@ -522,7 +522,7 @@ Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = Fa
             
             Dim tmpTop As Long, tmpHeight As Long, tmpHeightWithoutSeparator As Long
             Dim lineY As Single
-            Dim tmpListItem As PD_LISTITEM, tmpRect As RectF
+            Dim tmpListItem As PD_ListItem, tmpRect As RectF
             
             'Left and Width are the same for all list entries
             If listHasFocus Then

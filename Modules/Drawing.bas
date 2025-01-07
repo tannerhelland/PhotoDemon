@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 4/3/01
 'Last updated: 28/May/24
 'Last update: new "show distances" options for Move tool will render pixel distances onto the primary canvas

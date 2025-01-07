@@ -1,7 +1,7 @@
 Attribute VB_Name = "Histograms"
 '***************************************************************************
 'Histogram Analysis tools
-'Copyright 2000-2024 by Tanner Helland
+'Copyright 2000-2025 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 07/September/15
 'Last update: start collecting all of PD's various histogram-specific tools into a single location.

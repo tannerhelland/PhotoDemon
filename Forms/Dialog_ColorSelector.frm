@@ -253,7 +253,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Selection Dialog
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 11/November/13
 'Last updated: 14/May/16
 'Last update: improve real-time handling of hex input

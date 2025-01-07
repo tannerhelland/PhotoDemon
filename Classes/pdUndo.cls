@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo/Redo Handler
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 26/April/19
 'Last update: modify File > Revert behavior; it now creates a *new* entry on the Undo stack (similar to Photoshop),

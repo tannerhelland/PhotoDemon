@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Text Box control
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 03/November/14
 'Last updated: 10/May/19
 'Last update: raise key events for arrow keys; in rare circumstances (e.g. pdSearchBox) our parent window

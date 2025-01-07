@@ -1,7 +1,7 @@
 Attribute VB_Name = "UserPrefs"
 '***************************************************************************
 'PhotoDemon User Preferences Manager
-'Copyright 2012-2024 by Tanner Helland
+'Copyright 2012-2025 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 21/February/22
 'Last update: revert nightly builds to default to "nightly build" update track (I've gotten much better

@@ -162,7 +162,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animated PNG export dialog
-'Copyright 2012-2024 by Tanner Helland
+'Copyright 2012-2025 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 28/October/21
 'Last update: prep dialog for compatibility with batch processor

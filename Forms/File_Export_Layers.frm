@@ -166,7 +166,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Export Layers to Files dialog
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 22/January/24
 'Last updated: 01/February/24
 'Last update: complete initial build

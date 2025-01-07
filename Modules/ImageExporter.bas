@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageExporter"
 '***************************************************************************
 'Low-level image export interfaces
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 06/January/24
 'Last update: add PCX export

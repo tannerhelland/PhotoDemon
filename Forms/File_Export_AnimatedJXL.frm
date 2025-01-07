@@ -181,7 +181,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Animated JPEG XL export dialog
-'Copyright 2019-2024 by Tanner Helland
+'Copyright 2019-2025 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 13/October/23
 'Last update: spin off JXL-specific dialog (using WebP as the base)

@@ -286,7 +286,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Bucket Fill Tool Panel
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 30/August/17
 'Last updated: 02/December/21
 'Last update: migrate UI to new flyout design

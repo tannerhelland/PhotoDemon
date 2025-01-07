@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Comic Book Archive (CBZ) Container and Parser
-'Copyright 2021-2024 by Tanner Helland
+'Copyright 2021-2025 by Tanner Helland
 'Created: 18/June/21
 'Last updated: 23/June/21
 'Last update: wrap up initial build

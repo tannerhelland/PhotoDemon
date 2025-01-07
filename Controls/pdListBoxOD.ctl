@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Owner-Drawn List Box control
-'Copyright 2016-2024 by Tanner Helland
+'Copyright 2016-2025 by Tanner Helland
 'Created: 26/March/16
 'Last updated: 27/March/16
 'Last update: continued migrating code from the default list box to this instance

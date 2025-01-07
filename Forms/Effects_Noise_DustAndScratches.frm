@@ -89,7 +89,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Dust and scratches tool
-'Copyright 2020-2024 by Tanner Helland
+'Copyright 2020-2025 by Tanner Helland
 'Created: 17/September/20
 'Last updated: 17/September/20
 'Last update: spin off from normal Median tool; minor modifications to a median blur achieves

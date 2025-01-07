@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Noise Interface
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 15/March/01
 'Last updated: 07/August/17
 'Last update: large performance and quality improvements, Gaussian noise option, convert to XML params

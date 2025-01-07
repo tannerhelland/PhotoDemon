@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageFormats"
 '***************************************************************************
 'PhotoDemon Image Format Manager
-'Copyright 2012-2024 by Tanner Helland
+'Copyright 2012-2025 by Tanner Helland
 'Created: 18/November/12
 'Last updated: 06/January/24
 'Last update: allow PCX export after all (Photoshop does, so we should too)

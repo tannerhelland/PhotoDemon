@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 15/April/22
 'Last update: add a "before reset" event so controls can suspend behavior accordingly (this is used by the

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Handler
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 23/May/13
 'Last updated: 09/June/16
 'Last update: improve parsing behavior against incorrectly formed multiline print values that are non-binary in nature

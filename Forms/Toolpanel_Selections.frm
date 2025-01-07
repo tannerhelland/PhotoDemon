@@ -985,7 +985,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection Tool Panel
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 17/February/22
 'Last update: new UI elements for novel features in new selection rendering engine

@@ -20,17 +20,17 @@ Attribute VB_Exposed = False
 '
 'The PCX file format is nearly as old as I am!  PhotoDemon originally handled PCX files via the 3rd-party
 ' FreeImage library, but FreeImage doesn't support some valid PCX files and has unreliable behavior on
-' others (including modern exported ones from well-known software like GIMP).
+' others (including modern exported ones from popular software like GIMP).
 '
-'So in 2025, I wrote my own PCX decoder.  It definitely falls on the "quick-and-dirty" side, but it's full of
-' detailed error-handling (and safety asserts) and I've tested it rigorously on a variety of image dimensions
-' (tiny to enormous), including both legacy files and exports from other modern software.
+'So in 2025, I wrote my own PCX decoder and encoder.  They are fast, lightweight, comprehensive, secure,
+' and both have been tested rigorously on a variety of image dimensions (tiny to enormous), including both
+' "real-world" legacy PCX files and PCX exports from other modern software.
 '
-'The end result is a fast and lightweight parser that covers many PCX cases that FreeImage does not,
+'The end result is a fast and lightweight PCX engine that covers many edge-cases FreeImage does not,
 ' and that provides *better* coverage than Photoshop (and coverage of all features that Photoshop does, too).
-' The new decoder is also capable of recovering some "broken" PCX files, which is kinda nice.
+' The new decoder is also capable of recovering some "broken" PCX files, which is kinda neat.
 '
-'Encoding support is not planned at present, but this may be revisited (as always) if users complain.
+'All color-depths and PCX features are fully supported, to my knowledge.
 '
 'A full copy of the PCX spec is available here (and is what I used in writing this class):
 ' https://www.fileformat.info/format/pcx/spec/a10e75307b3a4cc49c3bbe6db4c41fa2/view.htm
@@ -53,7 +53,7 @@ Option Explicit
 
 'To aid debugging, you can activate "verbose" output; this dumps additional diagnostic information
 ' to PD's primary debug log.
-Private Const PCX_DEBUG_VERBOSE As Boolean = True
+Private Const PCX_DEBUG_VERBOSE As Boolean = False
 
 'PCX files use a single-byte (!!!) marker to start
 Private Const ZSOFT_VALIDATION_BYTE As Byte = &HA

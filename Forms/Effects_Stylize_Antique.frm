@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Antique Effect
-'Copyright 2012-2024 by Tanner Helland
+'Copyright 2012-2025 by Tanner Helland
 'Created: 03/July/12
 'Last updated: 19/October/17
 'Last update: rework algorithm with a full UI and user-controllable params

@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '3D color lookup effect
-'Copyright 2020-2024 by Tanner Helland
+'Copyright 2020-2025 by Tanner Helland
 'Created: 27/October/20
 'Last updated: 22/June/22
 'Last update: correctly handle importing a LUT with the same name as an existing LUT

@@ -782,7 +782,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright 2007-2024 by Tanner Helland
+'Copyright 2007-2025 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 09/December/22
 'Last update: add overrides for vector image import size (see https://github.com/tannerhelland/PhotoDemon/issues/456)

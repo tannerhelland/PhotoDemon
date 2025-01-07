@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Portrait glow (sometimes called "soft glow") image effect
-'Copyright 2015-2024 by Tanner Helland
+'Copyright 2015-2025 by Tanner Helland
 'Created: 20/Dec/15
 'Last updated: 20/Dec/15
 'Last update: initial build

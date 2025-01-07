@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
-	<pdData>
+<pdData>
 
-		<pdDataType>Translation</pdDataType>
+<pdDataType>Translation</pdDataType>
 
-		<langid>ru-RU</langid>
-        <langname>Русский</langname>
-        <langversion>2024.12.5</langversion>
-        <langstatus>Автообновление</langstatus>
+<langid>ru-RU</langid>
+<langname>Русский</langname>
+<langversion>2024.12.6</langversion>
+<langstatus>Автообновление</langstatus>
 
-        <author>воська</author>
+<author>воська</author>
 
-        <!-- BEGIN AUTOMATIC TEXT GENERATION -->
+<!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
 <phrase>
 <original>New image</original>
@@ -14428,7 +14428,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>Если  подключиться к %1, PhotoDemon предложит загрузить и настроить эту библиотеку.</translation>
 </phrase>
 
-        <!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14455,7 +14455,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>Запись — %1:%2 @ %3 кадра в секунду</translation>
 </phrase>
 
-        <!-- Tools_ScreenVideo.frm contains 37 phrases. 32 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Tools_ScreenVideo.frm contains 37 phrases. 32 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
@@ -14507,14 +14507,14 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>Курсор и щелчки</translation>
 </phrase>
 
-		<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
-		<!-- Automatic text generation complete. -->
+<!-- Automatic text generation complete. -->
 
-		<phrasecount>2747</phrasecount>
+<phrasecount>2747</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5837 phrases. -->
-	<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
-	<!-- These 2747 phrases contain approximately 11909 total words. -->
+<!-- As of this build, PhotoDemon contains 5837 phrases. -->
+<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- These 2747 phrases contain approximately 11909 total words. -->
 
-	</pdData>
+</pdData>

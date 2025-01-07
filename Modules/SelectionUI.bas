@@ -1,7 +1,7 @@
 Attribute VB_Name = "SelectionUI"
 '***************************************************************************
 'Selection Tools: UI
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 11/March/22
 'Last update: fix combine mode accidentally "resetting" after certain actions

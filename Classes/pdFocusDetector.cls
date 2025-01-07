@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Focus Detection class
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 07/May/15  (but built from many parts existing earlier)
 'Last updated: 07/May/15
 'Last update: abstract API focus detection bits into this class, so I don't have to keep copying the code into new UCs

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
 'PhotoDemon's Central Palette Interface
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 08/March/22
 'Last update: use new pdHistogramHash class to greatly accelerate median cut palette generation
