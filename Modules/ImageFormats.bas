@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2024 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 26/August/24
-'Last update: wire up heif export
+'Last updated: 06/January/24
+'Last update: allow PCX export after all (Photoshop does, so we should too)
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -431,6 +431,7 @@ Public Sub GenerateOutputFormats()
     
     If m_FreeImageEnabled Then AddOutputFormat "JXR - JPEG XR (HD Photo)", "jxr", PDIF_JXR
     AddOutputFormat "ORA - OpenRaster", "ora", PDIF_ORA
+    AddOutputFormat "PCX - Zsoft Paintbrush", "pcx", PDIF_PCX
     AddOutputFormat "PDI - PhotoDemon Image", "pdi", PDIF_PDI
     AddOutputFormat "PNG - Portable Network Graphic", "png", PDIF_PNG
     If m_FreeImageEnabled Then AddOutputFormat "PNM - Portable Anymap (Netpbm)", "pnm", PDIF_PNM
@@ -760,6 +761,8 @@ Public Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORM
         Case PDIF_JXR
             GetIdealMetadataFormatFromPDIF = PDMF_EXIF
         Case PDIF_MBM
+            GetIdealMetadataFormatFromPDIF = PDMF_NONE
+        Case PDIF_PCX
             GetIdealMetadataFormatFromPDIF = PDMF_NONE
         Case PDIF_PDF
             GetIdealMetadataFormatFromPDIF = PDMF_NONE

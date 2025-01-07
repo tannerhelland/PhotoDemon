@@ -1401,7 +1401,13 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export layers", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormExportLayers Else Saving.Export_LayersToFile PDImages.GetActiveImage, processParameters
+        If Menus.IsMenuEnabled("file_export_layers") Then
+            If raiseDialog Then
+                ShowPDDialog vbModal, FormExportLayers
+            Else
+                'There is no else; the above dialog handles everything!
+            End If
+        End If
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export animation", True) Then
