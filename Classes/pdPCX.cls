@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PCX (ZSoft "PiCture eXchange") Image Decoder
 'Copyright 2025-2025 by Tanner Helland
 'Created: 02/January/25
-'Last updated: 06/January/25
-'Last update: PCX images can now be exported (24-bit only; lower bit-depths are coming soon!)
+'Last updated: 07/January/25
+'Last update: PCX images can now be exported (at all bit-depths!)
 '
 'The PCX file format is nearly as old as I am!  PhotoDemon originally handled PCX files via the 3rd-party
 ' FreeImage library, but FreeImage doesn't support some valid PCX files and has unreliable behavior on
@@ -53,7 +53,7 @@ Option Explicit
 
 'To aid debugging, you can activate "verbose" output; this dumps additional diagnostic information
 ' to PD's primary debug log.
-Private Const PCX_DEBUG_VERBOSE As Boolean = False
+Private Const PCX_DEBUG_VERBOSE As Boolean = True
 
 'PCX files use a single-byte (!!!) marker to start
 Private Const ZSOFT_VALIDATION_BYTE As Byte = &HA
@@ -808,12 +808,35 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     'I'm happy to disable this pending user feedback, but for now, PD will try and preserve alpha.
     ' (Loading a PCX, editing it, then saving it back out to file is likely the most common use-case,
     '  and that's not gonna add transparency anyway - so this may all be a moot point.)
-    Dim outputColorDepth As Long
+    Dim outputColorDepth As Long, numColorsInPalette As Long, pxIndexed() As Byte
+    numColorsInPalette = 257
+    
     If DIBs.IsDIBTransparent(compositeDIB) Then
         outputColorDepth = 32
     Else
         outputColorDepth = 24
+        
+        'Look for lower color depths and grab the relevant palette accordingly
+        numColorsInPalette = Palettes.GetDIBColorCount_FastAbort(compositeDIB, m_Palette)
+        If (numColorsInPalette <= 2) Then
+            outputColorDepth = 1
+        ElseIf (numColorsInPalette <= 4) Then
+            outputColorDepth = 2
+        ElseIf (numColorsInPalette <= 16) Then
+            outputColorDepth = 4
+        ElseIf (numColorsInPalette <= 256) Then
+            outputColorDepth = 8
+        End If
+        
+        'If this image can be represented with a palette, palettize it now
+        If (outputColorDepth <= 8) Then
+            numColorsInPalette = DIBs.GetDIBAs8bpp_RGBA_SrcPalette(compositeDIB, m_Palette, pxIndexed)
+        End If
+        
     End If
+    
+    'We now have an accurate output color depth target, and for images <= 256 colors,
+    ' we also have a pre-filled palette in m_Palette().
     
     'We could populate a header struct, but VB padding issues make this annoying, so instead we're just
     ' gonna dump header bits out to file as we go.
@@ -829,8 +852,18 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         '24-bit RGB data should always be version 3 per https://www.fileformat.info/format/pcx/egff.htm
         ElseIf (outputColorDepth = 24) Then
             .WriteByte 3
+        
+        '8-bit RGB data needs v5, so we can append a larger palette to the tail-end of the image
+        ElseIf (outputColorDepth = 8) Then
+            .WriteByte 5
+        
+        'Images with <= 16 colors can use the preallocated palette in the header
+        ' (instead of appending their own).
+        ElseIf (outputColorDepth = 4) Or (outputColorDepth = 2) Or (outputColorDepth = 1) Then
+            .WriteByte 2
         Else
-            'TODO?
+            InternalError FUNC_NAME, "bad output depth"
+            GoTo SaveFailed
         End If
         
         'The only supported compression value is 1 (RLE-compressed)
@@ -841,7 +874,7 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         If (outputColorDepth >= 8) Then
             .WriteByte 8
         Else
-            'TODO?
+            .WriteByte outputColorDepth
         End If
         
         'Instead of dimensions, PCX files use x/y min/max values.  These don't mean anything in
@@ -863,14 +896,34 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         'Next comes a 48-byte (16x3) palette.  We'll write a standard EGA palette for all bit-depths,
         ' unless the image actually has a custom <= 16-color palette.
         Dim tmpPalette() As RGBQuad
-        Palettes.GetStockPalette_EGA tmpPalette, True
+        Palettes.GetStockPalette_EGA tmpPalette, True, False
         
         Dim i As Long
-        For i = 0 To 15
-            .WriteByte tmpPalette(i).Red
-            .WriteByte tmpPalette(i).Green
-            .WriteByte tmpPalette(i).Blue
-        Next i
+        If (outputColorDepth <= 4) Then
+            
+            'Write as many useable colors as the palette contains, then fill remaining entries with black
+            For i = 0 To numColorsInPalette - 1
+                .WriteByte m_Palette(i).Red
+                .WriteByte m_Palette(i).Green
+                .WriteByte m_Palette(i).Blue
+            Next i
+            If (numColorsInPalette < 16) Then
+                For i = numColorsInPalette To 15
+                    .WriteByte 0
+                    .WriteByte 0
+                    .WriteByte 0
+                Next i
+            End If
+        
+        'If the image doesn't have its own palette (or requires a full 256-color one),
+        ' write a dummy EGA palette.
+        Else
+            For i = 0 To 15
+                .WriteByte tmpPalette(i).Red
+                .WriteByte tmpPalette(i).Green
+                .WriteByte tmpPalette(i).Blue
+            Next i
+        End If
         
         'Next is a reserved byte, followed by the number of channels
         .WriteByte 0
@@ -888,8 +941,12 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         Dim bpScanline As Long
         If (outputColorDepth >= 8) Then
             bpScanline = compositeDIB.GetDIBWidth
-        Else
-            'TODO
+        ElseIf (outputColorDepth = 4) Then
+            bpScanline = (compositeDIB.GetDIBWidth + 1) \ 2
+        ElseIf (outputColorDepth = 2) Then
+            bpScanline = (compositeDIB.GetDIBWidth + 3) \ 4
+        ElseIf (outputColorDepth = 1) Then
+            bpScanline = (compositeDIB.GetDIBWidth + 7) \ 8
         End If
         
         If ((bpScanline And 1) = 1) Then bpScanline = bpScanline + 1
@@ -898,10 +955,11 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         'Next comes a palette "mode" which defines either color/bw or grayscale.  The spec explicitly says this
         ' value is ignored in modern versions (back in the day, grayscale was unachievable on CGA/EGA but could
         ' be nicely approximated on VGA so displays could use this to know whether to grab only the first byte
-        ' of any color values in the palette as necessary).
+        ' of any color values in the palette as necessary).  PD does not explicitly set this to avoid unpredictable
+        ' behavior in legacy software - instead, we always explicitly write the palette we want.
         .WriteIntU 1
         
-        'Next is a useless x/y resolution of the screen.  Almost always 0 in every "real-world" PCX.
+        'Next is a useless x/y resolution of the screen.  Almost always 0 in "real-world" PCXs.
         .WriteIntU 0
         .WriteIntU 0
         
@@ -935,20 +993,102 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     Dim compressedBytes() As Byte
     ReDim compressedBytes(0 To imgStrideInBytes * 2 - 1) As Byte
     
-    Dim x As Long, y As Long
+    Dim x As Long, y As Long, idxLast As Long, dstOffset As Long, offsetInByte As Long
     For y = 0 To imgHeight - 1
         
         'Point a scanline at this line in the source image
         compositeDIB.WrapArrayAroundScanline srcPixels, tmpSA1D, y
         
-        'Copy over bytes in planar order (RRR GGG BBB instead of RGB RGB RGB)
+        'Further handling separates by color-depth
+        
+        '24/32-bit color
         If (outputColorDepth >= 24) Then
+            
+            'Copy over bytes in planar order (RRR GGG BBB instead of RGB RGB RGB)
             For x = 0 To imgWidth - 1
                 uncompressedBytes(x) = srcPixels(x * 4 + 2)
                 uncompressedBytes(imgWidth + x) = srcPixels(x * 4 + 1)
                 uncompressedBytes(imgWidth * 2 + x) = srcPixels(x * 4)
                 If (outputColorDepth = 32) Then uncompressedBytes(imgWidth * 3 + x) = srcPixels(x * 4 + 3)
             Next x
+            
+            'Note the index of the last item added to the output array.  We can potentially add a
+            ' matching dummy byte after this (if the array has empty space) to save a little file space
+            ' during RLE compression.
+            If (outputColorDepth = 32) Then
+                idxLast = imgWidth * 4 - 1
+            Else
+                idxLast = imgWidth * 3 - 1
+            End If
+            
+        'Write only palette entries
+        ElseIf (outputColorDepth = 8) Then
+        
+            For x = 0 To imgWidth - 1
+                uncompressedBytes(x) = pxIndexed(x, y)
+            Next x
+            idxLast = imgWidth - 1
+            
+        ElseIf (outputColorDepth = 4) Then
+        
+            For x = 0 To imgWidth - 1
+                dstOffset = x \ 2
+                If (x And 1) Then
+                    uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or pxIndexed(x, y)
+                Else
+                    uncompressedBytes(dstOffset) = pxIndexed(x, y) * 16
+                End If
+            Next x
+            idxLast = dstOffset
+            
+        ElseIf (outputColorDepth = 2) Then
+            
+            offsetInByte = 0
+            For x = 0 To imgWidth - 1
+                dstOffset = x \ 4
+                Select Case offsetInByte
+                    Case 0
+                        uncompressedBytes(dstOffset) = pxIndexed(x, y) * 64
+                    Case 1
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 16)
+                    Case 2
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 4)
+                    Case 3
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or pxIndexed(x, y)
+                End Select
+                offsetInByte = offsetInByte + 1
+                If (offsetInByte > 3) Then offsetInByte = 0
+            Next x
+            idxLast = dstOffset
+            
+        ElseIf (outputColorDepth = 1) Then
+            
+            offsetInByte = 0
+            For x = 0 To imgWidth - 1
+                dstOffset = x \ 8
+                Select Case offsetInByte
+                    Case 0
+                        uncompressedBytes(dstOffset) = pxIndexed(x, y) * 128
+                    Case 1
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 64)
+                    Case 2
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 32)
+                    Case 3
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 16)
+                    Case 4
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 8)
+                    Case 5
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 4)
+                    Case 6
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or (pxIndexed(x, y) * 2)
+                    Case 7
+                        uncompressedBytes(dstOffset) = uncompressedBytes(dstOffset) Or pxIndexed(x, y)
+                End Select
+                offsetInByte = offsetInByte + 1
+                If (offsetInByte > 7) Then offsetInByte = 0
+            Next x
+            idxLast = dstOffset
+            
         End If
         
         'Unwrap our temporary array from the source image
@@ -958,7 +1098,11 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         
         'To improve compression a wee bit, ensure the null trailing bytes (if any) can simply be added
         ' to a trailing RLE packet matching the last meaningful byte.
-        'TODO!
+        If (idxLast < imgStrideInBytes - 1) Then
+            For i = idxLast + 1 To imgStrideInBytes - 1
+                uncompressedBytes(i) = uncompressedBytes(idxLast)
+            Next i
+        End If
         
         'Next, we need to perform a (pretty simple) RLE compression on the data.  Note that this
         ' *can* increase data size because PCX's RLE scheme is primitive.  (In a worst-case scenario
@@ -1045,6 +1189,24 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         
     Next y
     
+    'If the image is 8-bit (and *just* 8-bit!) write a trailing palette.  It must always be 256-colors
+    ' even if the image only uses < 256.
+    If (outputColorDepth = 8) Then
+        m_Stream.WriteByte 12   'Magic number; see the spec at https://www.fileformat.info/format/pcx/spec/a10e75307b3a4cc49c3bbe6db4c41fa2/view.htm
+        For i = 0 To numColorsInPalette - 1
+            m_Stream.WriteByte m_Palette(i).Red
+            m_Stream.WriteByte m_Palette(i).Green
+            m_Stream.WriteByte m_Palette(i).Blue
+        Next i
+        If (numColorsInPalette < 256) Then
+            For i = numColorsInPalette To 255
+                m_Stream.WriteByte 0
+                m_Stream.WriteByte 0
+                m_Stream.WriteByte 0
+            Next i
+        End If
+    End If
+    
     'No trailing bytes are required!  Close the stream and exit.
     m_Stream.StopStream True
     SavePCX_ToFile = True
@@ -1054,6 +1216,10 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
 SaveFailed:
     InternalError FUNC_NAME, "abandoned save due to critical error"
     SavePCX_ToFile = False
+    
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.IsOpen Then m_Stream.StopStream True
+    End If
     
 End Function
 
