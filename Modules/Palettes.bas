@@ -4381,7 +4381,7 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
 End Function
 
 'Returns the number of colors written to the palette (always 16 for this function)
-Public Function GetStockPalette_EGA(ByRef dstPalette() As RGBQuad, Optional ByVal initPaletteArrayForMe As Boolean = True) As Long
+Public Function GetStockPalette_EGA(ByRef dstPalette() As RGBQuad, Optional ByVal initPaletteArrayForMe As Boolean = True, Optional ByVal srcIsPCXLoader As Boolean = True) As Long
     
     'If the caller doesn't require initialization, still check palette bounds for safety
     If initPaletteArrayForMe Then
@@ -4396,9 +4396,20 @@ Public Function GetStockPalette_EGA(ByRef dstPalette() As RGBQuad, Optional ByVa
     dstPalette(3) = Colors.GetRGBQuadFromHex("#00AAAA")
     dstPalette(4) = Colors.GetRGBQuadFromHex("#AA0000")
     dstPalette(5) = Colors.GetRGBQuadFromHex("#AA00AA")
-    dstPalette(6) = Colors.GetRGBQuadFromHex("#AA5500")
-    dstPalette(7) = Colors.GetRGBQuadFromHex("#AAAAAA")
-    dstPalette(8) = Colors.GetRGBQuadFromHex("#555555")
+    
+    'I haven't fully nailed down why this helps, but this ordering (in PCX files only) brings us closer
+    ' to Photoshop's result on v3 PCX files (which explicitly lack a built-in palette and should use
+    ' a standard EGA one instead - so why the weird color order? idk)
+    If srcIsPCXLoader Then
+        dstPalette(6) = Colors.GetRGBQuadFromHex("#AAAA00")
+        dstPalette(7) = Colors.GetRGBQuadFromHex("#555555")
+        dstPalette(8) = Colors.GetRGBQuadFromHex("#AAAAAA")
+    Else
+        dstPalette(6) = Colors.GetRGBQuadFromHex("#AA5500")
+        dstPalette(7) = Colors.GetRGBQuadFromHex("#555555")
+        dstPalette(8) = Colors.GetRGBQuadFromHex("#AAAAAA")
+    End If
+    
     dstPalette(9) = Colors.GetRGBQuadFromHex("#5555FF")
     dstPalette(10) = Colors.GetRGBQuadFromHex("#55FF55")
     dstPalette(11) = Colors.GetRGBQuadFromHex("#55FFFF")

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PCX (ZSoft "PiCture eXchange") Image Decoder
 'Copyright 2025-2025 by Tanner Helland
 'Created: 02/January/25
-'Last updated: 04/January/25
-'Last update: add a small bit of helper code for recovering badly encoded PCX files
+'Last updated: 06/January/25
+'Last update: PCX images can now be exported (24-bit only; lower bit-depths are coming soon!)
 '
 'The PCX file format is nearly as old as I am!  PhotoDemon originally handled PCX files via the 3rd-party
 ' FreeImage library, but FreeImage doesn't support some valid PCX files and has unreliable behavior on
@@ -55,6 +55,9 @@ Option Explicit
 ' to PD's primary debug log.
 Private Const PCX_DEBUG_VERBOSE As Boolean = False
 
+'PCX files use a single-byte (!!!) marker to start
+Private Const ZSOFT_VALIDATION_BYTE As Byte = &HA
+
 'The full header is copied into this struct at validation time.
 Private Type PD_PCXHeader
     pcx_ValidationByte As Byte
@@ -69,9 +72,9 @@ Private Type PD_PCXHeader
     pcx_Ydpi As Long                'Encoded in file as unsigned short
     pcx_EGAPalette(0 To 47) As Byte 'EGA palette for 16-color images
     pcx_Reserved1 As Byte           'Should be 0
-    pcx_NumChannels As Byte         'Should validate to 1, 3, or 4
+    pcx_ChannelCount As Byte        'Technically planes, not channels, so can be 1, 2, 3 or 4
     pcx_BytesPerScanline As Long    'Encoded in file as unsigned short, and MUST BE EVEN
-    pcx_PaletteMode As Integer      '1 = monochrome OR color?, 2 = grayscale
+    pcx_PaletteMode As Integer      '1 = monochrome OR color, 2 = grayscale; basically unused by modern readers
     pcx_XScreenResolution As Long   'Encoded in file as unsigned short
     pcx_YScreenResolution As Long   'Encoded in file as unsigned short
     pcx_Reserved2(0 To 53) As Byte  'Reserved for future use, should be 0s
@@ -143,6 +146,7 @@ Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireVal
             .pcx_ValidationByte = m_Stream.ReadByte()
             .pcx_VersionNumber = m_Stream.ReadByte()
             .pcx_Compression = m_Stream.ReadByte()
+            If (.pcx_Compression <> 1) And PCX_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: unexpected compression value found: " & .pcx_Compression
             .pcx_BitsPerPixel = m_Stream.ReadByte()
             .pcx_XMin = m_Stream.ReadIntUnsigned()
             .pcx_YMin = m_Stream.ReadIntUnsigned()
@@ -152,7 +156,7 @@ Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireVal
             .pcx_Ydpi = m_Stream.ReadIntUnsigned()
             m_Stream.ReadBytesToBarePointer VarPtr(.pcx_EGAPalette(0)), 48
             .pcx_Reserved1 = m_Stream.ReadByte()
-            .pcx_NumChannels = m_Stream.ReadByte()
+            .pcx_ChannelCount = m_Stream.ReadByte()
             .pcx_BytesPerScanline = m_Stream.ReadIntUnsigned()
             .pcx_PaletteMode = m_Stream.ReadInt()
             .pcx_XScreenResolution = m_Stream.ReadIntUnsigned()
@@ -164,7 +168,6 @@ Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireVal
         With m_Header
             
             'Validate marker byte
-            Const ZSOFT_VALIDATION_BYTE As Byte = &HA
             IsFilePCX = (.pcx_ValidationByte = ZSOFT_VALIDATION_BYTE)
             If (IsFilePCX And PCX_DEBUG_VERBOSE) Then PDDebug.LogAction "File appears to be PCX format"
             
@@ -192,9 +195,9 @@ Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireVal
             
             'Validate channel count
             If IsFilePCX Then
-                IsFilePCX = (.pcx_NumChannels = 1) Or (.pcx_NumChannels = 3) Or (.pcx_NumChannels = 4)
-                If (Not IsFilePCX) Then IsFilePCX = (.pcx_BitsPerPixel = 1) And (.pcx_NumChannels = 2)
-                If (Not IsFilePCX) And PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Bad channel count: " & .pcx_NumChannels
+                IsFilePCX = (.pcx_ChannelCount = 1) Or (.pcx_ChannelCount = 3) Or (.pcx_ChannelCount = 4)
+                If (Not IsFilePCX) Then IsFilePCX = (.pcx_BitsPerPixel = 1) And (.pcx_ChannelCount = 2)
+                If (Not IsFilePCX) And PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Bad channel count: " & .pcx_ChannelCount
             End If
             
         End With
@@ -270,7 +273,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         
         'If the header specifies EGA mode, overwrite the embedded palette (which may be all-zeroes)
         ' with a stock EGA palette instead.
-        If (m_Header.pcx_VersionNumber < 2) Or (m_Header.pcx_VersionNumber = 3) Then Palettes.GetStockPalette_EGA m_Palette, False
+        If (m_Header.pcx_VersionNumber < 2) Or (m_Header.pcx_VersionNumber = 3) Then Palettes.GetStockPalette_EGA m_Palette, False, True
         
         'Untested, but as a failsafe: if a PCX specifies a grayscale palette, explicitly populate that now
         If (m_Header.pcx_PaletteMode = 2) Then
@@ -285,16 +288,16 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         Dim imgWidth As Long, imgHeight As Long, imgStrideInBytes As Long
         imgWidth = (m_Header.pcx_XMax - m_Header.pcx_XMin) + 1
         imgHeight = (m_Header.pcx_YMax - m_Header.pcx_YMin) + 1
-        imgStrideInBytes = m_Header.pcx_BytesPerScanline * m_Header.pcx_NumChannels
+        imgStrideInBytes = m_Header.pcx_BytesPerScanline * m_Header.pcx_ChannelCount
         
-        If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Preparing to decode PCX image (" & imgWidth & "x" & imgHeight & ") @ " & m_Header.pcx_BitsPerPixel & "x" & m_Header.pcx_NumChannels
+        If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Preparing to decode PCX image (" & imgWidth & "x" & imgHeight & ") @ " & m_Header.pcx_BitsPerPixel & "x" & m_Header.pcx_ChannelCount
         
         'PCX uses a strange hybrid of "planes" and "bit-depths" that is unlike other, more modern formats.
         ' We need to multiply these together to arrive at an "actual" bit-depth (although note that it
         ' doesn't always map cleanly - for example, PCX supports a "1-bit, 3-plane" encoding that's
         ' equivalent to "3-bits-per-pixel" - an oddity not supported by other formats).
         Dim actualBPP As Long
-        actualBPP = m_Header.pcx_BitsPerPixel * m_Header.pcx_NumChannels
+        actualBPP = m_Header.pcx_BitsPerPixel * m_Header.pcx_ChannelCount
         m_HasAlpha = False
         
         Select Case actualBPP
@@ -357,7 +360,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             If PCX_DEBUG_VERBOSE Then
                 PDDebug.LogAction "File version: " & m_Header.pcx_VersionNumber
                 PDDebug.LogAction "Palette mode: " & m_Header.pcx_PaletteMode
-                PDDebug.LogAction "Plane count: " & m_Header.pcx_NumChannels
+                PDDebug.LogAction "Plane count: " & m_Header.pcx_ChannelCount
                 PDDebug.LogAction "BPP: " & m_Header.pcx_BitsPerPixel
                 PDDebug.LogAction "Performing palette maintenance..."
             End If
@@ -426,7 +429,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         
         'Start iterating scanlines.  We'll build the image one line at a time as we go.
         Dim x As Long, y As Long, j As Long, curChannel As Long, maxChannels As Long
-        maxChannels = m_Header.pcx_NumChannels - 1
+        maxChannels = m_Header.pcx_ChannelCount - 1
         
         For y = 0 To imgHeight - 1
             
@@ -629,7 +632,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 ElseIf (actualBPP >= 2) Or (actualBPP <= 4) Then
                     
                     'Multi-plane mode requires use of another buffer before palette matching
-                    If (m_Header.pcx_NumChannels > 1) Then
+                    If (m_Header.pcx_ChannelCount > 1) Then
                         
                         'Black out the shuffled storage before proceeding
                         curChannel = 0
@@ -650,10 +653,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                                 If (x < imgWidth) And (curChannel <= maxChannels) Then
                                 
                                     'Use our pre-built LUT for simplicity
-                                    If (bitFlags(j) = (curByte And bitFlags(j))) Then i = 1 Else i = 0
-                                    
-                                    'Use this flag to update the corresponding "shuffled" entry
-                                    If (i = 1) Then
+                                    If (bitFlags(j) = (curByte And bitFlags(j))) Then
                                         shuffledBytes(x) = shuffledBytes(x) Or powFlag
                                     End If
                                     
@@ -786,8 +786,268 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     'This exists only as a failsafe; potential encoding errors are explicitly handled via other means
     On Error GoTo SaveFailed
     
+    'Open a stream on the target file
+    Set m_Stream = New pdStream
+    If (Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, 1024, 0, OptimizeSequentialAccess)) Then
+        InternalError FUNC_NAME, "couldn't start file stream: " & dstFile
+        Exit Function
+    End If
     
-    'SavePCX_FromFile = True
+    'PCX doesn't support multiple frames.  (We may add DCX support someday - that variant *does* support frames.)
+    ' As such, grab a composited copy of the current image.
+    Dim compositeDIB As pdDIB
+    srcImage.GetCompositedImage compositeDIB, True
+    
+    'For now, composite against white.  (32-bit export works, but is largely unsupported elsewhere.)
+    compositeDIB.CompositeBackgroundColor 255, 255, 255
+    
+    'Color-depth is currently locked at 24/32-bit export (other depths remain TODO).
+    ' Note that 32-bit PCX images aren't really a "thing", given that the PCX spec was last
+    ' (officially) updated in 2025.  However, some apps *will* load 32-bit PCX images.
+    '
+    'I'm happy to disable this pending user feedback, but for now, PD will try and preserve alpha.
+    ' (Loading a PCX, editing it, then saving it back out to file is likely the most common use-case,
+    '  and that's not gonna add transparency anyway - so this may all be a moot point.)
+    Dim outputColorDepth As Long
+    If DIBs.IsDIBTransparent(compositeDIB) Then
+        outputColorDepth = 32
+    Else
+        outputColorDepth = 24
+    End If
+    
+    'We could populate a header struct, but VB padding issues make this annoying, so instead we're just
+    ' gonna dump header bits out to file as we go.
+    With m_Stream
+        .WriteByte ZSOFT_VALIDATION_BYTE
+        
+        '32-bit RGBA data technically isn't valid, but some software will load it.  I'm still undecided
+        ' on whether to allow it at all.  (It requires no work on my part to allow, but I don't want users
+        ' writing files that are unusable elsewhere.  Choices choices.)
+        If (outputColorDepth = 32) Then
+            .WriteByte 5
+            
+        '24-bit RGB data should always be version 3 per https://www.fileformat.info/format/pcx/egff.htm
+        ElseIf (outputColorDepth = 24) Then
+            .WriteByte 3
+        Else
+            'TODO?
+        End If
+        
+        'The only supported compression value is 1 (RLE-compressed)
+        .WriteByte 1
+        
+        'Next is bits-per-pixel.  Note that PCX files can define "color-depth" in terms of both
+        ' bits and planes (e.g. bits-per-plane or planes-per-bit).  We only use the former.
+        If (outputColorDepth >= 8) Then
+            .WriteByte 8
+        Else
+            'TODO?
+        End If
+        
+        'Instead of dimensions, PCX files use x/y min/max values.  These don't mean anything in
+        ' modern software and it's always recommended to zero-out the min offsets (we do the same).
+        ' Note, however, that the formula for final size is (max - min) + 1.
+        
+        'x/y minimums
+        .WriteIntU 0
+        .WriteIntU 0
+        
+        'x/y maximums
+        .WriteIntU compositeDIB.GetDIBWidth - 1
+        .WriteIntU compositeDIB.GetDIBHeight - 1
+        
+        'x/y DPI
+        .WriteIntU srcImage.GetDPI()
+        .WriteIntU srcImage.GetDPI()
+        
+        'Next comes a 48-byte (16x3) palette.  We'll write a standard EGA palette for all bit-depths,
+        ' unless the image actually has a custom <= 16-color palette.
+        Dim tmpPalette() As RGBQuad
+        Palettes.GetStockPalette_EGA tmpPalette, True
+        
+        Dim i As Long
+        For i = 0 To 15
+            .WriteByte tmpPalette(i).Red
+            .WriteByte tmpPalette(i).Green
+            .WriteByte tmpPalette(i).Blue
+        Next i
+        
+        'Next is a reserved byte, followed by the number of channels
+        .WriteByte 0
+        
+        Dim channelCount As Long
+        If (outputColorDepth >= 8) Then
+            channelCount = outputColorDepth \ 8
+        Else
+            channelCount = 1
+        End If
+        .WriteByte channelCount
+        
+        'Next is bytes per scanline.  This value *MUST* be even, per the spec which explicitly states:
+        ' "Number of bytes to allocate for a scanline plane.  MUST be an EVEN number.  Do NOT calculate from Xmax-Xmin."
+        Dim bpScanline As Long
+        If (outputColorDepth >= 8) Then
+            bpScanline = compositeDIB.GetDIBWidth
+        Else
+            'TODO
+        End If
+        
+        If ((bpScanline And 1) = 1) Then bpScanline = bpScanline + 1
+        .WriteIntU bpScanline
+        
+        'Next comes a palette "mode" which defines either color/bw or grayscale.  The spec explicitly says this
+        ' value is ignored in modern versions (back in the day, grayscale was unachievable on CGA/EGA but could
+        ' be nicely approximated on VGA so displays could use this to know whether to grab only the first byte
+        ' of any color values in the palette as necessary).
+        .WriteIntU 1
+        
+        'Next is a useless x/y resolution of the screen.  Almost always 0 in every "real-world" PCX.
+        .WriteIntU 0
+        .WriteIntU 0
+        
+        'Next is 54 empty reserved bytes to pad out the 128-byte header
+        .WritePadding 54
+        
+    End With
+    
+    'With that, the header is complete!  Time to write pixel values.
+    Dim tmpSA1D As SafeArray1D, srcPixels() As Byte
+    
+    'Image stride (in bytes) represents how many bytes we *must* encode into a single RLE stream before
+    ' breaking for the next line.  (This amount is non-negotiable, even though it potentiall adds empty
+    ' bytes at the end of the RLE stream since PCXs enforce a strict rule of "scanlines must be even".)
+    Dim imgStrideInBytes As Long
+    imgStrideInBytes = bpScanline * channelCount
+    
+    Dim imgWidth As Long, imgHeight As Long
+    imgWidth = compositeDIB.GetDIBWidth
+    imgHeight = compositeDIB.GetDIBHeight
+    
+    'The RLE compression used in PCX files operates on byte-level data (*not* pixel data).
+    ' This simplifies encoding somewhat, since compression is identical for all color-depths.
+    ' All we have to do first is a small "pre-processing" step to organize pixel data by plane,
+    ' and then we can run the RLE compression scheme uniformly against the data without regard
+    ' to its source format.
+    Dim uncompressedBytes() As Byte
+    ReDim uncompressedBytes(0 To imgStrideInBytes - 1) As Byte
+    
+    'RLE compression has a worst-case encoding of 2x original scanline size
+    Dim compressedBytes() As Byte
+    ReDim compressedBytes(0 To imgStrideInBytes * 2 - 1) As Byte
+    
+    Dim x As Long, y As Long
+    For y = 0 To imgHeight - 1
+        
+        'Point a scanline at this line in the source image
+        compositeDIB.WrapArrayAroundScanline srcPixels, tmpSA1D, y
+        
+        'Copy over bytes in planar order (RRR GGG BBB instead of RGB RGB RGB)
+        If (outputColorDepth >= 24) Then
+            For x = 0 To imgWidth - 1
+                uncompressedBytes(x) = srcPixels(x * 4 + 2)
+                uncompressedBytes(imgWidth + x) = srcPixels(x * 4 + 1)
+                uncompressedBytes(imgWidth * 2 + x) = srcPixels(x * 4)
+                If (outputColorDepth = 32) Then uncompressedBytes(imgWidth * 3 + x) = srcPixels(x * 4 + 3)
+            Next x
+        End If
+        
+        'Unwrap our temporary array from the source image
+        compositeDIB.UnwrapArrayFromDIB srcPixels
+        
+        'The uncompressedBytes() array now holds the image's pixel data in PCX order.
+        
+        'To improve compression a wee bit, ensure the null trailing bytes (if any) can simply be added
+        ' to a trailing RLE packet matching the last meaningful byte.
+        'TODO!
+        
+        'Next, we need to perform a (pretty simple) RLE compression on the data.  Note that this
+        ' *can* increase data size because PCX's RLE scheme is primitive.  (In a worst-case scenario
+        ' it can potentially double image size - see the above declare for compressedBytes() for our
+        ' contingencies against this.)
+        
+        'Remember: we must encode a full "imgStrideInBytes" number of pixels, even if the trailing bytes
+        ' lie outside the image's actual boundaries.
+        Dim xOffset As Long
+        xOffset = 0
+        x = 0
+        
+        Do While (x < imgStrideInBytes)
+            
+            'See if the current byte must be encoded as a singleton (e.g. not part of a run)
+            Dim encodeAsSingleton As Boolean
+            encodeAsSingleton = (x = imgStrideInBytes - 1)  'last byte in the scanline
+            If (Not encodeAsSingleton) Then encodeAsSingleton = (uncompressedBytes(x) <> uncompressedBytes(x + 1))
+            
+            'Singleton encoding is a little weird, because certain byte values actually need to be encoded
+            ' as *two* bytes.
+            If encodeAsSingleton Then
+                
+                'PCX uses the first two bits (0b11000000 or 0xC0) to indicate an RLE run.
+                ' This prevents singleton encoding of anything 192 or higher.
+                If (uncompressedBytes(x) >= 192) Then
+                    
+                    'Write this value as an RLE packet with length 1
+                    compressedBytes(xOffset) = 193    '0b11000001 or 0xC1
+                    compressedBytes(xOffset + 1) = uncompressedBytes(x)
+                    xOffset = xOffset + 2
+                    
+                'Values smaller than 192 can just be dumped as-is
+                Else
+                    compressedBytes(xOffset) = uncompressedBytes(x)
+                    xOffset = xOffset + 1
+                End If
+                
+                'Increment the source array pointer
+                x = x + 1
+            
+            'This item can be encoded as an RLE run.
+            Else
+                
+                'See how many times we can repeat this pixel.  Note that we must stop repeating under
+                ' several conditions:
+                ' 1) End of scanline
+                ' 2) Byte that no longer matches the run value
+                ' 3) Max run size (63) reached.
+                '
+                'Remember; we only have 6 bits to write the RLE length, which is why 63 (0b00111111)
+                ' is the maximum run length.
+                Const MAX_RUN_LENGTH As Long = 63
+                
+                Dim idxTest As Long
+                idxTest = x + 1
+                
+                Dim keepScanning As Boolean
+                keepScanning = True
+                
+                Do
+                    idxTest = idxTest + 1
+                    keepScanning = (idxTest - x) < MAX_RUN_LENGTH
+                    If keepScanning Then keepScanning = (idxTest < imgStrideInBytes)
+                    If keepScanning Then keepScanning = (uncompressedBytes(x) = uncompressedBytes(idxTest))
+                Loop While keepScanning
+                
+                'For one reason or another, the RLE run ended, and idxTest points at at the uncompressed byte
+                ' *just past* where encoding *must* stop.
+                
+                'Knowing that, write the RLE data out to file.
+                compressedBytes(xOffset) = 192 + (idxTest - x)
+                compressedBytes(xOffset + 1) = uncompressedBytes(x)
+                xOffset = xOffset + 2
+                x = idxTest
+                
+            End If
+            
+        Loop
+        
+        'The compressedBytes() array now contains the RLE stream for this scanline.  Dump it
+        ' (up to the relevant offset) out to file.
+        m_Stream.WriteBytesFromPointer VarPtr(compressedBytes(0)), xOffset
+        
+    Next y
+    
+    'No trailing bytes are required!  Close the stream and exit.
+    m_Stream.StopStream True
+    SavePCX_ToFile = True
     
     Exit Function
     
