@@ -211,7 +211,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '8bf Plugin Interface Dialog
-'Copyright 2021-2024 by Tanner Helland
+'Copyright 2021-2025 by Tanner Helland
 'Created: 08/February/21
 'Last updated: 10/February/21
 'Last update: flesh out user-defined folder(s) feature

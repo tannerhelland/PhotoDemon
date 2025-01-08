@@ -8,7 +8,9 @@ Ongoing development is supported by PhotoDemon's [Patreon members](https://www.p
 
 Super Patrons:
 
+* DeltaVenue
 * Johannes Nendel
+* Refael Ackermann
 
 Patrons:
 
@@ -26,6 +28,7 @@ The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these
 * [FreeImage](https://freeimage.sourceforge.io/)
 * [libavif](https://github.com/AOMediaCodec/libavif)
 * [libdeflate](https://github.com/ebiggers/libdeflate)
+* [libheif](https://github.com/strukturag/libheif)
 * [libjxl](https://github.com/libjxl/libjxl)
 * [libwebp](https://developers.google.com/speed/webp)
 * [LittleCMS](http://www.littlecms.com)

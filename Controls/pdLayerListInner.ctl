@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layer Listbox (inner portion only)
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 18/April/22
 'Last update: fix UI glitch when starting to move layer that is *not* the active layer

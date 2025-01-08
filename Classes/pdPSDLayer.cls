@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSD (PhotoShop Image) Layer Container and Parser
-'Copyright 2019-2024 by Tanner Helland
+'Copyright 2019-2025 by Tanner Helland
 'Created: 15/January/19
 'Last updated: 17/April/24
 'Last update: improve compatibility by always writing RGBA layer data

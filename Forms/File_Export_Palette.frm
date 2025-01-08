@@ -121,7 +121,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Palette Export Dialog
-'Copyright 2018-2024 by Tanner Helland
+'Copyright 2018-2025 by Tanner Helland
 'Created: 25/March/18
 'Last updated: 25/March/18
 'Last update: initial build

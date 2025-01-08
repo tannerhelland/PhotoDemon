@@ -1,7 +1,7 @@
 Attribute VB_Name = "Units"
 '***************************************************************************
 'Unit Conversion Functions
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 10/February/14
 'Last updated: 04/March/24
 'Last update: helper function to retrieve OS user preference for metric vs imperial units

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSP (PaintShop Pro) Block Container
-'Copyright 2020-2024 by Tanner Helland
+'Copyright 2020-2025 by Tanner Helland
 'Created: 30/December/20
 'Last updated: 02/January/21
 'Last update: add helper function for human-readable block names

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Colors"
 '***************************************************************************
 'Miscellaneous Color Functions
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 28/February/19
 'Last update: add support for retrieving colors by SVG color name
@@ -770,6 +770,22 @@ Public Function GetRGBALongFromHex(ByVal srcHex As String) As Long
     
     'Return the RGB Long
     GetMem4_Ptr VarPtr(tmpQuad), VarPtr(GetRGBALongFromHex)
+    
+End Function
+
+'Given a hex color representation, return a matching RGBA quad (4 bytes in BGRA order).
+' NOTE: this function does not handle alpha, so incoming hex values must be 1, 3, or 6 chars long
+' NOTE: that this function DOES NOT validate the incoming string; as a purely internal function, it's assumed you
+'       won't send it gibberish!
+Public Function GetRGBQuadFromHex(ByVal srcHex As String) As RGBQuad
+    
+    Dim tmpLong As Long
+    tmpLong = Colors.GetRGBLongFromHex(srcHex)
+    
+    GetRGBQuadFromHex.Red = Colors.ExtractRed(tmpLong)
+    GetRGBQuadFromHex.Green = Colors.ExtractGreen(tmpLong)
+    GetRGBQuadFromHex.Blue = Colors.ExtractBlue(tmpLong)
+    GetRGBQuadFromHex.Alpha = 255
     
 End Function
 

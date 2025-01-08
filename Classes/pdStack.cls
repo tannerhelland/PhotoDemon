@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Generic (int) Stack
-'Copyright 2015-2024 by Tanner Helland
+'Copyright 2015-2025 by Tanner Helland
 'Created: 05/February/15
 'Last updated: 08/March/24
 'Last update: various helper functions to help with page selection during PDF import

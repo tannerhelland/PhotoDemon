@@ -174,7 +174,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Basic Brush ("Pencil") Tool Panel
-'Copyright 2016-2024 by Tanner Helland
+'Copyright 2016-2025 by Tanner Helland
 'Created: 31/Oct/16
 'Last updated: 01/December/21
 'Last update: migrate UI to new flyout-driven UI

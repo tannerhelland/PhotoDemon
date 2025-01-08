@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fast Histogram class (focused on RGB/A support), using hash-table + separate chaining (linked-list) for collisions
-'Copyright 2022-2024 by Tanner Helland
+'Copyright 2022-2025 by Tanner Helland
 'Created: 07/March/22
 'Last updated: 14/June/22
 'Last update: split off a new coordinate-driven variation from the original pdHistogramHash class

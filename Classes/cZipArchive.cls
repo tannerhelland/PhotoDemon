@@ -20,7 +20,7 @@ Attribute VB_Exposed = False
 ' unmodified copy from the following link (good as of January 2023):
 ' https://github.com/wqweto/ZipArchive
 '
-'This class is MIT-licensed and Copyright 2017-2024 by wqweto@gmail.com.
+'This class is MIT-licensed and Copyright 2017-2025 by wqweto@gmail.com.
 ' Full license details available at https://github.com/wqweto/ZipArchive/blob/master/LICENSE
 '
 'Original code follows, with any PhotoDemon-specific changes clearly noted at the end of the file.

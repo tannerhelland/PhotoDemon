@@ -158,7 +158,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Screen Capture Dialog
-'Copyright 2012-2024 by Tanner Helland
+'Copyright 2012-2025 by Tanner Helland
 'Created: 01/January/12 (approx)
 'Last updated: 13/April/22
 'Last update: replace lingering picture box with pdPictureBox and fix some minor annoyances

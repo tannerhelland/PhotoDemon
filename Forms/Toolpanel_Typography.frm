@@ -685,7 +685,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Advanced Typography Tool Panel
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 17/May/22
 'Last update: new stretch-to-fit option

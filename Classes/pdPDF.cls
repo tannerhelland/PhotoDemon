@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Individual Adobe PDF File Interface (via pdfium)
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 23/February/24
 'Last updated: 27/February/24
 'Last update: finish work on initial import prototype

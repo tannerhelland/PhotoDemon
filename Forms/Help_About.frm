@@ -205,9 +205,9 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon About Dialog
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 14/June/17
+'Last updated: 07/January/25
 'Last update: update contributor list
 '
 'PhotoDemon would not be possible without the help of many, many amazing people.  THANK YOU!
@@ -291,7 +291,9 @@ Private Sub Form_Load()
         GeneratePatron actualText, , True
     End If
     
+    GeneratePatron "DeltaVenue"
     GeneratePatron "Johannes Nendel"
+    GeneratePatron "Refael Ackermann"
     
     m_superPatronEndIndex = m_numOfPatrons
     GeneratePatron vbNullString

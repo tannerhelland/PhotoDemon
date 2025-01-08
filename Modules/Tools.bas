@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools"
 '***************************************************************************
 'Helper functions for various PhotoDemon tools
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 06/February/14
 'Last updated: 10/April/24
 'Last update: add snap support when moving or resizing a layer

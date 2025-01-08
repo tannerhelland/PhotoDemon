@@ -620,7 +620,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Interactive Language (i18n) Editor
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 28/August/13
 'Last updated: 02/November/22
 'Last update: fix issues with Ctrl+U key combination in non-en-US locales (https://github.com/tannerhelland/PhotoDemon/issues/455)

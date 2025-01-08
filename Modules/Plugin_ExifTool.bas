@@ -1,7 +1,7 @@
 Attribute VB_Name = "ExifTool"
 '***************************************************************************
 'ExifTool Plugin Interface
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 24/May/13
 'Last updated: 29/September/23
 'Last update: manually write pHYs block when exporting PNGs

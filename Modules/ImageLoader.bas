@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 26/August/24
 'Last update: wrap up work on HEIF import
@@ -27,6 +27,7 @@ Private Const USE_INTERNAL_PARSER_HGT As Boolean = True
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
 Private Const USE_INTERNAL_PARSER_ORA As Boolean = True
+Private Const USE_INTERNAL_PARSER_PCX As Boolean = True
 Private Const USE_INTERNAL_PARSER_PNG As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSD As Boolean = True
 Private Const USE_INTERNAL_PARSER_PSP As Boolean = True
@@ -1072,6 +1073,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'A custom PCX parser was added in v2025.x
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PCX Then
+        CascadeLoadGenericImage = LoadPCX(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_PCXParser
+            dstImage.SetOriginalFileFormat PDIF_PCX
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1509,6 +1519,48 @@ Private Function LoadOpenRaster(ByRef srcFile As String, ByRef dstImage As pdIma
         
     End If
     
+End Function
+
+'Load a PCX image.  Originally this was handled by FreeImage, but FreeImage doesn't handle all PCXs correctly.
+' So I wrote my own loader in Jan 2025.
+Private Function LoadPCX(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadPCX = False
+    
+    'pdPCX handles all the dirty work for us
+    Dim cReader As pdPCX
+    Set cReader = New pdPCX
+    
+    'Validate the file
+    If cReader.IsFilePCX(srcFile) Then
+    
+        'Load the file
+        LoadPCX = cReader.LoadPCX_FromFile(srcFile, dstImage, dstDIB)
+        
+        'Perform some PD-specific object initialization before exiting
+        If LoadPCX Then
+            
+            dstImage.SetOriginalFileFormat PDIF_PCX
+            dstImage.NotifyImageChanged UNDO_Everything
+            dstImage.SetOriginalGrayscale cReader.HasGrayscale()
+            dstImage.SetOriginalAlpha cReader.HasAlpha()
+            dstImage.SetOriginalColorDepth cReader.EquivalentColorDepth
+            
+            'DPI is not always reliable in PCX files, but we attempt to recover it anyway
+            Dim srcXDPI As Single, srcYDPI As Single
+            If cReader.GetDPI(srcXDPI, srcYDPI) Then dstImage.SetDPI srcXDPI, srcYDPI
+            
+            'PCX files do not support color management
+            dstDIB.SetColorManagementState cms_ProfileConverted
+            
+            'Premultiply alpha (none should exist, so this is kind of a null-step)
+            dstDIB.SetAlphaPremultiplication True
+            
+        End If
+    
+    '/File is not PCX format
+    End If
+        
 End Function
 
 'Load a PDF file as a multi-layer image (typically one page per layer).  This function can also be used to load the first
@@ -2115,6 +2167,7 @@ Private Function LoadWebP(ByRef srcFile As String, ByRef dstImage As pdImage, By
             dstDIB.CreateBlank 16, 16, 32, 0
             dstDIB.SetColorManagementState cms_ProfileConverted
     
+    'TODO: testing of WebP files and color management; this has changed since migrating to direct libwebp interfacing
     '        'Before exiting, ensure all color management data has been added to PD's central cache
     '        Dim profHash As String
     '        If cPSP.HasICCProfile() Then
@@ -2197,7 +2250,7 @@ Private Function LoadXCF(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         
         'Mark any other image-level properties
         dstImage.SetOriginalColorDepth cReader.GetOriginalColorDepth()
-        dstImage.SetOriginalGrayscale cReader.isGrayscale()
+        dstImage.SetOriginalGrayscale cReader.HasGrayscale()
         dstImage.SetOriginalAlpha cReader.GetOriginalAlphaState()
         
         'Before exiting, ensure all color management data has been added to PD's central cache

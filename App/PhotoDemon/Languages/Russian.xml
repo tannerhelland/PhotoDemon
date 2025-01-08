@@ -95,7 +95,7 @@
 
 <phrase>
 <original>Export color lookup</original>
-<translation>Экспорт поиска цветов</translation>
+<translation>Экспорт поиска цвета</translation>
 </phrase>
 
 <phrase>
@@ -215,7 +215,7 @@
 
 <phrase>
 <original>Stroke</original>
-<translation>Трассировка</translation>
+<translation>Обводка</translation>
 </phrase>
 
 <phrase>
@@ -310,7 +310,7 @@
 
 <phrase>
 <original>Create color lookup</original>
-<translation>Создать поиск по цвету</translation>
+<translation>Создать поиск цвета</translation>
 </phrase>
 
 <phrase>
@@ -365,7 +365,7 @@
 
 <phrase>
 <original>Layer via cut</original>
-<translation>Слой через разрез</translation>
+<translation>Вырезать на новый слой</translation>
 </phrase>
 
 <phrase>
@@ -695,7 +695,7 @@
 
 <phrase>
 <original>Curves</original>
-<translation>Кривая тона</translation>
+<translation>Кривые</translation>
 </phrase>
 
 <phrase>
@@ -710,7 +710,7 @@
 
 <phrase>
 <original>Vibrance</original>
-<translation>Сияние</translation>
+<translation>Сочность</translation>
 </phrase>
 
 <phrase>
@@ -765,7 +765,7 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation>Поиск по цвету</translation>
+<translation>Поиск цвета</translation>
 </phrase>
 
 <phrase>
@@ -900,7 +900,7 @@
 
 <phrase>
 <original>Plastic wrap</original>
-<translation>Пластиковая пленка</translation>
+<translation>Пластиковая упаковка</translation>
 </phrase>
 
 <phrase>
@@ -920,7 +920,7 @@
 
 <phrase>
 <original>Box blur</original>
-<translation>Размытие рамки</translation>
+<translation>Размытие по рамке</translation>
 </phrase>
 
 <phrase>
@@ -1000,7 +1000,7 @@
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation>Другие искажения</translation>
+<translation>Различные искажения</translation>
 </phrase>
 
 <phrase>
@@ -1010,12 +1010,12 @@
 
 <phrase>
 <original>Enhance edges</original>
-<translation>Выделить края</translation>
+<translation>Улучшить края</translation>
 </phrase>
 
 <phrase>
 <original>Find edges</original>
-<translation>Обнаружение края</translation>
+<translation>Выделение края</translation>
 </phrase>
 
 <phrase>
@@ -1270,7 +1270,7 @@
 
 <phrase>
 <original>Spherize</original>
-<translation>Сферизировать</translation>
+<translation>Сферизация</translation>
 </phrase>
 
 <phrase>
@@ -1344,7 +1344,7 @@
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>Восстановление автосохранения завершена для %1</translation>
+<translation>Завершено восстановление автосохранения для %1</translation>
 </phrase>
 
 <phrase>
@@ -1415,7 +1415,7 @@
 
 <phrase>
 <original>Drop as image or layer</original>
-<translation>Перетаскивание как изображение или слой</translation>
+<translation>Перетащи как изображение или слой</translation>
 </phrase>
 
 <!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -1573,7 +1573,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Applying grid blur</original>
-<translation>Применение размытия сетки</translation>
+<translation>Применить размытие сетки</translation>
 </phrase>
 
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -1895,7 +1895,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>clamp</original>
-<translation>Отрезать(Зажать)</translation>
+<translation>Обрезать</translation>
 </phrase>
 
 <phrase>
@@ -1905,7 +1905,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>wrap</original>
-<translation>Завернуть</translation>
+<translation>Деформация</translation>
 </phrase>
 
 <phrase>
@@ -2080,7 +2080,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Perceptual</original>
-<translation>Перцептивная</translation>
+<translation>Перцепционная</translation>
 </phrase>
 
 <phrase>
@@ -2167,7 +2167,7 @@ To enable support for this image format, please copy the FreeImage.dll file (dow
 
 <phrase>
 <original>Advanced text layer</original>
-<translation>Расширенный текстовый слой</translation>
+<translation>Дополнительный текстовый слой</translation>
 </phrase>
 
 <phrase>
@@ -3316,7 +3316,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Finding selection border</original>
-<translation>Найти контур выделения</translation>
+<translation>Найти границы выделения</translation>
 </phrase>
 
 <!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -3345,7 +3345,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Click on the first point to complete the polygon selection</original>
-<translation>Щелкни по первой точке, чтобы завершить выделение полигона.</translation>
+<translation>Щёлкни по первой точке, чтобы завершить выделение полигона.</translation>
 </phrase>
 
 <!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -3402,14 +3402,14 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Clone stamp</original>
-<translation>Штамп клонирования</translation>
+<translation>Штамп</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Fill tool</original>
-<translation>Инструмент заливки</translation>
+<translation>Инструменты заливки</translation>
 </phrase>
 
 <!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3452,7 +3452,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Paint stroke</original>
-<translation>Мазок краски</translation>
+<translation>Мазки краски</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3735,7 +3735,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Fit image</original>
-<translation>Подогнать по изобажению</translation>
+<translation>Изменить размерность</translation>
 </phrase>
 
 <!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -3756,7 +3756,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Clipboard Image</original>
-<translation>Изображения в буфере обмена</translation>
+<translation>Изображение из буфера обмена</translation>
 </phrase>
 
 <phrase>
@@ -3838,7 +3838,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Building color lookup</original>
-<translation>Создать поиск по цвету</translation>
+<translation>Создать поиск цвета</translation>
 </phrase>
 
 <phrase>
@@ -4235,7 +4235,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>ragged</original>
-<translation>Обшарпанный</translation>
+<translation>гармония в беспорядке</translation>
 </phrase>
 
 <!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -4588,7 +4588,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Duplicate layer</original>
-<translation>Дублировать слой</translation>
+<translation>Создать дубликат слоя</translation>
 </phrase>
 
 <phrase>
@@ -5225,7 +5225,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation>Вставка нескольких изображения в этом изображении (в виде слоёв)</translation>
+<translation>Открывать другие изображения (как слои) в этом изображении</translation>
 </phrase>
 
 <phrase>
@@ -5375,7 +5375,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Miscellaneous</original>
-<translation>Разнообразный</translation>
+<translation>Различные</translation>
 </phrase>
 
 <phrase>
@@ -5820,12 +5820,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>dithering amount</original>
-<translation>Качество сглаживания</translation>
+<translation>степень дизеринга</translation>
 </phrase>
 
 <phrase>
 <original>dithering</original>
-<translation>Сглаживание</translation>
+<translation>дизеринг</translation>
 </phrase>
 
 <phrase>
@@ -5835,7 +5835,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>threshold</original>
-<translation>Порог</translation>
+<translation>Изогелия</translation>
 </phrase>
 
 <phrase>
@@ -5872,7 +5872,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
-<translation>Образец истинного контраста (медленно, но точно)</translation>
+<translation>образец изображения истинного контраста (медленно, но точно)</translation>
 </phrase>
 
 <phrase>
@@ -5887,7 +5887,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Adjusting brightness and contrast</original>
-<translation>Отрегулируй яркость и контрастность</translation>
+<translation>Настройка яркости и контрастности</translation>
 </phrase>
 
 <phrase>
@@ -6025,7 +6025,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>preserve</original>
-<translation>Удержать</translation>
+<translation>сохранить</translation>
 </phrase>
 
 <phrase>
@@ -6126,7 +6126,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Applying color lookup</original>
-<translation>Применение поиска по цвету</translation>
+<translation>Применение поиска цвета</translation>
 </phrase>
 
 <phrase>
@@ -6251,12 +6251,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>vibrance</original>
-<translation>Сияние</translation>
+<translation>Сочность</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting color vibrance</original>
-<translation>Настройка яркости цвета</translation>
+<translation>Настройка сочности цвета</translation>
 </phrase>
 
 <!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6483,7 +6483,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>exposure compensation (stops)</original>
-<translation>Компенсация экспозиции</translation>
+<translation>коррекция экспозиции (стоп)</translation>
 </phrase>
 
 <phrase>
@@ -6603,7 +6603,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Yellow</original>
-<translation>Желтый</translation>
+<translation>Жёлтый</translation>
 </phrase>
 
 <phrase>
@@ -6773,7 +6773,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>wheels + history</original>
-<translation>Колесо истории</translation>
+<translation>цветовой круг + история</translation>
 </phrase>
 
 <phrase>
@@ -6879,12 +6879,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>pattern</original>
-<translation>Шаблон</translation>
+<translation>Узор</translation>
 </phrase>
 
 <phrase>
 <original>pattern color</original>
-<translation>Цвет рисунка</translation>
+<translation>Цвет узора</translation>
 </phrase>
 
 <phrase>
@@ -7120,7 +7120,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
-<translation>Щёлкни ЛКМ, чтобы добавить новый узел или отредактировать существующий узел. Щёлкни ПКМ узел и удалите его.</translation>
+<translation>Щёлкни ЛКМ, чтобы добавить новый узел или отредактировать существующий узел. Щёлкни ПКМ узел и удали его.</translation>
 </phrase>
 
 <phrase>
@@ -7353,7 +7353,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>miter limit</original>
-<translation>Предел диагонального соединения</translation>
+<translation>срезание</translation>
 </phrase>
 
 <phrase>
@@ -7378,22 +7378,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>flat</original>
-<translation>Плоская</translation>
+<translation>плоские</translation>
 </phrase>
 
 <phrase>
 <original>round</original>
-<translation>Закруглить по краю</translation>
+<translation>круглые</translation>
 </phrase>
 
 <phrase>
 <original>miter</original>
-<translation>Диагональное соединение</translation>
+<translation>угловые</translation>
 </phrase>
 
 <phrase>
 <original>bevel</original>
-<translation>Скос</translation>
+<translation>скошенные</translation>
 </phrase>
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -7412,7 +7412,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>tone-mapping operator</original>
-<translation>Тонмаппер (операторы отображения тонов)</translation>
+<translation>алгоритмы тональной компрессии</translation>
 </phrase>
 
 <phrase>
@@ -7726,7 +7726,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>sample from</original>
-<translation>Образец</translation>
+<translation>образец из</translation>
 </phrase>
 
 <phrase>
@@ -7741,7 +7741,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>random patch candidates</original>
-<translation>Случайные исправления</translation>
+<translation>кандидаты на патчи, выбранные случайным образом</translation>
 </phrase>
 
 <phrase>
@@ -7751,7 +7751,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation>Порог исправления</translation>
+<translation>коэффициент точности патча</translation>
 </phrase>
 
 <phrase>
@@ -7800,7 +7800,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>brush</original>
-<translation>Кисть для рисования</translation>
+<translation>Кисть</translation>
 </phrase>
 
 <phrase>
@@ -7963,12 +7963,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>first frame for effect</original>
-<translation>Первый кадр эффекта</translation>
+<translation>Первый кадр для эффекта</translation>
 </phrase>
 
 <phrase>
 <original>last frame for effect</original>
-<translation>Последний кадр эффекта</translation>
+<translation>Последний кадр для эффекта</translation>
 </phrase>
 
 <phrase>
@@ -8081,7 +8081,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>scale</original>
-<translation>Масштаб</translation>
+<translation>Масштабирование</translation>
 </phrase>
 
 <phrase>
@@ -8243,7 +8243,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Wrapping image in plastic</original>
-<translation>Завернуть картину в пластик полиэтиленовой пленкой</translation>
+<translation>Надеть на изображение полиэтиленовый пакет</translation>
 </phrase>
 
 <!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8270,7 +8270,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Posterizing image</original>
-<translation>Изображение постеризовано</translation>
+<translation>Постеризация изображения</translation>
 </phrase>
 
 <!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8299,7 +8299,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>color sampling</original>
-<translation>Выборка цвета</translation>
+<translation>подобрать цвет</translation>
 </phrase>
 
 <phrase>
@@ -8356,7 +8356,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying box blur to image</original>
-<translation>Применить размытие рамки на изображении</translation>
+<translation>Применить размытие рамки изображения</translation>
 </phrase>
 
 <!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8543,7 +8543,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>spread</original>
-<translation>Степень расширения в градусах</translation>
+<translation>Расширить</translation>
 </phrase>
 
 <phrase>
@@ -8582,7 +8582,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Miscellaneous distorts</original>
-<translation>Другие искажения</translation>
+<translation>Различные искажения</translation>
 </phrase>
 
 <phrase>
@@ -8896,7 +8896,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Tracing image contour</original>
-<translation>Обвести контур изображения</translation>
+<translation>Трассировка контура на изображении</translation>
 </phrase>
 
 <!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9591,12 +9591,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>forward (outline defines destination area)</original>
-<translation>Вперёд (контур определяет пункт назначения)</translation>
+<translation>Деформация (контур определяет пункт назначения)</translation>
 </phrase>
 
 <phrase>
 <original>reverse (outline defines source area)</original>
-<translation>Реверсивный (контур определяет исходную область)</translation>
+<translation>Инверсия (контур определяет исходную область)</translation>
 </phrase>
 
 <phrase>
@@ -10545,12 +10545,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>append</original>
-<translation>Добавить</translation>
+<translation>Присоединить</translation>
 </phrase>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>В файлах Adobe Replacement Swatch (ASE) можно хранить несколько палитр в одном файле.   При выборе опции "Добавить", PhotoDemon добавляет эту палитру в существующий файл ASE.  Палитры, которые уже существуют в файле, не изменяются.</translation>
+<translation>В файлах Adobe Replacement Swatch (ASE) можно хранить несколько палитр в одном файле.   При выборе опции "Присоединить", PhotoDemon добавляет эту палитру в существующий файл ASE.  Палитры, которые уже существуют в файле, не изменяются.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11430,17 +11430,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Create color lookup table (LUT)</original>
-<translation>Создание таблицы поиска цветов (LUT)</translation>
+<translation>Создание таблицы поиска цвета (LUT)</translation>
 </phrase>
 
 <phrase>
 <original>add this to the "Adjustments > Color > Color lookup" tool</original>
-<translation>Добавить в инструмент "Коррекция" > "Цвет"> "Поиск по цвету"</translation>
+<translation>Добавить в инструмент "Коррекция" > "Цвет"> "Поиск цвета"</translation>
 </phrase>
 
 <phrase>
 <original>modified image and layer</original>
-<translation>Изменённые изображения и слои</translation>
+<translation>Изменённое изображение и слой</translation>
 </phrase>
 
 <!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12141,7 +12141,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Поскольку запрос на сохранение отключен (задан в меню Сервис -> Параметры), запрос на подтверждение сохранения не отображается перед закрытием этого изображения.</translation>
+<translation>Поскольку запрос на сохранение отключен (задан в меню Правка -> Параметры), запрос на подтверждение сохранения не отображается перед закрытием этого изображения.</translation>
 </phrase>
 
 <phrase>
@@ -12181,7 +12181,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>Ручная (прокрутка изображения с помощью клика и перетаскивания)</translation>
+<translation>Рука (прокрутка изображения с помощью клика и перетаскивания)</translation>
 </phrase>
 
 <phrase>
@@ -12201,7 +12201,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Select colors from the image</original>
-<translation>Выбрать цвет на изображении</translation>
+<translation>Выделить цвет на изображении</translation>
 </phrase>
 
 <phrase>
@@ -12271,12 +12271,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Hand tool</original>
-<translation>Инструмент "Вручную"</translation>
+<translation>Инструмент "Рука"</translation>
 </phrase>
 
 <phrase>
 <original>Zoom tool</original>
-<translation>Инструмент "Масштабирование"</translation>
+<translation>Инструмент "Масштаб"</translation>
 </phrase>
 
 <phrase>
@@ -12588,7 +12588,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>swap points</original>
-<translation>Поменять точку</translation>
+<translation>Заменить точки</translation>
 </phrase>
 
 <phrase>
@@ -12598,7 +12598,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>clear points</original>
-<translation>Удалить опорную точку</translation>
+<translation>Удалить точки</translation>
 </phrase>
 
 <phrase>
@@ -12856,7 +12856,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation>Этот параметр повышает плавность выделения лассо, созданного вручную.</translation>
+<translation>Этот параметр повышает плавность выделения нарисованного от руки лассо.</translation>
 </phrase>
 
 <phrase>
@@ -12903,7 +12903,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>alignment</original>
-<translation>выравнивание</translation>
+<translation>Выравнивание</translation>
 </phrase>
 
 <phrase>
@@ -13279,7 +13279,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>miscellaneous</original>
-<translation>Другой</translation>
+<translation>Разные</translation>
 </phrase>
 
 <phrase>
@@ -13566,7 +13566,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>использовать встроенные профили ICC, если они доступны</translation>
 </phrase>
 
 <phrase>
@@ -13576,7 +13576,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation>Схемы цветопередачи</translation>
+<translation>Способ цветопередачи</translation>
 </phrase>
 
 <phrase>
@@ -13611,12 +13611,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>политика файлов</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>использовать данные управления цветом, относящиеся к конкретному формату, если они доступны</translation>
 </phrase>
 
 <phrase>
@@ -14175,7 +14175,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Перцептивная-для фотографий. Насыщенность-для диаграммы и графики. Относительная колориметрическая-для векторной графики. Абсолютная колориметрическая-для логотипов.</translation>
+<translation>Перцепционная-для фотографий. Насыщенность-для диаграммы и графики. Относительная колориметрическая-для векторной графики. Абсолютная колориметрическая-для логотипов.</translation>
 </phrase>
 
 <phrase>
@@ -14185,12 +14185,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>Встроенные профили ICC улучшают точность цветопередачи. Даже если этот параметр отключен, PhotoDemon может по-прежнему использовать профили ICC для некоторых задач (например, для обработки данных CMYK).</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>Некоторые форматы изображений поддерживают как профили ICC, так и собственные решения по управлению цветом. PhotoDemon всегда предпочитает профили ICC, но если ни один из них не встроен, можно попробовать другие подходы к управлению цветом.</translation>
 </phrase>
 
 <phrase>

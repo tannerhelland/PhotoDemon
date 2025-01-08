@@ -61,7 +61,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Twin" Filter Interface
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 08/August/17
 'Last update: migrate to XML params, minor performance improvements

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Measure"
 '***************************************************************************
 'Measure tool interface
-'Copyright 2018-2024 by Tanner Helland
+'Copyright 2018-2025 by Tanner Helland
 'Created: 11/July/17
 'Last updated: 28/May/14
 'Last update: add support for percent as a measurement unit

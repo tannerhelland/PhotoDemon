@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fast Variant-based collection, using hash-table + separate chaining (linked-list) for collisions
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 09/September/24
 'Last updated: 09/September/24
 'Last update: split off from string-based class; I'm keeping that for localized text performance,

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ScreenCapture"
 '***************************************************************************
 'Screen Capture Interface
-'Copyright 1999-2024 by Tanner Helland
+'Copyright 1999-2025 by Tanner Helland
 'Created: 12/June/99
 'Last updated: 13/April/22
 'Last update: replace lingering picture box with pdPictureBox

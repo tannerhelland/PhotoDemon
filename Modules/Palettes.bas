@@ -1,7 +1,7 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
 'PhotoDemon's Central Palette Interface
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 08/March/22
 'Last update: use new pdHistogramHash class to greatly accelerate median cut palette generation
@@ -1118,14 +1118,14 @@ Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
     Next i
 End Sub
 
-Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades As Long)
+Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades As Long, Optional ByVal dontSizeArray As Boolean = False)
     
     If (numShades > 256) Then numShades = 256
     
     Dim maxVal As Long
     maxVal = numShades - 1
     
-    ReDim dstPalette(0 To maxVal) As RGBQuad
+    If (Not dontSizeArray) Then ReDim dstPalette(0 To maxVal) As RGBQuad
     
     Dim i As Long, finalGray As Long
     For i = 0 To maxVal
@@ -4377,5 +4377,45 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
     Loop
     
     SortPaletteForCompression_IncAlpha = True
+    
+End Function
+
+'Returns the number of colors written to the palette (always 16 for this function)
+Public Function GetStockPalette_EGA(ByRef dstPalette() As RGBQuad, Optional ByVal initPaletteArrayForMe As Boolean = True, Optional ByVal srcIsPCXLoader As Boolean = True) As Long
+    
+    'If the caller doesn't require initialization, still check palette bounds for safety
+    If initPaletteArrayForMe Then
+        ReDim dstPalette(0 To 15) As RGBQuad
+    Else
+        If UBound(dstPalette) < 15 Then ReDim dstPalette(0 To 15) As RGBQuad
+    End If
+    
+    dstPalette(0) = Colors.GetRGBQuadFromHex("#000000")
+    dstPalette(1) = Colors.GetRGBQuadFromHex("#0000AA")
+    dstPalette(2) = Colors.GetRGBQuadFromHex("#00AA00")
+    dstPalette(3) = Colors.GetRGBQuadFromHex("#00AAAA")
+    dstPalette(4) = Colors.GetRGBQuadFromHex("#AA0000")
+    dstPalette(5) = Colors.GetRGBQuadFromHex("#AA00AA")
+    
+    'I haven't fully nailed down why this helps, but this ordering (in PCX files only) brings us closer
+    ' to Photoshop's result on v3 PCX files (which explicitly lack a built-in palette and should use
+    ' a standard EGA one instead - so why the weird color order? idk)
+    If srcIsPCXLoader Then
+        dstPalette(6) = Colors.GetRGBQuadFromHex("#AAAA00")
+        dstPalette(7) = Colors.GetRGBQuadFromHex("#555555")
+        dstPalette(8) = Colors.GetRGBQuadFromHex("#AAAAAA")
+    Else
+        dstPalette(6) = Colors.GetRGBQuadFromHex("#AA5500")
+        dstPalette(7) = Colors.GetRGBQuadFromHex("#555555")
+        dstPalette(8) = Colors.GetRGBQuadFromHex("#AAAAAA")
+    End If
+    
+    dstPalette(9) = Colors.GetRGBQuadFromHex("#5555FF")
+    dstPalette(10) = Colors.GetRGBQuadFromHex("#55FF55")
+    dstPalette(11) = Colors.GetRGBQuadFromHex("#55FFFF")
+    dstPalette(12) = Colors.GetRGBQuadFromHex("#FF5555")
+    dstPalette(13) = Colors.GetRGBQuadFromHex("#FF55FF")
+    dstPalette(14) = Colors.GetRGBQuadFromHex("#FFFF55")
+    dstPalette(15) = Colors.GetRGBQuadFromHex("#FFFFFF")
     
 End Function

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Median-Cut Color Quantization Class
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 08/March/22
 'Last update: new "bulk add" function for faster interop with the new pdHistogramHash class

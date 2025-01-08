@@ -1,7 +1,7 @@
 Attribute VB_Name = "Updates"
 '***************************************************************************
 'Automatic App Updater
-'Copyright 2012-2024 by Tanner Helland
+'Copyright 2012-2025 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 02/April/24
 'Last update: rework to prep for a more rapid release schedule (using year.month version numbers)

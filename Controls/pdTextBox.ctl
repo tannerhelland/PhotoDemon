@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Text Box control
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 03/November/14
 'Last updated: 09/February/16
 'Last update: move all API edit control code out of this class, and into a dedicated pdEditBoxW class.  This greatly

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
 'PhotoDemon Menu Manager
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 11/January/17
 'Last updated: 28/September/23
 'Last update: menus now pass menu-specific object IDs to the translation engine, enabling per-menu translations

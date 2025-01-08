@@ -247,7 +247,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Canvas User Control (previously a standalone form)
-'Copyright 2002-2024 by Tanner Helland
+'Copyright 2002-2025 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 28/December/24
 'Last update: handle new user preference for mouse wheel zoom vs scroll

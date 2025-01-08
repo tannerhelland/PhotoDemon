@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDMain"
 '***************************************************************************
 'PhotoDemon Startup Module
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 03/March/14
 'Last updated: 16/September/20
 'Last update: PD can now forward its command-line to an existing PD session then silently terminate,

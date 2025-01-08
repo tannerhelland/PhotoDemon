@@ -1,7 +1,7 @@
 Attribute VB_Name = "OS"
 '***************************************************************************
 'OS-specific specific features
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 21/November/13
 'Last updated: 18/October/21
 'Last update: new helper function for requesting app restart after forced system reboots

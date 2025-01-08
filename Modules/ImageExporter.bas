@@ -1,10 +1,10 @@
 Attribute VB_Name = "ImageExporter"
 '***************************************************************************
 'Low-level image export interfaces
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 26/August/24
-'Last update: add HEIF export
+'Last updated: 06/January/24
+'Last update: add PCX export
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.
 '
@@ -1577,6 +1577,59 @@ Public Function ExportORA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportORAError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportORA = False
+    
+End Function
+
+Public Function ExportPCX(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+
+    On Error GoTo ExportPCXError
+
+    ExportPCX = False
+    Dim sFileType As String: sFileType = "PCX"
+    
+    'All heavy lifting happens in the pdPCX class
+    Dim cPCX As pdPCX
+    Set cPCX = New pdPCX
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    If cPCX.SavePCX_ToFile(srcPDImage, tmpFilename) Then
+    
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportPCX = True
+        
+        'If we wrote our data to a temp file, attempt to replace the original file
+        Else
+        
+            ExportPCX = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+            
+            If (Not ExportPCX) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+            End If
+            
+        End If
+    
+    Else
+        ExportPCX = False
+        ExportDebugMsg "WARNING!  pdPCX.SavePCX() failed for reasons unknown; check the debug log for additional details"
+    End If
+    
+    Exit Function
+    
+ExportPCXError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportPCX = False
     
 End Function
 

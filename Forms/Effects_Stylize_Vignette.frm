@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Vignette tool
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 27/February/17
 'Last update: large performance improvements; added "custom shape" mode

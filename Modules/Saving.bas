@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 16/January/24
 'Last update: overhaul the way the Export > Animation menu works (condense format-specific menus into a single entry)
@@ -496,6 +496,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             
         Case PDIF_ORA
             ExportToSpecificFormat = ImageExporter.ExportORA(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_PCX
+            ExportToSpecificFormat = ImageExporter.ExportPCX(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_PDI
             ExportToSpecificFormat = Saving.SavePDI_Image(srcImage, dstPath, False, cf_Zstd, cf_Zstd, False, True, Compression.GetDefaultCompressionLevel(cf_Zstd))
@@ -1197,17 +1200,6 @@ Public Function Export_Animation(ByRef srcImage As pdImage) As Boolean
     Else
         Export_Animation = False
     End If
-    
-    
-End Function
-
-'PhotoDemon can currently export animated GIF, JPEG XL, PNG, and WebP images.  These fromats all have slight
-' subtleties in how we prep frames prior to export, but you can call this universal function to handle all those
-' details for you.  Note that you *must* pass a correct format ID as the first parameter, and a reference to the
-' pdImage object you want saved.
-Public Function Export_LayersToFile(ByRef srcImage As pdImage, ByRef listOfParams As String) As Boolean
-    
-    'TODO
     
 End Function
 

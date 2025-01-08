@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bilateral Filter
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 13/December/19
 'Last update: final round of minor perf and quality improvements to the recursive BF algorithm

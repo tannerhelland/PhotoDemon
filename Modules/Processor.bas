@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 22/January/24
 'Last update: new additions for the expanded File > Export menu
@@ -1401,7 +1401,13 @@ Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialo
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export layers", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormExportLayers Else Saving.Export_LayersToFile PDImages.GetActiveImage, processParameters
+        If Menus.IsMenuEnabled("file_export_layers") Then
+            If raiseDialog Then
+                ShowPDDialog vbModal, FormExportLayers
+            Else
+                'There is no else; the above dialog handles everything!
+            End If
+        End If
         Process_FileMenu = True
     
     ElseIf Strings.StringsEqual(processID, "Export animation", True) Then
