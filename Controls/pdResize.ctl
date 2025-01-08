@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Resize User Control
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2024 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 18/August/21
 'Last update: display in-memory size of the image as dimensions are changed (vs orig. size, when appropriate)
