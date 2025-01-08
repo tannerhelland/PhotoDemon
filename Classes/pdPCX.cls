@@ -272,8 +272,10 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         Next i
         
         'If the header specifies EGA mode, overwrite the embedded palette (which may be all-zeroes)
-        ' with a stock EGA palette instead.
-        If (m_Header.pcx_VersionNumber < 2) Or (m_Header.pcx_VersionNumber = 3) Then Palettes.GetStockPalette_EGA m_Palette, False, True
+        ' with a stock system palette instead.  (Technically an EGA palette should be used, but Adobe
+        ' uses a slightly modified version of an EGA palette and it seems to produce better-looking
+        ' PCX images than I've been able to do - so I'm just stealing their palette and running with it!)
+        If (m_Header.pcx_VersionNumber < 2) Or (m_Header.pcx_VersionNumber = 3) Then Palettes.GetStockPalette pdsp_PSLegacy, m_Palette, False
         
         'Untested, but as a failsafe: if a PCX specifies a grayscale palette, explicitly populate that now
         If (m_Header.pcx_PaletteMode = 2) Then
@@ -893,10 +895,10 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         .WriteIntU srcImage.GetDPI()
         .WriteIntU srcImage.GetDPI()
         
-        'Next comes a 48-byte (16x3) palette.  We'll write a standard EGA palette for all bit-depths,
+        'Next comes a 48-byte (16x3) palette.  We'll write a standard system palette for all bit-depths,
         ' unless the image actually has a custom <= 16-color palette.
         Dim tmpPalette() As RGBQuad
-        Palettes.GetStockPalette_EGA tmpPalette, True, False
+        Palettes.GetStockPalette pdsp_PSLegacy, tmpPalette, True
         
         Dim i As Long
         If (outputColorDepth <= 4) Then

@@ -35,6 +35,15 @@ End Enum
     Private Const pdpf_AdobeColorSwatch = 0, pdpf_AdobeColorTable = 1, pdpf_AdobeSwatchExchange = 2, pdpf_GIMP = 3, pdpf_PaintDotNet = 4, pdpf_PSP = 5, pdpf_PhotoDemon = 6
 #End If
 
+Public Enum PD_StockPalette
+    pdsp_EGA = 0
+    pdsp_PSLegacy = 1
+End Enum
+
+#If False Then
+    Private Const pdsp_EGA = 0, pdsp_PSLegacy = 1
+#End If
+
 'Used for more accurate color distance comparisons (using human eye sensitivity as a rough guide, while staying in
 ' the sRGB space for performance reasons)
 Private Const CUSTOM_WEIGHT_RED As Single = 0.299!
@@ -4381,41 +4390,46 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
 End Function
 
 'Returns the number of colors written to the palette (always 16 for this function)
-Public Function GetStockPalette_EGA(ByRef dstPalette() As RGBQuad, Optional ByVal initPaletteArrayForMe As Boolean = True, Optional ByVal srcIsPCXLoader As Boolean = True) As Long
+Public Function GetStockPalette(ByVal palID As PD_StockPalette, ByRef dstPalette() As RGBQuad, Optional ByVal initPaletteArrayForMe As Boolean = True) As Long
+    
+    'Different system palettes have different color counts
+    Dim numColors As Long
+    
+    Select Case palID
+        Case pdsp_EGA
+            numColors = 16
+        Case pdsp_PSLegacy
+            numColors = 16
+    End Select
     
     'If the caller doesn't require initialization, still check palette bounds for safety
     If initPaletteArrayForMe Then
-        ReDim dstPalette(0 To 15) As RGBQuad
+        ReDim dstPalette(0 To numColors - 1) As RGBQuad
     Else
-        If UBound(dstPalette) < 15 Then ReDim dstPalette(0 To 15) As RGBQuad
+        If UBound(dstPalette) < numColors - 1 Then ReDim dstPalette(0 To numColors - 1) As RGBQuad
     End If
     
-    dstPalette(0) = Colors.GetRGBQuadFromHex("#000000")
-    dstPalette(1) = Colors.GetRGBQuadFromHex("#0000AA")
-    dstPalette(2) = Colors.GetRGBQuadFromHex("#00AA00")
-    dstPalette(3) = Colors.GetRGBQuadFromHex("#00AAAA")
-    dstPalette(4) = Colors.GetRGBQuadFromHex("#AA0000")
-    dstPalette(5) = Colors.GetRGBQuadFromHex("#AA00AA")
+    'Grab a predefined string of palette entries
+    Dim palAsHexString As String
     
-    'I haven't fully nailed down why this helps, but this ordering (in PCX files only) brings us closer
-    ' to Photoshop's result on v3 PCX files (which explicitly lack a built-in palette and should use
-    ' a standard EGA one instead - so why the weird color order? idk)
-    If srcIsPCXLoader Then
-        dstPalette(6) = Colors.GetRGBQuadFromHex("#AAAA00")
-        dstPalette(7) = Colors.GetRGBQuadFromHex("#555555")
-        dstPalette(8) = Colors.GetRGBQuadFromHex("#AAAAAA")
-    Else
-        dstPalette(6) = Colors.GetRGBQuadFromHex("#AA5500")
-        dstPalette(7) = Colors.GetRGBQuadFromHex("#555555")
-        dstPalette(8) = Colors.GetRGBQuadFromHex("#AAAAAA")
-    End If
+    Select Case palID
+        Case pdsp_EGA
+            Const EGA_PAL_STRING As String = "000000,0000AA,00AA00,00AAAA,AA0000,AA00AA,AA5500,555555,AAAAAA,5555FF,55FF55,55FFFF,FF5555,FF55FF,FFFF55,FFFFFF"
+            palAsHexString = EGA_PAL_STRING
+        Case pdsp_PSLegacy
+            Const PSLEGACY_PAL_STRING As String = "000000,0000aa,00aa00,00aaaa,aa0000,aa00aa,aaaa00,848484,c6c6c6,5555ff,55ff55,55ffff,ff5555,ff55ff,ffff55,ffffff"
+            palAsHexString = PSLEGACY_PAL_STRING
+    End Select
     
-    dstPalette(9) = Colors.GetRGBQuadFromHex("#5555FF")
-    dstPalette(10) = Colors.GetRGBQuadFromHex("#55FF55")
-    dstPalette(11) = Colors.GetRGBQuadFromHex("#55FFFF")
-    dstPalette(12) = Colors.GetRGBQuadFromHex("#FF5555")
-    dstPalette(13) = Colors.GetRGBQuadFromHex("#FF55FF")
-    dstPalette(14) = Colors.GetRGBQuadFromHex("#FFFF55")
-    dstPalette(15) = Colors.GetRGBQuadFromHex("#FFFFFF")
+    'Split the color string into individual entries
+    Dim listOfStrings() As String
+    listOfStrings = Split(palAsHexString, ",", -1, vbBinaryCompare)
+    
+    If (UBound(listOfStrings) <> numColors - 1) Then PDDebug.LogAction "WARNING: Palettes.GetStockPalette failed unexpectedly"
+    
+    Dim i As Long
+    For i = 0 To numColors - 1
+        dstPalette(i) = Colors.GetRGBQuadFromHex(listOfStrings(i))
+    Next i
     
 End Function
