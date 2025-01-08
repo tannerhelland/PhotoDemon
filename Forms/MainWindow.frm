@@ -1658,9 +1658,9 @@ Begin VB.Form FormMain
             Caption         =   "Build standalone package..."
             Index           =   3
          End
-      End
-      Begin VB.Menu MnuTest 
-         Caption         =   "Test"
+         Begin VB.Menu MnuTest 
+            Caption         =   "Test"
+         End
       End
    End
    Begin VB.Menu MnuViewTop 
