@@ -1531,7 +1531,7 @@ Private Function LoadPCX(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     Dim cReader As pdPCX
     Set cReader = New pdPCX
     
-    'Validate the file
+    'Validate the file (note: this will return TRUE for both PCX and DCX images)
     If cReader.IsFilePCX(srcFile) Then
     
         'Load the file
@@ -1545,16 +1545,19 @@ Private Function LoadPCX(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             dstImage.SetOriginalGrayscale cReader.HasGrayscale()
             dstImage.SetOriginalAlpha cReader.HasAlpha()
             dstImage.SetOriginalColorDepth cReader.EquivalentColorDepth
+            dstImage.UpdateSize
             
             'DPI is not always reliable in PCX files, but we attempt to recover it anyway
             Dim srcXDPI As Single, srcYDPI As Single
             If cReader.GetDPI(srcXDPI, srcYDPI) Then dstImage.SetDPI srcXDPI, srcYDPI
             
-            'PCX files do not support color management
-            dstDIB.SetColorManagementState cms_ProfileConverted
-            
-            'Premultiply alpha (none should exist, so this is kind of a null-step)
-            dstDIB.SetAlphaPremultiplication True
+            'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+            ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+            If (dstDIB Is Nothing) Then
+                Set dstDIB = New pdDIB
+                dstDIB.CreateBlank 16, 16, 32, 0, 0
+                dstDIB.SetInitialAlphaPremultiplicationState True
+            End If
             
         End If
     
