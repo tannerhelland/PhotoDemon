@@ -420,7 +420,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             posInit = m_dcxOffsets(i)
             If (i < m_dcxCount - 1) Then posEOF = m_dcxOffsets(i + 1) Else posEOF = m_Stream.GetStreamSize()
             PDDebug.LogAction "Attempting to load PCX at offset " & posInit
-            If LoadPCXFrame(posInit, posEOF, dstDIB) Then
+            If LoadPCXFrame(posInit, posEOF, dstDIB, dstImage) Then
                 
                 numPagesAdded = numPagesAdded + 1
                         
@@ -491,7 +491,7 @@ End Function
 ' by this function, if loading is successful.
 '
 'Returns: TRUE if load successful; FALSE otherwise
-Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef dstDIB As pdDIB) As Boolean
+Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
     Const FUNC_NAME As String = "LoadPCXFrame"
     LoadPCXFrame = False
@@ -646,6 +646,15 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                     m_Palette(0) = Colors.GetRGBQuadFromHex("#000000")
                     m_Palette(1) = Colors.GetRGBQuadFromHex("#FFFFFF")
                 End If
+            End If
+            
+            'If this image is a PCX (not a DCX), save this palette to the target image object
+            ' as the "original" image palette.
+            If (Not dstImage Is Nothing) And (Not m_DCXMode) Then
+                Dim numPossiblePalColors As Long
+                numPossiblePalColors = 2 ^ actualBPP
+                If (numPossiblePalColors > 256) Then numPossiblePalColors = 256
+                dstImage.SetOriginalPalette m_Palette, numPossiblePalColors
             End If
             
         End If
@@ -1126,6 +1135,7 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         
         'If this image can be represented with a palette, palettize it now
         If (outputColorDepth <= 8) Then
+            Palettes.SortPaletteByPopularity_RGB compositeDIB, m_Palette
             numColorsInPalette = DIBs.GetDIBAs8bpp_RGBA_SrcPalette(compositeDIB, m_Palette, pxIndexed)
         End If
         
@@ -1277,13 +1287,19 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     imgWidth = compositeDIB.GetDIBWidth
     imgHeight = compositeDIB.GetDIBHeight
     
+    'Remember: image width needs to be padded to an even number.  (Some PCXs "in the wild"
+    ' may even use 4-byte alignment; they probably relied on a system-level macro for alignment.)
+    Dim imgWidthChannelPadded As Long
+    imgWidthChannelPadded = imgWidth
+    If ((imgWidthChannelPadded And 1) = 1) Then imgWidthChannelPadded = imgWidthChannelPadded + 1
+    
     'The RLE compression used in PCX files operates on byte-level data (*not* pixel data).
     ' This simplifies encoding somewhat, since compression is identical for all color-depths.
     ' All we have to do first is a small "pre-processing" step to organize pixel data by plane,
     ' and then we can run the RLE compression scheme uniformly against the data without regard
     ' to its source format.
     Dim uncompressedBytes() As Byte
-    ReDim uncompressedBytes(0 To imgStrideInBytes - 1) As Byte
+    ReDim uncompressedBytes(0 To imgStrideInBytes) As Byte
     
     'RLE compression has a worst-case encoding of 2x original scanline size
     Dim compressedBytes() As Byte
@@ -1303,18 +1319,27 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
             'Copy over bytes in planar order (RRR GGG BBB instead of RGB RGB RGB)
             For x = 0 To imgWidth - 1
                 uncompressedBytes(x) = srcPixels(x * 4 + 2)
-                uncompressedBytes(imgWidth + x) = srcPixels(x * 4 + 1)
-                uncompressedBytes(imgWidth * 2 + x) = srcPixels(x * 4)
-                If (outputColorDepth = 32) Then uncompressedBytes(imgWidth * 3 + x) = srcPixels(x * 4 + 3)
+                uncompressedBytes(imgWidthChannelPadded + x) = srcPixels(x * 4 + 1)
+                uncompressedBytes(imgWidthChannelPadded * 2 + x) = srcPixels(x * 4)
+                If (outputColorDepth = 32) Then uncompressedBytes(imgWidthChannelPadded * 3 + x) = srcPixels(x * 4 + 3)
             Next x
             
             'Note the index of the last item added to the output array.  We can potentially add a
             ' matching dummy byte after this (if the array has empty space) to save a little file space
             ' during RLE compression.
             If (outputColorDepth = 32) Then
-                idxLast = imgWidth * 4 - 1
+                idxLast = imgWidthChannelPadded * 4 - 1
             Else
-                idxLast = imgWidth * 3 - 1
+                idxLast = imgWidthChannelPadded * 3 - 1
+            End If
+            
+            'Pad each color channel as relevant, so that padding bytes don't inadvertently add an extra
+            ' RLE packet (because they differ from the previous pixel).
+            If (imgWidth < imgWidthChannelPadded) Then
+                uncompressedBytes(imgWidthChannelPadded - 1) = uncompressedBytes(imgWidthChannelPadded - 2)
+                uncompressedBytes(imgWidthChannelPadded * 2 - 1) = uncompressedBytes(imgWidthChannelPadded * 2 - 2)
+                uncompressedBytes(imgWidthChannelPadded * 3 - 1) = uncompressedBytes(imgWidthChannelPadded * 3 - 2)
+                If (outputColorDepth = 32) Then uncompressedBytes(imgWidthChannelPadded * 4 - 1) = uncompressedBytes(imgWidthChannelPadded * 4 - 2)
             End If
             
         'Write only palette entries
@@ -1393,8 +1418,9 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         'The uncompressedBytes() array now holds the image's pixel data in PCX order.
         
         'To improve compression a wee bit, ensure the null trailing bytes (if any) can simply be added
-        ' to a trailing RLE packet matching the last meaningful byte.
-        If (idxLast < imgStrideInBytes - 1) Then
+        ' to a trailing RLE packet matching the last meaningful byte.  (Note that 24/32-bpp have already
+        ' been handled; they require special work because each channel has its own padding.)
+        If (idxLast < imgStrideInBytes - 1) And (outputColorDepth <= 8) Then
             For i = idxLast + 1 To imgStrideInBytes - 1
                 uncompressedBytes(i) = uncompressedBytes(idxLast)
             Next i
