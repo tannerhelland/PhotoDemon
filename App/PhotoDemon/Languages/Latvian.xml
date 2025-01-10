@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).5</langversion>
+<langversion>2028.8 Alfa (Build 25).6</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -4171,6 +4171,8 @@ Jums būs nepieciešams manuāli lejupielādēt šo failu, izmantojot interneta 
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -13564,126 +13566,6 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 </phrase>
 
 <phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>izmantot melnā punkta kompensāciju</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>displeja atveidošanas nolūks</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>pieejamie displeji</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>izslēgt displeja krāsu pārvaldību</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>izmantot pašreizējos sistēmas profilus katram displejam</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>šī displeja krāsu profils</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>attēlošanas politika</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>izmantot pielāgotus profilus katram displejam</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>augstas izšķirtspējas peles ievade</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>visu programmas iestatījumu atiestatīšana</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>atmiņas izmantošana tiks parādīta šeit</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>atmiņas diagnostika</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>pagaidu faila atrašanās vieta</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>sākt no jauna</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>lietojumprogrammas iestatījumu mape</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>ģenerēt atkļūdošanas žurnālus</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(atruna, kas tiek ievadīta darbības laikā)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automātiski pārbaudīt atjauninājumus</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>atļaut atjauninājumus no šiem celiņiem</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>atjaunināšanas iespējas</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>paziņot, kad atjauninājums ir gatavs</translation>
-</phrase>
-
-<phrase>
 <original>zoom with mouse wheel</original>
 <translation></translation>
 </phrase>
@@ -13886,6 +13768,126 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 <phrase>
 <original>viewport</original>
 <translation>skatlogs</translation>
+</phrase>
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>izmantot melnā punkta kompensāciju</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>displeja atveidošanas nolūks</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>pieejamie displeji</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>izslēgt displeja krāsu pārvaldību</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>izmantot pašreizējos sistēmas profilus katram displejam</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>šī displeja krāsu profils</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>attēlošanas politika</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>izmantot pielāgotus profilus katram displejam</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>augstas izšķirtspējas peles ievade</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>visu programmas iestatījumu atiestatīšana</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>atmiņas izmantošana tiks parādīta šeit</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>atmiņas diagnostika</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>pagaidu faila atrašanās vieta</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>sākt no jauna</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>lietojumprogrammas iestatījumu mape</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>ģenerēt atkļūdošanas žurnālus</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(atruna, kas tiek ievadīta darbības laikā)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automātiski pārbaudīt atjauninājumus</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>atļaut atjauninājumus no šiem celiņiem</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>atjaunināšanas iespējas</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>paziņot, kad atjauninājums ir gatavs</translation>
 </phrase>
 
 <phrase>
@@ -14512,8 +14514,8 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5837 phrases. -->
-<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5839 phrases. -->
+<!-- 3092 are duplicates, so only 2747 unique phrases have been written to file. -->
 <!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>

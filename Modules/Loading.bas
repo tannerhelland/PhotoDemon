@@ -271,6 +271,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_JXL)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_MBM)
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_ORA)
+            layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_PCX) And (decoderUsed = id_PCXParser))
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PDF)
             layersAlreadyLoaded = layersAlreadyLoaded Or ((targetImage.GetCurrentFileFormat = PDIF_PSD) And (decoderUsed = id_PSDParser))
             layersAlreadyLoaded = layersAlreadyLoaded Or (targetImage.GetCurrentFileFormat = PDIF_PSP)
@@ -662,7 +663,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If cORA.IsFileORA(imagePath) Then loadSuccessful = cORA.LoadORA(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
-        Case "PCX"
+        Case "PCC", "PCX", "DCX"
             Dim cPCX As pdPCX
             Set cPCX = New pdPCX
             If cPCX.IsFilePCX(imagePath, False, True) Then loadSuccessful = cPCX.LoadPCX_FromFile(imagePath, tmpPDImage, targetDIB)

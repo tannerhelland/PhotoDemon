@@ -271,7 +271,7 @@ Public Sub GenerateInputFormats()
     If m_FreeImageEnabled Then
         AddInputFormat "PBM - Portable Bitmap", "*.pbm", PDIF_PBM
         AddInputFormat "PCD - Kodak PhotoCD", "*.pcd", PDIF_PCD
-        AddInputFormat "PCX - Zsoft Paintbrush", "*.pcx", PDIF_PCX
+        AddInputFormat "PCX/DCX - Zsoft Paintbrush", "*.pcx;*.pcc;*.dcx", PDIF_PCX
     End If
     
     'In v10.0, support was added for PDFs (via pdfium)
