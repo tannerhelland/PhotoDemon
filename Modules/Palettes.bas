@@ -4228,6 +4228,119 @@ End Function
 
 'Given an arbitrary palette (including palettes > 256 colors - they work just fine!), match said palette to a
 ' target image and measure palette entry "popularity".  Then, redistribute said palette entries so that the
+' most popular colors appear earliest in the palette.
+'
+'This improves performance on palette-based images in legacy RLE formats like PCX, because PCX uses high-value
+' bytes as RLE flags.  (So single-occurrences of high-value bytes must be encoded as RLE runs of 1, while lower
+' values can simply be written as-is.)
+'
+'Because this function is targeted at legacy formats specifically, alpha values are *not* considered.
+'
+'This operation is lossless for the DIB - it is treated as read-only - but the passed palette will obviously
+' be modified by the function!
+Public Function SortPaletteByPopularity_RGB(ByRef srcDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
+    
+    Dim srcPixels() As Byte, tmpSA As SafeArray1D
+    
+    Dim pxSize As Long
+    pxSize = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBStride - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+    ' searching for contiguous matching colors.
+    Dim lastColor As Long: lastColor = -1
+    Dim lastAlpha As Long: lastAlpha = -1
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    Dim tmpQuad As RGBQuad, palIndex As Long, lastPalIndex As Long
+    
+    'Build the initial tree
+    Dim kdTree As pdKDTree
+    Set kdTree = New pdKDTree
+    kdTree.BuildTree srcPalette, UBound(srcPalette) + 1
+    
+    'Also construct a histogram; this is how we measure popularity
+    Dim palPopularity() As Long
+    ReDim palPopularity(0 To UBound(srcPalette)) As Long
+    
+    'Start matching pixels
+    For y = 0 To finalY
+        srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
+    For x = 0 To finalX Step pxSize
+    
+        b = srcPixels(x)
+        g = srcPixels(x + 1)
+        r = srcPixels(x + 2)
+        
+        'If this pixel matches the last pixel we tested, reuse our previous match results
+        If (RGB(r, g, b) <> lastColor) Then
+            
+            tmpQuad.Red = r
+            tmpQuad.Green = g
+            tmpQuad.Blue = b
+            
+            'Ask the tree for its best match
+            palIndex = kdTree.GetNearestPaletteIndex(tmpQuad)
+            
+            lastColor = RGB(r, g, b)
+            lastPalIndex = palIndex
+            
+        Else
+            palIndex = lastPalIndex
+        End If
+        
+        'Increment the histogram for the matched palette index
+        palPopularity(palIndex) = palPopularity(palIndex) + 1
+        
+    Next x
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcPixels
+    
+    Dim i As Long, j As Long
+    
+    'Do a quick insertion sort.  Points are likely to be somewhat close to sorted, as the first color(s)
+    ' we encounter are likely to consume most of the image, especially in e.g. GIFs.
+    Dim numColors As Long
+    numColors = UBound(srcPalette) + 1
+    
+    Dim tmpSortQ As RGBQuad, tmpSortL As Long, searchCont As Boolean
+    i = 1
+    
+    Do While (i < numColors)
+        tmpSortQ = srcPalette(i)
+        tmpSortL = palPopularity(i)
+        j = i - 1
+        
+        'Because VB6 doesn't short-circuit And statements, we split this check into separate parts.
+        searchCont = False
+        If (j >= 0) Then searchCont = (palPopularity(j) < tmpSortL)
+        
+        Do While searchCont
+            srcPalette(j + 1) = srcPalette(j)
+            palPopularity(j + 1) = palPopularity(j)
+            j = j - 1
+            searchCont = False
+            If (j >= 0) Then searchCont = (palPopularity(j) < tmpSortL)
+        Loop
+        
+        srcPalette(j + 1) = tmpSortQ
+        palPopularity(j + 1) = tmpSortL
+        i = i + 1
+        
+    Loop
+    
+    SortPaletteByPopularity_RGB = True
+    
+End Function
+
+'Given an arbitrary palette (including palettes > 256 colors - they work just fine!), match said palette to a
+' target image and measure palette entry "popularity".  Then, redistribute said palette entries so that the
 ' eight most popular colors are matched to power-of-two values (e.g. the most compressible indices).
 '
 'If the prioritizeAlpha parameter is set to TRUE, the palette value with transparency = 0 will be given
