@@ -102,7 +102,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Make layer transparent using luma data (dialog)
-'Copyright 2020-2024 by Tanner Helland
+'Copyright 2020-2025 by Tanner Helland
 'Created: 14/February/20
 'Last updated: 14/February/20
 'Last update: initial build

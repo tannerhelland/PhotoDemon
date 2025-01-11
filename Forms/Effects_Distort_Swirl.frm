@@ -159,7 +159,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Swirl" Distortion
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 21/February/21
 'Last update: large performance improvements

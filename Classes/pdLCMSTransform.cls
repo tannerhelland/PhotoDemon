@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon LCMS (LittleCMS) Transformation Manager
-'Copyright 2015-2024 by Tanner Helland
+'Copyright 2015-2025 by Tanner Helland
 'Created: 26/May/16
 'Last updated: 09/June/16
 'Last update: add support for RGB modification transforms, which allow adjustment of brightness, contrast, hue, and saturation

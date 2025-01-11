@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter LUT (Look Up Table) Support Class
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 15/January/15
 'Last updated: 26/March/20
 'Last update: performance improvements

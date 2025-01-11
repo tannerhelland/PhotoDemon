@@ -1,7 +1,7 @@
 Attribute VB_Name = "Resampling"
 '***************************************************************************
 'Image Resampling engine
-'Copyright 2021-2024 by Tanner Helland
+'Copyright 2021-2025 by Tanner Helland
 'Created: 16/August/21
 'Last updated: 19/January/23
 'Last update: new floating-point variations that operate on the new pdSurfaceF class (for HDR resampling)

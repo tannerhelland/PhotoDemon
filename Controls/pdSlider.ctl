@@ -47,7 +47,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Slider+Spinner custom control
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 09/December/21
 'Last update: new CaptionPadding property, so I can fix minor alignment annoyances on toolpanels

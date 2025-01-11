@@ -1,10 +1,10 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
 'PhotoDemon Menu Manager
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 11/January/17
-'Last updated: 28/September/23
-'Last update: menus now pass menu-specific object IDs to the translation engine, enabling per-menu translations
+'Last updated: 08/January/25
+'Last update: move the Tools > Test menu to the Developer submenu
 '
 'PhotoDemon has an extensive menu system.  Managing all those menus is cumbersome.
 ' This module handles the worst parts of run-time maintenance.
@@ -569,7 +569,7 @@ Public Sub InitializeMenus()
             AddMenuItem "Build theme package...", "tools_themepackage", 7, 15, 1, , False
             AddMenuItem "-", "-", 7, 15, 2
             AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 15, 3, , False
-        AddMenuItem "Test", "effects_developertest", 7, 16
+            AddMenuItem "Test", "effects_developertest", 7, 15, 4, , False
     End If
     
     'View Menu

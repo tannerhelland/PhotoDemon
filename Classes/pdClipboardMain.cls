@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Clipboard Interface
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 25/August/22
 'Last update: add support for `Explorer > Copy as Path` context menu (this command places quotes around the target file path)

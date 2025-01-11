@@ -1,7 +1,7 @@
 Attribute VB_Name = "NavKey"
 '***************************************************************************
 'Navigation Key Handler (including automated tab order handling)
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 18/August/17
 'Last updated: 14/November/21
 'Last update: fix nav key tracking across toolboxes (which are no longer unloaded after switching away

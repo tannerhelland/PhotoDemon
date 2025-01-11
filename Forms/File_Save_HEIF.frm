@@ -163,7 +163,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'HEIF Export Dialog
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 26/August/24
 'Last updated: 29/August/24
 'Last update: add support for multi-page export (one layer per frame in the heif file)

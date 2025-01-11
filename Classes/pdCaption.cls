@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Caption" support class for user controls
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 27/August/15
 'Last updated: 05/June/22
 'Last update: remove check for spaces prior to enabling wordwrap; CJK languages (and likely others) can break

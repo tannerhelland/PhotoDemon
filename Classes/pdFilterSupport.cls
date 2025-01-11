@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter Support Class
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 15/January/13
 'Last updated: 02/November/22
 'Last update: new helper for handling edges on normalized values (range [0, 1]); the Perspective transform now

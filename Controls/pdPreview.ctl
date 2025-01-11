@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Preview custom control
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 10/January/13
 'Last updated: 09/August/19
 'Last update: render a highlight+chunky border on keyboard focus

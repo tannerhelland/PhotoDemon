@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon XCF (GIMP native file format) Container and Parser
-'Copyright 2022-2024 by Tanner Helland
+'Copyright 2022-2025 by Tanner Helland
 'Created: 30/March/22
 'Last updated: 25/May/22
 'Last update: add support for GZip variants (.xcfgz, .xcf.gz)
@@ -443,8 +443,8 @@ Friend Function GetOriginalDPI() As Single
 End Function
 
 'This function is ONLY VALID AFTER A SUCCESSFUL CALL TO LoadXCF_FromFile!
-Friend Function isGrayscale() As Boolean
-    isGrayscale = (m_imageColorMode = xcf_Grayscale)
+Friend Function HasGrayscale() As Boolean
+    HasGrayscale = (m_imageColorMode = xcf_Grayscale)
 End Function
 
 'Validate and load a candidate XCF file

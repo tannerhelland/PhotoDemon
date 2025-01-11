@@ -160,7 +160,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Create color lookup from differences between two images
-'Copyright 2022-2024 by Tanner Helland
+'Copyright 2022-2025 by Tanner Helland
 'Created: 18/June/22
 'Last updated: 24/June/22
 'Last update: save *some* last-used settings (but not ones that will break the app, like the layer dropdowns)

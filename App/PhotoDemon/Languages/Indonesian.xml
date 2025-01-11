@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1727</langversion>
+<langversion>8.9.1728</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -4171,6 +4171,8 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -13564,126 +13566,6 @@ Untuk melanjutkan, silakan unduh salinan Photodemon baru dari photodemon.org.</t
 </phrase>
 
 <phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>Gunakan kompensasi titik hitam</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>Tampilkan niat rendering</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>tampilan yang tersedia</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>Matikan manajemen warna tampilan</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>Gunakan profil sistem saat ini untuk setiap tampilan</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>profil warna untuk tampilan ini</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Tampilkan kebijakan</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>Gunakan profil khusus untuk setiap tampilan</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>Input mouse resolusi tinggi</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Setel ulang semua pengaturan program</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Penggunaan memori akan ditampilkan di sini</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Diagnostik memori</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Lokasi file sementara</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>Mulai dari awal</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>Folder Pengaturan Aplikasi</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>menghasilkan log debug</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Penafian yang dihuni saat run-time)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>secara otomatis memeriksa pembaruan</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>Izinkan pembaruan dari trek ini</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Perbarui opsi</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>Beri tahu saat pembaruan siap</translation>
-</phrase>
-
-<phrase>
 <original>zoom with mouse wheel</original>
 <translation></translation>
 </phrase>
@@ -13886,6 +13768,126 @@ Untuk melanjutkan, silakan unduh salinan Photodemon baru dari photodemon.org.</t
 <phrase>
 <original>viewport</original>
 <translation>viewport</translation>
+</phrase>
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>Gunakan kompensasi titik hitam</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>Tampilkan niat rendering</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>tampilan yang tersedia</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>Matikan manajemen warna tampilan</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>Gunakan profil sistem saat ini untuk setiap tampilan</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>profil warna untuk tampilan ini</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Tampilkan kebijakan</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>Gunakan profil khusus untuk setiap tampilan</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>Input mouse resolusi tinggi</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Setel ulang semua pengaturan program</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Penggunaan memori akan ditampilkan di sini</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Diagnostik memori</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Lokasi file sementara</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>Mulai dari awal</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>Folder Pengaturan Aplikasi</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>menghasilkan log debug</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Penafian yang dihuni saat run-time)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>secara otomatis memeriksa pembaruan</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>Izinkan pembaruan dari trek ini</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Perbarui opsi</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>Beri tahu saat pembaruan siap</translation>
 </phrase>
 
 <phrase>
@@ -14512,8 +14514,8 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <phrasecount>2747</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5837 phrases. -->
-<!-- 3090 are duplicates, so only 2747 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5839 phrases. -->
+<!-- 3092 are duplicates, so only 2747 unique phrases have been written to file. -->
 <!-- These 2747 phrases contain approximately 11909 total words. -->
 
 </pdData>

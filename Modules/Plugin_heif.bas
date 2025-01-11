@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_Heif"
 '***************************************************************************
 'libheif Library Interface
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 16/July/24
 'Last updated: 29/August/24
 'Last update: add support for exporting multi-frame images

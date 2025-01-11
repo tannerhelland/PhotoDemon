@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Mouse Input Handler (mouse, pen, etc) class
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
 'Last updated: 29/October/19
 'Last update: manually raise corresponding _MouseDown() event in _DoubleClick() handler

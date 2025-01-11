@@ -132,7 +132,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pointillize Effect UI
-'Copyright 2019-2024 by Tanner Helland
+'Copyright 2019-2025 by Tanner Helland
 'Created: 25/November/19
 'Last updated: 25/November/19
 'Last update: initial build

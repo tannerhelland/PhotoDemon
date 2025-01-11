@@ -1,7 +1,7 @@
 Attribute VB_Name = "Snap"
 '***************************************************************************
 'Snap-to-target Handler
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 16/April/24
 'Last updated: 24/April/24
 'Last update: finalize support for rendering smart guides when snapping

@@ -445,7 +445,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 31/July/17
 'Last update: performance improvements, migrate to XML params

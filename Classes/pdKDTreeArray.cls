@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon array-backed KD-Tree (slower than normal KD-tree, but much faster tear-down due to no child classes)
-'Copyright 2018-2024 by Tanner Helland
+'Copyright 2018-2025 by Tanner Helland
 'Created: 28/January/18
 'Last updated: 23/June/22
 'Last update: add support for tracking/returning original palette index

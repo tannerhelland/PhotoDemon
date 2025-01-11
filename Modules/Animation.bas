@@ -1,7 +1,7 @@
 Attribute VB_Name = "Animation"
 '***************************************************************************
 'Animation Functions
-'Copyright 2019-2024 by Tanner Helland
+'Copyright 2019-2025 by Tanner Helland
 'Created: 20/August/19
 'Last updated: 15/November/23
 'Last update: clean up code that converts animation frame times to/from layer names

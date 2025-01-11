@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Move"
 '***************************************************************************
 'PhotoDemon Move/Size Tool Manager
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 24/May/14
 'Last updated: 06/May/24
 'Last update: move rendering layer boundaries to universal "View > Show" menu; start work on new
@@ -10,7 +10,7 @@ Attribute VB_Name = "Tools_Move"
 'This module interfaces between the layer move/size UI and actual layer backend.  Look in the relevant
 ' tool panel form for more details on how the UI relays relevant tool data here.
 '
-'As of 2024, This module also handles move-related duties like snapping to various features.
+'As of 2024, this module also handles move-related duties like snapping to various features.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/

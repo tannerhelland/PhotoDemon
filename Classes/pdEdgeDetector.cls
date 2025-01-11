@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Edge Detector ("Marching squares") Engine
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 05/January/17
 'Last updated: 09/May/17
 'Last update: add comprehensive edge detection (e.g. edges of *multiple* objects in one image)

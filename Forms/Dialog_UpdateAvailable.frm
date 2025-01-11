@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Update Notification form
-'Copyright 2014-2024 by Tanner Helland
+'Copyright 2014-2025 by Tanner Helland
 'Created: 03/March/14
 'Last updated: 06/September/15
 'Last update: convert buttons to pdButton

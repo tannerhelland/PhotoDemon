@@ -103,7 +103,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Emboss/Engrave Effect Dialog
-'Copyright 2003-2024 by Tanner Helland
+'Copyright 2003-2025 by Tanner Helland
 'Created: 3/6/03
 'Last updated: 21/February/20
 'Last update: large performance improvements

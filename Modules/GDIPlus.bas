@@ -1,7 +1,7 @@
 Attribute VB_Name = "GDI_Plus"
 '***************************************************************************
 'GDI+ Interface
-'Copyright 2012-2024 by Tanner Helland
+'Copyright 2012-2025 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 21/June/22
 'Last update: ensure GDI+ image export uses safe overwriting (e.g. do not overwrite an existing file

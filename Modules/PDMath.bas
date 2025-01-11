@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDMath"
 '***************************************************************************
 'Specialized Math Routines
-'Copyright 2013-2024 by Tanner Helland
+'Copyright 2013-2025 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 06/May/22
 'Last update: new function for direct path simplification, which handles all line extraction for you

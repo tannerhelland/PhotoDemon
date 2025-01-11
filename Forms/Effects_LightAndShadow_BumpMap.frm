@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Bump Map Effect Dialog
-'Copyright 2022-2024 by Tanner Helland
+'Copyright 2022-2025 by Tanner Helland
 'Created: 18/April/22
 'Last updated: 19/April/22
 'Last update: wrap up initial build

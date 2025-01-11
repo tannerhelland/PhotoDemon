@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageFormats_GIF"
 '***************************************************************************
 'Additional support functions for GIF support
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 21/June/22
 'Last update: unify debug text across the codebase

@@ -192,7 +192,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Content-Aware Fill (aka "Heal Selection" in some software) Settings Dialog
-'Copyright 2022-2024 by Tanner Helland
+'Copyright 2022-2025 by Tanner Helland
 'Created: 03/May/22
 'Last updated: 03/May/22
 'Last update: initial build

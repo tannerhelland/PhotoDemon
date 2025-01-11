@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Edge"
 '***************************************************************************
 'Edge Filter Collection
-'Copyright 2003-2024 by Tanner Helland
+'Copyright 2003-2025 by Tanner Helland
 'Created: sometime 2003?
 'Last updated: 14/September/22
 'Last update: start migrating some edge filters here

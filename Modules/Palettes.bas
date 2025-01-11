@@ -1,7 +1,7 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
 'PhotoDemon's Central Palette Interface
-'Copyright 2017-2024 by Tanner Helland
+'Copyright 2017-2025 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 08/March/22
 'Last update: use new pdHistogramHash class to greatly accelerate median cut palette generation
@@ -33,6 +33,15 @@ End Enum
 
 #If False Then
     Private Const pdpf_AdobeColorSwatch = 0, pdpf_AdobeColorTable = 1, pdpf_AdobeSwatchExchange = 2, pdpf_GIMP = 3, pdpf_PaintDotNet = 4, pdpf_PSP = 5, pdpf_PhotoDemon = 6
+#End If
+
+Public Enum PD_StockPalette
+    pdsp_EGA = 0
+    pdsp_PSLegacy = 1
+End Enum
+
+#If False Then
+    Private Const pdsp_EGA = 0, pdsp_PSLegacy = 1
 #End If
 
 'Used for more accurate color distance comparisons (using human eye sensitivity as a rough guide, while staying in
@@ -1118,14 +1127,14 @@ Public Sub GetPalette_Grayscale(ByRef dstPalette() As RGBQuad)
     Next i
 End Sub
 
-Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades As Long)
+Public Sub GetPalette_GrayscaleEx(ByRef dstPalette() As RGBQuad, ByVal numShades As Long, Optional ByVal dontSizeArray As Boolean = False)
     
     If (numShades > 256) Then numShades = 256
     
     Dim maxVal As Long
     maxVal = numShades - 1
     
-    ReDim dstPalette(0 To maxVal) As RGBQuad
+    If (Not dontSizeArray) Then ReDim dstPalette(0 To maxVal) As RGBQuad
     
     Dim i As Long, finalGray As Long
     For i = 0 To maxVal
@@ -4219,6 +4228,119 @@ End Function
 
 'Given an arbitrary palette (including palettes > 256 colors - they work just fine!), match said palette to a
 ' target image and measure palette entry "popularity".  Then, redistribute said palette entries so that the
+' most popular colors appear earliest in the palette.
+'
+'This improves performance on palette-based images in legacy RLE formats like PCX, because PCX uses high-value
+' bytes as RLE flags.  (So single-occurrences of high-value bytes must be encoded as RLE runs of 1, while lower
+' values can simply be written as-is.)
+'
+'Because this function is targeted at legacy formats specifically, alpha values are *not* considered.
+'
+'This operation is lossless for the DIB - it is treated as read-only - but the passed palette will obviously
+' be modified by the function!
+Public Function SortPaletteByPopularity_RGB(ByRef srcDIB As pdDIB, ByRef srcPalette() As RGBQuad) As Boolean
+    
+    Dim srcPixels() As Byte, tmpSA As SafeArray1D
+    
+    Dim pxSize As Long
+    pxSize = srcDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.GetDIBStride - 1
+    finalY = srcDIB.GetDIBHeight - 1
+    
+    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+    ' searching for contiguous matching colors.
+    Dim lastColor As Long: lastColor = -1
+    Dim lastAlpha As Long: lastAlpha = -1
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    Dim tmpQuad As RGBQuad, palIndex As Long, lastPalIndex As Long
+    
+    'Build the initial tree
+    Dim kdTree As pdKDTree
+    Set kdTree = New pdKDTree
+    kdTree.BuildTree srcPalette, UBound(srcPalette) + 1
+    
+    'Also construct a histogram; this is how we measure popularity
+    Dim palPopularity() As Long
+    ReDim palPopularity(0 To UBound(srcPalette)) As Long
+    
+    'Start matching pixels
+    For y = 0 To finalY
+        srcDIB.WrapArrayAroundScanline srcPixels, tmpSA, y
+    For x = 0 To finalX Step pxSize
+    
+        b = srcPixels(x)
+        g = srcPixels(x + 1)
+        r = srcPixels(x + 2)
+        
+        'If this pixel matches the last pixel we tested, reuse our previous match results
+        If (RGB(r, g, b) <> lastColor) Then
+            
+            tmpQuad.Red = r
+            tmpQuad.Green = g
+            tmpQuad.Blue = b
+            
+            'Ask the tree for its best match
+            palIndex = kdTree.GetNearestPaletteIndex(tmpQuad)
+            
+            lastColor = RGB(r, g, b)
+            lastPalIndex = palIndex
+            
+        Else
+            palIndex = lastPalIndex
+        End If
+        
+        'Increment the histogram for the matched palette index
+        palPopularity(palIndex) = palPopularity(palIndex) + 1
+        
+    Next x
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcPixels
+    
+    Dim i As Long, j As Long
+    
+    'Do a quick insertion sort.  Points are likely to be somewhat close to sorted, as the first color(s)
+    ' we encounter are likely to consume most of the image, especially in e.g. GIFs.
+    Dim numColors As Long
+    numColors = UBound(srcPalette) + 1
+    
+    Dim tmpSortQ As RGBQuad, tmpSortL As Long, searchCont As Boolean
+    i = 1
+    
+    Do While (i < numColors)
+        tmpSortQ = srcPalette(i)
+        tmpSortL = palPopularity(i)
+        j = i - 1
+        
+        'Because VB6 doesn't short-circuit And statements, we split this check into separate parts.
+        searchCont = False
+        If (j >= 0) Then searchCont = (palPopularity(j) < tmpSortL)
+        
+        Do While searchCont
+            srcPalette(j + 1) = srcPalette(j)
+            palPopularity(j + 1) = palPopularity(j)
+            j = j - 1
+            searchCont = False
+            If (j >= 0) Then searchCont = (palPopularity(j) < tmpSortL)
+        Loop
+        
+        srcPalette(j + 1) = tmpSortQ
+        palPopularity(j + 1) = tmpSortL
+        i = i + 1
+        
+    Loop
+    
+    SortPaletteByPopularity_RGB = True
+    
+End Function
+
+'Given an arbitrary palette (including palettes > 256 colors - they work just fine!), match said palette to a
+' target image and measure palette entry "popularity".  Then, redistribute said palette entries so that the
 ' eight most popular colors are matched to power-of-two values (e.g. the most compressible indices).
 '
 'If the prioritizeAlpha parameter is set to TRUE, the palette value with transparency = 0 will be given
@@ -4377,5 +4499,50 @@ Public Function SortPaletteForCompression_IncAlpha(ByRef srcDIB As pdDIB, ByRef 
     Loop
     
     SortPaletteForCompression_IncAlpha = True
+    
+End Function
+
+'Returns the number of colors written to the palette (always 16 for this function)
+Public Function GetStockPalette(ByVal palID As PD_StockPalette, ByRef dstPalette() As RGBQuad, Optional ByVal initPaletteArrayForMe As Boolean = True) As Long
+    
+    'Different system palettes have different color counts
+    Dim numColors As Long
+    
+    Select Case palID
+        Case pdsp_EGA
+            numColors = 16
+        Case pdsp_PSLegacy
+            numColors = 16
+    End Select
+    
+    'If the caller doesn't require initialization, still check palette bounds for safety
+    If initPaletteArrayForMe Then
+        ReDim dstPalette(0 To numColors - 1) As RGBQuad
+    Else
+        If UBound(dstPalette) < numColors - 1 Then ReDim dstPalette(0 To numColors - 1) As RGBQuad
+    End If
+    
+    'Grab a predefined string of palette entries
+    Dim palAsHexString As String
+    
+    Select Case palID
+        Case pdsp_EGA
+            Const EGA_PAL_STRING As String = "000000,0000AA,00AA00,00AAAA,AA0000,AA00AA,AA5500,555555,AAAAAA,5555FF,55FF55,55FFFF,FF5555,FF55FF,FFFF55,FFFFFF"
+            palAsHexString = EGA_PAL_STRING
+        Case pdsp_PSLegacy
+            Const PSLEGACY_PAL_STRING As String = "000000,0000aa,00aa00,00aaaa,aa0000,aa00aa,aaaa00,848484,c6c6c6,5555ff,55ff55,55ffff,ff5555,ff55ff,ffff55,ffffff"
+            palAsHexString = PSLEGACY_PAL_STRING
+    End Select
+    
+    'Split the color string into individual entries
+    Dim listOfStrings() As String
+    listOfStrings = Split(palAsHexString, ",", -1, vbBinaryCompare)
+    
+    If (UBound(listOfStrings) <> numColors - 1) Then PDDebug.LogAction "WARNING: Palettes.GetStockPalette failed unexpectedly"
+    
+    Dim i As Long
+    For i = 0 To numColors - 1
+        dstPalette(i) = Colors.GetRGBQuadFromHex(listOfStrings(i))
+    Next i
     
 End Function

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 '***************************************************************************
 'PhotoDemon Macro Interface
-'Copyright 2001-2024 by Tanner Helland
+'Copyright 2001-2025 by Tanner Helland
 'Created: 10/21/01
 'Last updated: 27/October/21
 'Last update: merge all validation into one place, and add an explicit check for "Original image state"
