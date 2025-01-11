@@ -554,6 +554,13 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
         imgHeight = (m_Header.pcx_YMax - m_Header.pcx_YMin) + 1
         imgStrideInBytes = m_Header.pcx_BytesPerScanline * m_Header.pcx_ChannelCount
         
+        'Multi-plane images at low bit-depths (a quirk of PCX encoding) can be cumbersome to track
+        ' where one plane ends and another begins due to the way PCX alignment works.  Cache the
+        ' bytes-per-scanline value in a local, non-UDT value so we can access it faster in the
+        ' decoding loop.
+        Dim bytesPerSingleScanline As Long
+        bytesPerSingleScanline = m_Header.pcx_BytesPerScanline
+        
         If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Preparing to decode PCX image (" & imgWidth & "x" & imgHeight & ") @ " & m_Header.pcx_BitsPerPixel & "x" & m_Header.pcx_ChannelCount & " (" & imgStrideInBytes & ")"
         If PCX_DEBUG_VERBOSE And ((m_Header.pcx_XMin <> 0) Or (m_Header.pcx_YMin <> 0)) Then PDDebug.LogAction "Note: unexpected x/y min values: " & m_Header.pcx_XMin & ", " & m_Header.pcx_YMin
         
@@ -946,6 +953,9 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                         Dim powFlag As Long
                         powFlag = 1
                         
+                        Dim numBytesThisChannel As Long
+                        numBytesThisChannel = 0
+                        
                         'Count pixels and iterate as we go (so we can ignore dead space at the end
                         ' of individual scanlines).
                         x = 0: xOffset = 0
@@ -968,6 +978,15 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                                         x = 0
                                         curChannel = curChannel + 1
                                         powFlag = 2 ^ curChannel
+                                        
+                                        'Ensure padding is maintained if image width doesn't map cleanly
+                                        ' to scanline widths at this bit-depth.
+                                        If (numBytesThisChannel < bytesPerSingleScanline - 1) Then xOffset = xOffset + 1
+                                        
+                                        'Reset how many bytes we've read *for this channel* (to -1,
+                                        ' because it will be incremented again outside the for loop)
+                                        numBytesThisChannel = -1
+                                        
                                         Exit For
                                     End If
                                     
@@ -978,6 +997,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                             Next j
                             
                             xOffset = xOffset + 1
+                            numBytesThisChannel = numBytesThisChannel + 1
                             
                         Loop
                         
