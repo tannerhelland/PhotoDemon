@@ -446,10 +446,10 @@ Private Sub SyncUI_CurrentImageSettings()
     Else
         FormMain.Caption = Interface.GetWindowCaption(PDImages.GetActiveImage())
     End If
-            
+    
     'Display the image's size in the status bar
     If (PDImages.GetActiveImage.Width <> 0) Then Interface.DisplaySize PDImages.GetActiveImage()
-            
+    
     'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
     If (PDImages.GetActiveImage.GetImageIcon(False) = 0) Or (PDImages.GetActiveImage.GetImageIcon(True) = 0) Then IconsAndCursors.CreateCustomFormIcons PDImages.GetActiveImage()
     IconsAndCursors.ChangeAppIcons PDImages.GetActiveImage.GetImageIcon(False), PDImages.GetActiveImage.GetImageIcon(True)

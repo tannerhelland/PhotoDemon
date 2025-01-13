@@ -232,8 +232,11 @@ Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
         End If
     End With
     
-    'Lock position and height to the nearest (rounded?) edge of the image
+    'Lock position and height to the nearest edge of the image
     PDMath.GetIntClampedRectF m_CropRectF
+    
+    'If the crop rect is valid, relay its values to the toolpanel
+    If ValidateCropRectF() Then RelayCropChangesToUI
     
 End Sub
 
@@ -254,3 +257,36 @@ Private Function ValidateCropRectF() As Boolean
         If (.Width <= 0) Or (.Height <= 0) Then ValidateCropRectF = False
     End With
 End Function
+
+Private Sub RelayCropChangesToUI()
+    
+    'Lock updates to prevent circular references
+    Tools.SetToolBusyState True
+    
+    toolpanel_Crop.tudCrop(0).Value = m_CropRectF.Left
+    toolpanel_Crop.tudCrop(1).Value = m_CropRectF.Top
+    
+    toolpanel_Crop.tudCrop(2).Value = m_CropRectF.Width
+    toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
+    
+    'Aspect ratio requires a bit of math
+    Dim fracNumerator As Long, fracDenominator As Long
+    PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
+    
+    'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+    If (fracDenominator = 5) Then
+        fracNumerator = fracNumerator * 2
+        fracDenominator = fracDenominator * 2
+    End If
+    
+    toolpanel_Crop.tudCrop(4).Value = fracNumerator
+    toolpanel_Crop.tudCrop(5).Value = fracDenominator
+    
+    'Unlock updates
+    Tools.SetToolBusyState False
+    
+End Sub
+
+Public Sub RelayCropChangesFromUI()
+
+End Sub

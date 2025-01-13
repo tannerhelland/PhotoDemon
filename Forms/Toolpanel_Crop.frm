@@ -100,6 +100,8 @@ Begin VB.Form toolpanel_Crop
       Width           =   1080
       _ExtentX        =   1905
       _ExtentY        =   609
+      Min             =   -32000
+      Max             =   32000
       ShowResetButton =   0   'False
    End
    Begin PhotoDemon.pdSpinner tudCrop 
@@ -111,6 +113,8 @@ Begin VB.Form toolpanel_Crop
       Width           =   1080
       _ExtentX        =   1905
       _ExtentY        =   609
+      Min             =   -32000
+      Max             =   32000
       ShowResetButton =   0   'False
    End
    Begin PhotoDemon.pdTitle ttlPanel 
@@ -134,6 +138,10 @@ Begin VB.Form toolpanel_Crop
       Width           =   1080
       _ExtentX        =   1905
       _ExtentY        =   609
+      DefaultValue    =   1
+      Min             =   1
+      Max             =   32000
+      Value           =   1
       ShowResetButton =   0   'False
    End
    Begin PhotoDemon.pdSpinner tudCrop 
@@ -145,6 +153,10 @@ Begin VB.Form toolpanel_Crop
       Width           =   1080
       _ExtentX        =   1905
       _ExtentY        =   609
+      DefaultValue    =   1
+      Min             =   1
+      Max             =   32000
+      Value           =   1
       ShowResetButton =   0   'False
    End
    Begin PhotoDemon.pdTitle ttlPanel 
