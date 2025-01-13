@@ -30,50 +30,30 @@ Begin VB.Form toolpanel_Crop
    ScaleWidth      =   794
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButton cmdCommit 
+      Height          =   375
+      Index           =   0
+      Left            =   9600
+      TabIndex        =   13
+      Top             =   405
+      Width           =   600
+      _ExtentX        =   1058
+      _ExtentY        =   661
+   End
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   975
       Index           =   0
-      Left            =   0
+      Left            =   3720
       Top             =   960
       Visible         =   0   'False
       Width           =   3975
       _ExtentX        =   7011
       _ExtentY        =   3625
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   10
-         Left            =   0
-         Top             =   0
-         Width           =   3450
-         _ExtentX        =   6085
-         _ExtentY        =   423
-         Caption         =   "size (w, h)"
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   2
-         Left            =   120
-         TabIndex        =   5
-         Top             =   360
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdSpinner tudLayerMove 
-         Height          =   345
-         Index           =   3
-         Left            =   1680
-         TabIndex        =   6
-         Top             =   390
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   609
-      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
          Left            =   3480
-         TabIndex        =   10
+         TabIndex        =   3
          Top             =   480
          Width           =   390
          _ExtentX        =   1111
@@ -82,142 +62,207 @@ Begin VB.Form toolpanel_Crop
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   4935
-      Index           =   2
+      Height          =   1095
+      Index           =   1
       Left            =   8160
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
       _ExtentY        =   8705
-      Begin PhotoDemon.pdCheckBox chkDistances 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   1
-         Top             =   2790
-         Width           =   3330
-         _ExtentX        =   5874
-         _ExtentY        =   582
-         Caption         =   "show distances"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkLayerNodes 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   0
-         Top             =   3180
-         Width           =   3330
-         _ExtentX        =   5874
-         _ExtentY        =   582
-         Caption         =   "show resize nodes"
-      End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   1
          Left            =   120
-         Top             =   2460
+         Top             =   0
          Width           =   3360
          _ExtentX        =   5927
          _ExtentY        =   423
          Caption         =   "display options"
       End
-      Begin PhotoDemon.pdCheckBox chkRotateNode 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   2
-         Top             =   3570
-         Width           =   3330
-         _ExtentX        =   5874
-         _ExtentY        =   582
-         Caption         =   "show rotate nodes"
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
-         Height          =   390
-         Index           =   2
-         Left            =   3210
-         TabIndex        =   12
-         Top             =   4440
-         Width           =   390
-         _ExtentX        =   1111
-         _ExtentY        =   1111
-         StickyToggle    =   -1  'True
-      End
-   End
-   Begin PhotoDemon.pdTitle ttlPanel 
-      Height          =   375
-      Index           =   0
-      Left            =   0
-      TabIndex        =   7
-      Top             =   0
-      Width           =   3510
-      _ExtentX        =   6191
-      _ExtentY        =   661
-      Caption         =   "position (x, y)"
-      Value           =   0   'False
-   End
-   Begin PhotoDemon.pdSpinner tudLayerMove 
-      Height          =   345
-      Index           =   0
-      Left            =   120
-      TabIndex        =   4
-      Top             =   450
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   609
-   End
-   Begin PhotoDemon.pdSpinner tudLayerMove 
-      Height          =   345
-      Index           =   1
-      Left            =   1680
-      TabIndex        =   3
-      Top             =   450
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   609
-   End
-   Begin PhotoDemon.pdTitle ttlPanel 
-      Height          =   375
-      Index           =   1
-      Left            =   3720
-      TabIndex        =   8
-      Top             =   0
-      Width           =   3510
-      _ExtentX        =   6191
-      _ExtentY        =   661
-      Caption         =   "angle"
-      Value           =   0   'False
-   End
-   Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1335
-      Index           =   1
-      Left            =   3960
-      Top             =   960
-      Visible         =   0   'False
-      Width           =   4095
-      _ExtentX        =   7223
-      _ExtentY        =   2355
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
-         Left            =   3600
-         TabIndex        =   11
-         Top             =   842
+         Left            =   3210
+         TabIndex        =   4
+         Top             =   600
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
       End
    End
+   Begin PhotoDemon.pdSpinner tudCrop 
+      Height          =   345
+      Index           =   0
+      Left            =   120
+      TabIndex        =   1
+      Top             =   420
+      Width           =   1080
+      _ExtentX        =   1905
+      _ExtentY        =   609
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner tudCrop 
+      Height          =   345
+      Index           =   1
+      Left            =   1320
+      TabIndex        =   0
+      Top             =   420
+      Width           =   1080
+      _ExtentX        =   1905
+      _ExtentY        =   609
+      ShowResetButton =   0   'False
+   End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
-      Index           =   2
-      Left            =   7440
-      TabIndex        =   9
+      Index           =   0
+      Left            =   6120
+      TabIndex        =   2
       Top             =   0
-      Width           =   3060
-      _ExtentX        =   5398
+      Width           =   3105
+      _ExtentX        =   5477
       _ExtentY        =   661
-      Caption         =   "other options"
+      Caption         =   "aspect ratio"
       Value           =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner tudCrop 
+      Height          =   345
+      Index           =   2
+      Left            =   2820
+      TabIndex        =   5
+      Top             =   420
+      Width           =   1080
+      _ExtentX        =   1905
+      _ExtentY        =   609
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner tudCrop 
+      Height          =   345
+      Index           =   3
+      Left            =   4380
+      TabIndex        =   6
+      Top             =   420
+      Width           =   1080
+      _ExtentX        =   1905
+      _ExtentY        =   609
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   375
+      Index           =   1
+      Left            =   9480
+      TabIndex        =   7
+      Top             =   0
+      Width           =   1620
+      _ExtentX        =   2858
+      _ExtentY        =   661
+      Caption         =   "commit"
+      Value           =   0   'False
+   End
+   Begin PhotoDemon.pdLabel lblOptions 
+      Height          =   240
+      Index           =   2
+      Left            =   30
+      Top             =   30
+      Width           =   2490
+      _ExtentX        =   4392
+      _ExtentY        =   423
+      Caption         =   "position (x, y)"
+   End
+   Begin PhotoDemon.pdLabel lblOptions 
+      Height          =   240
+      Index           =   0
+      Left            =   2700
+      Top             =   30
+      Width           =   3285
+      _ExtentX        =   5794
+      _ExtentY        =   423
+      Caption         =   "size (w, h)"
+   End
+   Begin PhotoDemon.pdLabel lblColon 
+      Height          =   375
+      Index           =   0
+      Left            =   7320
+      Top             =   405
+      Width           =   270
+      _ExtentX        =   476
+      _ExtentY        =   661
+      Alignment       =   2
+      Caption         =   ":"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdLock 
+      Height          =   360
+      Index           =   2
+      Left            =   8760
+      TabIndex        =   8
+      Top             =   405
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   635
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdSpinner tudCrop 
+      Height          =   345
+      Index           =   4
+      Left            =   6240
+      TabIndex        =   9
+      Top             =   420
+      Width           =   1080
+      _ExtentX        =   2328
+      _ExtentY        =   714
+      DefaultValue    =   1
+      Min             =   1
+      Max             =   32000
+      Value           =   1
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdSpinner tudCrop 
+      Height          =   345
+      Index           =   5
+      Left            =   7680
+      TabIndex        =   10
+      Top             =   420
+      Width           =   1080
+      _ExtentX        =   2328
+      _ExtentY        =   714
+      DefaultValue    =   1
+      Min             =   1
+      Max             =   32000
+      Value           =   1
+      ShowResetButton =   0   'False
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdLock 
+      Height          =   360
+      Index           =   1
+      Left            =   5460
+      TabIndex        =   11
+      Top             =   405
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   635
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdLock 
+      Height          =   360
+      Index           =   0
+      Left            =   3900
+      TabIndex        =   12
+      Top             =   405
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   635
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdButton cmdCommit 
+      Height          =   375
+      Index           =   1
+      Left            =   10320
+      TabIndex        =   14
+      Top             =   405
+      Width           =   600
+      _ExtentX        =   1058
+      _ExtentY        =   661
    End
 End
 Attribute VB_Name = "toolpanel_Crop"
@@ -249,59 +294,6 @@ Attribute m_Flyout.VB_VarHelpID = -1
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
-'Show/hide layer borders while using the move tool
-Private Sub chkDistances_Click()
-    Tools_Move.SetDrawDistances chkDistances.Value
-    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-End Sub
-
-Private Sub chkDistances_GotFocusAPI()
-    UpdateFlyout 2, True
-End Sub
-
-Private Sub chkDistances_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then
-        'newTargetHwnd = Me.btsCopyCut.hWnd
-    Else
-        newTargetHwnd = Me.chkLayerNodes.hWnd
-    End If
-End Sub
-
-'Show/hide layer transform nodes while using the move tool
-Private Sub chkLayerNodes_Click()
-    Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
-    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-End Sub
-
-Private Sub chkLayerNodes_GotFocusAPI()
-    UpdateFlyout 2, True
-End Sub
-
-Private Sub chkLayerNodes_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then
-        newTargetHwnd = chkDistances.hWnd
-    Else
-        newTargetHwnd = chkRotateNode.hWnd
-    End If
-End Sub
-
-Private Sub chkRotateNode_Click()
-    Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
-    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-End Sub
-
-Private Sub chkRotateNode_GotFocusAPI()
-    UpdateFlyout 2, True
-End Sub
-
-Private Sub chkRotateNode_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then
-        newTargetHwnd = chkLayerNodes.hWnd
-    Else
-        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
-    End If
-End Sub
-
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
 End Sub
@@ -318,7 +310,7 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
             'If shiftTabWasPressed Then newTargetHwnd = Me.sltLayerShearY.hWndSpinner Else newTargetHwnd = Me.ttlPanel(2).hWnd
         Case 2
             If shiftTabWasPressed Then
-                newTargetHwnd = Me.chkRotateNode.hWnd
+                'newTargetHwnd = Me.chkRotateNode.hWnd
             Else
                 newTargetHwnd = Me.ttlPanel(0).hWnd
             End If
@@ -435,7 +427,7 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
     Else
         Select Case Index
             Case 0
-                newTargetHwnd = Me.tudLayerMove(0).hWnd
+                newTargetHwnd = Me.tudCrop(0).hWnd
             Case 1
                 'newTargetHwnd = Me.sltLayerAngle.hWndSlider
             Case 2
@@ -444,7 +436,7 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
     End If
 End Sub
 
-Private Sub tudLayerMove_Change(Index As Integer)
+Private Sub tudCrop_Change(Index As Integer)
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
@@ -457,26 +449,26 @@ Private Sub tudLayerMove_Change(Index As Integer)
 '
 '        'Layer position (x)
 '        Case 0
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX tudLayerMove(Index).Value
+'            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX tudCrop(Index).Value
 '
 '        'Layer position (y)
 '        Case 1
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY tudLayerMove(Index).Value
+'            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY tudCrop(Index).Value
 '
 '        'Layer width
 '        Case 2
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
+'            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier tudCrop(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
 '            If chkAspectRatio.Value Then
 '                PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier()
-'                toolpanel_MoveSize.tudLayerMove(3).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(True)
+'                toolpanel_MoveSize.tudCrop(3).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(True)
 '            End If
 '
 '        'Layer height
 '        Case 3
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier tudLayerMove(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
+'            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier tudCrop(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
 '            If chkAspectRatio.Value Then
 '                PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier()
-'                toolpanel_MoveSize.tudLayerMove(2).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(True)
+'                toolpanel_MoveSize.tudCrop(2).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(True)
 '            End If
 '
 '    End Select
@@ -489,27 +481,27 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
 End Sub
 
-Private Sub tudLayerMove_GotFocusAPI(Index As Integer)
+Private Sub tudCrop_GotFocusAPI(Index As Integer)
     UpdateFlyout 0, True
 End Sub
 
-Private Sub tudLayerMove_LostFocusAPI(Index As Integer)
+Private Sub tudCrop_LostFocusAPI(Index As Integer)
     If (Not PDImages.IsImageActive()) Then Exit Sub
 End Sub
 
 'Because these controls are laid out in a non-standard pattern, we want to manually specify tab and
 ' shift+tab focus targets.
-Private Sub tudLayerMove_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+Private Sub tudCrop_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     
     If shiftTabWasPressed Then
         If (Index > 0) Then
-            newTargetHwnd = tudLayerMove(Index - 1).hWnd
+            newTargetHwnd = tudCrop(Index - 1).hWnd
         Else
             newTargetHwnd = Me.ttlPanel(0).hWnd
         End If
     Else
         If (Index < 3) Then
-            newTargetHwnd = tudLayerMove(Index + 1).hWnd
+            newTargetHwnd = tudCrop(Index + 1).hWnd
         Else
             'newTargetHwnd = chkAspectRatio.hWnd
         End If
@@ -528,9 +520,22 @@ Public Sub UpdateAgainstCurrentTheme()
     'TODO:
     
     'UI images must be updated against theme-specific colors
-    Dim buttonSize As Long
-    buttonSize = Interface.FixDPI(32)
+    'Dim buttonSize As Long
+    'buttonSize = Interface.FixDPI(32)
     'cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
+    
+    Dim buttonSize As Long
+    buttonSize = Interface.FixDPI(16)
+    
+    Dim i As Long
+    For i = 0 To cmdLock.Count - 1
+        cmdLock(i).AssignImage "generic_unlock", , buttonSize, buttonSize
+        cmdLock(i).AssignImage_Pressed "generic_lock", , buttonSize, buttonSize
+        cmdLock(i).AssignTooltip "Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)"
+    Next i
+    
+    cmdCommit(0).AssignImage "generic_ok", , buttonSize, buttonSize
+    cmdCommit(1).AssignImage "generic_cancel", , buttonSize, buttonSize
     
     'Tooltips must be localized
     'cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
