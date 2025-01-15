@@ -1157,6 +1157,14 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         If (outputColorDepth <= 8) Then
             Palettes.SortPaletteByPopularity_RGB compositeDIB, m_Palette
             numColorsInPalette = DIBs.GetDIBAs8bpp_RGBA_SrcPalette(compositeDIB, m_Palette, pxIndexed)
+            
+            'NOTE: if this file was originally a PCX file, and you wanted to retain the image's original palette,
+            ' you could do it like this:
+            'Dim tmpPDPalette As pdPalette
+            'srcImage.GetOriginalPalette tmpPDPalette
+            'tmpPDPalette.CopyPaletteToArray m_Palette
+            'numColorsInPalette = DIBs.GetDIBAs8bpp_RGBA_SrcPalette(compositeDIB, m_Palette, pxIndexed)
+            
         End If
         
     End If
