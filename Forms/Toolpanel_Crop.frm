@@ -329,6 +329,43 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
     End Select
 End Sub
 
+Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    
+    Dim lockedValue As Variant
+    If (Index = 0) Then
+        lockedValue = tudCrop(2).Value
+    ElseIf (Index = 1) Then
+        lockedValue = tudCrop(3).Value
+    Else
+        If (tudCrop(4).Value <> 0#) And (tudCrop(5).Value <> 0#) Then
+            lockedValue = tudCrop(4).Value / tudCrop(5).Value
+        Else
+            lockedValue = 1#
+        End If
+    End If
+
+    'When setting a new lock, unlock any other locks.
+    If cmdLock(Index).Value Then
+        If (Index = 0) Then
+            cmdLock(1).Value = False
+            cmdLock(2).Value = False
+        ElseIf (Index = 1) Then
+            cmdLock(0).Value = False
+            cmdLock(2).Value = False
+        ElseIf (Index = 2) Then
+            cmdLock(0).Value = False
+            cmdLock(1).Value = False
+        End If
+    End If
+    
+    If cmdLock(Index).Value Then
+        Tools_Crop.LockProperty Index, lockedValue
+    Else
+        Tools_Crop.UnlockProperty Index
+    End If
+    
+End Sub
+
 Private Sub Form_Load()
     
     Tools.SetToolBusyState True
@@ -451,39 +488,55 @@ End Sub
 Private Sub tudCrop_Change(Index As Integer)
     
     'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    ' NOTE: this will also check tool busy status, via Tools.GetToolBusyState
     If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
     
-'    Select Case Index
-'
-'        'Layer position (x)
-'        Case 0
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetX tudCrop(Index).Value
-'
-'        'Layer position (y)
-'        Case 1
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerOffsetY tudCrop(Index).Value
-'
-'        'Layer width
-'        Case 2
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier tudCrop(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(False)
-'            If chkAspectRatio.Value Then
-'                PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier()
-'                toolpanel_MoveSize.tudCrop(3).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(True)
-'            End If
-'
-'        'Layer height
-'        Case 3
-'            PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasYModifier tudCrop(Index).Value / PDImages.GetActiveImage.GetActiveLayer.GetLayerHeight(False)
-'            If chkAspectRatio.Value Then
-'                PDImages.GetActiveImage.GetActiveLayer.SetLayerCanvasXModifier PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier()
-'                toolpanel_MoveSize.tudCrop(2).Value = PDImages.GetActiveImage.GetActiveLayer.GetLayerWidth(True)
-'            End If
-'
-'    End Select
+    Select Case Index
+
+        'Crop position (x, y)
+        Case 0
+            If tudCrop(Index).IsValid Then Tools_Crop.RelayCropChangesFromUI pdd_Left, tudCrop(Index).Value
+        
+        Case 1
+            If tudCrop(Index).IsValid Then Tools_Crop.RelayCropChangesFromUI pdd_Top, tudCrop(Index).Value
+
+        'Crop size (w, h)
+        Case 2
+            If tudCrop(Index).IsValid Then Tools_Crop.RelayCropChangesFromUI pdd_Width, tudCrop(Index).Value
+            
+        Case 3
+            If tudCrop(Index).IsValid Then Tools_Crop.RelayCropChangesFromUI pdd_Height, tudCrop(Index).Value
+        
+        'Aspect ratio (x, y)
+        Case 4, 5
+            
+            'Because aspect ratio calculations involve division, ensure validity before continuing
+            Dim aspW As Double, aspH As Double, aspFinal As Double, newDimension As Long
+            
+            If tudCrop(4).IsValid Then aspW = tudCrop(4).Value
+            If tudCrop(5).IsValid Then aspH = tudCrop(5).Value
+            
+            If (aspW <> 0#) And (aspH <> 0#) Then
+                
+                'As a convenience, adjust width OR height depending on the aspect ratio value that is changing.
+                ' (Note that we also have to account for locked width or height here - if a dimension is locked,
+                '  we must adjust the *other* dimension.)
+                If ((Index = 4) And (Not cmdLock(0).Value)) Or cmdLock(1).Value Then
+                    aspFinal = aspW / aspH
+                    newDimension = tudCrop(3).Value * aspFinal
+                    Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioW, newDimension, CSng(aspFinal)
+                Else
+                    aspFinal = aspH / aspW
+                    newDimension = tudCrop(2).Value * aspFinal
+                    Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioH, newDimension, CSng(aspFinal)
+                End If
+                
+            End If
+                    
+    End Select
     
     'Free the tool engine
     Tools.SetToolBusyState False
@@ -494,7 +547,7 @@ Private Sub tudCrop_Change(Index As Integer)
 End Sub
 
 Private Sub tudCrop_GotFocusAPI(Index As Integer)
-    UpdateFlyout 0, True
+    If (Index = 4) Or (Index = 5) Then UpdateFlyout 0, True
 End Sub
 
 Private Sub tudCrop_LostFocusAPI(Index As Integer)

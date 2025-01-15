@@ -28,6 +28,10 @@ Private m_LastImgX As Double, m_LastImgY As Double
 'Current crop rect, always *in image coordinates*
 Private m_CropRectF As RectF
 
+'Some crop attributes can be independently locked (e.g. aspect ratio).
+Private m_IsWidthLocked As Boolean, m_IsHeightLocked As Boolean, m_IsAspectLocked As Boolean
+Private m_LockedWidth As Long, m_LockedHeight As Long, m_LockedAspectRatio As Double
+
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
     'Update the status bar with the curent crop rectangle (if any)
@@ -213,26 +217,80 @@ Public Function IsValidCropActive() As Boolean
     IsValidCropActive = ValidateCropRectF
 End Function
 
-Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
+'Some properties can be independently locked (e.g. width or height or aspect ratio).
+' When a property is locked, it cannot be changed by additional UI inputs.
+Public Sub LockProperty(ByVal selProperty As PD_SelectionLockable, ByVal lockedValue As Variant)
+
+    If (selProperty = pdsl_Width) Then
+        m_IsWidthLocked = True
+        m_LockedWidth = lockedValue
+        m_IsHeightLocked = False
+        m_IsAspectLocked = False
+    ElseIf (selProperty = pdsl_Height) Then
+        m_IsHeightLocked = True
+        m_LockedHeight = lockedValue
+        m_IsWidthLocked = False
+        m_IsAspectLocked = False
+    ElseIf (selProperty = pdsl_AspectRatio) Then
+        m_IsAspectLocked = True
+        m_LockedAspectRatio = lockedValue
+        m_IsWidthLocked = False
+        m_IsHeightLocked = False
+    End If
     
+End Sub
+
+Public Sub UnlockProperty(ByVal selProperty As PD_SelectionLockable)
+    If (selProperty = pdsl_Width) Then
+        m_IsWidthLocked = False
+    ElseIf (selProperty = pdsl_Height) Then
+        m_IsHeightLocked = False
+    ElseIf (selProperty = pdsl_AspectRatio) Then
+        m_IsAspectLocked = False
+    End If
+End Sub
+
+Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
+        
     With m_CropRectF
+    
         If (newX < m_InitImgX) Then
-            .Left = newX
-            .Width = m_InitImgX - newX
+            If m_IsWidthLocked Then
+                .Left = (m_InitImgX - m_LockedWidth)
+                .Width = m_LockedWidth
+            Else
+                .Left = newX
+                .Width = m_InitImgX - newX
+            End If
         Else
             .Left = m_InitImgX
-            .Width = newX - m_InitImgX
+            If m_IsWidthLocked Then
+                .Width = m_LockedWidth
+            Else
+                .Width = newX - m_InitImgX
+            End If
         End If
+        
         If (newY < m_InitImgY) Then
-            .Top = newY
-            .Height = m_InitImgY - newY
+            If m_IsHeightLocked Then
+                .Top = (m_InitImgY - m_LockedHeight)
+                .Height = m_LockedHeight
+            Else
+                .Top = newY
+                .Height = m_InitImgY - newY
+            End If
         Else
             .Top = m_InitImgY
-            .Height = newY - m_InitImgY
+            If m_IsHeightLocked Then
+                .Height = m_LockedHeight
+            Else
+                .Height = newY - m_InitImgY
+            End If
         End If
+        
     End With
     
-    'Lock position and height to the nearest edge of the image
+    'Lock position and height to their nearest integer equivalent
     PDMath.GetIntClampedRectF m_CropRectF
     
     'If the crop rect is valid, relay its values to the toolpanel
@@ -287,6 +345,87 @@ Private Sub RelayCropChangesToUI()
     
 End Sub
 
-Public Sub RelayCropChangesFromUI()
-
+'The crop toolpanel relays user input via this function.  Left/top/width/height as passed as integers; aspect ratio as a float.
+Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optional ByVal newPropI As Long = 0, Optional ByVal newPropF As Single = 0!)
+    
+    Select Case changedProperty
+        
+        Case pdd_Left
+            m_CropRectF.Left = newPropI
+            
+        Case pdd_Top
+            m_CropRectF.Top = newPropI
+        
+        'Changing width/height requires us to update aspect ratio to match
+        Case pdd_Width, pdd_Height
+            
+            'If the current aspect ratio is locked, we need to update the dimension passed to its exact value,
+            ' then modify the opposite dimension to match the locked aspect ratio.
+            If m_IsAspectLocked And (m_LockedAspectRatio > 0#) Then
+                
+                'User is changing width
+                If (changedProperty = pdd_Width) Then
+                    If toolpanel_Crop.tudCrop(2).IsValid(False) Then
+                        m_CropRectF.Width = newPropI
+                        m_CropRectF.Height = m_CropRectF.Width * (1# / m_LockedAspectRatio)
+                        toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
+                    End If
+                    
+                'User is changing height
+                Else
+                    If toolpanel_Crop.tudCrop(3).IsValid(False) Then
+                        m_CropRectF.Height = newPropI
+                        m_CropRectF.Width = m_CropRectF.Height * m_LockedAspectRatio
+                        toolpanel_Crop.tudCrop(2).Value = m_CropRectF.Width
+                    End If
+                End If
+            
+            'If aspect ratio is *not* locked, freely modify either value, and cache any locked values
+            ' so they can be used elsewhere.
+            Else
+                
+                If (changedProperty = pdd_Width) Then
+                    m_CropRectF.Width = newPropI
+                    If m_IsWidthLocked Then m_LockedWidth = m_CropRectF.Width
+                Else
+                    m_CropRectF.Height = newPropI
+                    If m_IsHeightLocked Then m_LockedHeight = m_CropRectF.Height
+                End If
+                
+                'Changes to width/height (with unlocked aspect ratio) will obviously change the
+                ' current aspect ratio.  Re-calculate aspect ratio and update those spinners accordingly.
+                Dim fracNumerator As Long, fracDenominator As Long
+                PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
+                
+                'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+                If (fracDenominator = 5) Then
+                    fracNumerator = fracNumerator * 2
+                    fracDenominator = fracDenominator * 2
+                End If
+                
+                toolpanel_Crop.tudCrop(4).Value = fracNumerator
+                toolpanel_Crop.tudCrop(5).Value = fracDenominator
+                
+            End If
+        
+        'When changing aspect ratio, the UI passes both the new aspect ratio, and the current size of
+        ' the *opposite* dimension.
+        Case pdd_AspectRatioW
+            m_CropRectF.Width = newPropI
+            toolpanel_Crop.tudCrop(2).Value = newPropI
+            If m_IsAspectLocked Then m_LockedAspectRatio = newPropF
+            
+        Case pdd_AspectRatioH
+            m_CropRectF.Height = newPropI
+            toolpanel_Crop.tudCrop(3).Value = newPropI
+            If m_IsAspectLocked And (newPropF <> 0!) Then m_LockedAspectRatio = 1! / newPropF
+            
+    End Select
+    
+    'After a property change, we must validate the crop rectangle to make sure no funny business occurred
+    ValidateCropRectF
+    
+    '...then request a viewport redraw to reflect any changes
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
 End Sub
