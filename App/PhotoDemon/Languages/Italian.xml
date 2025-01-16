@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1646</langversion>
+<langversion>8.9.1647</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -5614,6 +5614,21 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
+<original>Angle 90</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Angle 45</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Angle 30</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>Finestra</translation>
 </phrase>
@@ -5811,7 +5826,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <translation>Lingua modificata con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 403 phrases. 217 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
+<!-- MainWindow.frm contains 406 phrases. 217 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13615,6 +13630,11 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>quando le immagini arrivano da una fonte esterna (come Esplora risorse)</translation>
 </phrase>
@@ -14301,7 +14321,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 <translation>La nuova posizione della cartella temporanea non avrà effetto finché non si riavvia il programma.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14511,10 +14531,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2747</phrasecount>
+<phrasecount>2751</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5839 phrases. -->
-<!-- 3092 are duplicates, so only 2747 unique phrases have been written to file. -->
-<!-- These 2747 phrases contain approximately 11909 total words. -->
+<!-- As of this build, PhotoDemon contains 5843 phrases. -->
+<!-- 3092 are duplicates, so only 2751 unique phrases have been written to file. -->
+<!-- These 2751 phrases contain approximately 11917 total words. -->
 
 </pdData>

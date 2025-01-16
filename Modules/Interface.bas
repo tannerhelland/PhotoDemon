@@ -747,6 +747,9 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             Menus.SetMenuChecked "snap_canvasedge", Snap.GetSnap_CanvasEdge()
             Menus.SetMenuChecked "snap_centerline", Snap.GetSnap_Centerline()
             Menus.SetMenuChecked "snap_layer", Snap.GetSnap_Layer()
+            Menus.SetMenuChecked "snap_angle_90", Snap.GetSnap_Angle90()
+            Menus.SetMenuChecked "snap_angle_45", Snap.GetSnap_Angle45()
+            Menus.SetMenuChecked "snap_angle_30", Snap.GetSnap_Angle30()
             
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus.
         ' (This flag is very useful for items that require at least one open image to operate.)

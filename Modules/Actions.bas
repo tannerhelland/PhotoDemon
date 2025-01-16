@@ -1378,6 +1378,15 @@ Private Function Launch_ByName_MenuView(ByRef srcMenuName As String, Optional By
         Case "snap_layer"
             Snap.ToggleSnapOptions pdst_Layer
             
+        Case "snap_angle_90"
+            Snap.ToggleSnapOptions pdst_Angle90
+            
+        Case "snap_angle_45"
+            Snap.ToggleSnapOptions pdst_Angle45
+            
+        Case "snap_angle_30"
+            Snap.ToggleSnapOptions pdst_Angle30
+            
         Case Else
             cmdFound = False
         
@@ -2034,6 +2043,9 @@ Public Sub BuildActionDatabase()
     AddAction "snap_canvasedge", vbNullString
     AddAction "snap_centerline", vbNullString
     AddAction "snap_layer", vbNullString
+    AddAction "snap_angle_90", vbNullString
+    AddAction "snap_angle_45", vbNullString
+    AddAction "snap_angle_30", vbNullString
     
     'AddAction "window_toolbox"
     AddAction "window_displaytoolbox", vbNullString
