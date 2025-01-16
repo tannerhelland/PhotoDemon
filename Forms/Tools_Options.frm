@@ -66,6 +66,7 @@ Begin VB.Form FormOptions
       End
       Begin PhotoDemon.pdSpinner spnSnapDistance 
          Height          =   375
+         Index           =   0
          Left            =   120
          TabIndex        =   44
          Top             =   4800
@@ -234,12 +235,39 @@ Begin VB.Form FormOptions
          Index           =   23
          Left            =   0
          Top             =   4320
-         Width           =   8100
+         Width           =   4020
          _ExtentX        =   14288
          _ExtentY        =   503
          Caption         =   "snap distance (in pixels)"
          FontSize        =   12
          ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   25
+         Left            =   4080
+         Top             =   4320
+         Width           =   4020
+         _ExtentX        =   7091
+         _ExtentY        =   503
+         Caption         =   "angle snap distance (in degrees)"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdSpinner spnSnapDistance 
+         Height          =   375
+         Index           =   1
+         Left            =   4200
+         TabIndex        =   48
+         Top             =   4800
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   661
+         DefaultValue    =   5
+         Min             =   1
+         Max             =   15
+         SigDigits       =   1
+         Value           =   5
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -1040,8 +1068,8 @@ Attribute VB_Exposed = False
 'Program Preferences Handler
 'Copyright 2002-2025 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 28/December/24
-'Last update: handle new user preference for mouse wheel zoom vs scroll
+'Last updated: 16/January/25
+'Last update: new user preference for snap distance (degrees) for angle snapping
 '
 'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
 ' XML file that actually stores all preferences.
@@ -1253,8 +1281,10 @@ Private Sub cmdBarMini_OKClick()
     UserPrefs.SetPref_Boolean "Interface", "wheel-zoom", chkZoomMouse.Value
     UserPrefs.SetZoomWithWheel chkZoomMouse.Value
     
-    UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance.Value
-    Snap.SetSnap_Distance spnSnapDistance.Value
+    UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance(0).Value
+    UserPrefs.SetPref_Long "Interface", "snap-degrees", spnSnapDistance(1).Value
+    Snap.SetSnap_Distance spnSnapDistance(0).Value
+    Snap.SetSnap_Degrees spnSnapDistance(1).Value
     
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
     UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
@@ -1486,7 +1516,8 @@ Private Sub LoadAllPreferences()
     csCanvasColor.Color = UserPrefs.GetCanvasColor()
     tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
     btsMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
-    spnSnapDistance.Value = UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
+    spnSnapDistance(0).Value = UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
+    spnSnapDistance(1).Value = UserPrefs.GetPref_Float("Interface", "snap-degrees", 7.5)
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
     csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))

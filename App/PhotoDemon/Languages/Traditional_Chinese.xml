@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.310</langversion>
+<langversion>7.0.311</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -5573,6 +5573,21 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Angle 90</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Angle 45</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Angle 30</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Window</original>
 <translation>視窗</translation>
 </phrase>
@@ -5770,7 +5785,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>語言切換成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 403 phrases. 217 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
+<!-- MainWindow.frm contains 406 phrases. 217 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13564,6 +13579,11 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation></translation>
 </phrase>
@@ -14246,7 +14266,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 202 phrases. 56 were duplicates of existing phrases, so only 146 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14456,10 +14476,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2747</phrasecount>
+<phrasecount>2751</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5839 phrases. -->
-<!-- 3092 are duplicates, so only 2747 unique phrases have been written to file. -->
-<!-- These 2747 phrases contain approximately 11909 total words. -->
+<!-- As of this build, PhotoDemon contains 5843 phrases. -->
+<!-- 3092 are duplicates, so only 2751 unique phrases have been written to file. -->
+<!-- These 2751 phrases contain approximately 11917 total words. -->
 
 </pdData>
