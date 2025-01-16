@@ -4,7 +4,7 @@ Attribute VB_Name = "Snap"
 'Copyright 2024-2025 by Tanner Helland
 'Created: 16/April/24
 'Last updated: 16/January/25
-'Last update: start work on angle snapping in the move/size tool
+'Last update: implement angle snapping for the move/size tool
 '
 'In 2024, snap-to-target support was added to various PhotoDemon tools.  Thank you to all the users
 ' who suggested this feature!
@@ -282,6 +282,27 @@ Public Function SnapAngle(ByVal srcAngle As Single) As Single
         ElseIf (Abs(PDMath.Modulo(srcAngle, 90#)) > (90! - m_SnapDegrees)) Then
             SnapAngle = Int((srcAngle + m_SnapDegrees) / 90!) * 90!
         End If
+    End If
+    
+End Function
+
+'Given a source angle, snap it using some arbitrary snap threshold.  This is used by the Move/Size tool
+' when rotating and the SHIFT key is held down.  (The code for this behavior seemed to fit here as much
+' as anywhere, despite it not being tied to the View > Snap To menu...)
+'
+'Because this function ignores broader Snap preferences, it is up to the user to ensure its behavior
+' is what they want *BEFORE* calling this function.
+'
+' RETURNS: source angle, snapped to the nearest increment of snapTarget.
+Public Function SnapAngle_Arbitrary(ByVal srcAngle As Single, ByVal snapTarget As Single) As Single
+    
+    Dim halfAngle As Single
+    halfAngle = snapTarget * 0.5!
+    
+    If (Abs(PDMath.Modulo(srcAngle, snapTarget)) < halfAngle) Then
+        SnapAngle_Arbitrary = Int(srcAngle / snapTarget) * snapTarget
+    Else
+        SnapAngle_Arbitrary = Int((srcAngle + halfAngle) / snapTarget) * snapTarget
     End If
     
 End Function

@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools"
 'Helper functions for various PhotoDemon tools
 'Copyright 2014-2025 by Tanner Helland
 'Created: 06/February/14
-'Last updated: 10/April/24
-'Last update: add snap support when moving or resizing a layer
+'Last updated: 16/January/25
+'Last update: add snap support when rotating a layer
 '
 'To keep the pdCanvas user control codebase lean, many of its MouseMove events redirect here, to specialized
 ' functions that take mouse actions on the canvas and translate them into tool actions.
@@ -546,8 +546,14 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                     If (pt2.x < pt1.x) Then newAngle = -newAngle
                 End If
                 
-                'If snap is active, snap the angle before committing it
-                newAngle = Snap.SnapAngle(newAngle)
+                'If the SHIFT key is down, snap the angle
+                If isShiftDown Then
+                    newAngle = Snap.SnapAngle_Arbitrary(newAngle, 15!)
+                    
+                'If the SHIFT key is *not* down, rely on the View > Snap To... menu for snap behavior
+                Else
+                    newAngle = Snap.SnapAngle(newAngle)
+                End If
                 
                 'Apply the angle to the layer, and our work here is done!
                 .SetLayerAngle newAngle
