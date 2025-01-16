@@ -259,6 +259,8 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     'For operations that transform multiple points (like moving an entire layer), we need to snap points *besides*
     ' the mouse pointer (e.g. the layer edges, which are not located at the mouse position), so we'll need to wait
     ' to snap until the transform has been applied to the underlying layer.
+    '
+    '(Note: snapping angle is not handled this way; it's handled later in the function.)
     Dim srcPtF As PointFloat, snappedPtF As PointFloat
     If Snap.GetSnap_Any() Then
         
@@ -544,7 +546,8 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                     If (pt2.x < pt1.x) Then newAngle = -newAngle
                 End If
                 
-                'SNAP HERE?
+                'If snap is active, snap the angle before committing it
+                newAngle = Snap.SnapAngle(newAngle)
                 
                 'Apply the angle to the layer, and our work here is done!
                 .SetLayerAngle newAngle

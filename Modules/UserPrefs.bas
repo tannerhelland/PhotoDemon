@@ -642,7 +642,7 @@ Public Sub LoadUserSettings()
         Snap.ToggleSnapOptions pdst_Angle90, True, UserPrefs.GetPref_Boolean("Interface", "snap-angle-90", True)
         Snap.ToggleSnapOptions pdst_Angle45, True, UserPrefs.GetPref_Boolean("Interface", "snap-angle-45", True)
         Snap.ToggleSnapOptions pdst_Angle30, True, UserPrefs.GetPref_Boolean("Interface", "snap-angle-30", False)
-        Snap.SetSnap_Degrees UserPrefs.GetPref_Float("Interface", "snap-degrees", 5#)
+        Snap.SetSnap_Degrees UserPrefs.GetPref_Float("Interface", "snap-degrees", 7.5)
         Snap.SetSnap_Distance UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
         
         m_ZoomWithWheel = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)

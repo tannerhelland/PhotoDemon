@@ -159,7 +159,6 @@ Public Sub NotifyNoSnapping_Y()
 End Sub
 
 Public Sub SetSnap_Angle90(ByVal newState As Boolean)
-    Debug.Print "SetSnap_Angle90", newState
     m_SnapAngle90 = newState
 End Sub
 
@@ -232,7 +231,6 @@ Public Sub ToggleSnapOptions(ByVal snapTarget As PD_SnapTargets, Optional ByVal 
             Menus.SetMenuChecked "snap_layer", newState
             
         Case pdst_Angle90
-            Debug.Print "here Snap", newState
             If (Not forceInsteadOfToggle) Then newState = Not Snap.GetSnap_Angle90()
             Snap.SetSnap_Angle90 newState
             UserPrefs.SetPref_Boolean "Interface", "snap-angle-90", newState
@@ -254,6 +252,39 @@ Public Sub ToggleSnapOptions(ByVal snapTarget As PD_SnapTargets, Optional ByVal 
     End Select
     
 End Sub
+
+'Given a source angle, snap it using current snap settings.
+' RETURNS: snapped angle, as relevant.  Original angle if angle snapping is turned OFF.
+Public Function SnapAngle(ByVal srcAngle As Single) As Single
+    
+    SnapAngle = srcAngle
+    If (Not Snap.GetSnap_Any()) Then Exit Function
+    
+    If (Snap.GetSnap_Angle30()) Then
+        If (Abs(PDMath.Modulo(srcAngle, 30#)) < m_SnapDegrees) Then
+            SnapAngle = Int(srcAngle / 30!) * 30!
+        ElseIf (Abs(PDMath.Modulo(srcAngle, 30#)) > (30 - m_SnapDegrees)) Then
+            SnapAngle = Int((srcAngle + m_SnapDegrees) / 30!) * 30!
+        End If
+    End If
+    
+    If (Snap.GetSnap_Angle45()) Then
+        If (Abs(PDMath.Modulo(srcAngle, 45#)) < m_SnapDegrees) Then
+            SnapAngle = Int(srcAngle / 45!) * 45!
+        ElseIf (Abs(PDMath.Modulo(srcAngle, 45#)) > (45! - m_SnapDegrees)) Then
+            SnapAngle = Int((srcAngle + m_SnapDegrees) / 45!) * 45!
+        End If
+    End If
+    
+    If (Snap.GetSnap_Angle90()) Then
+        If (Abs(PDMath.Modulo(srcAngle, 90#)) < m_SnapDegrees) Then
+            SnapAngle = Int(srcAngle / 90!) * 90!
+        ElseIf (Abs(PDMath.Modulo(srcAngle, 90#)) > (90! - m_SnapDegrees)) Then
+            SnapAngle = Int((srcAngle + m_SnapDegrees) / 90!) * 90!
+        End If
+    End If
+    
+End Function
 
 'Snap the passed point to any relevant snap targets (based on the user's current snap settings).
 Public Sub SnapPointByMoving(ByRef srcPointF As PointFloat, ByRef dstPointF As PointFloat)
