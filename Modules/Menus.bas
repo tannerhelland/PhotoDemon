@@ -600,6 +600,10 @@ Public Sub InitializeMenus()
     AddMenuItem "Canvas edges", "snap_canvasedge", 8, 11, 0
     AddMenuItem "Centerlines", "snap_centerline", 8, 11, 1
     AddMenuItem "Layers", "snap_layer", 8, 11, 2
+    AddMenuItem "-", "-", 8, 11, 3
+    AddMenuItem "Angle 90", "snap_angle_90", 8, 11, 4
+    AddMenuItem "Angle 45", "snap_angle_45", 8, 11, 5
+    AddMenuItem "Angle 30", "snap_angle_30", 8, 11, 6
     
     'Window Menu
     AddMenuItem "Window", "window_top", 9

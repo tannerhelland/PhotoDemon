@@ -1768,6 +1768,22 @@ Begin VB.Form FormMain
             Caption         =   "Layers"
             Index           =   2
          End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "-"
+            Index           =   3
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Angle 90"
+            Index           =   4
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Angle 45"
+            Index           =   5
+         End
+         Begin VB.Menu MnuSnap 
+            Caption         =   "Angle 30"
+            Index           =   6
+         End
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -3790,6 +3806,14 @@ Private Sub MnuSnap_Click(Index As Integer)
             Actions.LaunchAction_ByName "snap_centerline"
         Case 2
             Actions.LaunchAction_ByName "snap_layer"
+        Case 3
+            'separator
+        Case 4
+            Actions.LaunchAction_ByName "snap_angle_90"
+        Case 5
+            Actions.LaunchAction_ByName "snap_angle_45"
+        Case 6
+            Actions.LaunchAction_ByName "snap_angle_30"
     End Select
 End Sub
 

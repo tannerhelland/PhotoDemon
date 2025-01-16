@@ -3,8 +3,8 @@ Attribute VB_Name = "Snap"
 'Snap-to-target Handler
 'Copyright 2024-2025 by Tanner Helland
 'Created: 16/April/24
-'Last updated: 24/April/24
-'Last update: finalize support for rendering smart guides when snapping
+'Last updated: 16/January/25
+'Last update: start work on angle snapping in the move/size tool
 '
 'In 2024, snap-to-target support was added to various PhotoDemon tools.  Thank you to all the users
 ' who suggested this feature!
@@ -24,10 +24,14 @@ Public Enum PD_SnapTargets
     pdst_CanvasEdge = 1
     pdst_Centerline = 2
     pdst_Layer = 4
+    pdst_Angle90 = 8
+    pdst_Angle45 = 16
+    pdst_Angle30 = 32
 End Enum
 
 #If False Then
     Private Const pdst_Global = 0, pdst_CanvasEdge = 1, pdst_Centerline = 2, pdst_Layer = 4
+    Private Const pdst_Angle90 = 8, pdst_Angle45 = 16, pdst_Angle30 = 32
 #End If
 
 'When snapping coordinates, we need to compare all possible snap targets and choose the best independent
@@ -50,7 +54,8 @@ End Type
 'To improve performance, snap-to settings are cached locally (instead of traveling out to
 ' the user preference engine on every call).
 Private m_SnapGlobal As Boolean, m_SnapToCanvasEdge As Boolean, m_SnapToCenterline As Boolean, m_SnapToLayer As Boolean
-Private m_SnapDistance As Long
+Private m_SnapAngle90 As Boolean, m_SnapAngle45 As Boolean, m_SnapAngle30 As Boolean
+Private m_SnapDistance As Long, m_SnapDegrees As Single
 
 'When a snap request was successful, these flags are set to TRUE and points defining the snapped line are
 ' also generated (so the renderer can display a smart guide, if enabled).
@@ -62,7 +67,20 @@ Public Function GetSnap_Any() As Boolean
     GetSnap_Any = m_SnapGlobal
     If m_SnapGlobal Then
         GetSnap_Any = m_SnapToCanvasEdge Or m_SnapToCenterline Or m_SnapToLayer
+        GetSnap_Any = GetSnap_Any Or m_SnapAngle90 Or m_SnapAngle45 Or m_SnapAngle30
     End If
+End Function
+
+Public Function GetSnap_Angle90() As Boolean
+    GetSnap_Angle90 = m_SnapAngle90
+End Function
+
+Public Function GetSnap_Angle45() As Boolean
+    GetSnap_Angle45 = m_SnapAngle45
+End Function
+
+Public Function GetSnap_Angle30() As Boolean
+    GetSnap_Angle30 = m_SnapAngle30
 End Function
 
 Public Function GetSnap_CanvasEdge() As Boolean
@@ -71,6 +89,16 @@ End Function
 
 Public Function GetSnap_Centerline() As Boolean
     GetSnap_Centerline = m_SnapToCenterline
+End Function
+
+Public Function GetSnap_Degrees() As Single
+
+    GetSnap_Degrees = m_SnapDegrees
+    
+    'Failsafe only; should never trigger
+    If (GetSnap_Degrees < 1!) Then GetSnap_Degrees = 5!
+    If (GetSnap_Degrees > 15!) Then GetSnap_Degrees = 15!
+    
 End Function
 
 Public Function GetSnap_Distance() As Long
@@ -130,12 +158,31 @@ Public Sub NotifyNoSnapping_Y()
     m_SnappedY = False
 End Sub
 
+Public Sub SetSnap_Angle90(ByVal newState As Boolean)
+    Debug.Print "SetSnap_Angle90", newState
+    m_SnapAngle90 = newState
+End Sub
+
+Public Sub SetSnap_Angle45(ByVal newState As Boolean)
+    m_SnapAngle45 = newState
+End Sub
+
+Public Sub SetSnap_Angle30(ByVal newState As Boolean)
+    m_SnapAngle30 = newState
+End Sub
+
 Public Sub SetSnap_CanvasEdge(ByVal newState As Boolean)
     m_SnapToCanvasEdge = newState
 End Sub
 
 Public Sub SetSnap_Centerline(ByVal newState As Boolean)
     m_SnapToCenterline = newState
+End Sub
+
+Public Sub SetSnap_Degrees(ByVal newDegrees As Single)
+    m_SnapDegrees = newDegrees
+    If (m_SnapDegrees < 1!) Then m_SnapDegrees = 1!
+    If (m_SnapDegrees > 15!) Then m_SnapDegrees = 15!
 End Sub
 
 Public Sub SetSnap_Distance(ByVal newDistance As Long)
@@ -183,6 +230,26 @@ Public Sub ToggleSnapOptions(ByVal snapTarget As PD_SnapTargets, Optional ByVal 
             Snap.SetSnap_Layer newState
             UserPrefs.SetPref_Boolean "Interface", "snap-layer", newState
             Menus.SetMenuChecked "snap_layer", newState
+            
+        Case pdst_Angle90
+            Debug.Print "here Snap", newState
+            If (Not forceInsteadOfToggle) Then newState = Not Snap.GetSnap_Angle90()
+            Snap.SetSnap_Angle90 newState
+            UserPrefs.SetPref_Boolean "Interface", "snap-angle-90", newState
+            Menus.SetMenuChecked "snap_angle_90", newState
+            
+        Case pdst_Angle45
+            If (Not forceInsteadOfToggle) Then newState = Not Snap.GetSnap_Angle45()
+            Snap.SetSnap_Angle45 newState
+            UserPrefs.SetPref_Boolean "Interface", "snap-angle-45", newState
+            Menus.SetMenuChecked "snap_angle_45", newState
+            
+        Case pdst_Angle30
+            If (Not forceInsteadOfToggle) Then newState = Not Snap.GetSnap_Angle30()
+            Snap.SetSnap_Angle30 newState
+            UserPrefs.SetPref_Boolean "Interface", "snap-angle-30", newState
+            Menus.SetMenuChecked "snap_angle_30", newState
+            
             
     End Select
     

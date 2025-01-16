@@ -544,6 +544,8 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                     If (pt2.x < pt1.x) Then newAngle = -newAngle
                 End If
                 
+                'SNAP HERE?
+                
                 'Apply the angle to the layer, and our work here is done!
                 .SetLayerAngle newAngle
                 
