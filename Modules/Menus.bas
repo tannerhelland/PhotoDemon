@@ -565,11 +565,13 @@ Public Sub InitializeMenus()
     If debugMenuVisibility Then
         AddMenuItem "-", "-", 7, 14
         AddMenuItem "Developers", "tools_developers", 7, 15
-            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 15, 0, , False
-            AddMenuItem "Build theme package...", "tools_themepackage", 7, 15, 1, , False
-            AddMenuItem "-", "-", 7, 15, 2
-            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 15, 3, , False
-            AddMenuItem "Test", "effects_developertest", 7, 15, 4, , False
+            AddMenuItem "View debug log for this session...", "tools_viewdebuglog", 7, 15, 0, , False
+            AddMenuItem "-", "-", 7, 15, 1, , False
+            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 15, 2, , False
+            AddMenuItem "Build theme package...", "tools_themepackage", 7, 15, 3, , False
+            AddMenuItem "-", "-", 7, 15, 4
+            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 15, 5, , False
+            AddMenuItem "Test", "effects_developertest", 7, 15, 6, , False
     End If
     
     'View Menu

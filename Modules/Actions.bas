@@ -1261,6 +1261,9 @@ Private Function Launch_ByName_MenuTools(ByRef srcMenuName As String, Optional B
             ShowPDDialog vbModal, FormPluginManager
             
         Case "tools_developers"
+            Case "tools_viewdebuglog"
+                If (UserPrefs.GenerateDebugLogs() And (LenB(PDDebug.GetDebugLogFilename()) <> 0)) Then Web.OpenURL PDDebug.GetDebugLogFilename()
+            
             Case "tools_themeeditor"
                 ShowPDDialog vbModal, FormThemeEditor
                 
@@ -1271,6 +1274,7 @@ Private Function Launch_ByName_MenuTools(ByRef srcMenuName As String, Optional B
                 ShowPDDialog vbModal, FormPackage
                 
         Case "effects_developertest"
+            'Handled directly in FormMain (for legacy reasons)
         
         Case Else
             cmdFound = False
