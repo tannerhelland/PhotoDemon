@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，2024.12）</langname>
-<langversion>2024.12.16</langversion>
+<langversion>2024.12.17</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on December 12, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
@@ -5520,6 +5520,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>View debug log for this session</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Theme editor</original>
 <translation>主题编辑器</translation>
 </phrase>
@@ -5821,7 +5826,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>语言切换成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 406 phrases. 217 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 407 phrases. 217 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14526,11 +14531,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2751</phrasecount>
+<phrasecount>2752</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5843 phrases. -->
-<!-- 3092 are duplicates, so only 2751 unique phrases have been written to file. -->
-<!-- These 2751 phrases contain approximately 11917 total words. -->
+<!-- As of this build, PhotoDemon contains 5844 phrases. -->
+<!-- 3092 are duplicates, so only 2752 unique phrases have been written to file. -->
+<!-- These 2752 phrases contain approximately 11923 total words. -->
 
 <special-translations>
 

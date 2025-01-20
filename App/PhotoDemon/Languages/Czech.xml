@@ -5,8 +5,8 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>cs-CZ</langid>
-<langname>Czech</langname>
-<langversion>1.0.1</langversion>
+<langname>Čeština (Czech)</langname>
+<langversion>1.0.2</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -5748,6 +5748,11 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
+<original>View debug log for this session</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Theme editor</original>
 <translation>Editor motivů
 </translation>
@@ -6084,7 +6089,7 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 </translation>
 </phrase>
 
-<!-- MainWindow.frm contains 406 phrases. 217 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 407 phrases. 217 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -15178,10 +15183,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2751</phrasecount>
+<phrasecount>2752</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5843 phrases. -->
-<!-- 3092 are duplicates, so only 2751 unique phrases have been written to file. -->
-<!-- These 2751 phrases contain approximately 11917 total words. -->
+<!-- As of this build, PhotoDemon contains 5844 phrases. -->
+<!-- 3092 are duplicates, so only 2752 unique phrases have been written to file. -->
+<!-- These 2752 phrases contain approximately 11923 total words. -->
 
 </pdData>

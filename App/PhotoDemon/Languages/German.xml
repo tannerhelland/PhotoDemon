@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 95</langversion>
+<langversion>2024.12 Alpha - Build 95.1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5525,6 +5525,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
+<original>View debug log for this session</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Theme editor</original>
 <translation>Theme-Editor</translation>
 </phrase>
@@ -5827,7 +5832,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 406 phrases. 217 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 407 phrases. 217 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14530,10 +14535,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2751</phrasecount>
+<phrasecount>2752</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5843 phrases. -->
-<!-- 3092 are duplicates, so only 2751 unique phrases have been written to file. -->
-<!-- These 2751 phrases contain approximately 11917 total words. -->
+<!-- As of this build, PhotoDemon contains 5844 phrases. -->
+<!-- 3092 are duplicates, so only 2752 unique phrases have been written to file. -->
+<!-- These 2752 phrases contain approximately 11923 total words. -->
 
 </pdData>
