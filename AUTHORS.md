@@ -91,6 +91,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Leandro Ascierto](http://leandroascierto.com/blog/clsmenuimage/)
 * [Lemuel Cushing](https://github.com/LemuelCushing)
 * Leonid Blyakher
+* [LsGeorge](https://github.com/LsGeorge)
 * Manfredi Marceca
 * [Manuel Augusto Santos](https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303)
 * Mariozo
