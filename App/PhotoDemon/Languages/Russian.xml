@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12.9</langversion>
+<langversion>2024.12 Alpha - Build 97.1</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -575,12 +575,12 @@
 
 <phrase>
 <original>Split layer into image</original>
-<translation>Разделить слой на изображение</translation>
+<translation>Разделить слои на изображении</translation>
 </phrase>
 
 <phrase>
 <original>Split layers into images</original>
-<translation>Разделить слои на изображения</translation>
+<translation>Разделить слои на отдельные изображения</translation>
 </phrase>
 
 <phrase>
@@ -645,7 +645,7 @@
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation>Границы выделенного контура</translation>
+<translation>Обводка контура выделения</translation>
 </phrase>
 
 <phrase>
@@ -5232,7 +5232,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Select</original>
-<translation>Выбор</translation>
+<translation>Выделение</translation>
 </phrase>
 
 <phrase>
@@ -5252,12 +5252,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Shrink</original>
-<translation>Сокращение</translation>
+<translation>Сжатие</translation>
 </phrase>
 
 <phrase>
 <original>Border</original>
-<translation>Выделение границ</translation>
+<translation>Граница</translation>
 </phrase>
 
 <phrase>
@@ -5277,7 +5277,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Selection mask as image</original>
-<translation>Выделение маски в виде изображения</translation>
+<translation>Выделенная маска как изображения</translation>
 </phrase>
 
 <phrase>
@@ -5512,7 +5512,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Options</original>
-<translation>Опции</translation>
+<translation>Параметры</translation>
 </phrase>
 
 <phrase>
@@ -5552,7 +5552,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>View</original>
-<translation>Дисплей</translation>
+<translation>Вид</translation>
 </phrase>
 
 <phrase>
@@ -5582,57 +5582,57 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show extras</original>
-<translation>Показать дополнения</translation>
+<translation>Показать дополнительные линии</translation>
 </phrase>
 
 <phrase>
 <original>Layer edges</original>
-<translation>Края слоя</translation>
+<translation>Границы слоя</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation>Направляющие</translation>
+<translation>Быстрые направляющие</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation>Зафиксировать</translation>
+<translation>Привязка</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation>Привязаться к</translation>
+<translation>Привязать к</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation>Край холста</translation>
+<translation>Краям холста</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation>Центральная линия</translation>
+<translation>Центральной линии</translation>
 </phrase>
 
 <phrase>
 <original>Layers</original>
-<translation>Слой</translation>
+<translation>Слои</translation>
 </phrase>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>Угол 90</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>Угол 45</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>Угол 30</translation>
 </phrase>
 
 <phrase>
@@ -7743,7 +7743,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>above</original>
-<translation>Поверх</translation>
+<translation>верха</translation>
 </phrase>
 
 <phrase>
@@ -7758,42 +7758,42 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>patch test size</original>
-<translation>Размер патч-теста</translation>
+<translation>размер тестового исправления</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation>кандидаты на патчи, выбранные случайным образом</translation>
+<translation>случайные кандидаты на исправление</translation>
 </phrase>
 
 <phrase>
 <original>refinement (percent)</original>
-<translation>Степень очистки (%)</translation>
+<translation>уточнение (в процентах)</translation>
 </phrase>
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation>коэффициент точности патча</translation>
+<translation>коэффициент точности исправления</translation>
 </phrase>
 
 <phrase>
 <original>sample radius</original>
-<translation>Радиус образца</translation>
+<translation>радиус скругления</translation>
 </phrase>
 
 <phrase>
 <original>left</original>
-<translation>Влево</translation>
+<translation>слева</translation>
 </phrase>
 
 <phrase>
 <original>right</original>
-<translation>Право</translation>
+<translation>справа</translation>
 </phrase>
 
 <phrase>
 <original>below</original>
-<translation>Вниз</translation>
+<translation>низа</translation>
 </phrase>
 
 <phrase>
@@ -13633,12 +13633,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation>Расстояние между точками (в пикселях)</translation>
+<translation>привязка расстояний (в пикселях)</translation>
 </phrase>
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>угловая привязка расстояний (в градусах)</translation>
 </phrase>
 
 <phrase>
