@@ -56,6 +56,13 @@ Option Explicit
 ' to PD's primary debug log.
 Private Const PCX_DEBUG_VERBOSE As Boolean = False
 
+'The PCX spec is relatively unambiguous, but due to its age (pre-widespread Internet availability),
+' I'm guessing many implementors didn't actually read the spec and just reverse-engineered its behavior
+' from files in the wild.  This leads to a lot of weird spec deviations in actual images, some of which
+' are recoverable (with extra handling on our part).  To enforce stricter per-spec behavior, set this to
+' FALSE.  In production builds, I recommend leaving as TRUE, to improve compatibility with more images.
+Private Const PCX_DEBUG_RESCUE_BROKEN As Boolean = True
+
 'PCX files use a single-byte (!!!) marker to start
 Private Const ZSOFT_VALIDATION_BYTE As Byte = &HA
 
@@ -560,9 +567,11 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
         ' decoding loop.
         Dim bytesPerSingleScanline As Long
         bytesPerSingleScanline = m_Header.pcx_BytesPerScanline
-        
-        If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Preparing to decode PCX image (" & imgWidth & "x" & imgHeight & ") @ " & m_Header.pcx_BitsPerPixel & "x" & m_Header.pcx_ChannelCount & " (" & imgStrideInBytes & ")"
-        If PCX_DEBUG_VERBOSE And ((m_Header.pcx_XMin <> 0) Or (m_Header.pcx_YMin <> 0)) Then PDDebug.LogAction "Note: unexpected x/y min values: " & m_Header.pcx_XMin & ", " & m_Header.pcx_YMin
+        If PCX_DEBUG_VERBOSE Then
+            If ((bytesPerSingleScanline And 1) = 1) Then PDDebug.LogAction "WARNING: bytes per scanline value is bad; will attempt load anyway."
+            If ((m_Header.pcx_XMin <> 0) Or (m_Header.pcx_YMin <> 0)) Then PDDebug.LogAction "Note: unexpected x/y min values: " & m_Header.pcx_XMin & ", " & m_Header.pcx_YMin
+            PDDebug.LogAction "Preparing to decode PCX image (" & imgWidth & "x" & imgHeight & ") @ " & m_Header.pcx_BitsPerPixel & "x" & m_Header.pcx_ChannelCount & " (" & imgStrideInBytes & ")"
+        End If
         
         'PCX uses a strange hybrid of "planes" and "bit-depths" that is unlike other, more modern formats.
         ' We need to multiply these together to arrive at an "actual" bit-depth (although note that it
@@ -801,15 +810,20 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                         'Failsafe check for RLE runs that would cross into the next scanline.
                         If (xOffset + runLength > imgStrideInBytes) Then
                             
-                            'Store the bad run amount and value for the *next* line; we'll try to
-                            ' rescue the encoding there.
-                            m_BadRLECount(y + 1) = (xOffset + runLength) - imgStrideInBytes
-                            m_BadRLEValue(y + 1) = curByte
+                            If PCX_DEBUG_RESCUE_BROKEN Then
+                                
+                                'Store the bad run amount and value for the *next* line; we'll try to
+                                ' rescue the encoding there.
+                                m_BadRLECount(y + 1) = (xOffset + runLength) - imgStrideInBytes
+                                m_BadRLEValue(y + 1) = curByte
+                                
+                                'This RLE runs breaks spec and extends to the next line.  Decoding from this
+                                ' point forward may not work, but you could theoretically attempt to fix this
+                                ' by prepending the run to the next line, then going from there.
+                                runLength = imgStrideInBytes - xOffset
+                                
+                            End If
                             
-                            'This RLE runs breaks spec and extends to the next line.  Decoding from this
-                            ' point forward may not work, but you could theoretically attempt to fix this
-                            ' by prepending the run to the next line, then going from there.
-                            runLength = imgStrideInBytes - xOffset
                             If PCX_DEBUG_VERBOSE Then InternalError FUNC_NAME, "RLE overrun on line " & y
                             
                         End If
