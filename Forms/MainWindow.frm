@@ -1643,20 +1643,28 @@ Begin VB.Form FormMain
          Caption         =   "Developers"
          Index           =   15
          Begin VB.Menu MnuDevelopers 
-            Caption         =   "Theme editor..."
+            Caption         =   "View debug log for this session..."
             Index           =   0
          End
          Begin VB.Menu MnuDevelopers 
-            Caption         =   "Build theme package..."
+            Caption         =   "-"
             Index           =   1
          End
          Begin VB.Menu MnuDevelopers 
-            Caption         =   "-"
+            Caption         =   "Theme editor..."
             Index           =   2
          End
          Begin VB.Menu MnuDevelopers 
-            Caption         =   "Build standalone package..."
+            Caption         =   "Build theme package..."
             Index           =   3
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "-"
+            Index           =   4
+         End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Build standalone package..."
+            Index           =   5
          End
          Begin VB.Menu MnuTest 
             Caption         =   "Test"
@@ -2096,6 +2104,13 @@ Private Sub Form_Load()
         PDDebug.LogAction "Checking for old autosave data..."
         Autosaves.InitializeAutosave
         
+        'PD's internal debug logger will now be active if...
+        ' 1) this is a nightly build, or...
+        ' 2) the last session crashed, or...
+        ' 3) the user manually activated debug logging
+        '
+        'Activate the Tools > Developer > View debug log for current session menu accordingly
+        Menus.SetMenuEnabled "tools_viewdebuglog", UserPrefs.GenerateDebugLogs()
         
         '*************************************************************************************************************************************
         ' Next, analyze the command line and load any passed image files
@@ -2906,12 +2921,16 @@ End Sub
 Private Sub MnuDevelopers_Click(Index As Integer)
     Select Case Index
         Case 0
-            Actions.LaunchAction_ByName "tools_themeeditor"
+            Actions.LaunchAction_ByName "tools_viewdebuglog"
         Case 1
-            Actions.LaunchAction_ByName "tools_themepackage"
-        Case 2
             '(separator)
+        Case 2
+            Actions.LaunchAction_ByName "tools_themeeditor"
         Case 3
+            Actions.LaunchAction_ByName "tools_themepackage"
+        Case 4
+            '(separator)
+        Case 5
             Actions.LaunchAction_ByName "tools_standalonepackage"
     End Select
 End Sub

@@ -77,8 +77,9 @@ Private m_logDatatoFile As Boolean
 Private m_debuggerID As Long
 
 'Full path to the log file for this debug session.  This is created by the StartDebugger function, and it relies on
-' the /Debug path specified by the pdPreferences class.  (Generally this is the /Data/Debug folder of wherever PhotoDemon.exe
-' is located.)
+' the /Debug path specified by the pdPreferences class.
+'
+'(Generally this is the /Data/Debug folder of wherever PhotoDemon.exe is located.)
 Private m_logPath As String
 
 'Number of unique events logged this session.
@@ -106,6 +107,10 @@ Private m_utf8Buffer() As Byte, m_utf8Size As Long
 
 'A string builder is used to cut down on string allocations
 Private m_LogString As pdString
+
+Public Function GetDebugLogFilename() As String
+    GetDebugLogFilename = m_logPath
+End Function
 
 Public Sub InitializeDebugger()
     
