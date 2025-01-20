@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 (Build 28).2</langversion>
+<langversion>2024.12 Alpha - Build 95</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5616,17 +5616,17 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>Winkel 90</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>Winkel 45</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>Winkel 30</translation>
 </phrase>
 
 <phrase>
@@ -13630,7 +13630,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>Winkel-Einrastdistanz (in Grad)</translation>
 </phrase>
 
 <phrase>
