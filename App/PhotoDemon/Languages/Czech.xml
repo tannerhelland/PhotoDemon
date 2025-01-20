@@ -10347,8 +10347,7 @@ Pokud jej chcete uložit pod jiným názvem souboru, vyberte 'Zrušit' a poté p
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>po úspěšném obnovení vymažte originál (neopravený)
-<</translation>
+<translation>po úspěšném obnovení vymažte originál (neopravený)</translation>
 </phrase>
 
 <phrase>
@@ -11808,8 +11807,7 @@ aplikace - Windows 95, 98, ME
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation>Soubory PNG podporují různé kompresní strategie (nazývané „filtry“).  Inteligentní výběr filtru poskytuje lepší kompresi.  Použijte automatické nastavení, aby PhotoDemon testoval více strategií a automaticky vybral tu, která produkuje nejlepší kompresi.
-<překlad><</translation>
+<translation>Soubory PNG podporují různé kompresní strategie (nazývané „filtry“).  Inteligentní výběr filtru poskytuje lepší kompresi.  Použijte automatické nastavení, aby PhotoDemon testoval více strategií a automaticky vybral tu, která produkuje nejlepší kompresi.</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->

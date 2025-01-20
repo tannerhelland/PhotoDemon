@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 95.1</langversion>
+<langversion>2024.12 Alpha - Build 103</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5526,7 +5526,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>Debug-Log für diese Session ansehen</translation>
 </phrase>
 
 <phrase>
@@ -13860,7 +13860,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>memory usage will be displayed here</original>
-<translation>Speicherauslastung wird hier angezeigt</translation>
+<translation>Speichernutzung wird hier angezeigt</translation>
 </phrase>
 
 <phrase>
@@ -14297,12 +14297,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>current PhotoDemon memory usage</original>
-<translation>Aktuelle PhotoDemon-Speicherauslastung</translation>
+<translation>Aktuelle PhotoDemon-Speichernutzung</translation>
 </phrase>
 
 <phrase>
 <original>max PhotoDemon memory usage this session</original>
-<translation>Max. PhotoDemon-Speicherauslastung in dieser Session</translation>
+<translation>Max. PhotoDemon-Speichernutzung in dieser Session</translation>
 </phrase>
 
 <phrase>
