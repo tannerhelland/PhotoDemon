@@ -2351,8 +2351,9 @@ Friend Function CheckForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long, 
     ' working with standard layers), it lets us generalize all coordinate checks into a single function, which is awesome!
     Dim poiList() As PointFloat
     
-    'Points of interest are sorted by layer type.  In most cases, only the corners of a layer are interesting (as they control
-    ' the layer's bounding box), but in the future, things like a Pen tool could have tons of points of interest.
+    'Points of interest are sorted by layer type.  In most cases, only the corners of a layer are interesting
+    ' (as they control the layer's bounding box), but in the future, things like a Pen tool could have many
+    ' points of interest.
     Select Case m_LayerType
     
         'Image and text layers consider their corners to be points of interest

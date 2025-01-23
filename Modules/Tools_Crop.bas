@@ -32,6 +32,9 @@ Private m_CropRectF As RectF
 Private m_IsWidthLocked As Boolean, m_IsHeightLocked As Boolean, m_IsAspectLocked As Boolean
 Private m_LockedWidth As Long, m_LockedHeight As Long, m_LockedAspectRatio As Double
 
+'Index of the current mouse_over point, if any.
+Private m_idxHover As PD_PointOfInterest
+
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
     'Update the status bar with the curent crop rectangle (if any)
@@ -72,9 +75,31 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     Set cropOutline = New pd2DPath
     cropOutline.AddRectangle_RectF cropRectCanvas
     
-    'Stroke the path
+    'Stroke the outline path
     PD2D.DrawPath cSurface, basePenInactive, cropOutline
     PD2D.DrawPath cSurface, topPenInactive, cropOutline
+    
+    'Next, we want to render drag outlines over the four corner vertices.
+    Dim ptCorners() As PointFloat, numPoints As Long
+    numPoints = GetCropCorners(ptCorners)
+    
+    'Next, convert each corner from image coordinate space to the active viewport coordinate space
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, ptCorners, False
+    
+    Dim cornerSize As Single, halfCornerSize As Single
+    cornerSize = SQUARE_CORNER_SIZE
+    halfCornerSize = cornerSize * 0.5!
+    
+    Dim i As Long
+    For i = 0 To numPoints - 1
+        If (i = m_idxHover) Then
+            PD2D.DrawRectangleF cSurface, basePenActive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            PD2D.DrawRectangleF cSurface, topPenActive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
+        Else
+            PD2D.DrawRectangleF cSurface, basePenInactive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            PD2D.DrawRectangleF cSurface, topPenInactive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
+        End If
+    Next i
     
     'Free rendering objects
     Set cSurface = Nothing
@@ -109,12 +134,15 @@ End Sub
 
 Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Single, ByVal canvasY As Single)
     
+    'Convert the current x/y position from canvas to image coordinates
+    Dim imgX As Double, imgY As Double
+    Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
+    
+    'Regardless of mousedown state, see if the mouse is over any of the corner nodes of the crop region.
+    'if (
+    
     'Cache current x/y positions
     If m_LMBDown Then
-        
-        'Convert the current x/y position from canvas to image coordinates
-        Dim imgX As Double, imgY As Double
-        Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
         
         'Move coordinates around to ensure positive width/height
         UpdateCropRectF imgX, imgY
@@ -123,10 +151,13 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
         
         'TODO: apply aspect ratio, if any
         
-        'Request a viewport redraw too
-        Viewport.Stage4_FlipBufferAndDrawUI srcImage, FormMain.MainCanvas(0)
-    
     End If
+    
+    'Update the currently hovered crop corner, if any
+    UpdateMousePOI imgX, imgY
+    
+    'Finally, request a viewport redraw (to reflect any changes)
+    Viewport.Stage4_FlipBufferAndDrawUI srcImage, FormMain.MainCanvas(0)
     
 End Sub
 
@@ -249,6 +280,93 @@ Public Sub UnlockProperty(ByVal selProperty As PD_SelectionLockable)
         m_IsAspectLocked = False
     End If
 End Sub
+
+Public Sub ReadyForCursor(ByRef srcCanvasView As pdCanvasView)
+
+    Select Case m_idxHover
+    
+        'Mouse not over the crop
+        Case poi_Undefined
+            srcCanvasView.RequestCursor_System IDC_ARROW
+            
+        'Mouse is within the crop region, but not over a corner node
+        Case poi_Interior
+            srcCanvasView.RequestCursor_System IDC_SIZEALL
+        
+        'Mouse is over one of the four crop corners
+        Case 0
+            srcCanvasView.RequestCursor_System IDC_SIZENWSE
+        Case 1
+            srcCanvasView.RequestCursor_System IDC_SIZENESW
+        Case 2
+            srcCanvasView.RequestCursor_System IDC_SIZENESW
+        Case 3
+            srcCanvasView.RequestCursor_System IDC_SIZENWSE
+        
+        'Should never trigger; failsafe only
+        Case Else
+            srcCanvasView.RequestCursor_System IDC_ARROW
+        
+    End Select
+    
+End Sub
+
+'On _MouseMove events, update the current POI (if any)
+Private Sub UpdateMousePOI(ByVal imgX As Long, ByVal imgY As Long)
+    
+    'MouseAccuracy in PD is a global value, but because we are working in image coordinates, we must compensate for the
+    ' current zoom value.  (Otherwise, when zoomed out the user would be forced to work with tighter accuracy.)
+    ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
+    '        so perhaps the caller should specify an image x/y and a radius...?)
+    Dim mouseAccuracy As Double
+    mouseAccuracy = Drawing.ConvertCanvasSizeToImageSize(Interface.GetStandardInteractionDistance(), PDImages.GetActiveImage)
+    
+    'Find the smallest distance for this mouse position
+    Dim minDistance As Single
+    minDistance = mouseAccuracy
+    
+    'Retrieve current crop corners (in image space)
+    Dim cropCorners() As PointFloat, numPoints As Long
+    numPoints = GetCropCorners(cropCorners)
+    
+    'Find the nearest point (if any) to the mouse pointer
+    m_idxHover = poi_Undefined
+    m_idxHover = PDMath.FindClosestPointInFloatArray(imgX, imgY, minDistance, cropCorners)
+    
+    'If the mouse is not near a corner, perform an additional check for the crop rect's interior
+    If (m_idxHover = poi_Undefined) Then
+        
+        Dim tmpPath As pd2DPath
+        Set tmpPath = New pd2DPath
+        tmpPath.AddRectangle_RectF m_CropRectF
+        
+        If tmpPath.IsPointInsidePathF(imgX, imgY) Then
+            m_idxHover = poi_Interior
+        Else
+            m_idxHover = poi_Undefined
+        End If
+        
+    End If
+    
+End Sub
+
+'Get the current crop rect coordinates as a list of points (in image coordinates).
+' Returns: number of points in the array, and a guaranteed ReDim to [0, [n] - 1].
+Private Function GetCropCorners(ByRef dstCropPts() As PointFloat) As Long
+    
+    GetCropCorners = 4
+    
+    ReDim dstCropPts(0 To GetCropCorners - 1) As PointFloat
+    dstCropPts(0).x = m_CropRectF.Left
+    dstCropPts(0).y = m_CropRectF.Top
+    dstCropPts(1).x = m_CropRectF.Left + m_CropRectF.Width
+    dstCropPts(1).y = dstCropPts(0).y
+    dstCropPts(2).x = dstCropPts(0).x
+    dstCropPts(2).y = m_CropRectF.Top + m_CropRectF.Height
+    dstCropPts(3).x = dstCropPts(1).x
+    dstCropPts(3).y = dstCropPts(2).y
+    
+End Function
 
 Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
         

@@ -127,3 +127,6 @@ Public Const PD_DEFAULT_ALPHA_CUTOFF As Long = 64
 ' any special per-object (not per-caption) translations in the active language file.
 Public Const SPECIAL_TRANSLATION_OBJECT_PREFIX As String = "obj-"
 Public Const CONTROL_ARRAY_IDX_SEPARATOR As String = "."
+
+'UI element sizes are standardized against 96-DPI.  It's up to the caller to adjust these at run-time as relevant.
+Public Const SQUARE_CORNER_SIZE As Single = 12!

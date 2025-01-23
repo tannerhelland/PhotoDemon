@@ -578,8 +578,8 @@ End Sub
 'On the current viewport, render standard PD transformation nodes (layer corners, currently) atop the active layer.
 Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
     
-    'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0,
-    ' affine transforms mean this is no longer guaranteed.
+    'In the old days, we could get away with assuming layer boundaries form a rectangle,
+    ' but as of PD 7.0, affine transforms mean this is no longer guaranteed.
     '
     'So instead of filling a rect, we must retrieve the four layer corner coordinates as floating-point pairs.
     Dim layerCorners() As PointFloat
@@ -591,7 +591,7 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
     Dim cornerSize As Single, halfCornerSize As Single
-    cornerSize = 12!
+    cornerSize = SQUARE_CORNER_SIZE
     halfCornerSize = cornerSize * 0.5!
     
     Dim cSurface As pd2DSurface

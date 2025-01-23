@@ -1321,6 +1321,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Crop tool
             Case ND_CROP
                 Tools_Crop.NotifyMouseMove Button, Shift, FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y
+                SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
                 
             'Color picker
             Case COLOR_PICKER
@@ -1386,6 +1387,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 'Move stuff around
                 Case NAV_MOVE
                     m_LayerAutoActivateIndex = Tools_Move.NotifyMouseMove(m_LMBDown, Shift, imgX, imgY)
+                    
+                'Crop tool
+                Case ND_CROP
+                    Tools_Crop.NotifyMouseMove Button, Shift, FormMain.MainCanvas(0), PDImages.GetActiveImage, x, y
                 
                 'Color picker
                 Case COLOR_PICKER
@@ -2413,7 +2418,11 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 tmpViewportParams.curPOI = curPOI
                 Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), Me, VarPtr(tmpViewportParams)
             End If
-            
+        
+        'Crop tool handles cursor changes locally
+        Case ND_CROP
+            Tools_Crop.ReadyForCursor CanvasView
+        
         'The color-picker custom-draws its own outline.
         Case COLOR_PICKER
             CanvasView.RequestCursor_System IDC_ICON
