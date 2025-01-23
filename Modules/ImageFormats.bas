@@ -271,8 +271,10 @@ Public Sub GenerateInputFormats()
     If m_FreeImageEnabled Then
         AddInputFormat "PBM - Portable Bitmap", "*.pbm", PDIF_PBM
         AddInputFormat "PCD - Kodak PhotoCD", "*.pcd", PDIF_PCD
-        AddInputFormat "PCX/DCX - Zsoft Paintbrush", "*.pcx;*.pcc;*.dcx", PDIF_PCX
     End If
+    
+    'In 2025, I wrote a custom DCX/PCX parser
+    AddInputFormat "PCX/DCX - Zsoft Paintbrush", "*.pcx;*.pcc;*.dcx", PDIF_PCX
     
     'In v10.0, support was added for PDFs (via pdfium)
     If Plugin_PDF.IsPDFiumAvailable() Then AddInputFormat "PDF - Portable Document Format", "*.pdf", PDIF_PDF
@@ -317,7 +319,8 @@ Public Sub GenerateInputFormats()
     'FreeImage or GDI+ works for loading TIFFs
     AddInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", PDIF_TIFF
         
-    If m_FreeImageEnabled Then AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
+    'In v10, I wrote a custom WBMP parser
+    AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
         
     'libwebp is our preferred handler for WebP files, but if it goes missing,
     ' we can fall back to FreeImage (albeit with a greatly reduced feature-set).
