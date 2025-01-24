@@ -39,6 +39,9 @@ Private m_idxHover As PD_PointOfInterest
 ' (If the user is creating a new Crop from scratch, this will be poi_Undefined.)
 Private m_idxMouseDown As PD_PointOfInterest
 
+'If the user is modifying an existing crop boundary, this list of coordinates will be filled in _MouseDown
+Private m_CornerCoords() As PointFloat, m_numCornerCoords As Long
+
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
     'Update the status bar with the curent crop rectangle (if any)
@@ -79,8 +82,12 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     Set cropOutline = New pd2DPath
     cropOutline.AddRectangle_RectF cropRectCanvas
     
+    Dim drawActiveOutline As Boolean
+    drawActiveOutline = (m_idxHover = poi_Interior)
+    If m_LMBDown Then drawActiveOutline = drawActiveOutline And (m_idxMouseDown = poi_Interior)
+    
     'Stroke the outline path
-    If (m_idxHover = poi_Interior) Then
+    If drawActiveOutline Then
         PD2D.DrawPath cSurface, basePenActive, cropOutline
         PD2D.DrawPath cSurface, topPenActive, cropOutline
     Else
@@ -128,23 +135,26 @@ Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift A
         Dim imgX As Double, imgY As Double
         Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
         
+        'Cache mouse coords so we can calculate translation amounts in future _MouseMove events
+        m_InitImgX = imgX
+        m_InitImgY = imgY
+        m_LastImgX = imgX
+        m_LastImgY = imgY
+    
         'See if the user is creating a new crop, or interacting with an existing point
         m_idxMouseDown = UpdateMousePOI(imgX, imgY)
         
         'If the user is initiating a new crop, start it now
         If (m_idxMouseDown = poi_Undefined) Then
-            
             ResetCropRectF imgX, imgY
             
-            m_InitImgX = imgX
-            m_InitImgY = imgY
-            m_LastImgX = imgX
-            m_LastImgY = imgY
-        
-        'The user is interacting with an existing crop.  How we modify the crop rect depends on the point
-        ' being interacted with.
+        'The user is interacting with an existing crop boundary.
+        ' How we modify the crop rect depends on the point being interacted with.
         Else
-        
+            
+            'Cache a full list of boundary coordinates
+            m_numCornerCoords = GetCropCorners(m_CornerCoords)
+            
         End If
             
     Else
@@ -165,7 +175,64 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
         
         'If the user is interacting with an existing crop, modify the crop rect accordingly.
         If (m_idxMouseDown <> poi_Undefined) Then
-        
+            
+            'Calculate an offset from the original click to this new location
+            Dim xOffset As Long, yOffset As Long
+            xOffset = imgX - m_InitImgX
+            yOffset = imgY - m_InitImgY
+            
+            Dim i As Long, tmpCornerCoords() As PointFloat
+            If (m_numCornerCoords > 0) Then ReDim tmpCornerCoords(0 To UBound(m_CornerCoords)) As PointFloat
+            
+            'On a "move" event, the entire crop area is moving.  Calculate an offset and move all crop points that far.
+            If (m_idxMouseDown = poi_Interior) Then
+                
+                'Failsafe only; _MouseDown will always set m_numCornerCoords to 4
+                If (m_numCornerCoords > 0) Then
+                    For i = 0 To m_numCornerCoords - 1
+                        tmpCornerCoords(i).x = m_CornerCoords(i).x + xOffset
+                        tmpCornerCoords(i).y = m_CornerCoords(i).y + yOffset
+                    Next i
+                End If
+                
+            'The user is click-dragging a specific point.
+            Else
+                
+                'Failsafe only; _MouseDown will always set m_numCornerCoords to 4
+                If (m_numCornerCoords > 0) Then
+                    
+                    For i = 0 To m_numCornerCoords - 1
+                        tmpCornerCoords(i).x = m_CornerCoords(i).x
+                        tmpCornerCoords(i).y = m_CornerCoords(i).y
+                        If (i = m_idxMouseDown) Then
+                            tmpCornerCoords(i).x = tmpCornerCoords(i).x + xOffset
+                            tmpCornerCoords(i).y = tmpCornerCoords(i).y + yOffset
+                        End If
+                    Next i
+                    
+                    'Because the point-list-to-rect function operates on max/min values, we need to adjust adjoining
+                    ' corners too.
+                    If (m_idxMouseDown = 0) Then
+                        tmpCornerCoords(1).y = tmpCornerCoords(1).y + yOffset
+                        tmpCornerCoords(2).x = tmpCornerCoords(2).x + xOffset
+                    ElseIf (m_idxMouseDown = 1) Then
+                        tmpCornerCoords(0).y = tmpCornerCoords(0).y + yOffset
+                        tmpCornerCoords(3).x = tmpCornerCoords(3).x + xOffset
+                    ElseIf (m_idxMouseDown = 2) Then
+                        tmpCornerCoords(0).x = tmpCornerCoords(0).x + xOffset
+                        tmpCornerCoords(3).y = tmpCornerCoords(3).y + yOffset
+                    Else
+                        tmpCornerCoords(1).x = tmpCornerCoords(1).x + xOffset
+                        tmpCornerCoords(2).y = tmpCornerCoords(2).y + yOffset
+                    End If
+                    
+                End If
+                
+            End If
+            
+            'Update the crop rect to reflect any changes made to individual coordinates
+            UpdateCropRectF_FromPtFList tmpCornerCoords, (m_idxMouseDown = poi_Interior)
+            
         '...otherwise, simply create a new crop to match the mouse movement
         Else
             
@@ -175,9 +242,7 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
             m_LastImgY = imgY
             
         End If
-            
-        'TODO: apply aspect ratio, if any
-    
+        
     '/LMB is *not* down
     End If
     
@@ -202,19 +267,8 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     'Double-click commits the crop, so we may need to flag something here?  idk yet...
     If clickEventAlsoFiring Then
         
-        'Dim zoomIn As Boolean
-        'If ((Button And pdLeftButton) <> 0) Then
-        '    zoomIn = True
-        'ElseIf ((Button And pdRightButton) <> 0) Then
-        '    zoomIn = False
-        'Else
-        '    m_InitImgX = INVALID_X_COORD
-        '    m_InitImgY = INVALID_Y_COORD
-        '    Exit Sub
-        'End If
-        '
-        'Tools_Zoom.RelayCanvasZoom srcCanvas, srcImage, canvasX, canvasY, zoomIn
-    
+        'TODO: commit crop here
+        
     'If this is a click-drag event, we need to simply resize the crop area to match.
     ' (Commit happens in a separate step.)
     Else
@@ -241,10 +295,6 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         
     End If
     
-    'Reset x/y trackers
-    'm_InitImgX = INVALID_X_COORD
-    'm_InitImgY = INVALID_Y_COORD
-        
 End Sub
 
 'Only returns usable data when IsValidCropActive() is TRUE
@@ -300,8 +350,16 @@ Public Sub ReadyForCursor(ByRef srcCanvasView As pdCanvasView)
             
         'Mouse is within the crop region, but not over a corner node
         Case poi_Interior
-            srcCanvasView.RequestCursor_System IDC_SIZEALL
-        
+            If m_LMBDown Then
+                If (m_idxMouseDown = poi_Interior) Then
+                    srcCanvasView.RequestCursor_System IDC_SIZEALL
+                Else
+                    srcCanvasView.RequestCursor_System IDC_ARROW
+                End If
+            Else
+                srcCanvasView.RequestCursor_System IDC_SIZEALL
+            End If
+            
         'Mouse is over one of the four crop corners
         Case 0
             srcCanvasView.RequestCursor_System IDC_SIZENWSE
@@ -378,42 +436,89 @@ Private Function GetCropCorners(ByRef dstCropPts() As PointFloat) As Long
 End Function
 
 Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
-        
-    With m_CropRectF
     
+    Dim newHeight As Single
+    If m_IsHeightLocked Then
+        newHeight = m_LockedHeight
+    Else
+        newHeight = Abs(m_InitImgY - newY)
+        If (newHeight < 1!) Then newHeight = 1!
+    End If
+    
+    Dim newWidth As Single
+    If m_IsWidthLocked Then
+        newWidth = m_LockedWidth
+    Else
+        If m_IsAspectLocked Then
+            newWidth = newHeight * m_LockedAspectRatio
+        Else
+            newWidth = Abs(m_InitImgX - newX)
+        End If
+        If (newWidth < 1!) Then newWidth = 1!
+    End If
+    
+    With m_CropRectF
+        
+        .Width = newWidth
+        
         If (newX < m_InitImgX) Then
-            If m_IsWidthLocked Then
-                .Left = (m_InitImgX - m_LockedWidth)
-                .Width = m_LockedWidth
+            If (m_IsWidthLocked Or m_IsAspectLocked) Then
+                .Left = m_InitImgX - newWidth
             Else
                 .Left = newX
-                .Width = m_InitImgX - newX
             End If
         Else
             .Left = m_InitImgX
-            If m_IsWidthLocked Then
-                .Width = m_LockedWidth
-            Else
-                .Width = newX - m_InitImgX
-            End If
         End If
         
+        .Height = newHeight
+        
         If (newY < m_InitImgY) Then
-            If m_IsHeightLocked Then
-                .Top = (m_InitImgY - m_LockedHeight)
-                .Height = m_LockedHeight
+            If (m_IsHeightLocked Or m_IsAspectLocked) Then
+                .Top = m_InitImgY - newHeight
             Else
                 .Top = newY
-                .Height = m_InitImgY - newY
             End If
         Else
             .Top = m_InitImgY
-            If m_IsHeightLocked Then
-                .Height = m_LockedHeight
-            Else
-                .Height = newY - m_InitImgY
-            End If
         End If
+        
+    End With
+    
+    'Lock position and height to their nearest integer equivalent
+    PDMath.GetIntClampedRectF m_CropRectF
+    
+    'If the crop rect is valid, relay its values to the toolpanel
+    If ValidateCropRectF() Then RelayCropChangesToUI
+    
+End Sub
+
+'You can only pass a PointFloat array sized [0, 3] to this function.  It will use that array to produce an updated
+' RectF of the boundary coords of the passed list.
+Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optional ByVal okToMove As Boolean = False)
+    
+    'Find the min/max points in the source point list
+    Dim xMin As Single, yMin As Single, xMax As Single, yMax As Single
+    xMin = srcPoints(0).x
+    yMin = srcPoints(0).y
+    xMax = srcPoints(0).x
+    yMax = srcPoints(0).y
+    
+    Dim i As Long
+    For i = 1 To UBound(srcPoints)
+        If (srcPoints(i).x < xMin) Then xMin = srcPoints(i).x
+        If (srcPoints(i).x > xMax) Then xMax = srcPoints(i).x
+        If (srcPoints(i).y < yMin) Then yMin = srcPoints(i).y
+        If (srcPoints(i).y > yMax) Then yMax = srcPoints(i).y
+    Next i
+    
+    With m_CropRectF
+        
+        If okToMove Or (Not m_IsWidthLocked) Then .Left = xMin
+        If (Not m_IsWidthLocked) Then .Width = xMax - xMin
+        
+        If okToMove Or (Not m_IsHeightLocked) Then .Top = yMin
+        If (Not m_IsHeightLocked) Then .Height = yMax - yMin
         
     End With
     
