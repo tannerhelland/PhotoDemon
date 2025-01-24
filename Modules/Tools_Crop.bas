@@ -106,9 +106,13 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     cornerSize = SQUARE_CORNER_SIZE
     halfCornerSize = cornerSize * 0.5!
     
+    Dim idxActive As PD_PointOfInterest
+    idxActive = poi_Undefined
+    If m_LMBDown Then idxActive = m_idxMouseDown Else idxActive = m_idxHover
+    
     Dim i As Long
     For i = 0 To numPoints - 1
-        If (i = m_idxHover) Then
+        If (i = idxActive) Then
             PD2D.DrawRectangleF cSurface, basePenActive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
             PD2D.DrawRectangleF cSurface, topPenActive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
         Else
@@ -231,7 +235,7 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
             End If
             
             'Update the crop rect to reflect any changes made to individual coordinates
-            UpdateCropRectF_FromPtFList tmpCornerCoords, (m_idxMouseDown = poi_Interior)
+            UpdateCropRectF_FromPtFList tmpCornerCoords, (m_idxMouseDown = poi_Interior), m_idxMouseDown
             
         '...otherwise, simply create a new crop to match the mouse movement
         Else
@@ -341,8 +345,11 @@ Public Sub UnlockProperty(ByVal selProperty As PD_SelectionLockable)
 End Sub
 
 Public Sub ReadyForCursor(ByRef srcCanvasView As pdCanvasView)
-
-    Select Case m_idxHover
+    
+    Dim idxRelevant As PD_PointOfInterest
+    If m_LMBDown Then idxRelevant = m_idxMouseDown Else idxRelevant = m_idxHover
+    
+    Select Case idxRelevant
     
         'Mouse not over the crop
         Case poi_Undefined
@@ -495,7 +502,7 @@ End Sub
 
 'You can only pass a PointFloat array sized [0, 3] to this function.  It will use that array to produce an updated
 ' RectF of the boundary coords of the passed list.
-Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optional ByVal okToMove As Boolean = False)
+Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optional ByVal okToMove As Boolean = False, Optional ByVal srcPOI As PD_PointOfInterest = poi_Undefined)
     
     'Find the min/max points in the source point list
     Dim xMin As Single, yMin As Single, xMax As Single, yMax As Single
@@ -512,16 +519,77 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optiona
         If (srcPoints(i).y > yMax) Then yMax = srcPoints(i).y
     Next i
     
-    With m_CropRectF
+    'We can now use the calculated max/min values to calculate a boundary rect (but note that we must
+    ' also consider any locked dimensions and/or aspect ratio).
+    If m_IsAspectLocked And (Not okToMove) Then
         
-        If okToMove Or (Not m_IsWidthLocked) Then .Left = xMin
-        If (Not m_IsWidthLocked) Then .Width = xMax - xMin
+        'When aspect ratio is locked, we need to manually calculate new width/height values
+        Dim newWidth As Single, newHeight As Single
+        newHeight = yMax - yMin
+        If (newHeight < 1!) Then newHeight = 1!
+        newWidth = Int(newHeight * m_LockedAspectRatio + 0.5!)
+        If (newWidth < 1!) Then newWidth = 1!
+        m_CropRectF.Width = newWidth
+        m_CropRectF.Height = newHeight
         
-        If okToMove Or (Not m_IsHeightLocked) Then .Top = yMin
-        If (Not m_IsHeightLocked) Then .Height = yMax - yMin
+        'We now need to position the selection to either the left or right, depending on the current POI
+        If (srcPOI = 0) Then
+            If (srcPoints(0).x < srcPoints(1).x) Then
+                m_CropRectF.Left = srcPoints(1).x - newWidth
+            Else
+                m_CropRectF.Left = xMin
+            End If
+            If (srcPoints(0).y < srcPoints(2).y) Then
+                m_CropRectF.Top = srcPoints(2).y - newHeight
+            Else
+                m_CropRectF.Top = yMin
+            End If
+        ElseIf (srcPOI = 1) Then
+            If (srcPoints(1).x < srcPoints(0).x) Then
+                m_CropRectF.Left = srcPoints(0).x - newWidth
+            Else
+                m_CropRectF.Left = xMin
+            End If
+            If (srcPoints(0).y < srcPoints(3).y) Then
+                m_CropRectF.Top = srcPoints(3).y - newHeight
+            Else
+                m_CropRectF.Top = yMin
+            End If
+        ElseIf (srcPOI = 2) Then
+            If (srcPoints(2).x < srcPoints(3).x) Then
+                m_CropRectF.Left = srcPoints(3).x - newWidth
+            Else
+                m_CropRectF.Left = xMin
+            End If
+            If (srcPoints(2).y < srcPoints(0).y) Then
+                m_CropRectF.Top = srcPoints(0).y - newHeight
+            Else
+                m_CropRectF.Top = yMin
+            End If
+        ElseIf (srcPOI = 3) Then
+            If (srcPoints(3).x < srcPoints(2).x) Then
+                m_CropRectF.Left = srcPoints(2).x - newWidth
+            Else
+                m_CropRectF.Left = xMin
+            End If
+            If (srcPoints(3).y < srcPoints(1).y) Then
+                m_CropRectF.Top = srcPoints(1).y - newHeight
+            Else
+                m_CropRectF.Top = yMin
+            End If
+        End If
         
-    End With
-    
+    Else
+        
+        With m_CropRectF
+            If okToMove Or (Not m_IsWidthLocked) Then .Left = xMin
+            If (Not m_IsWidthLocked) Then .Width = xMax - xMin
+            If okToMove Or (Not m_IsHeightLocked) Then .Top = yMin
+            If (Not m_IsHeightLocked) Then .Height = yMax - yMin
+        End With
+        
+    End If
+        
     'Lock position and height to their nearest integer equivalent
     PDMath.GetIntClampedRectF m_CropRectF
     
