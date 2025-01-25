@@ -290,6 +290,7 @@ Private Function LoadPCXHeader() As Boolean
         m_Stream.SetPosition initStreamPos
         Exit Function
     Else
+        LoadPCXHeader = True
         If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Frame appears to be PCX format; loading rest of header..."
     End If
     
