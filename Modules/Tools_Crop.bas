@@ -1,9 +1,9 @@
 Attribute VB_Name = "Tools_Crop"
 '***************************************************************************
 'Crop tool interface
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 12/November/24
-'Last updated: 12/November/24
+'Last updated: 24/January/25
 'Last update: initial build
 '
 'The crop tool performs identical operations to the rectangular selection tool + Image > Crop menu.
@@ -578,7 +578,8 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optiona
                 m_CropRectF.Top = yMin
             End If
         End If
-        
+    
+    'When aspect ratio is not locked, this step is easy: just use max/min values as calculated above
     Else
         
         With m_CropRectF

@@ -284,7 +284,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Crop Tool Panel
-'Copyright 2024-2024 by Tanner Helland
+'Copyright 2024-2025 by Tanner Helland
 'Created: 11/Nov/24
 'Last updated: 11/Nov/24
 'Last update: initial build
