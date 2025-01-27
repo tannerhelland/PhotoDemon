@@ -928,8 +928,8 @@ Private Sub NewToolSelected()
         
         'Crop tool
         Case ND_CROP
-            'TODO!
-        
+            Tools_Crop.InitializeCropTool
+            
         'Selection tools
         Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
         

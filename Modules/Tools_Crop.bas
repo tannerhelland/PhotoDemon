@@ -42,6 +42,25 @@ Private m_idxMouseDown As PD_PointOfInterest
 'If the user is modifying an existing crop boundary, this list of coordinates will be filled in _MouseDown
 Private m_CornerCoords() As PointFloat, m_numCornerCoords As Long
 
+'To correctly detect clicks, we cache the current crop rect (if any) at _MouseDown
+Private m_CropRectAtMouseDown As RectF
+
+'Commit (apply) the current crop rectangle.  *All* layers will be affected by this.
+' This function takes the current crop settings, builds a string parameter list from them, then calls
+' PD's central processor with the resulting string.  (This allows the crop to be recorded.)
+Public Sub CommitCurrentCrop()
+    
+    Debug.Print "(commit code here)"
+    
+End Sub
+
+'Turn off the current crop rectangle.  No image modifications will be made.
+Public Sub RemoveCurrentCrop()
+    ResetCropRectF
+    RelayCropChangesToUI
+    Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage, FormMain.MainCanvas(0)
+End Sub
+
 Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
     'Update the status bar with the curent crop rectangle (if any)
@@ -134,6 +153,10 @@ Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift A
     m_LMBDown = ((Button And pdLeftButton) = pdLeftButton)
     
     If m_LMBDown Then
+        
+        'Cache the current crop rect, if any.
+        ' (on _Click events, we'll compare click coords against *this* rect.)
+        m_CropRectAtMouseDown = m_CropRectF
         
         'Translate the canvas coordinates to image coordinates
         Dim imgX As Double, imgY As Double
@@ -271,12 +294,23 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     'Double-click commits the crop, so we may need to flag something here?  idk yet...
     If clickEventAlsoFiring Then
         
-        'TODO: commit crop here
+        'Check mouse position.  If the mouse is *outside* the crop rect that existed at _MouseDown,
+        ' simply clear the current rect.
+        If (Not PDMath.IsPointInRectF(imgX, imgY, m_CropRectAtMouseDown)) Then
+            RemoveCurrentCrop
+        Else
+            CommitCurrentCrop
+        End If
         
     'If this is a click-drag event, we need to simply resize the crop area to match.
     ' (Commit happens in a separate step.)
     Else
         
+        'If the user has modified the current crop in an unuseable way, we need to update the UI accordingly
+        ' (by e.g. disabling the "commit crop" button)
+        Dim cropAintGood As Boolean
+        cropAintGood = False
+            
         'If the user is interacting with an existing crop, modify the crop rect accordingly.
         If (m_idxMouseDown <> poi_Undefined) Then
         
@@ -288,14 +322,21 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
             m_LastImgX = imgX
             m_LastImgY = imgY
             
-            'Bail if coordinates are bad
-            If (m_InitImgX = INVALID_X_COORD) Or (m_InitImgY = INVALID_Y_COORD) Then Exit Sub
-            If (Not ValidateCropRectF()) Then Exit Sub
-            
         End If
         
+        'Bail if any of the final coordinates produce an unuseable crop rect
+        If (m_InitImgX = INVALID_X_COORD) Or (m_InitImgY = INVALID_Y_COORD) Then cropAintGood = True
+        If (Not ValidateCropRectF()) Then cropAintGood = True
+        If cropAintGood Then
+            RemoveCurrentCrop
+        
         'Finally, request a viewport redraw (to reflect any changes)
-        Viewport.Stage4_FlipBufferAndDrawUI srcImage, FormMain.MainCanvas(0)
+        Else
+            
+            'If the UI looks OK, update the viewport to match
+            Viewport.Stage4_FlipBufferAndDrawUI srcImage, FormMain.MainCanvas(0)
+            
+        End If
         
     End If
     
@@ -305,6 +346,12 @@ End Sub
 Public Function GetCropRectF() As RectF
     GetCropRectF = m_CropRectF
 End Function
+
+'Called whenever the crop tool is selected
+Public Sub InitializeCropTool()
+    ResetCropRectF
+    RelayCropChangesToUI
+End Sub
 
 'Check before using anything from GetCropRectF, above
 Public Function IsValidCropActive() As Boolean
@@ -630,7 +677,12 @@ Private Sub RelayCropChangesToUI()
     
     'Aspect ratio requires a bit of math
     Dim fracNumerator As Long, fracDenominator As Long
-    PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
+    If (m_CropRectF.Width > 0!) And (m_CropRectF.Height > 0!) Then
+        PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
+    Else
+        fracNumerator = 1
+        fracDenominator = 1
+    End If
     
     'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
     If (fracDenominator = 5) Then
@@ -640,6 +692,9 @@ Private Sub RelayCropChangesToUI()
     
     toolpanel_Crop.tudCrop(4).Value = fracNumerator
     toolpanel_Crop.tudCrop(5).Value = fracDenominator
+    
+    toolpanel_Crop.cmdCommit(0).Enabled = Tools_Crop.IsValidCropActive()
+    toolpanel_Crop.cmdCommit(1).Enabled = Tools_Crop.IsValidCropActive()
     
     'Unlock updates
     Tools.SetToolBusyState False

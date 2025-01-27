@@ -168,7 +168,7 @@ Begin VB.Form toolpanel_Crop
       Width           =   1620
       _ExtentX        =   2858
       _ExtentY        =   661
-      Caption         =   "commit"
+      Caption         =   "apply"
       Value           =   0   'False
    End
    Begin PhotoDemon.pdLabel lblOptions 
@@ -306,6 +306,17 @@ Attribute m_Flyout.VB_VarHelpID = -1
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
+Private Sub cmdCommit_Click(Index As Integer)
+    
+    Select Case Index
+        Case 0
+            Tools_Crop.CommitCurrentCrop
+        Case 1
+            Tools_Crop.RemoveCurrentCrop
+    End Select
+    
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
 End Sub
@@ -363,6 +374,14 @@ Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     Else
         Tools_Crop.UnlockProperty Index
     End If
+    
+End Sub
+
+Private Sub Form_Activate()
+    
+    'Only enable commit/clear buttons while a crop is actually active
+    Me.cmdCommit(0).Enabled = Tools_Crop.IsValidCropActive()
+    Me.cmdCommit(1).Enabled = Tools_Crop.IsValidCropActive()
     
 End Sub
 
