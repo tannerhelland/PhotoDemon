@@ -1630,10 +1630,12 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
             rgbValues(7) = CDbl(chrmData(7)) / 100000#
             rgbValues(8) = 1#
             
+            'Per https://github.com/tannerhelland/PhotoDemon/issues/612, when chromaticity data is present
+            ' but gamma is *not*, assume 2.2 gamma.  (This resolves color issues from images originating
+            ' from ezgif.com.)
             If (Not gammaOK) Then
                 If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: chromaticity present, but gamma missing; colors may be incorrect!"
-                '(Temporarily commented out while awaiting user feedback on https://github.com/tannerhelland/PhotoDemon/issues/612 )
-                'gammaFloat = 2.2
+                gammaFloat = 2.2
             End If
             
             'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
