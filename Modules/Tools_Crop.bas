@@ -291,7 +291,10 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     Dim imgX As Double, imgY As Double
     Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
         
-    'Double-click commits the crop, so we may need to flag something here?  idk yet...
+    'In Photoshop, double-click commits the crop.  In GIMP, it's single-click.
+    '
+    'I'm still debating which way to go in PD, but I'm currently leaning toward GIMP as it's also the
+    ' traditional PD convention (click-outside-to-cancel, click-inside-to-apply).
     If clickEventAlsoFiring Then
         
         'Check mouse position.  If the mouse is *outside* the crop rect that existed at _MouseDown,
@@ -657,11 +660,21 @@ End Sub
 
 'Returns TRUE if the current crop rect is valid; if FALSE, do *not* attempt to crop
 Private Function ValidateCropRectF() As Boolean
+    
     ValidateCropRectF = True
+    
+    'Validate left/right/width/height
     With m_CropRectF
         If (.Left = INVALID_X_COORD) Or (.Top = INVALID_Y_COORD) Then ValidateCropRectF = False
         If (.Width <= 0) Or (.Height <= 0) Then ValidateCropRectF = False
     End With
+    
+    'Next, ensure the crop rect actually overlaps the image *somewhere*.
+    If PDImages.IsImageActive() Then
+        Dim dummyIntersectRectF As RectF
+        If (Not GDI_Plus.IntersectRectF(dummyIntersectRectF, m_CropRectF, PDImages.GetActiveImage.GetBoundaryRectF)) Then ValidateCropRectF = False
+    End If
+    
 End Function
 
 Private Sub RelayCropChangesToUI()
@@ -751,17 +764,21 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
                 'Changes to width/height (with unlocked aspect ratio) will obviously change the
                 ' current aspect ratio.  Re-calculate aspect ratio and update those spinners accordingly.
                 Dim fracNumerator As Long, fracDenominator As Long
-                PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
-                
-                'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-                If (fracDenominator = 5) Then
-                    fracNumerator = fracNumerator * 2
-                    fracDenominator = fracDenominator * 2
+                If (m_CropRectF.Width >= 1) And (m_CropRectF.Height >= 1) Then
+                    
+                    PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
+                    
+                    'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+                    If (fracDenominator = 5) Then
+                        fracNumerator = fracNumerator * 2
+                        fracDenominator = fracDenominator * 2
+                    End If
+                    
+                    toolpanel_Crop.tudCrop(4).Value = fracNumerator
+                    toolpanel_Crop.tudCrop(5).Value = fracDenominator
+                    
                 End If
-                
-                toolpanel_Crop.tudCrop(4).Value = fracNumerator
-                toolpanel_Crop.tudCrop(5).Value = fracDenominator
-                
+                    
             End If
         
         'When changing aspect ratio, the UI passes both the new aspect ratio, and the current size of
@@ -780,6 +797,12 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
     
     'After a property change, we must validate the crop rectangle to make sure no funny business occurred
     ValidateCropRectF
+    
+    'We don't want to relay *all* crop settings back to the UI (because this function is meant to
+    ' relay values *from* the UI), but we may need to adjust the apply/commit buttons if the user's
+    ' changes changed crop validity state.
+    toolpanel_Crop.cmdCommit(0).Enabled = Tools_Crop.IsValidCropActive()
+    toolpanel_Crop.cmdCommit(1).Enabled = Tools_Crop.IsValidCropActive()
     
     '...then request a viewport redraw to reflect any changes
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
