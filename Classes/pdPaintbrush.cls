@@ -15,8 +15,10 @@ Attribute VB_Exposed = False
 'Paintbrush tool interface
 'Copyright 2016-2025 by Tanner Helland
 'Created: 1/November/16
-'Last updated: 12/September/19
-'Last update: split into its own class, so that tools other than the plain paintbrush can use it!
+'Last updated: 27/November/25
+'Last update: switch back to an older line renderer, as it demonstrates more predictable behavior at
+'             single-pixel sizes (vs the voxel renderer, which intentionally "spills over" into
+'             neighboring pixels due to the way it calculates overlap).
 '
 'This module handles the messy business of translating mouse events (or really, a list of input
 ' coordinates) into a stream of paint dabs.
@@ -24,10 +26,10 @@ Attribute VB_Exposed = False
 'All of PD's paint tools rely on this class in some way.
 '
 'The class uses a simple design:
-' 1) As the caller receives input events, it should forward them to this class
-' 2) This class will use the current brush settings to calculate a corresponding list of dabs
-' 3) Based on brush settings, a matching "list of dabs" will be returned back to the caller
-' 4) The caller can apply those dabs however they want!
+' 1) As the caller receives input events, it should simply forward them to this class
+' 2) This class uses current paint tool settings to calculate a corresponding list of "dabs"
+' 3) The final list of "dabs" can be queried by the caller
+' 4) The caller applies the dabs however they want!
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -232,7 +234,7 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         ' If it is, we actually want to interpolate between the last-clicked point and this one.
         If useShiftStyle Then
             m_IsFirstDab = False
-            AddPoints_VoxelStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, False
+            AddPoints_BresenhamStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, False
         Else
             AddSinglePoint srcX, srcY
         End If
@@ -254,7 +256,7 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
                 ' which greatly interferes with soft edge brush behavior (because the dabs will all
                 ' overlap each other, effectively "erasing" the soft edges).
                 If (Abs(m_LastPoint.x - srcX) > 0.25) Or (Abs(m_LastPoint.y - srcY) > 0.25) Then
-                    AddPoints_VoxelStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, True
+                    AddPoints_BresenhamStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, True
                 Else
                     storeAsLastPoint = False
                 End If
@@ -324,82 +326,75 @@ Private Sub Class_Initialize()
     Me.Reset
 End Sub
 
-'Add all relevant points between [1] and [2] to the queue, using a voxel traversal algorithm.
-Private Sub AddPoints_VoxelStyle(ByVal xStart As Single, ByVal yStart As Single, ByVal xEnd As Single, ByVal yEnd As Single, Optional ByVal addFirstPoint As Boolean = True)
-
-    'Voxel traversal brush approach based on "A Fast Voxel Traversal Algorithm for Ray Tracing."
-    ' link: http://www.cse.yorku.ca/~amana/research/grid.pdf
-    '
-    'This is a highly efficient way to test every pixel "collision" against a line, by only testing pixel
-    ' intersections.  There is a penalty at start-up (like most line algorithms), but traversal itself is
-    ' extremely fast *and* friendly toward starting/ending floating-point coords.
+'Add all relevant points between [1] and [2] to the queue, using a traditional Bresenham line rasterizer
+Private Sub AddPoints_BresenhamStyle(ByVal xStart As Single, ByVal yStart As Single, ByVal xEnd As Single, ByVal yEnd As Single, Optional ByVal addFirstPoint As Boolean = True)
     
-    'Calculate directionality.  Note that I've manually added handling for the special case of horizontal
-    ' and vertical lines.  (What I *haven't* yet implemented is speed-optimized versions of those special
-    ' cases!)
-    Dim stepX As Long, stepY As Long
-    If (xEnd > xStart) Then
-        stepX = 1
+    'This is a barebones Bresenham implementation.  It will be difficult to improve speed much beyond
+    ' this code, short of specialized per-brush implementations, so this is a nice baseline for "fast but
+    ' sketchy pixel coverage."  (Note that performance of this function itself is largely irrelevant --
+    ' the cost of stroke rendering lies primarily in *rendering* the brush, not calculating its path.)
+    
+    'In classic Bresenham fashion, calculations are performed against integers.  It is up to the caller
+    ' to pre-treat coordinates with any relevant rounding (and indeed this is how we do it in PD; the caller
+    ' plots points against pixel centers, so the same modification is performed on coordinates returned
+    ' by this rasterizer).
+    Dim x0 As Long, x1 As Long, y0 As Long, y1 As Long
+    x0 = Int(xStart)
+    y0 = Int(yStart)
+    x1 = Int(xEnd)
+    y1 = Int(yEnd)
+    
+    'Add this point to the queue (unless it's the first point and the caller has requested otherwise)
+    If addFirstPoint Then AddSinglePoint x0, y0
+    
+    'Calculate deltas
+    Dim dx As Long, dy As Long
+    dx = Abs(x1 - x0)
+    dy = Abs(y1 - y0)
+    
+    'Calculate step directionality.
+    Dim sX As Long, sY As Long
+    If (x0 < x1) Then
+        sX = 1
+    ElseIf (x0 = x1) Then
+        sX = 0
     Else
-        If (xEnd < xStart) Then stepX = -1 Else stepX = 0
+        sX = -1
     End If
-    If (yEnd > yStart) Then
-        stepY = 1
+    
+    If (y0 < y1) Then
+        sY = 1
+    ElseIf (y0 = y1) Then
+        sY = 0
     Else
-        If (yEnd < yStart) Then stepY = -1 Else stepY = 0
+        sY = -1
     End If
     
-    'Calculate deltas and termination conditions.  Note that these are all floating-point values, so we could
-    ' theoretically support sub-pixel traversal conditions.  (At present, we only traverse full pixels.)
-    Dim tDeltaX As Single, tMaxX As Single
-    If (stepX <> 0) Then tDeltaX = PDMath.Min2Float_Single(CSng(stepX) / (xEnd - xStart), 10000000#) Else tDeltaX = 10000000#
-    If (stepX > 0) Then tMaxX = tDeltaX * (1 - xStart + Int(xStart)) Else tMaxX = tDeltaX * (xStart - Int(xStart))
+    'Running "errors" are used to nudge running pixel calculations in x or y directions
+    Dim runningErr As Long, e2 As Long
+    runningErr = dx - dy
     
-    Dim tDeltaY As Single, tMaxY As Single
-    If (stepY <> 0) Then tDeltaY = PDMath.Min2Float_Single(CSng(stepY) / (yEnd - yStart), 10000000#) Else tDeltaY = 10000000#
-    If (stepY > 0) Then tMaxY = tDeltaY * (1 - yStart + Int(yStart)) Else tMaxY = tDeltaY * (yStart - Int(yStart))
-    
-    'After some testing, I'm pretty pleased with the integer-only results of the traversal algorithm,
-    ' so I've gone ahead and declared the traversal trackers as integer-only.  This doesn't do much for
-    ' performance (as this algorithm is already highly optimized), but it does simplify some of our
-    ' subsequent calculations.
-    Dim x As Long, y As Long
-    x = Int(xStart)
-    y = Int(yStart)
-    
-    'Voxel traversal doesn't require this; I've added it to simplify handling of the first point
-    ' in the traversal (which we often don't want to add, because it was covered by the *last*
-    ' traversal).
-    Dim numPointsAdded As Long
-    numPointsAdded = 0
-    
-    'Start plotting points.  Note that - by design, the first point is *not* manually rendered.
     Do
         
-        'Add this point to the queue (unless it's the first point and the caller has requested otherwise)
-        If (numPointsAdded = 0) Then
-            If addFirstPoint Then AddSinglePoint x, y
-        Else
-            AddSinglePoint x, y
+        'Once we hit the final pixel, exit immediately.
+        If ((x0 = x1) And (y0 = y1)) Then
+            Exit Do
         End If
         
-        'See if our next voxel (pixel) intersection occurs on a horizontal or vertical edge, and increase our
-        ' running offset proportionally.
-        If (tMaxX < tMaxY) Then
-            tMaxX = tMaxX + tDeltaX
-            x = x + stepX
-        Else
-            tMaxY = tMaxY + tDeltaY
-            y = y + stepY
+        'Calculate a new error, and determine if we need to advance in the X or Y direction
+        e2 = 2 * runningErr
+        If (e2 > -dy) Then
+            runningErr = runningErr - dy
+            x0 = x0 + sX
         End If
         
-        'Check for traversal past the end of the destination voxel
-        If (tMaxX > 1) Then
-            If (tMaxY > 1) Then Exit Do
+        If (e2 < dx) Then
+            runningErr = runningErr + dx
+            y0 = y0 + sY
         End If
         
-        'Increment point count
-        numPointsAdded = numPointsAdded + 1
+        'Dab the target pixel
+        AddSinglePoint x0, y0
         
     Loop
     

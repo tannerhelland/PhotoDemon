@@ -3,11 +3,12 @@ Attribute VB_Name = "Tools_Paint"
 'Paintbrush tool interface
 'Copyright 2016-2025 by Tanner Helland
 'Created: 1/November/16
-'Last updated: 14/September/19
-'Last update: strip out pencil tool bits and heavily refactor in preparation for new paint tools
+'Last updated: 27/January/25
+'Last update: standardize all positioning calculations against pixel centers, to ensure reliable behavior
+'             of single-pixel brushes at extreme zoom-in levels
 '
-'To simplify the design of the primary canvas, it makes brush-related requests to this module.  This module
-' then handles all the messy business of managing the actual background brush data.
+'To simplify the design of the primary canvas, all brush-related requests are simply forwarded here.
+' This module then handles all the messy business of managing brush behavior, strokes, and dabs.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -16,12 +17,14 @@ Attribute VB_Name = "Tools_Paint"
 
 Option Explicit
 
-'The current brush engine is stored here.  Note that this value is not correct until a call has been made to
-' the CreateCurrentBrush() function; this function searches brush attributes and determines which brush engine
-' to use.
+'The current brush outline (as a vector path) is stored here.  Note that this path is not filled until a call
+' is made to the CreateCurrentBrush() function; that function then calculates brush attributes and fills this
+' path accordingly.
 Private m_BrushOutlinePath As pd2DPath
 
 'Brush resources, used only as necessary.  Check for null values before using.
+' (PD currently uses a faster, simpler GDI renderer for strokes; in the future, brush manipulations will
+' require us to switch to GDI+.)
 Private m_CustomPenImage As pd2DSurface, m_SrcPenDIB As pdDIB
 
 'Brush attributes are stored in these variables
@@ -33,23 +36,28 @@ Private m_BrushHardness As Single
 Private m_BrushSpacing As Single
 Private m_BrushFlow As Single
 
-'Note that some brush attributes only exist for certain brush sources.
+'Note that some brush attributes, like color, only exist for certain brush sources.
 Private m_BrushSourceColor As Long
 
-'If brush properties have changed since the last brush creation, this is set to FALSE.  We use this to optimize
-' brush creation behavior.
+'If brush properties have changed since the last brush creation, this is set to FALSE.
+' PD uses this to optimize brush creation behavior (as initialization is expensive for some brush shapes).
 Private m_BrushIsReady As Boolean
 Private m_BrushCreatedAtLeastOnce As Boolean
 
 'Current mouse/pen input values.  These are blindly relayed to us by the canvas, and it's up to us to perform any
 ' special tracking calculations.
+'
+'Note: as of 2025, PD forcibly centers all coordinates against pixel centers.  This provides the most reliable
+' behavior for dabbing individual pixel centers at small brush sizes.
 Private m_MouseX As Single, m_MouseY As Single
 Private Const MOUSE_OOB As Single = -9.99999E+14!
 
-'If the shift key is being held down, we draw a different type of preview
+'Shift key state must be tracked at module-level, because it is used to stroke straight lines from the previous
+' moust point (which requires us to maintain a number of extra background values, including ones necessary to
+' render a UI for line stroking).
 Private m_ShiftKeyDown As Boolean
 
-'Brush dynamics are calculated on-the-fly, and they include things like velocity, distance, angle, and more.
+'Brush dynamics are calculated on-the-fly, and they could someday include things like velocity, distance, angle, and more.
 Private m_DistPixels As Long, m_BrushSizeInt As Long
 Private m_BrushSpacingCheck As Long
 
@@ -59,22 +67,24 @@ Private m_BrushSpacingCheck As Long
 '    StrokeSpeed As Single
 'End Type
 
-'As brush movements are relayed to us, we keep a running note of the modified area of the scratch layer.
-' The compositor can use this information to only regenerate the compositor cache area that's changed since the
+'As mouse movements are relayed to us, we keep a running note of the modified area of the scratch layer.
+' The compositor uses this information to only regenerate the scratch area that's changed since the
 ' last repaint event.  Note that the m_ModifiedRectF may be cleared between accesses, by design - you'll need to
-' keep an eye on your usage of parameters in the GetModifiedUpdateRectF function.
+' keep an eye on what calls the GetModifiedUpdateRectF function for details.
 '
 'If you want the absolute modified area since the stroke began, you can use m_TotalModifiedRectF, which is not
 ' cleared until the current stroke is released.
 Private m_UnionRectRequired As Boolean
 Private m_ModifiedRectF As RectF, m_TotalModifiedRectF As RectF
 
-'pd2D is used for certain brush styles
+'pd2D is used for rendering certain brush styles
 Private m_Surface As pd2DSurface
 
-'A dedicated class produces the actual dab coordinates for us, from mouse events we've forwarded to it
+'A dedicated class produces actual dab coordinates for us, using whatever mouse events we forward to it
 Private m_Paintbrush As pdPaintbrush
 
+'To improve rendering performance of large brushes on large images, you can use crappier viewport quality while
+' the brush is rendering, then switch to the usual high-quality renderer when the stroke is released.
 Public Function GetBrushPreviewQuality_GDIPlus() As GP_InterpolationMode
     If (g_ViewportPerformance = PD_PERF_FASTEST) Then
         GetBrushPreviewQuality_GDIPlus = GP_IM_NearestNeighbor
@@ -180,6 +190,8 @@ Public Sub SetBrushSpacing(ByVal newSpacing As Single)
     End If
 End Sub
 
+'Using the current brush settings, construct a raster surface representing said brush.
+' (The perf cost of this function can be significant, so try to call it only as necessary.)
 Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean = True, Optional ByVal forceCreation As Boolean = False)
         
     If ((Not m_BrushIsReady) Or forceCreation Or (Not m_BrushCreatedAtLeastOnce)) Then
@@ -188,7 +200,7 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
         VBHacks.GetHighResTime startTime
 
         'Build a new brush reference image that reflects the current brush properties
-        m_BrushSizeInt = Int(m_BrushSize + 0.999999)
+        m_BrushSizeInt = Int(m_BrushSize + 0.999999!)
         CreateSoftBrushReference_PD
         m_SrcPenDIB.SetInitialAlphaPremultiplicationState True
         
@@ -197,11 +209,12 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
         ' large brushes, so avoid it if possible.
         '
         'The "Automatic" setting (which maps to spacing = 0) automatically calculates spacing based on
-        ' the current brush size.  (Basically, we dab every 1/2pi of a radius.)
+        ' the current brush size.  (Basically, we dab every 1/2pi of a radius; this mirrors a similar
+        ' calculation used by Photoshop.)
         Dim tmpBrushSpacing As Single
         tmpBrushSpacing = m_BrushSize / PI_DOUBLE
         
-        If (m_BrushSpacing > 0#) Then
+        If (m_BrushSpacing > 0!) Then
             tmpBrushSpacing = (m_BrushSpacing * tmpBrushSpacing)
         End If
         
@@ -209,7 +222,8 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
         m_BrushSpacingCheck = Int(tmpBrushSpacing + 0.5)
         If (m_BrushSpacingCheck < 1) Then m_BrushSpacingCheck = 1
         
-        'Want to use some arbitrary DIB for testing purposes?  Uncomment the lines below.
+        'While working on image-based brushes, I find it useful to reference arbitrary images as the
+        ' paint surface.  You too can do this by uncommenting the lines below.
         'Dim testImgPath As String
         'testImgPath = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\brush_test_500.png"
         '
@@ -217,20 +231,27 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
         'Loading.QuickLoadImageToDIB testImgPath, m_SrcPenDIB, False, False
         'SetBrushSize m_SrcPenDIB.GetDIBWidth
         
-        'Want to the GDI+ renderer (instead of GDI)?  Uncomment these two lines, then visit the
-        ' ApplyPaintDab() function and uncomment the GDI+ renderer comment there.
-        ' (This will be needed in the future for rotating and/or skewing the brush "on the fly"
+        'Similarly, in the future we will need to switch to a GDI+ renderer (instead of GDI).
+        ' To do so, uncomment these two lines, then visit the ApplyPaintDab() function and uncomment
+        ' the GDI+ renderer comment there.
+        '
+        '(Why will this be needed in the future?  For rotating and/or skewing brushes "on the fly"
         '  based on brush dynamics.)
-        'If (m_CustomPenImage Is Nothing) Then Set m_CustomPenImage = New pd2DSurface
+        If (m_CustomPenImage Is Nothing) Then Set m_CustomPenImage = New pd2DSurface
+        m_CustomPenImage.WrapSurfaceAroundPDDIB m_SrcPenDIB
+        m_CustomPenImage.SetSurfacePixelOffset P2_PO_Half
+        
+        'Similarly, to build the pen image from a file, use this:
         'm_CustomPenImage.CreateSurfaceFromFile testImgPath
         
-        'Whenever we create a new brush, we should also refresh the current brush outline
+        'Whenever we create a new brush, we must also refresh the current brush outline
         If alsoCreateBrushOutline Then CreateCurrentBrushOutline
         
+        'Because brush initialization is expensive, we avoid it unless brush parameters change.
         m_BrushIsReady = True
         m_BrushCreatedAtLeastOnce = True
         
-        PDDebug.LogAction "Tools_Paint.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
+        'PDDebug.LogAction "Tools_Paint.CreateCurrentBrush took " & VBHacks.GetTimeDiffNowAsString(startTime)
         
     End If
     
@@ -260,7 +281,7 @@ Private Sub CreateSoftBrushReference_MyPaint()
     
     Dim x As Long, y As Long, tmpMult As Single
     For x = 0 To 255
-        tmpMult = CSng(x) / 255
+        tmpMult = CSng(x) / 255!
         cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x)
     Next x
     
@@ -282,8 +303,8 @@ Private Sub CreateSoftBrushReference_MyPaint()
     
     'Some MyPaint-supported features are not currently exposed to the user.  Their hard-coded
     ' values appear below, and in the future, we may migrate these over to the UI.
-    brushAspectRatio = 1#   '[1, #INF]
-    brushAngle = 0#         '[0, 180] in degrees
+    brushAspectRatio = 1!   '[1, #INF]
+    brushAngle = 0!         '[0, 180] in degrees
     
     Dim refCos As Single, refSin As Single
     refCos = Cos(brushAngle / 360# * 2# * PI)
@@ -292,14 +313,17 @@ Private Sub CreateSoftBrushReference_MyPaint()
     Dim dx As Single, dy As Single
     Dim dXr As Single, dYr As Single
     Dim brushRadius As Single, brushRadiusSquare As Single
-    brushRadius = (m_BrushSize - 1#) / 2#
+    brushRadius = (m_BrushSize - 1!) / 2!
     brushRadiusSquare = brushRadius * brushRadius
+    
+    'Failsafe for division in the inner loop.  (TODO: ensure this limit doesn't break single-pixel brushes.)
+    If (brushRadiusSquare < 1!) Then brushRadiusSquare = 1!
     
     Dim dd As Single, pxOpacity As Single
     Dim brushHardness As Single
     brushHardness = m_BrushHardness
-    If (brushHardness < 0.001) Then brushHardness = 0.001
-    If (brushHardness > 0.999) Then brushHardness = 0.999
+    If (brushHardness < 0.001!) Then brushHardness = 0.001!
+    If (brushHardness > 0.999!) Then brushHardness = 0.999!
     
     'Loop through each pixel in the image, calculating per-pixel brush values as we go
     For x = initX To finalX
@@ -359,13 +383,19 @@ Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor
     'Next, check for a few special cases.  First, brushes with maximum hardness don't need to be rendered manually.
     ' Instead, just plot an antialiased circle and call it good.
     Dim cSurface As pd2DSurface, cBrush As pd2DBrush
-    If (brushHardness = 1#) Then
+    If (brushHardness = 1!) Then
         
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
         Drawing2D.QuickCreateSolidBrush cBrush, srcColor, brushFlow
-        PD2D.FillCircleF cSurface, cBrush, brushSize * 0.5, brushSize * 0.5, brushSize * 0.5
+        
+        'Single-pixel brushes are a special case; use a strict rectangle for them
+        If (brushSize = 1!) Then
+            PD2D.FillRectangleF cSurface, cBrush, 0!, 0!, 1!, 1!
+        Else
+            PD2D.FillCircleF cSurface, cBrush, brushSize * 0.5, brushSize * 0.5, brushSize * 0.5
+        End If
         
         Set cBrush = Nothing: Set cSurface = Nothing
     
@@ -386,8 +416,8 @@ Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor
         
         'Calculate brush flow (which controls the opacity of individual dabs)
         Dim normMult As Single, flowMult As Single
-        flowMult = brushFlow * 0.01
-        normMult = (1# / 255#) * flowMult
+        flowMult = brushFlow * 0.01!
+        normMult = (1! / 255!) * flowMult
         
         Dim x As Long, y As Long, tmpMult As Single
         For x = 0 To 255
@@ -525,12 +555,14 @@ Private Sub CreateCurrentBrushOutline()
     ' one in the future.
     Set m_BrushOutlinePath = New pd2DPath
     
-    'Single-pixel brushes are treated as a square for cursor purposes.
-    If (m_BrushSize > 0#) Then
+    'Single-pixel brushes are treated as a square for cursor purposes.  Size the outline *slightly* larger
+    ' than the target rect (to avoid covering it at small sizes).
+    If (m_BrushSize > 0!) Then
         If (m_BrushSize = 1) Then
-            m_BrushOutlinePath.AddRectangle_Absolute -0.75, -0.75, 0.75, 0.75
+            m_BrushOutlinePath.AddRectangle_Absolute -0.6, -0.6, 0.6, 0.6
         Else
-            m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2 + 0.5
+            'Other brushes currently just use a circle outline
+            m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2! + 0.5!
         End If
     End If
 
@@ -540,16 +572,24 @@ End Sub
 ' not screen space.  (Translation between spaces will be handled internally.)
 Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
-    'Relay this action to the brush engine; it calculates dab positions for us.
+    'To ensure consistent brush behavior, we always position the cursor in the center of the current pixel.
+    ' (If we don't do this, painting with a small brush while deeply zoomed in may behave unpredictably,
+    ' especially near pixel edges.)
+    '
+    'Note also that anywhere else in this function that calculates coordinates - including interpolated coordinates
+    ' coming from the line rasterizer - also performs this adjustment, to ensure brush strokes are always painted
+    ' against the precise center of each target pixel.
+    srcX = Int(srcX) + 0.5!
+    srcY = Int(srcY) + 0.5!
+    
+    'Relay this action to the brush engine; it calculates actual dab positions for us, while accounting for
+    ' any customized paintbrush properties.
     m_Paintbrush.NotifyBrushXY mouseButtonDown, Shift, srcX, srcY, mouseTimeStamp
     
-    'Regardless of mouse button state (up *or* down), cache a local copy of mouse coords; we require these for
-    ' rendering a brush outline.
-    
-    'Perform a failsafe check for brush creation
+    'Perform a failsafe check for brush creation.  (This is the actual raster surface containing the brush "image".)
     If (Not m_BrushIsReady) Then CreateCurrentBrush
     
-    'If this is a MouseDown operation, we need to make sure the full paint engine is synchronized against any property
+    'If this is a MouseDown operation, we need to synchronize the full paint engine against any brush property
     ' changes that are applied "on-demand".
     If m_Paintbrush.IsFirstDab() Then
         
@@ -559,26 +599,30 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         ' auto-dropped until the processor catches up.  We have other ways of working around that problem in the
         ' brush engine.)
         '
-        'IMPORTANT NOTE: VirtualBox returns bad data via GetMouseMovePointsEx, so I now expose this setting to the user
-        ' via the Tools > Options menu.  If the user disables high-res input, we will also ignore it.
+        'IMPORTANT NOTE: VirtualBox returns bad data via GetMouseMovePointsEx, so I now expose this setting to
+        ' the user in the Tools > Options menu.  If the user disables high-res input, we will also ignore it.
         srcCanvas.SetMouseInput_HighRes Tools.GetToolSetting_HighResMouse()
         srcCanvas.SetMouseInput_AutoDrop False
         
-        'Make sure the current scratch layer is properly initialized
+        'Make sure the current scratch layer is properly initialized (failsafe only; this should have happened
+        ' when the tool was first initialized)
         Tools.InitializeToolsDependentOnImage
         PDImages.GetActiveImage.ScratchLayer.SetLayerOpacity m_BrushOpacity
         PDImages.GetActiveImage.ScratchLayer.SetLayerBlendMode m_BrushBlendmode
         PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
         
-        'Reset the "last mouse position" values to match the current ones
-        m_MouseX = srcX
-        m_MouseY = srcY
+        'Reset the "last mouse position" tracker, and remember - all coordinates in this function are forcibly
+        ' synchronized against pixel centers.
+        m_MouseX = Int(srcX) + 0.5!
+        m_MouseY = Int(srcY) + 0.5!
         
         'Notify the central "color history" manager of the color currently being used
         UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushSourceColor, , True
         
-        'Initialize any relevant GDI+ objects for the current brush
+        'Initialize any relevant GDI+ objects for the current brush.
+        ' (This is not currently used, but may be in the future when brushes become customizable.)
         Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBDC
+        m_Surface.SetSurfacePixelOffset P2_PO_Normal
         
         'Reset any brush dynamics that are calculated on a per-stroke basis
         m_DistPixels = 0
@@ -586,16 +630,18 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     End If
     
     'Next, determine if the shift key is being pressed.  If it is, and if the user has already committed a
-    ' brush stroke to this image (on a previous paint tool event), we want to draw a smooth line between the
-    ' last paint point and the current one.  Note that this special condition is stored at module level,
-    ' as we render a custom UI on mouse move events if the mouse button is *not* pressed, to help communicate
-    ' what the shift key does.
+    ' brush stroke to this image (on a previous paint tool event), we will draw a smooth line between the
+    ' last paint point and the current one.
+    '
+    '(This special condition is stored at module level because we render a custom hover UI when the shift
+    ' key is down, to communicate its line-drawing behavior.)
     m_ShiftKeyDown = (Shift = vbShiftMask)
     
+    '(This value is only used for performance profiling.)
     Dim startTime As Currency
     
     'If the mouse button is down, perform painting between the old and new points.
-    ' (All painting occurs in image coordinate space, and is applied to the current image's scratch layer.)
+    ' (All painting occurs in image coordinate space, and is applied to the active image's scratch layer.)
     If mouseButtonDown Then
     
         'Want to profile this function?  Use this line of code (and the matching report line at the bottom of the function).
@@ -612,11 +658,16 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
             
             Do While srcCanvas.GetNextMouseMovePoint(VarPtr(tmpMMP))
                 
-                'The (x, y) points returned by this request are in the *hWnd's* coordinate space.  We must manually convert them
-                ' to the image coordinate space.
+                'The (x, y) points returned by this request are in the *hWnd's* coordinate space.
+                ' We must manually convert them to the *image* coordinate space.
                 If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, PDImages.GetActiveImage(), tmpMMP.x, tmpMMP.y, imgX, imgY) Then
                     
-                    'Add these points to the brush engine
+                    'As noted elsewhere in this function, all coordinates are forcibly pixel-centered to ensure
+                    ' consistent stroke behavior across brushes.
+                    imgX = Int(imgX) + 0.5!
+                    imgY = Int(imgY) + 0.5!
+                    
+                    'Add this set of points to the brush engine, along with their original time signature
                     m_Paintbrush.NotifyBrushXY True, 0, imgX, imgY, tmpMMP.ptTime
                     
                 End If
@@ -625,22 +676,26 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         
         End If
         
-        'Unlike other drawing tools, the paintbrush engine controls viewport redraws.  This allows us to optimize behavior
-        ' if we fall behind, and a long queue of drawing actions builds up.
+        'Unlike other drawing tools, the paintbrush engine controls viewport redraws.
+        ' This allows us to optimize behavior if we fall behind and a long queue of drawing actions accumulates.
         '
-        '(Note that we only request manual redraws if the mouse is currently down; if the mouse *isn't* down, the canvas
-        ' handles this for us.)
+        '(Note that we only request manual redraws if the mouse is currently down; if the mouse *isn't* down,
+        ' the canvas handles this for us.)
         Dim tmpPoint As PointFloat, numPointsDrawn As Long
         Do While m_Paintbrush.GetNextPoint(tmpPoint)
             
+            'As noted elsewhere, we first center coordinates against the target pixel
+            tmpPoint.x = Int(tmpPoint.x) + 0.5!
+            tmpPoint.y = Int(tmpPoint.y) + 0.5!
+            
             'Calculate new modification rects, e.g. the portion of the paintbrush layer affected by this stroke.
-            ' (The central compositor requires this information for its optimized paintbrush renderer.)
+            ' (The central compositor requires this information for optimized paintbrush rendering.)
             UpdateModifiedRect tmpPoint.x, tmpPoint.y, m_Paintbrush.IsFirstDab() And (numPointsDrawn = 0)
             
             'Paint this dab
             ApplyPaintDab tmpPoint.x, tmpPoint.y
                 
-            'Update the "old" mouse coordinate trackers
+            'Update the "last" mouse coordinate trackers
             m_MouseX = tmpPoint.x
             m_MouseY = tmpPoint.y
             numPointsDrawn = numPointsDrawn + 1
@@ -653,24 +708,24 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         'Report paint tool render times, as relevant
         'Debug.Print "Paint tool render timing: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "0000.00") & " ms"
     
-    'The previous x/y coordinate trackers are updated automatically when the mouse is DOWN.  When the mouse is UP, we must manually
-    ' modify those values.
+    'Previous x/y coordinate trackers are updated automatically when a mouse button is DOWN.
+    ' When NO mouse buttons are pressed, we must manually track those values.
     Else
-        m_MouseX = srcX
-        m_MouseY = srcY
+        m_MouseX = Int(srcX) + 0.5!
+        m_MouseY = Int(srcY) + 0.5!
     End If
     
     'If the shift key is down, we're gonna commit the paint results immediately - so don't waste time
-    ' updating the screen, as it's about to be overwritten.
+    ' updating the screen (as it's about to be overwritten).
     If mouseButtonDown And (Shift = 0) Then UpdateViewportWhilePainting startTime, srcCanvas
     
-    'If the mouse button has been released, we can also release our internal GDI+ objects.
+    'If the mouse button has been released, we can also release any internal GDI+ objects.
     ' (Note that the current *brush* resources are *not* released, by design.)
     If m_Paintbrush.IsLastDab() Then
         
         Set m_Surface = Nothing
         
-        'Reset the target canvas's mouse handling behavior
+        'Reset the target canvas's mouse handling behavior for other tools
         srcCanvas.SetMouseInput_HighRes False
         srcCanvas.SetMouseInput_AutoDrop True
         
@@ -714,10 +769,16 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
     
     If allowedToDab Then
         
-        'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
-        ' for a performance boost, however.
+        'TODO: certain features (like brush rotation) will require a GDI+ surface.
+        ' Simple brushes can use GDI's AlphaBlend for a performance boost, however.
         m_SrcPenDIB.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), 0, 0, Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), dabOpacity * 255
-        'PD2D.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
+        
+        'NOTE: GDI+ stroke rendering is not currently well-tested, and will likely require adjustments
+        ' to the formula below.
+        
+        'If (Not m_Surface Is Nothing) Then
+        '    PD2D.DrawSurfaceCroppedF m_Surface, Int(srcX - m_BrushSize * 0.5!), Int(srcY - m_BrushSize + 0.5!), Int(m_BrushSize + 0.5!), Int(m_BrushSize + 0.5!), m_CustomPenImage, 0!, 0!, dabOpacity * 100!
+        'End If
         
     End If
     
@@ -752,7 +813,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
     'Inflate the rect calculation by the size of the current brush, while accounting for the possibility of antialiasing
     ' (which may extend up to 1.0 pixel outside the calculated boundary area).
     Dim halfBrushSize As Single
-    halfBrushSize = m_BrushSize / 2 + 1#
+    halfBrushSize = m_BrushSize * 0.5! + 1!
     
     tmpRectF.Left = tmpRectF.Left - halfBrushSize
     tmpRectF.Top = tmpRectF.Top - halfBrushSize
@@ -839,6 +900,8 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim cursX As Double, cursY As Double
     Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, PDImages.GetActiveImage(), m_MouseX, m_MouseY, cursX, cursY
     
+    'Debug.Print m_MouseX, m_MouseY, "render brush outline"
+    
     'If the on-screen brush size is above a certain threshold, we'll paint a full brush outline.
     ' If it's too small, we'll only paint a cross in the current brush position.
     Dim onScreenSize As Double
@@ -860,6 +923,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, targetCanvas.hDC, True
     cSurface.SetSurfacePixelOffset P2_PO_Normal
+    If (m_BrushSize = 1!) Then cSurface.SetSurfacePixelOffset P2_PO_Half
     
     'If the user is holding down the SHIFT key, paint a line between the end of the previous stroke and the current
     ' mouse position.  This helps communicate that shift+clicking will string together separate strokes.
@@ -950,6 +1014,7 @@ Public Sub ReduceMemoryIfPossible()
     ' (to ensure it gets re-created correctly)
     m_BrushIsReady = False
     m_BrushCreatedAtLeastOnce = False
+    Set m_CustomPenImage = Nothing
     Set m_SrcPenDIB = Nothing
     
 End Sub
