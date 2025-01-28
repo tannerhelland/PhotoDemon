@@ -3,8 +3,8 @@ Attribute VB_Name = "PD2D"
 'PhotoDemon 2D Painting class (interface for using pd2DBrush and pd2DPen on pd2DSurface objects)
 'Copyright 2012-2025 by Tanner Helland
 'Created: 01/September/12
-'Last updated: 03/July/17
-'Last update: kill off pd2DPainter class; migrate all commands to this module, instead
+'Last updated: 28/January/25
+'Last update: fix some sloppy float/double intermixing
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
@@ -174,7 +174,7 @@ Public Function DrawSurfaceF(ByRef dstSurface As pd2DSurface, ByVal dstX As Sing
     srcHeight = srcSurface.GetSurfaceHeight
     
     'Custom opacity requires a totally different (and far more complicated) GDI+ function
-    If (customOpacity <> 100#) Then
+    If (customOpacity <> 100!) Then
         DrawSurfaceF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, srcWidth, srcHeight, 0!, 0!, srcWidth, srcHeight, customOpacity * 0.01)
     Else
         DrawSurfaceF = GDI_Plus.GDIPlus_DrawImageF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY)
@@ -187,7 +187,7 @@ Public Function DrawSurfaceCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX 
     'Because this function doesn't require stretching, we can drop back to AlphaBlend for improved performance.
     ' (This is only possible because pd2D operates in the premultiplied alpha space; if it didn't, we'd be forced
     ' to use slower GDI+ calls everywhere.)
-    If (srcSurface.GetSurfaceAlphaSupport Or (customOpacity <> 100)) Then
+    If (srcSurface.GetSurfaceAlphaSupport Or (customOpacity <> 100!)) Then
         DrawSurfaceCroppedI = AlphaBlendWrapper(dstSurface.GetSurfaceDC, dstX, dstY, cropWidth, cropHeight, srcSurface.GetSurfaceDC, srcX, srcY, cropWidth, cropHeight, srcSurface.GetSurfaceAlphaSupport, customOpacity * 2.55)
     Else
         DrawSurfaceCroppedI = GDI.BitBltWrapper(dstSurface.GetSurfaceDC, dstX, dstY, cropWidth, cropHeight, srcSurface.GetSurfaceDC, srcX, srcY, vbSrcCopy)
@@ -205,8 +205,8 @@ Public Function DrawSurfaceResizedI(ByRef dstSurface As pd2DSurface, ByVal dstX 
     srcWidth = srcSurface.GetSurfaceWidth
     srcHeight = srcSurface.GetSurfaceHeight
     
-    If (customOpacity <> 100#) Then
-        DrawSurfaceResizedI = GDI_Plus.GDIPlus_DrawImageRectRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, 0#, 0#, srcWidth, srcHeight, customOpacity * 0.01)
+    If (customOpacity <> 100!) Then
+        DrawSurfaceResizedI = GDI_Plus.GDIPlus_DrawImageRectRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, 0, 0, srcWidth, srcHeight, customOpacity * 0.01)
     Else
         DrawSurfaceResizedI = GDI_Plus.GDIPlus_DrawImageRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight)
     End If
@@ -220,7 +220,7 @@ Public Function DrawSurfaceResizedF(ByRef dstSurface As pd2DSurface, ByVal dstX 
     srcWidth = srcSurface.GetSurfaceWidth
     srcHeight = srcSurface.GetSurfaceHeight
     
-    If (customOpacity <> 100#) Then
+    If (customOpacity <> 100!) Then
         DrawSurfaceResizedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, 0!, 0!, srcWidth, srcHeight, customOpacity * 0.01)
     Else
         DrawSurfaceResizedF = GDI_Plus.GDIPlus_DrawImageRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight)

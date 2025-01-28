@@ -3,9 +3,9 @@ Attribute VB_Name = "Tools_Paint"
 'Paintbrush tool interface
 'Copyright 2016-2025 by Tanner Helland
 'Created: 1/November/16
-'Last updated: 27/January/25
-'Last update: standardize all positioning calculations against pixel centers, to ensure reliable behavior
-'             of single-pixel brushes at extreme zoom-in levels
+'Last updated: 28/January/25
+'Last update: add "align to pixel grid" setting, and allow the user to toggle at their leisure.
+'             (When enabled, all paint dabs are forcibly centered against the pixel grid, for "perfect" precision.)
 '
 'To simplify the design of the primary canvas, all brush-related requests are simply forwarded here.
 ' This module then handles all the messy business of managing brush behavior, strokes, and dabs.
@@ -38,6 +38,11 @@ Private m_BrushFlow As Single
 
 'Note that some brush attributes, like color, only exist for certain brush sources.
 Private m_BrushSourceColor As Long
+
+'In 2025, a new option was added for strictly snapping the brush to pixel centers (see https://github.com/tannerhelland/PhotoDemon/discussions/635).
+' When this option is toggled OFF, paint tools behave like Photoshop or Paint.NET.  Turning it ON makes it more acceptable
+' for e.g. pixel art, with strict precision (particularly with 1px brush sizes).
+Private m_StrictPixelCentering As Boolean
 
 'If brush properties have changed since the last brush creation, this is set to FALSE.
 ' PD uses this to optimize brush creation behavior (as initialization is expensive for some brush shapes).
@@ -130,6 +135,10 @@ Public Function GetBrushSpacing() As Single
     GetBrushSpacing = m_BrushSpacing
 End Function
 
+Public Function GetStrictPixelAlignment() As Boolean
+    GetStrictPixelAlignment = m_StrictPixelCentering
+End Function
+
 'Property set functions.  Note that not all brush properties are used by all styles.
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
 Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = AM_Normal)
@@ -186,6 +195,13 @@ Public Sub SetBrushSpacing(ByVal newSpacing As Single)
     newSpacing = newSpacing * 0.01
     If (newSpacing <> m_BrushSpacing) Then
         m_BrushSpacing = newSpacing
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetStrictPixelAlignment(ByVal newValue As Boolean)
+    If (newValue <> m_StrictPixelCentering) Then
+        m_StrictPixelCentering = newValue
         m_BrushIsReady = False
     End If
 End Sub
@@ -391,7 +407,7 @@ Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor
         Drawing2D.QuickCreateSolidBrush cBrush, srcColor, brushFlow
         
         'Single-pixel brushes are a special case; use a strict rectangle for them
-        If (brushSize = 1!) Then
+        If (brushSize = 1!) And m_StrictPixelCentering Then
             PD2D.FillRectangleF cSurface, cBrush, 0!, 0!, 1!, 1!
         Else
             PD2D.FillCircleF cSurface, cBrush, brushSize * 0.5, brushSize * 0.5, brushSize * 0.5
@@ -537,7 +553,7 @@ Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor
         'If a temporary brush was required (because the target brush is so small), downscale it to its
         ' final size now.
         If tmpBrushRequired Then
-            GDI_Plus.GDIPlus_StretchBlt dstDIB, 0#, 0#, brushSize, brushSize, tmpDIB, 0#, 0#, BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, , GP_IM_HighQualityBilinear, , , True, True
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, 0!, 0!, brushSize, brushSize, tmpDIB, 0!, 0!, BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, , GP_IM_HighQualityBilinear, , , True, True
         End If
         
     End If
@@ -558,7 +574,7 @@ Private Sub CreateCurrentBrushOutline()
     'Single-pixel brushes are treated as a square for cursor purposes.  Size the outline *slightly* larger
     ' than the target rect (to avoid covering it at small sizes).
     If (m_BrushSize > 0!) Then
-        If (m_BrushSize = 1) Then
+        If (m_BrushSize = 1!) And m_StrictPixelCentering Then
             m_BrushOutlinePath.AddRectangle_Absolute -0.6, -0.6, 0.6, 0.6
         Else
             'Other brushes currently just use a circle outline
@@ -572,19 +588,27 @@ End Sub
 ' not screen space.  (Translation between spaces will be handled internally.)
 Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, ByRef srcCanvas As pdCanvas)
     
-    'To ensure consistent brush behavior, we always position the cursor in the center of the current pixel.
-    ' (If we don't do this, painting with a small brush while deeply zoomed in may behave unpredictably,
-    ' especially near pixel edges.)
+    'Determine if the shift key is being pressed.  If it is, and if the user has already committed a
+    ' brush stroke to this image (on a previous paint tool event), we will draw a smooth line between the
+    ' last paint point and the current one.
+    '
+    '(This special condition is stored at module level because we render a custom hover UI when the shift
+    ' key is down, to communicate its line-drawing behavior.)
+    m_ShiftKeyDown = (Shift = vbShiftMask)
+    
+    'A new toggle (as of 2025) now exists for strictly positioning the cursor in the center of the current pixel.
     '
     'Note also that anywhere else in this function that calculates coordinates - including interpolated coordinates
-    ' coming from the line rasterizer - also performs this adjustment, to ensure brush strokes are always painted
-    ' against the precise center of each target pixel.
-    srcX = Int(srcX) + 0.5!
-    srcY = Int(srcY) + 0.5!
+    ' coming from the line rasterizer - also need to perform this adjustment, as direct mouse input is only one
+    ' source of pixel coordinates.
+    If m_StrictPixelCentering Then
+        srcX = Int(srcX) + 0.5!
+        srcY = Int(srcY) + 0.5!
+    End If
     
     'Relay this action to the brush engine; it calculates actual dab positions for us, while accounting for
     ' any customized paintbrush properties.
-    m_Paintbrush.NotifyBrushXY mouseButtonDown, Shift, srcX, srcY, mouseTimeStamp
+    m_Paintbrush.NotifyBrushXY mouseButtonDown, Shift, srcX, srcY, mouseTimeStamp, m_StrictPixelCentering
     
     'Perform a failsafe check for brush creation.  (This is the actual raster surface containing the brush "image".)
     If (Not m_BrushIsReady) Then CreateCurrentBrush
@@ -611,31 +635,37 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         PDImages.GetActiveImage.ScratchLayer.SetLayerBlendMode m_BrushBlendmode
         PDImages.GetActiveImage.ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
         
-        'Reset the "last mouse position" tracker, and remember - all coordinates in this function are forcibly
-        ' synchronized against pixel centers.
-        m_MouseX = Int(srcX) + 0.5!
-        m_MouseY = Int(srcY) + 0.5!
+        'Reset the "last mouse position" tracker, and remember - an option exists for forcibly centering
+        ' strokes against pixel centers.
+        m_MouseX = srcX
+        m_MouseY = srcY
+        If m_StrictPixelCentering Then
+            m_MouseX = Int(m_MouseX) + 0.5!
+            m_MouseY = Int(m_MouseY) + 0.5!
+        End If
         
         'Notify the central "color history" manager of the color currently being used
         UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushSourceColor, , True
         
+    End If
+    
+    'Next, if this is a first dab *OR* if the shift key is down, we need to ensure a pd2D surface exists
+    ' for the target canvas (because other functions will be rendering onto it).
+    If m_Paintbrush.IsFirstDab() Or m_ShiftKeyDown Then
+    
         'Initialize any relevant GDI+ objects for the current brush.
         ' (This is not currently used, but may be in the future when brushes become customizable.)
         Drawing2D.QuickCreateSurfaceFromDC m_Surface, PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBDC
-        m_Surface.SetSurfacePixelOffset P2_PO_Normal
+        If m_StrictPixelCentering Then
+            m_Surface.SetSurfacePixelOffset P2_PO_Normal
+        Else
+            m_Surface.SetSurfacePixelOffset P2_PO_Half
+        End If
         
         'Reset any brush dynamics that are calculated on a per-stroke basis
         m_DistPixels = 0
         
     End If
-    
-    'Next, determine if the shift key is being pressed.  If it is, and if the user has already committed a
-    ' brush stroke to this image (on a previous paint tool event), we will draw a smooth line between the
-    ' last paint point and the current one.
-    '
-    '(This special condition is stored at module level because we render a custom hover UI when the shift
-    ' key is down, to communicate its line-drawing behavior.)
-    m_ShiftKeyDown = (Shift = vbShiftMask)
     
     '(This value is only used for performance profiling.)
     Dim startTime As Currency
@@ -662,13 +692,15 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
                 ' We must manually convert them to the *image* coordinate space.
                 If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, PDImages.GetActiveImage(), tmpMMP.x, tmpMMP.y, imgX, imgY) Then
                     
-                    'As noted elsewhere in this function, all coordinates are forcibly pixel-centered to ensure
-                    ' consistent stroke behavior across brushes.
-                    imgX = Int(imgX) + 0.5!
-                    imgY = Int(imgY) + 0.5!
+                    'As noted elsewhere in this function, all coordinates can be forcibly pixel-centered to ensure
+                    ' consistent stroke behavior.
+                    If m_StrictPixelCentering Then
+                        imgX = Int(imgX) + 0.5!
+                        imgY = Int(imgY) + 0.5!
+                    End If
                     
                     'Add this set of points to the brush engine, along with their original time signature
-                    m_Paintbrush.NotifyBrushXY True, 0, imgX, imgY, tmpMMP.ptTime
+                    m_Paintbrush.NotifyBrushXY True, 0, imgX, imgY, tmpMMP.ptTime, m_StrictPixelCentering
                     
                 End If
                 
@@ -684,9 +716,11 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         Dim tmpPoint As PointFloat, numPointsDrawn As Long
         Do While m_Paintbrush.GetNextPoint(tmpPoint)
             
-            'As noted elsewhere, we first center coordinates against the target pixel
-            tmpPoint.x = Int(tmpPoint.x) + 0.5!
-            tmpPoint.y = Int(tmpPoint.y) + 0.5!
+            'As noted elsewhere, forcible pixel alignment exists as a user-facing option
+            If m_StrictPixelCentering Then
+                tmpPoint.x = Int(tmpPoint.x) + 0.5!
+                tmpPoint.y = Int(tmpPoint.y) + 0.5!
+            End If
             
             'Calculate new modification rects, e.g. the portion of the paintbrush layer affected by this stroke.
             ' (The central compositor requires this information for optimized paintbrush rendering.)
@@ -711,17 +745,21 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     'Previous x/y coordinate trackers are updated automatically when a mouse button is DOWN.
     ' When NO mouse buttons are pressed, we must manually track those values.
     Else
-        m_MouseX = Int(srcX) + 0.5!
-        m_MouseY = Int(srcY) + 0.5!
+        m_MouseX = srcX
+        m_MouseY = srcY
+        If m_StrictPixelCentering Then
+            m_MouseX = Int(m_MouseX) + 0.5!
+            m_MouseY = Int(m_MouseY) + 0.5!
+        End If
     End If
     
     'If the shift key is down, we're gonna commit the paint results immediately - so don't waste time
     ' updating the screen (as it's about to be overwritten).
     If mouseButtonDown And (Shift = 0) Then UpdateViewportWhilePainting startTime, srcCanvas
     
-    'If the mouse button has been released, we can also release any internal GDI+ objects.
+    'If the mouse button has been released, or if the shift key is down, we can also release any internal GDI+ objects.
     ' (Note that the current *brush* resources are *not* released, by design.)
-    If m_Paintbrush.IsLastDab() Then
+    If m_Paintbrush.IsLastDab() Or m_ShiftKeyDown Then
         
         Set m_Surface = Nothing
         
@@ -769,16 +807,17 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
     
     If allowedToDab Then
         
-        'TODO: certain features (like brush rotation) will require a GDI+ surface.
-        ' Simple brushes can use GDI's AlphaBlend for a performance boost, however.
-        m_SrcPenDIB.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), 0, 0, Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), dabOpacity * 255
+        'Simple brushes (no rotation, stretching, etc) can use GDI's AlphaBlend for a performance boost.
+        'm_SrcPenDIB.AlphaBlendToDCEx PDImages.GetActiveImage.ScratchLayer.GetLayerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), 0, 0, Int(m_BrushSize + 0.5), Int(m_BrushSize + 0.5), dabOpacity * 255
         
-        'NOTE: GDI+ stroke rendering is not currently well-tested, and will likely require adjustments
-        ' to the formula below.
-        
-        'If (Not m_Surface Is Nothing) Then
-        '    PD2D.DrawSurfaceCroppedF m_Surface, Int(srcX - m_BrushSize * 0.5!), Int(srcY - m_BrushSize + 0.5!), Int(m_BrushSize + 0.5!), Int(m_BrushSize + 0.5!), m_CustomPenImage, 0!, 0!, dabOpacity * 100!
-        'End If
+        'In early 2025, I switched PD to GDI+ stroke rendering in preparation for future brush engine improvements.
+        If (Not m_Surface Is Nothing) Then
+            If m_StrictPixelCentering Then
+                PD2D.DrawSurfaceCroppedF m_Surface, Int(srcX - m_BrushSize * 0.5!), Int(srcY - m_BrushSize * 0.5!), Int(m_BrushSize + 0.5!), Int(m_BrushSize + 0.5!), m_CustomPenImage, 0!, 0!, dabOpacity * 100!
+            Else
+                PD2D.DrawSurfaceCroppedF m_Surface, srcX - m_BrushSize * 0.5!, srcY - m_BrushSize * 0.5!, Int(m_BrushSize + 0.5!), Int(m_BrushSize + 0.5!), m_CustomPenImage, 0!, 0!, dabOpacity * 100!
+            End If
+        End If
         
     End If
     
@@ -899,8 +938,6 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     'We also want to pinpoint the precise cursor position
     Dim cursX As Double, cursY As Double
     Drawing.ConvertImageCoordsToCanvasCoords targetCanvas, PDImages.GetActiveImage(), m_MouseX, m_MouseY, cursX, cursY
-    
-    'Debug.Print m_MouseX, m_MouseY, "render brush outline"
     
     'If the on-screen brush size is above a certain threshold, we'll paint a full brush outline.
     ' If it's too small, we'll only paint a cross in the current brush position.

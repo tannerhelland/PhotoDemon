@@ -15,10 +15,8 @@ Attribute VB_Exposed = False
 'Paintbrush tool interface
 'Copyright 2016-2025 by Tanner Helland
 'Created: 1/November/16
-'Last updated: 27/November/25
-'Last update: switch back to an older line renderer, as it demonstrates more predictable behavior at
-'             single-pixel sizes (vs the voxel renderer, which intentionally "spills over" into
-'             neighboring pixels due to the way it calculates overlap).
+'Last updated: 28/January/25
+'Last update: again provide a floating-point line interpolator (and give users a toggle for strict vs loose pixel alignment)
 '
 'This module handles the messy business of translating mouse events (or really, a list of input
 ' coordinates) into a stream of paint dabs.
@@ -193,7 +191,7 @@ End Function
 '
 'Passing the current shift modifier is also important, as this class will auto-calculate straight lines of
 ' dabs for shift-click patterns.
-Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long)
+Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftConstants, ByVal srcX As Single, ByVal srcY As Single, ByVal mouseTimeStamp As Long, Optional ByVal useIntegerAlignment As Boolean = False)
     
     'Start by checking for first/last dabs
     m_IsFirstDab = (Not m_MouseDown) And mouseButtonDown
@@ -228,13 +226,17 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         ' what the shift key does.
         Dim useShiftStyle As Boolean
         useShiftStyle = ((Shift And vbShiftMask) <> 0) And (m_LastPoint.x <> MOUSE_OOB) And (m_LastPoint.y <> MOUSE_OOB)
-        If useShiftStyle Then useShiftStyle = (m_LastPoint.x <> srcX) And (m_LastPoint.y <> srcY)
+        If useShiftStyle Then useShiftStyle = (m_LastPoint.x <> srcX) Or (m_LastPoint.y <> srcY)
         
         'Add this point to the collection as-is, *UNLESS* the shift button is down.
         ' If it is, we actually want to interpolate between the last-clicked point and this one.
         If useShiftStyle Then
             m_IsFirstDab = False
-            AddPoints_BresenhamStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, False
+            If useIntegerAlignment Then
+                AddPoints_BresenhamStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, False
+            Else
+                AddPoints_NaiveFloat m_LastPoint.x, m_LastPoint.y, srcX, srcY, False
+            End If
         Else
             AddSinglePoint srcX, srcY
         End If
@@ -256,7 +258,11 @@ Friend Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
                 ' which greatly interferes with soft edge brush behavior (because the dabs will all
                 ' overlap each other, effectively "erasing" the soft edges).
                 If (Abs(m_LastPoint.x - srcX) > 0.25) Or (Abs(m_LastPoint.y - srcY) > 0.25) Then
-                    AddPoints_BresenhamStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, True
+                    If useIntegerAlignment Then
+                        AddPoints_BresenhamStyle m_LastPoint.x, m_LastPoint.y, srcX, srcY, True
+                    Else
+                        AddPoints_NaiveFloat m_LastPoint.x, m_LastPoint.y, srcX, srcY, True
+                    End If
                 Else
                     storeAsLastPoint = False
                 End If
@@ -397,6 +403,42 @@ Private Sub AddPoints_BresenhamStyle(ByVal xStart As Single, ByVal yStart As Sin
         AddSinglePoint x0, y0
         
     Loop
+    
+End Sub
+
+'Add all relevant points between [1] and [2] to the queue, ignoring integer requirements and simply
+' breaking the line down into ~1px increments.
+Private Sub AddPoints_NaiveFloat(ByVal xStart As Single, ByVal yStart As Single, ByVal xEnd As Single, ByVal yEnd As Single, Optional ByVal addFirstPoint As Boolean = True)
+    
+    If addFirstPoint Then AddSinglePoint xStart, yStart
+    
+    'Ignore further plotting if start and end points match
+    If (xStart <> xEnd) Or (yStart <> yEnd) Then
+        
+        'Break the line up into roughly 1px offsets.
+        Dim lineLength As Single
+        lineLength = PDMath.DistanceTwoPoints(xStart, yStart, xEnd, yEnd)
+        
+        'If the distance is already 1px or less, just plot both points and exit
+        If (lineLength <= 1!) Then
+            AddSinglePoint xEnd, yEnd
+            Exit Sub
+        End If
+        
+        'Line length is > 1.  Divide it into roughly 1px increments, and plot all points accordingly.
+        Dim numLineSegments As Long
+        numLineSegments = Int(lineLength + 0.5!) + 1
+        
+        Dim xIncrement As Single, yIncrement As Single
+        xIncrement = (xEnd - xStart) / numLineSegments
+        yIncrement = (yEnd - yStart) / numLineSegments
+        
+        Dim i As Long
+        For i = 1 To numLineSegments
+            AddSinglePoint xStart + (i * xIncrement), yStart + (i * yIncrement)
+        Next i
+        
+    End If
     
 End Sub
 
