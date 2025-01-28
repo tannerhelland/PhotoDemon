@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Paintbrush
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   3600
+   ClientHeight    =   3945
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   10035
@@ -25,26 +25,26 @@ Begin VB.Form toolpanel_Paintbrush
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   240
+   ScaleHeight     =   263
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   669
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2415
+      Height          =   3000
       Index           =   2
       Left            =   5880
       Top             =   840
       Visible         =   0   'False
-      Width           =   3855
-      _ExtentX        =   6800
-      _ExtentY        =   4260
+      Width           =   3840
+      _ExtentX        =   6773
+      _ExtentY        =   5292
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
          Left            =   3360
          TabIndex        =   10
-         Top             =   1815
+         Top             =   2430
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -56,7 +56,7 @@ Begin VB.Form toolpanel_Paintbrush
          Index           =   3
          Left            =   120
          TabIndex        =   11
-         Top             =   0
+         Top             =   600
          Width           =   3135
          _ExtentX        =   5530
          _ExtentY        =   1217
@@ -72,7 +72,7 @@ Begin VB.Form toolpanel_Paintbrush
          Height          =   495
          Left            =   180
          TabIndex        =   12
-         Top             =   1800
+         Top             =   2400
          Width           =   3090
          _ExtentX        =   5450
          _ExtentY        =   873
@@ -88,12 +88,23 @@ Begin VB.Form toolpanel_Paintbrush
          Height          =   855
          Left            =   120
          TabIndex        =   13
-         Top             =   840
+         Top             =   1440
          Width           =   3135
          _ExtentX        =   5530
          _ExtentY        =   1508
          Caption         =   "spacing"
          FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdCheckBox chkStrictPixel 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   14
+         Top             =   120
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   661
+         Caption         =   "align to pixel grid"
+         Value           =   0   'False
       End
    End
    Begin PhotoDemon.pdSlider sltBrushSetting 
@@ -340,6 +351,22 @@ Private Sub cboBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabW
     End Select
 End Sub
 
+Private Sub chkStrictPixel_Click()
+    Tools_Paint.SetStrictPixelAlignment chkStrictPixel.Value
+End Sub
+
+Private Sub chkStrictPixel_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub chkStrictPixel_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sltBrushSetting(2).hWndSpinner
+    Else
+        newTargetHwnd = Me.sltBrushSetting(3).hWndSlider
+    End If
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
 End Sub
@@ -486,11 +513,11 @@ Private Sub sltBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabW
             If shiftTabWasPressed Then
                 newTargetHwnd = Me.ttlPanel(2).hWnd
             Else
-                newTargetHwnd = Me.sltBrushSetting(3).hWndSlider
+                newTargetHwnd = Me.chkStrictPixel.hWnd
             End If
         Case 3
             If shiftTabWasPressed Then
-                newTargetHwnd = Me.sltBrushSetting(2).hWndSpinner
+                newTargetHwnd = Me.chkStrictPixel.hWnd
             Else
                 newTargetHwnd = Me.btsSpacing.hWnd
             End If
@@ -680,7 +707,8 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Tools_Paint.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Tools_Paint.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Tools_Paint.SetBrushAlphaMode cboBrushSetting(1).ListIndex
-    If (btsSpacing.ListIndex = 0) Then Tools_Paint.SetBrushSpacing 0# Else Tools_Paint.SetBrushSpacing sldSpacing.Value
+    If (btsSpacing.ListIndex = 0) Then Tools_Paint.SetBrushSpacing 0! Else Tools_Paint.SetBrushSpacing sldSpacing.Value
+    Tools_Paint.SetStrictPixelAlignment chkStrictPixel.Value
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
@@ -691,12 +719,13 @@ Public Sub SyncUIToAllPaintbrushSettings()
     sltBrushSetting(3).Value = Tools_Paint.GetBrushFlow()
     cboBrushSetting(0).ListIndex = Tools_Paint.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Tools_Paint.GetBrushAlphaMode()
-    If (Tools_Paint.GetBrushSpacing() = 0#) Then
+    If (Tools_Paint.GetBrushSpacing() = 0!) Then
         btsSpacing.ListIndex = 0
     Else
         btsSpacing.ListIndex = 1
         sldSpacing.Value = Tools_Paint.GetBrushSpacing()
     End If
+    chkStrictPixel.Value = Tools_Paint.GetStrictPixelAlignment()
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -709,6 +738,9 @@ Public Sub UpdateAgainstCurrentTheme()
 
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock
+    
+    'Assign a tooltip to the "strict pixel alignment" checkbox, as it's somewhat unintuitive.
+    chkStrictPixel.AssignTooltip "This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural."
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -752,7 +784,7 @@ End Sub
 Private Sub UpdateSpacingVisibility()
     If (btsSpacing.ListIndex = 0) Then
         sldSpacing.Visible = False
-        Tools_Paint.SetBrushSpacing 0#
+        Tools_Paint.SetBrushSpacing 0!
     Else
         sldSpacing.Visible = True
         Tools_Paint.SetBrushSpacing sldSpacing.Value
