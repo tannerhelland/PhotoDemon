@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 103.1</langversion>
+<langversion>2024.12 Alpha - Build 111</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2790,7 +2790,7 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
-<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Bitte machen Sie Systemspeicher (RAM) frei, indem Sie nicht benötigte Programme beenden - insbesondere Ihren Webbrowser, falls er geöffnet ist - dann versuchen Sie die Aktion erneut.</translation>
+<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Bitte geben Sie Systemspeicher (RAM) frei, indem Sie nicht benötigte Programme beenden - insbesondere Ihren Webbrowser, falls er geöffnet ist - dann versuchen Sie die Aktion erneut.</translation>
 </phrase>
 
 <phrase>
@@ -3451,7 +3451,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Paint stroke</original>
-<translation>Farbstrich</translation>
+<translation>Malstrich</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -10717,7 +10717,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können additionale Bestätigungsscreens zum Drucken erscheinen.)</translation>
+<translation>Bild erfolgreich gedruckt. (Hinweis: Abhängig von Ihrem Drucker können additionale Druck-Bestätigungsscreens erscheinen.)</translation>
 </phrase>
 
 <phrase>
@@ -12496,12 +12496,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>An Pixelraster ausrichten</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>Diese Einstellung richtet Malstriche zwangsweise an den Mittelpunkten des Pixelrasters aus. Dies verbessert die Präzision (vor allem bei kleinen Pinselgrößen), aber Pinselstriche können weniger natürlich erscheinen.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -14159,7 +14159,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon generiert viele Thumbnail-Bilder, insbesondere wenn Bilder multiple Layer enthalten. Die Thumbnail-Qualität kann verringert werden, um die Performance zu verbessern.</translation>
+<translation>PhotoDemon generiert viele Thumbnail-Bilder, vor allem, wenn Bilder multiple Layer enthalten. Die Thumbnail-Qualität kann verringert werden, um die Performance zu verbessern.</translation>
 </phrase>
 
 <phrase>
