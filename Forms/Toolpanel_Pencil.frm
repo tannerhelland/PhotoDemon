@@ -34,7 +34,7 @@ Begin VB.Form toolpanel_Pencil
       Height          =   375
       Left            =   5640
       TabIndex        =   2
-      Top             =   240
+      Top             =   135
       Width           =   3495
       _ExtentX        =   6165
       _ExtentY        =   661
@@ -166,6 +166,16 @@ Begin VB.Form toolpanel_Pencil
          FontSizeCaption =   10
       End
    End
+   Begin PhotoDemon.pdCheckBox chkAlignPixelGrid 
+      Height          =   375
+      Left            =   5640
+      TabIndex        =   9
+      Top             =   480
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   661
+      Caption         =   "align to pixel grid"
+   End
 End
 Attribute VB_Name = "toolpanel_Pencil"
 Attribute VB_GlobalNameSpace = False
@@ -176,11 +186,11 @@ Attribute VB_Exposed = False
 'PhotoDemon Basic Brush ("Pencil") Tool Panel
 'Copyright 2016-2025 by Tanner Helland
 'Created: 31/Oct/16
-'Last updated: 01/December/21
-'Last update: migrate UI to new flyout-driven UI
+'Last updated: 29/January/25
+'Last update: new "align to pixel grid" setting
 '
 'This form includes all user-editable settings for the "pencil" canvas tool.  Unlike other programs,
-' PD's pencil tool supports a number of features (like antialiasing) while maintaining the high
+' PD's pencil tool does actually support a few features (like antialiasing) while maintaining the high
 ' performance everyone expects from a basic brush.
 '
 'Extremely large radii are suppored, as are all blend modes (including "erase").
@@ -238,6 +248,22 @@ Private Sub cboBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabW
     End Select
 End Sub
 
+Private Sub chkAlignPixelGrid_Click()
+    Tools_Pencil.SetStrictPixelAlignment chkAlignPixelGrid.Value
+End Sub
+
+Private Sub chkAlignPixelGrid_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = chkAntialiasing.hWnd
+    Else
+        If Me.ttlPanel(0).Enabled Then
+            newTargetHwnd = Me.ttlPanel(0).hWnd
+        Else
+            newTargetHwnd = Me.sltBrushSetting(0).hWndSlider
+        End If
+    End If
+End Sub
+
 Private Sub chkAntialiasing_Click()
     If chkAntialiasing.Value Then
         Tools_Pencil.SetBrushAntialiasing P2_AA_HighQuality
@@ -250,11 +276,7 @@ Private Sub chkAntialiasing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boole
     If shiftTabWasPressed Then
         newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
     Else
-        If Me.ttlPanel(0).Enabled Then
-            newTargetHwnd = Me.ttlPanel(0).hWnd
-        Else
-            newTargetHwnd = Me.sltBrushSetting(0).hWndSlider
-        End If
+        newTargetHwnd = Me.chkAlignPixelGrid.hWnd
     End If
 End Sub
 
@@ -341,7 +363,7 @@ Private Sub sltBrushSetting_SetCustomTabTarget(Index As Integer, ByVal shiftTabW
                 If Me.ttlPanel(0).Enabled Then
                     newTargetHwnd = Me.ttlPanel(0).hWnd
                 Else
-                    newTargetHwnd = Me.chkAntialiasing.hWnd
+                    newTargetHwnd = Me.chkAlignPixelGrid.hWnd
                 End If
             Else
                 newTargetHwnd = Me.sltBrushSetting(1).hWndSlider
@@ -367,7 +389,7 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
     Select Case Index
         Case 0
             If shiftTabWasPressed Then
-                newTargetHwnd = Me.chkAntialiasing.hWnd
+                newTargetHwnd = Me.chkAlignPixelGrid.hWnd
             Else
                 newTargetHwnd = Me.sltBrushSetting(0).hWnd
             End If
@@ -418,6 +440,11 @@ Private Sub ReflowUI()
     Dim useWideMode As Boolean
     Dim availablePixels As Long, minAvailableLeft As Long
     
+    'We need to align against either the antialiasing *or* "align to pixel grid" checkbox.
+    ' Use whichever has the longest width at run-time (changes based on the current UI language).
+    Dim widthWidestCheckbox As Long
+    widthWidestCheckbox = PDMath.Max2Int(Me.chkAlignPixelGrid.GetWidth_Clickable(), Me.chkAntialiasing.GetWidth_Clickable())
+    
     'If in wide mode, see if the toolpanel has gotten too crammed
     If inWideModeNow Then
         
@@ -426,13 +453,13 @@ Private Sub ReflowUI()
         ' and some controls (like checkboxes) will deliberately make themselves as wide as possible
         ' to allow for long translations in non-US locales, so a special Width() function needs
         ' to be called.
-        minAvailableLeft = Me.chkAntialiasing.GetLeft + Me.chkAntialiasing.GetWidth_Clickable + stdPaddingTitle
+        minAvailableLeft = Me.chkAntialiasing.GetLeft + widthWidestCheckbox + stdPaddingTitle
         useWideMode = (minAvailableLeft < parentWidth)
         
     'If *not* in "wide mode", see if we have enough spare space to activate wide mode.
     Else
     
-        minAvailableLeft = Me.chkAntialiasing.GetLeft + Me.chkAntialiasing.GetWidth_Clickable + stdPadding + stdPaddingTitle
+        minAvailableLeft = Me.chkAntialiasing.GetLeft + widthWidestCheckbox + stdPadding + stdPaddingTitle
         availablePixels = parentWidth - minAvailableLeft
         
         'useWideMode needs to now be compared against the object we want to move into the toolpanel
@@ -480,6 +507,7 @@ Private Sub ReflowUI()
             
             'Move the final control into position and stop calculating xOffset
             Me.chkAntialiasing.SetLeft xOffset
+            Me.chkAlignPixelGrid.SetLeft xOffset
             
             'Now forcibly disable (or enable) all controls associated with the old flyout,
             ' including the parent titlebar of the flyout and the panel lock button *on* the flyout.
@@ -519,8 +547,9 @@ Private Sub ReflowUI()
             Me.cboBrushSetting(0).SetLeft xOffset + stdPaddingTitle
             xOffset = xOffset + ttlPanel(1).GetWidth + stdPadding
             
-            'Final control in the panel
+            'Final controls in the panel
             Me.chkAntialiasing.SetLeft xOffset
+            Me.chkAlignPixelGrid.SetLeft xOffset
             
         End If
             
@@ -536,6 +565,7 @@ Public Sub SyncAllPencilSettingsToUI()
     Tools_Pencil.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Tools_Pencil.SetBrushAlphaMode cboBrushSetting(1).ListIndex
     If chkAntialiasing.Value Then Tools_Pencil.SetBrushAntialiasing P2_AA_HighQuality Else Tools_Pencil.SetBrushAntialiasing P2_AA_None
+    Tools_Pencil.SetStrictPixelAlignment Me.chkAlignPixelGrid.Value
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
@@ -545,6 +575,7 @@ Public Sub SyncUIToAllPencilSettings()
     cboBrushSetting(0).ListIndex = Tools_Pencil.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Tools_Pencil.GetBrushAlphaMode()
     chkAntialiasing.Value = (Tools_Pencil.GetBrushAntialiasing = P2_AA_HighQuality)
+    Me.chkAlignPixelGrid.Value = Tools_Pencil.GetStrictPixelAlignment()
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -557,6 +588,9 @@ Public Sub UpdateAgainstCurrentTheme()
 
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock
+    
+    'Assign a tooltip to the "strict pixel alignment" checkbox, as it's somewhat unintuitive.
+    Me.chkAlignPixelGrid.AssignTooltip "This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural."
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

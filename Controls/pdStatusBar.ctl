@@ -312,7 +312,7 @@ Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Doub
     'The position displayed changes based on the current measurement unit (px, in, cm)
     Else
         If PDImages.IsImageActive() Then
-            lblCoordinates(0).Caption = "(" & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False) & "," & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False) & ")"
+            lblCoordinates(0).Caption = "(" & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, xCoord, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False, False) & "," & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, yCoord, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False, False) & ")"
         End If
     End If
     

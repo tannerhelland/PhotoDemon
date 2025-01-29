@@ -193,7 +193,9 @@ End Function
 ' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
 ' optional parameters may also be necessary: a pixel resolution, expressed as PPI (needed for absolute measurements like inches
 ' or cm), and for percentage, an ORIGINAL value, in pixels, must be supplied.
-Public Function GetValueFormattedForUnit_FromPixel(ByVal curUnit As PD_MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double = 0#, Optional ByVal initPixelValue As Double = 0#, Optional ByVal appendUnitAsText As Boolean = False) As String
+'
+'(Note: the optional parameter "useRounding" only applies when converting some other unit to PIXELS.
+Public Function GetValueFormattedForUnit_FromPixel(ByVal curUnit As PD_MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double = 0#, Optional ByVal initPixelValue As Double = 0#, Optional ByVal appendUnitAsText As Boolean = False, Optional ByVal useRounding As Boolean = True) As String
     
     If (curUnit <> mu_Pixels) Then srcPixelValue = Units.ConvertPixelToOtherUnit(curUnit, srcPixelValue, srcPixelResolution, initPixelValue)
     
@@ -203,7 +205,8 @@ Public Function GetValueFormattedForUnit_FromPixel(ByVal curUnit As PD_Measureme
             GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
         
         Case mu_Pixels
-            GetValueFormattedForUnit_FromPixel = CStr(Int(srcPixelValue + 0.5))
+            If useRounding Then srcPixelValue = srcPixelValue + 0.5
+            GetValueFormattedForUnit_FromPixel = CStr(Int(srcPixelValue))
         
         Case mu_Inches
             GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0##")

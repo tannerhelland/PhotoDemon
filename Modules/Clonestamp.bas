@@ -216,7 +216,7 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
         Dim tmpBrushSpacing As Single
         tmpBrushSpacing = m_BrushSize / PI_DOUBLE
         
-        If (m_BrushSpacing > 0#) Then
+        If (m_BrushSpacing > 0!) Then
             tmpBrushSpacing = (m_BrushSpacing * tmpBrushSpacing)
         End If
         
@@ -284,7 +284,7 @@ Private Sub CreateCurrentBrushOutline()
     Set m_BrushOutlinePath = New pd2DPath
     
     'Single-pixel brushes are treated as a square for cursor purposes.
-    If (m_BrushSize > 0#) Then
+    If (m_BrushSize > 0!) Then
         If (m_BrushSize = 1) Then
             m_BrushOutlinePath.AddRectangle_Absolute -0.75, -0.75, 0.75, 0.75
         Else
@@ -879,7 +879,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
     'Inflate the rect calculation by the size of the current brush, while accounting for the possibility of antialiasing
     ' (which may extend up to 1.0 pixel outside the calculated boundary area).
     Dim halfBrushSize As Single
-    halfBrushSize = m_BrushSize / 2 + 1#
+    halfBrushSize = m_BrushSize / 2! + 1!
     
     tmpRectF.Left = tmpRectF.Left - halfBrushSize
     tmpRectF.Top = tmpRectF.Top - halfBrushSize
@@ -1245,8 +1245,8 @@ Public Sub InitializeBrushEngine()
     'Flow and spacing are *not* currently available to the user (in the tool UI).  They may be restored
     ' in a future update, and as such, no work is required to integrate them - the values are "ready to go".
     ' For now, we just set them to default values.
-    m_BrushSpacing = 0#
-    m_BrushFlow = 100#
+    m_BrushSpacing = 0!
+    m_BrushFlow = 100!
     
 End Sub
 
