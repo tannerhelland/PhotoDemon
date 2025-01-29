@@ -407,7 +407,7 @@ Public Function CreateBrushMask_SolidColor(ByRef dstDIB As pdDIB, ByVal srcColor
         Drawing2D.QuickCreateSolidBrush cBrush, srcColor, brushFlow
         
         'Single-pixel brushes are a special case; use a strict rectangle for them
-        If (brushSize = 1!) And m_StrictPixelCentering Then
+        If (brushSize <= 1!) And m_StrictPixelCentering Then
             PD2D.FillRectangleF cSurface, cBrush, 0!, 0!, 1!, 1!
         Else
             PD2D.FillCircleF cSurface, cBrush, brushSize * 0.5, brushSize * 0.5, brushSize * 0.5
@@ -574,7 +574,7 @@ Private Sub CreateCurrentBrushOutline()
     'Single-pixel brushes are treated as a square for cursor purposes.  Size the outline *slightly* larger
     ' than the target rect (to avoid covering it at small sizes).
     If (m_BrushSize > 0!) Then
-        If (m_BrushSize = 1!) And m_StrictPixelCentering Then
+        If (m_BrushSize <= 1!) And m_StrictPixelCentering Then
             m_BrushOutlinePath.AddRectangle_Absolute -0.6, -0.6, 0.6, 0.6
         Else
             'Other brushes currently just use a circle outline

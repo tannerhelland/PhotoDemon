@@ -186,11 +186,11 @@ Attribute VB_Exposed = False
 'PhotoDemon Basic Brush ("Pencil") Tool Panel
 'Copyright 2016-2025 by Tanner Helland
 'Created: 31/Oct/16
-'Last updated: 01/December/21
-'Last update: migrate UI to new flyout-driven UI
+'Last updated: 29/January/25
+'Last update: new "align to pixel grid" setting
 '
 'This form includes all user-editable settings for the "pencil" canvas tool.  Unlike other programs,
-' PD's pencil tool supports a number of features (like antialiasing) while maintaining the high
+' PD's pencil tool does actually support a few features (like antialiasing) while maintaining the high
 ' performance everyone expects from a basic brush.
 '
 'Extremely large radii are suppored, as are all blend modes (including "erase").
@@ -588,6 +588,9 @@ Public Sub UpdateAgainstCurrentTheme()
 
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock
+    
+    'Assign a tooltip to the "strict pixel alignment" checkbox, as it's somewhat unintuitive.
+    Me.chkAlignPixelGrid.AssignTooltip "This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural."
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

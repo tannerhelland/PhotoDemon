@@ -3,13 +3,12 @@ Attribute VB_Name = "Tools_Pencil"
 'Pencil tool interface
 'Copyright 2016-2025 by Tanner Helland
 'Created: 1/November/16
-'Last updated: 13/September/19
-'Last update: split pencil tool into its own handler, as paint tools are about to get more complicated
-'             (custom brush support!) and the pencil tool works *so* differently that it just clutters
-'             up the paint module.
+'Last updated: 29/January/25
+'Last update: add "align to pixel grid" setting, and allow the user to toggle at their leisure.
+'             (When enabled, all pen strokes are forcibly centered against the pixel grid, for "perfect" precision.)
 '
 'PD's pencil tool is just a thin wrapper around standard GDI+ pens.  This makes it fast but somewhat quirky
-' to handle compared to PD's paintbrush tools (which are
+' to code against compared to PD's paintbrush tools (which use a custom brush engine).
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -158,7 +157,7 @@ Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean 
     
         'For now, create a circular pen at the current size
         If (m_GDIPPen Is Nothing) Then Set m_GDIPPen = New pd2DPen
-        Drawing2D.QuickCreateSolidPen m_GDIPPen, m_BrushSize, m_BrushColor, , P2_LJ_Round, P2_LC_Round
+        Drawing2D.QuickCreateSolidPen m_GDIPPen, m_BrushSize, m_BrushColor, 100!, P2_LJ_Round, P2_LC_Round
         
         'Whenever we create a new brush, we should also refresh the current brush outline
         If alsoCreateBrushOutline Then CreateCurrentBrushOutline
@@ -180,7 +179,7 @@ Private Sub CreateCurrentBrushOutline()
     
     'Single-pixel brushes are treated as a square for cursor purposes.
     If (m_BrushSize > 0!) Then
-        If (m_BrushSize <= 1!) Then
+        If (m_BrushSize <= 1!) And m_StrictPixelCentering Then
             m_BrushOutlinePath.AddRectangle_Absolute -0.6, -0.6, 0.6, 0.6
         Else
             m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2! + 0.5!
@@ -202,6 +201,12 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     
     'Perform a failsafe check for brush creation
     If (Not m_BrushIsReady) Then CreateCurrentBrush
+    
+    'A new toggle (as of 2025) now exists for strictly positioning the cursor in the center of the current pixel.
+    If m_StrictPixelCentering Then
+        srcX = Int(srcX) + 0.5!
+        srcY = Int(srcY) + 0.5!
+    End If
     
     'If this is a MouseDown operation, we need to make sure the full paint engine is synchronized against any property
     ' changes that are applied "on-demand".
@@ -227,6 +232,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
         'Reset the "last mouse position" values to match the current ones
         m_MouseX = srcX
         m_MouseY = srcY
+        If m_StrictPixelCentering Then
+            m_MouseX = Int(m_MouseX) + 0.5!
+            m_MouseY = Int(m_MouseY) + 0.5!
+        End If
         
         'Notify the central "color history" manager of the color currently being used
         UserControls.PostPDMessage WM_PD_PRIMARY_COLOR_APPLIED, m_BrushColor, , True
@@ -251,6 +260,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     
     Dim startTime As Currency
     
+    'Do not stroke unless a minimum distance threshold is met.
+    ' (This helps work around some GDI+ issues with tiny lines.)
+    Const MINIMUM_DISTANCE_TO_STROKE As Single = 0.25
+    
     'If the mouse button is down, perform painting between the old and new points.
     ' (All painting occurs in image coordinate space, and is applied to the current image's scratch layer.)
     If mouseButtonDown Then
@@ -264,6 +277,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
             'Replace the last rendering x/y with the mouse position of the last paint event
             m_MouseX = m_MouseLastUserX
             m_MouseY = m_MouseLastUserY
+            If m_StrictPixelCentering Then
+                m_MouseX = Int(m_MouseX) + 0.5!
+                m_MouseY = Int(m_MouseY) + 0.5!
+            End If
             
             'Initialize the paint stroker at the previous mouse position (but importantly, ask it to
             ' suspend actual graphics operations - this will initialize things like the compositor rect,
@@ -276,7 +293,12 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
             
         'This is a normal paint stroke
         Else
-            ApplyPaintLine srcX, srcY, m_isFirstStroke
+            
+            'Require a minimum distance threshold in order to paint
+            If (PDMath.DistanceTwoPoints(m_MouseX, m_MouseY, srcX, srcY) >= MINIMUM_DISTANCE_TO_STROKE) Or m_isFirstStroke Then
+                ApplyPaintLine srcX, srcY, m_isFirstStroke
+            End If
+            
         End If
         
         'See if there are more points in the mouse move queue.  If there are, grab them all and stroke them immediately.
@@ -294,6 +316,13 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
                 ' to the image coordinate space.
                 If Drawing.ConvertCanvasCoordsToImageCoords(srcCanvas, PDImages.GetActiveImage(), tmpMMP.x, tmpMMP.y, imgX, imgY) Then
                 
+                    'As noted elsewhere in this function, all coordinates can be forcibly pixel-centered to ensure
+                    ' consistent stroke behavior.
+                    If m_StrictPixelCentering Then
+                        imgX = Int(imgX) + 0.5!
+                        imgY = Int(imgY) + 0.5!
+                    End If
+                    
                     'The paint layer is always full-size, so we don't need to perform a separate "image space to layer space"
                     ' coordinate conversion here.
                     ApplyPaintLine imgX, imgY, False
@@ -316,6 +345,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal Shift As ShiftC
     Else
         m_MouseX = srcX
         m_MouseY = srcY
+        If m_StrictPixelCentering Then
+            m_MouseX = Int(m_MouseX) + 0.5!
+            m_MouseY = Int(m_MouseY) + 0.5!
+        End If
     End If
     
     'With all painting tasks complete, update all old state values to match the new state values.
@@ -348,8 +381,8 @@ End Sub
 Private Sub UpdateViewportWhilePainting(ByVal strokeStartTime As Currency, ByRef srcCanvas As pdCanvas)
     
     'Ask the paint engine if now is a good time to update the viewport.
-    If m_Paintbrush.IsItTimeForScreenUpdate(strokeStartTime) Then
-    
+    If m_Paintbrush.IsItTimeForScreenUpdate(strokeStartTime) Or m_isFirstStroke Then
+        
         'Retrieve viewport parameters, then perform a full layer stack merge and repaint the screen
         Dim tmpViewportParams As PD_ViewportParams
         tmpViewportParams = Viewport.GetDefaultParamObject()
@@ -384,7 +417,20 @@ Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isF
         ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we have to
         ' manually render a dab at the initial starting position.
         If isFirstStroke Then
-            PD2D.DrawLineF m_Surface, m_GDIPPen, Int(srcX), Int(srcY), Int(srcX) + 0.9999, Int(srcY) + 0.9999
+            
+            'Manually fill a circle or rectangle, depending on brush size
+            Dim tmpBrush As pd2DBrush
+            Set tmpBrush = New pd2DBrush
+            Drawing2D.QuickCreateSolidBrush tmpBrush, m_BrushColor, m_BrushOpacity
+            
+            If (m_BrushSize <= 1!) Then
+                PD2D.FillRectangleF m_Surface, tmpBrush, m_MouseX - m_BrushSize * 0.5, m_MouseY - m_BrushSize * 0.5, m_BrushSize, m_BrushSize
+            Else
+                PD2D.FillCircleF m_Surface, tmpBrush, m_MouseX, m_MouseY, m_BrushSize * 0.5!
+            End If
+            
+            Set tmpBrush = Nothing
+            
         Else
             PD2D.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
         End If
@@ -422,7 +468,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
     'Inflate the rect calculation by the size of the current brush, while accounting for the possibility of antialiasing
     ' (which may extend up to 1.0 pixel outside the calculated boundary area).
     Dim halfBrushSize As Single
-    halfBrushSize = m_BrushSize / 2 + 1!
+    halfBrushSize = m_BrushSize * 0.5! + 1!
     
     tmpRectF.Left = tmpRectF.Left - halfBrushSize
     tmpRectF.Top = tmpRectF.Top - halfBrushSize
@@ -519,7 +565,9 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     'Create other required pd2D drawing tools (a surface)
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, targetCanvas.hDC, True
+    'cSurface.SetSurfacePixelOffset P2_PO_Normal
     cSurface.SetSurfacePixelOffset P2_PO_Normal
+    If (m_BrushSize = 1!) Then cSurface.SetSurfacePixelOffset P2_PO_Half
     
     'If the user is holding down the SHIFT key, paint a line between the end of the previous stroke and the current
     ' mouse position.  This helps communicate that shift+clicking will string together separate strokes.
