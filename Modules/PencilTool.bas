@@ -8,8 +8,8 @@ Attribute VB_Name = "Tools_Pencil"
 '             (custom brush support!) and the pencil tool works *so* differently that it just clutters
 '             up the paint module.
 '
-'PD's pencil tool is just a thin wrapper around standard GDI+ brushes.  For the good stuff, visit the
-' Paintbrush module (which uses our own custom brushes for much more interesting effects).
+'PD's pencil tool is just a thin wrapper around standard GDI+ pens.  This makes it fast but somewhat quirky
+' to handle compared to PD's paintbrush tools (which are
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -35,6 +35,11 @@ Private m_BrushAntialiasing As PD_2D_Antialiasing
 
 'Note that some brush attributes only exist for certain brush sources.
 Private m_BrushColor As Long
+
+'In 2025, a new option was added for strictly snapping the brush to pixel centers (see https://github.com/tannerhelland/PhotoDemon/discussions/635).
+' When this option is toggled OFF, paint tools behave like Photoshop or Paint.NET.  Turning it ON makes it more acceptable
+' for e.g. pixel art, with strict precision (particularly with 1px brush sizes).
+Private m_StrictPixelCentering As Boolean
 
 'If brush properties have changed since the last brush creation, this is set to FALSE.
 ' (We use this to optimize brush creation behavior.)
@@ -92,6 +97,10 @@ Public Function GetBrushColor() As Long
     GetBrushColor = m_BrushColor
 End Function
 
+Public Function GetStrictPixelAlignment() As Boolean
+    GetStrictPixelAlignment = m_StrictPixelCentering
+End Function
+
 'Property set functions.  Note that not all brush properties are used by all styles.
 ' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
 Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As PD_AlphaMode = AM_Normal)
@@ -136,6 +145,13 @@ Public Sub SetBrushColor(Optional ByVal newColor As Long = vbWhite)
     End If
 End Sub
 
+Public Sub SetStrictPixelAlignment(ByVal newValue As Boolean)
+    If (newValue <> m_StrictPixelCentering) Then
+        m_StrictPixelCentering = newValue
+        m_BrushIsReady = False
+    End If
+End Sub
+
 Private Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean = True, Optional ByVal forceCreation As Boolean = False)
         
     If ((Not m_BrushIsReady) Or forceCreation) Then
@@ -164,10 +180,10 @@ Private Sub CreateCurrentBrushOutline()
     
     'Single-pixel brushes are treated as a square for cursor purposes.
     If (m_BrushSize > 0!) Then
-        If (m_BrushSize = 1) Then
-            m_BrushOutlinePath.AddRectangle_Absolute -0.75, -0.75, 0.75, 0.75
+        If (m_BrushSize <= 1!) Then
+            m_BrushOutlinePath.AddRectangle_Absolute -0.6, -0.6, 0.6, 0.6
         Else
-            m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2 + 0.5
+            m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2! + 0.5!
         End If
     End If
     
