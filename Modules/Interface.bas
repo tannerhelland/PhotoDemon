@@ -1458,8 +1458,8 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
             End If
         
             'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
-            If appendFileFormat And (Not doNotAppendImageFormat) And (LenB(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
-                captionBase = captionBase & " [" & UCase$(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
+            If appendFileFormat And (Not doNotAppendImageFormat) And (srcImage.GetOriginalFileFormat() <> PDIF_UNKNOWN) Then
+                captionBase = captionBase & " [" & UCase$(ImageFormats.GetExtensionFromPDIF(srcImage.GetOriginalFileFormat())) & "]"
             End If
         
         Else
