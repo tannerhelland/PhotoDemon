@@ -1406,7 +1406,10 @@ Private Sub cmdBarMini_OKClick()
     FormMain.Enabled = True
     FormMain.UpdateMainLayout
     FormMain.MainCanvas(0).UpdateAgainstCurrentTheme FormMain.hWnd, True
-    If PDImages.IsImageActive Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage, FormMain.MainCanvas(0)
+    If PDImages.IsImageActive Then
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage, FormMain.MainCanvas(0)
+        Interface.SyncInterfaceToCurrentImage
+    End If
     FormMain.ChangeSessionListenerState UserPrefs.GetPref_Boolean("Loading", "Single Instance", False), True
     
     'TODO: color management changes need to be propagated here; otherwise, they won't trigger until the program is restarted.
