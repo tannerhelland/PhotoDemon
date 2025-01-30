@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Crop
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   6315
+   ClientHeight    =   2955
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   11910
@@ -25,7 +25,7 @@ Begin VB.Form toolpanel_Crop
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   421
+   ScaleHeight     =   197
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   794
    ShowInTaskbar   =   0   'False

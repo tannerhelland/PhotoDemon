@@ -45,14 +45,286 @@ Private m_CornerCoords() As PointFloat, m_numCornerCoords As Long
 'To correctly detect clicks, we cache the current crop rect (if any) at _MouseDown
 Private m_CropRectAtMouseDown As RectF
 
+'Apply a crop operation from a param string constructed by the GetCropParamString() function.
+' (This function is a thin wrapper to Crop_ApplyCrop(); it just extracts relevant params from the
+'  param string and forwards the results.)
+Public Sub Crop_ApplyFromString(ByRef paramString As String)
+    
+    Const FUNC_NAME As String = "Crop_ApplyFromString"
+     
+    'Extract string parameters and convert them to actual types
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString paramString
+    
+    Dim targetCropRectF As RectF
+    
+    'Only rectangular crops are currently supported
+    If Strings.StringsNotEqual("rect", cParams.GetString("type", "rect", True), True) Then
+        InternalError FUNC_NAME, "no crop rect"
+        Exit Sub
+    Else
+        
+        With cParams
+            targetCropRectF.Left = .GetDouble("left", 0#, True)
+            targetCropRectF.Top = .GetDouble("top", 0#, True)
+            targetCropRectF.Width = .GetDouble("width", 0#, True)
+            targetCropRectF.Height = .GetDouble("height", 0#, True)
+        End With
+        
+        Crop_ApplyCropRect targetCropRectF
+    
+    End If
+    
+End Sub
+
+'Crop the image against coordinates supplied by the on-canvas crop tool.
+' - To crop only a single layer, specify a target layer index.
+' - Full-image crops on multi-layer images can be applied non-destructively (by simply modifying layer offsets
+'    and parent image dimensions.)
+' - Destructive cropping requires rasterization of vector layers, *if* they overlap crop boundaries.
+Private Sub Crop_ApplyCropRect(ByRef cropRectF As RectF, Optional ByVal targetLayerIndex As Long = -1, Optional ByVal applyNonDestructively As Boolean = True)
+    
+    Const FUNC_NAME As String = "Crop_ApplyCrop"
+    
+    'Errors are never expected; this is an extreme failsafe, only
+    On Error GoTo CropProblem
+    
+    'A few more failsafe checks for valid crop areas.
+    m_CropRectF = cropRectF
+    If (Not IsValidCropActive()) Then
+        InternalError FUNC_NAME, "bad crop rect"
+        Exit Sub
+    End If
+    
+    'Just an FYI before we begin: an important distinction between this tool and selection-based cropping
+    ' is that this tool can explicitly *grow* image dimensions if/when the crop boundary lies outside the image.
+    ' As such, the overlap between any given layer and the crop rect is highly variable, and it's fully
+    ' possible for layers and cropped regions to not overlap at all during a crop.
+    
+    Message "Cropping image..."
+    
+    'Layers are cropped one-at-a-time
+    Dim i As Long, tmpLayerRef As pdLayer
+    
+    'Layers with active transforms need to be rasterized into a temporary DIB before cropping.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    
+    'This function can crop the entire image, or individual layer(s)
+    Dim croppingWholeImage As Boolean
+    croppingWholeImage = (targetLayerIndex < 0)
+    
+    'On a full image crop, we need to iterate all layers.  For a single layer crop, we do not.
+    ' Determine indices for an outer loop that traverses all crop targets.
+    Dim numLayersToCrop As Long, startLayerIndex As Long, endLayerIndex As Long
+    If croppingWholeImage Then
+        numLayersToCrop = PDImages.GetActiveImage.GetNumOfLayers
+        startLayerIndex = 0
+        endLayerIndex = PDImages.GetActiveImage.GetNumOfLayers - 1
+    Else
+        numLayersToCrop = 1
+        startLayerIndex = targetLayerIndex
+        endLayerIndex = targetLayerIndex
+    End If
+    
+    'To keep processing quick, we only update the progress bar when absolutely necessary.
+    ' This function calculates that value based on the size of the area to be processed.
+    ProgressBars.SetProgBarMax numLayersToCrop
+    
+    'New layer rects are assigned based on the union of the crop rect and each layer's original boundary rect.
+    Dim origLayerRect As RectF, newLayerRect As RectF
+    Dim numLayersProcessed As Long
+    
+    'Iterate through each layer, cropping them in turn
+    For i = startLayerIndex To endLayerIndex
+        
+        ProgressBars.SetProgBarVal numLayersProcessed + 1
+        
+        'Point a local reference at the layer of interest
+        Set tmpLayerRef = PDImages.GetActiveImage.GetLayerByIndex(i)
+        
+        'Cache a copy of the layer's current boundary rect.  (We'll refer to this later
+        ' to determine ideal layer offsets inside the newly cropped image.)
+        tmpLayerRef.GetLayerBoundaryRect origLayerRect
+        
+        'If this is a vector layer, and the current selection is rectangular, we can do a "fake" crop
+        ' by simply changing layer offsets within the image.  This lets us avoid rasterization.
+        If applyNonDestructively Then
+        
+            With tmpLayerRef
+                .SetLayerOffsetX .GetLayerOffsetX - cropRectF.Left
+                .SetLayerOffsetY .GetLayerOffsetY - cropRectF.Top
+            End With
+            
+            'Notify the parent of the change
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer_VectorSafe, i
+        
+        'This is a raster layer and/or a non-rectangular selection.  We have to do a pixel-by-pixel scan.
+        Else
+            
+            'Make sure this layer overlaps at least partially with the crop area.
+            ' (If it lies fully within the crop, we can simply move it, and if it lies fully outside the crop,
+            '  we can just delete it.)
+            If GDI_Plus.IntersectRectF(newLayerRect, origLayerRect, cropRectF) Then
+            
+                'This layer intersects the selection region.
+                
+                'If the target layer has non-destructive transforms, rasterize it, trim it,
+                ' then recalculate the intersection rect between the layer and the selection.
+                If tmpLayerRef.AffineTransformsActive(True) Then
+                    tmpLayerRef.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
+                    tmpLayerRef.CropNullPaddedLayer
+                    tmpLayerRef.GetLayerBoundaryRect origLayerRect
+                    GDI_Plus.IntersectRectF newLayerRect, origLayerRect, cropRectF
+                End If
+                
+                'TODO: look for a selection that's fully contained and skip the next step.
+                
+                'Create a new DIB at the size of the intersection between the layer and the crop rect.
+                ' (This will become the backing bits for the new layer copy.)
+                Set tmpDIB = New pdDIB
+                tmpDIB.CreateBlank newLayerRect.Width, newLayerRect.Height, 32, 0, 0
+                
+                'To remove the need for a copy of the original layer bits, we are now going to copy the relevant
+                ' portion of the source layer into the temporary surface we just created.  As a nice perf bonus,
+                ' this will greatly reduce cache misses while applying any per-pixel modifications.
+                GDI.BitBltWrapper tmpDIB.GetDIBDC, 0, 0, newLayerRect.Width, newLayerRect.Height, tmpLayerRef.GetLayerDIB.GetDIBDC, newLayerRect.Left - origLayerRect.Left, newLayerRect.Top - origLayerRect.Top, vbSrcCopy
+                
+                'We no longer need the source layer's pixel data.  Free it.
+                tmpLayerRef.GetLayerDIB.EraseDIB
+                
+                'Mark target alpha as premultiplied
+                tmpDIB.SetInitialAlphaPremultiplicationState True
+                
+                'Update the target layer's backing surface with the newly composited result
+                tmpLayerRef.SetLayerDIB tmpDIB
+                
+                'Update the layer's offsets to match.
+                If croppingWholeImage Then
+                    tmpLayerRef.SetLayerOffsetX newLayerRect.Left - cropRectF.Left
+                    tmpLayerRef.SetLayerOffsetY newLayerRect.Top - cropRectF.Top
+                Else
+                    tmpLayerRef.SetLayerOffsetX newLayerRect.Left
+                    tmpLayerRef.SetLayerOffsetY newLayerRect.Top
+                End If
+                
+            'This layer does *not* intersect the newly cropped image.  I'm not entirely
+            ' sure what the best option is here - ideally we'd probably just delete the
+            ' damn layer (since it now exists entirely off-image), but because that
+            ' could have problematic knock-on effects, let's instead just replace it
+            ' with a fully transparent DIB at the current selection size.
+            Else
+                
+                'Start by resetting all non-destructive layer transforms.
+                ' (This is a nop if the layer hasn't been transformed non-destructively.)
+                tmpLayerRef.MakeCanvasTransformsPermanent
+                
+                'Next, create a blank layer at the size of the current selection
+                tmpLayerRef.GetLayerDIB.CreateBlank cropRectF.Width, cropRectF.Height, 32, 0, 0
+                tmpLayerRef.GetLayerDIB.SetInitialAlphaPremultiplicationState True
+                
+                'Reset layer offsets to match the new size.  If we are resizing *all* layers,
+                ' set the offset to the top-left of the new image, but if we are only cropping
+                ' a single layer, instead set its top-left position to the current selection's.
+                If croppingWholeImage Then
+                    tmpLayerRef.SetLayerOffsetX 0
+                    tmpLayerRef.SetLayerOffsetY 0
+                Else
+                    tmpLayerRef.SetLayerOffsetX cropRectF.Left
+                    tmpLayerRef.SetLayerOffsetY cropRectF.Top
+                End If
+                
+            End If
+            
+            'Notify the parent of the change
+            PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer, i
+        
+        '/end LayerIsVector and NonDestructiveCropPossible
+        End If
+        
+        Set tmpLayerRef = Nothing
+        numLayersProcessed = numLayersProcessed + 1
+        
+    Next i
+    
+    'From here, we do some generic clean-up that's identical for both destructive
+    ' and non-destructive modes. (But generally speaking, it's only relevant when
+    ' *all* layers are being cropped.)
+    
+    'Start clean-up by removing the active crop rect and updating some crop tool UI bits
+    ResetCropRectF
+    toolpanel_Crop.cmdCommit(0).Enabled = Tools_Crop.IsValidCropActive()
+    toolpanel_Crop.cmdCommit(1).Enabled = Tools_Crop.IsValidCropActive()
+    
+    'If cropping the entire image, notify the parent image object of the new size.
+    ' (Layers don't need this notification; they always auto-sync against their backing surface.)
+    If croppingWholeImage Then
+        PDImages.GetActiveImage.UpdateSize False, cropRectF.Width, cropRectF.Height
+        Interface.DisplaySize PDImages.GetActiveImage()
+        Tools.NotifyImageSizeChanged
+    End If
+    
+    'Update the viewport.  For full-image crops, we need to refresh the entire viewport pipeline
+    ' (as the image size may have changed).
+    If croppingWholeImage Then
+    
+        'Reset the viewport to center the newly cropped image on-screen
+        CanvasManager.CenterOnScreen True
+        Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+    'When cropping individual layers, we can reuse some existing viewport pipeline data
+    Else
+        Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
+    
+    'Reset the progress bar to zero, then exit
+    ProgressBars.SetProgBarVal 0
+    ProgressBars.ReleaseProgressBar
+    
+    Message "Finished. "
+    
+    Exit Sub
+    
+CropProblem:
+    InternalError FUNC_NAME, "WARNING! Error #" & Err.Number & ": " & Err.Description
+    
+End Sub
+
 'Commit (apply) the current crop rectangle.  *All* layers will be affected by this.
 ' This function takes the current crop settings, builds a string parameter list from them, then calls
 ' PD's central processor with the resulting string.  (This allows the crop to be recorded.)
 Public Sub CommitCurrentCrop()
     
-    Debug.Print "(commit code here)"
+    'TODO: undo type needs to be flagged as vector_safe here pending a UI toggle for erasing cropped areas
+    
+    If Tools_Crop.IsValidCropActive() Then
+        Process "Crop tool", False, GetCropParamString(), UNDO_Image, ND_CROP
+    End If
     
 End Sub
+
+'All operations in PD derive from parameter strings.  This allows us to save operations to file in a human-readable format.
+Private Function GetCropParamString() As String
+    
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    
+    'Start with generic crop settings
+    ' (TODO)
+    
+    'Finally, add the corner coordinates of the crop region
+    With cParams
+        .AddParam "type", "rect"
+        .AddParam "left", m_CropRectF.Left
+        .AddParam "top", m_CropRectF.Top
+        .AddParam "width", m_CropRectF.Width
+        .AddParam "height", m_CropRectF.Height
+    End With
+    
+    GetCropParamString = cParams.GetParamString()
+    
+End Function
 
 'Turn off the current crop rectangle.  No image modifications will be made.
 Public Sub RemoveCurrentCrop()
@@ -358,7 +630,7 @@ End Sub
 
 'Check before using anything from GetCropRectF, above
 Public Function IsValidCropActive() As Boolean
-    IsValidCropActive = ValidateCropRectF
+    IsValidCropActive = ValidateCropRectF()
 End Function
 
 'Some properties can be independently locked (e.g. width or height or aspect ratio).
@@ -808,3 +1080,9 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
 End Sub
+
+'Pass crop-tool-specific errors here
+Private Sub InternalError(ByRef funcName As String, ByRef srcErrMsg As String)
+    PDDebug.LogAction "WARNING!  Tools_Crop module error in " & funcName & ": " & srcErrMsg
+End Sub
+
