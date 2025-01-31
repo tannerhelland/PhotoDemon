@@ -334,6 +334,19 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
         
         PDDebug.LogAction "Core plugins missing or broken; PD will now terminate."
         
+        'To help with further debugging, dump a tiny debug file with details on the specific library(ies) that failed.
+        ' (Unpatched Windows installs have known issues with 3rd-party libraries that require updated mscvrt runtimes,
+        '  so if all 3rd-party libs failed to load this points squarely at an unpatched Windows install that I can't
+        '  resolve - knowing this in advance saves all of us trouble.)
+        Dim tmpDebugLog As pdString
+        Set tmpDebugLog = New pdString
+        tmpDebugLog.AppendLine "Core plugin status (installed, enabled)"
+        tmpDebugLog.AppendLine "libzstd: " & PluginManager.IsPluginCurrentlyInstalled(CCP_zstd) & ", " & PluginManager.IsPluginCurrentlyEnabled(CCP_zstd)
+        tmpDebugLog.AppendLine "liblz4: " & PluginManager.IsPluginCurrentlyInstalled(CCP_lz4) & ", " & PluginManager.IsPluginCurrentlyEnabled(CCP_lz4)
+        tmpDebugLog.AppendLine "libdeflate: " & PluginManager.IsPluginCurrentlyInstalled(CCP_libdeflate) & ", " & PluginManager.IsPluginCurrentlyEnabled(CCP_libdeflate)
+        tmpDebugLog.AppendLine "lcms2: " & PluginManager.IsPluginCurrentlyInstalled(CCP_LittleCMS) & ", " & PluginManager.IsPluginCurrentlyEnabled(CCP_LittleCMS)
+        Files.FileSaveAsText tmpDebugLog.ToString(), UserPrefs.GetDebugPath() & "startup-failure.log", True, True
+        
         'Translations will not be available yet, so use non-localized strings.
         Dim tmpMsg As pdString, tmpTitle As String
         Set tmpMsg = New pdString
