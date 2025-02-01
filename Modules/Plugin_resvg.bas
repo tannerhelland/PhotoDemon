@@ -175,9 +175,12 @@ End Function
 
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     
-    'I don't currently know how to build resvg in an XP-compatible way.
-    ' As a result, its support is limited to Win Vista and above.
-    If OS.IsVistaOrLater Then
+    'Rust dropped support for Win 7/8 in 2024.  I have successfully built a copy using the i586-pc-windows-msvc toolchain,
+    ' which might allow me to still support OSes prior to Win 10, but the DLL is extremely buggy, crashing frequently
+    ' on valid SVGs (and when it does work, it's *really* slow).
+    '
+    'As a result, I made the choice to limit SVG support to Win 10+ for the time being.
+    If OS.IsWin10OrLater Then
         
         Dim strLibPath As String
         strLibPath = pathToDLLFolder & "resvg.dll"
@@ -189,7 +192,7 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         
     Else
         InitializeEngine = False
-        PDDebug.LogAction "resvg does not currently work on Windows XP"
+        PDDebug.LogAction "resvg does not currently work on Windows versions prior to Windows 10."
     End If
     
 End Function
