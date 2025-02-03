@@ -685,6 +685,7 @@ End Function
 Private Function ImportHotkeysFromFile(ByRef srcFile As String) As Boolean
     
     ImportHotkeysFromFile = False
+    If (Not Files.FileExists(srcFile)) Then Exit Function
     
     Dim cXML As pdXML
     Set cXML = New pdXML
