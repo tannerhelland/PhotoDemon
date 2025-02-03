@@ -180,7 +180,7 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     ' on valid SVGs (and when it does work, it's *really* slow).
     '
     'As a result, I made the choice to limit SVG support to Win 10+ for the time being.
-    If OS.IsWin10OrLater Then
+    If OS.IsWin10OrLater Or (Not OS.IsProgramCompiled) Then
         
         Dim strLibPath As String
         strLibPath = pathToDLLFolder & "resvg.dll"
