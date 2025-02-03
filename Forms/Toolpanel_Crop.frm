@@ -6,7 +6,7 @@ Begin VB.Form toolpanel_Crop
    ClientHeight    =   2955
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   11910
+   ClientWidth     =   12270
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -27,7 +27,7 @@ Begin VB.Form toolpanel_Crop
    NegotiateMenus  =   0   'False
    ScaleHeight     =   197
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   794
+   ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdButton cmdCommit 
@@ -42,8 +42,8 @@ Begin VB.Form toolpanel_Crop
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   975
-      Index           =   0
-      Left            =   3720
+      Index           =   1
+      Left            =   4200
       Top             =   960
       Visible         =   0   'False
       Width           =   3975
@@ -51,7 +51,7 @@ Begin VB.Form toolpanel_Crop
       _ExtentY        =   3625
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
-         Index           =   0
+         Index           =   1
          Left            =   3480
          TabIndex        =   3
          Top             =   480
@@ -63,8 +63,8 @@ Begin VB.Form toolpanel_Crop
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   1095
-      Index           =   1
-      Left            =   8160
+      Index           =   2
+      Left            =   8400
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
@@ -81,7 +81,7 @@ Begin VB.Form toolpanel_Crop
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
-         Index           =   1
+         Index           =   2
          Left            =   3210
          TabIndex        =   4
          Top             =   600
@@ -119,7 +119,7 @@ Begin VB.Form toolpanel_Crop
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
-      Index           =   0
+      Index           =   1
       Left            =   6120
       TabIndex        =   2
       Top             =   0
@@ -161,7 +161,7 @@ Begin VB.Form toolpanel_Crop
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
-      Index           =   1
+      Index           =   2
       Left            =   9480
       TabIndex        =   7
       Top             =   0
@@ -180,16 +180,6 @@ Begin VB.Form toolpanel_Crop
       _ExtentX        =   4392
       _ExtentY        =   423
       Caption         =   "position (x, y)"
-   End
-   Begin PhotoDemon.pdLabel lblOptions 
-      Height          =   240
-      Index           =   0
-      Left            =   2700
-      Top             =   30
-      Width           =   3285
-      _ExtentX        =   5794
-      _ExtentY        =   423
-      Caption         =   "size (w, h)"
    End
    Begin PhotoDemon.pdLabel lblColon 
       Height          =   375
@@ -276,6 +266,49 @@ Begin VB.Form toolpanel_Crop
       _ExtentX        =   1058
       _ExtentY        =   661
    End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   615
+      Index           =   0
+      Left            =   0
+      Top             =   960
+      Visible         =   0   'False
+      Width           =   3975
+      _ExtentX        =   7011
+      _ExtentY        =   1085
+      Begin PhotoDemon.pdCheckBox chkAllowGrowing 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   17
+         Top             =   120
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   661
+         Caption         =   "allow enlarging"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   3480
+         TabIndex        =   15
+         Top             =   120
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   375
+      Index           =   0
+      Left            =   2760
+      TabIndex        =   16
+      Top             =   0
+      Width           =   3105
+      _ExtentX        =   5477
+      _ExtentY        =   661
+      Caption         =   "size (w, h)"
+      Value           =   0   'False
+   End
 End
 Attribute VB_Name = "toolpanel_Crop"
 Attribute VB_GlobalNameSpace = False
@@ -285,11 +318,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Crop Tool Panel
 'Copyright 2024-2025 by Tanner Helland
-'Created: 11/Nov/24
-'Last updated: 11/Nov/24
-'Last update: initial build
+'Created: 11/November/24
+'Last updated: 01/February/25
+'Last update: with core functions complete, time to start adding optional toggles
 '
-'This form includes all user-editable settings for the Crop on-canvas tool.
+'This form includes all user-editable settings for the on-canvas Crop tool.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -306,6 +339,13 @@ Attribute m_Flyout.VB_VarHelpID = -1
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
+'When toggling the allow/don't allow enlarge setting, we also need to modify min/max values of
+' the position and size spin controls.  All handling (including relaying changes back to the crop engine)
+' take place in SyncMinMaxAgainstImage.
+Private Sub chkAllowGrowing_Click()
+    SyncMinMaxAgainstImage
+End Sub
+
 Private Sub cmdCommit_Click(Index As Integer)
     
     Select Case Index
@@ -315,6 +355,10 @@ Private Sub cmdCommit_Click(Index As Integer)
             Tools_Crop.RemoveCurrentCrop
     End Select
     
+End Sub
+
+Private Sub cmdCommit_GotFocusAPI(Index As Integer)
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
@@ -389,14 +433,6 @@ Private Sub Form_Load()
     
     Tools.SetToolBusyState True
     
-    'TODO:
-    'Ensure our corresponding tool manager is synchronized with default layer rendering styles
-    'Tools_Move.SetDrawDistances chkDistances.Value
-    'Tools_Move.SetDrawLayerCornerNodes chkLayerNodes.Value
-    'Tools_Move.SetDrawLayerRotateNodes chkRotateNode.Value
-    'Tools_Move.SetMoveSelectedPixels_SampleMerged (btsSampleMerged.ListIndex = 0)
-    'Tools_Move.SetMoveSelectedPixels_DefaultCut (btsCopyCut.ListIndex = 1)
-    
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
     m_lastUsedSettings.SetParentForm Me
@@ -425,55 +461,19 @@ Private Sub m_Flyout_FlyoutClosed(origTriggerObject As Control)
     If (Not origTriggerObject Is Nothing) Then origTriggerObject.Value = False
 End Sub
 
-'Because this tool synchronizes the vast majority of its properties to the active layer
-' in the current image, we do *not* automatically save all settings for this tool.
-' Instead, we custom-save only the settings we absolutely want.
+'Non-measurement settings are stored between sessions
 Private Sub m_LastUsedSettings_AddCustomPresetData()
-
-    'TODO:
+    
     With m_lastUsedSettings
-        '.AddPresetData "move-size-auto-activate", chkAutoActivateLayer.Value
-        '.AddPresetData "move-size-ignore-transparent", chkIgnoreTransparent.Value
-        '.AddPresetData "move-size-selection-sample-merged", btsSampleMerged.ListIndex
-        '.AddPresetData "move-size-selection-default-cut", btsCopyCut.ListIndex
-        '.AddPresetData "move-size-show-distances", chkDistances.Value
-        '.AddPresetData "move-size-show-resize-nodes", chkLayerNodes.Value
-        '.AddPresetData "move-size-show-rotate-nodes", chkRotateNode.Value
-        '.AddPresetData "move-size-lock-aspect-ratio", chkAspectRatio.Value
+        .AddPresetData "crop-tool-allow-enlarge", Me.chkAllowGrowing.Value
     End With
 
 End Sub
 
 Private Sub m_LastUsedSettings_ReadCustomPresetData()
 
-'TODO:
     With m_lastUsedSettings
-'        chkAutoActivateLayer.Value = .RetrievePresetData("move-size-auto-activate", True)
-'        chkIgnoreTransparent.Value = .RetrievePresetData("move-size-ignore-transparent", True)
-'
-'        btsSampleMerged.ListIndex = CLng(.RetrievePresetData("move-size-selection-sample-merged", "1"))
-'        btsCopyCut.ListIndex = CLng(.RetrievePresetData("move-size-selection-default-cut", "1"))
-'
-'        chkDistances.Value = .RetrievePresetData("move-size-show-distances", False)
-'        chkLayerNodes.Value = .RetrievePresetData("move-size-show-resize-nodes", True)
-'        chkRotateNode.Value = .RetrievePresetData("move-size-show-rotate-nodes", True)
-'
-'        'The "lock aspect ratio" control is tricky, because we don't want to set this value
-'        ' if the current image has variable aspect ratio enabled; otherwise, it will forcibly
-'        ' modify the active layer's size value(s).
-'        Dim okToLoad As Boolean
-'        okToLoad = True
-'
-'        If Tools.CanvasToolsAllowed(False) Then
-'            okToLoad = (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasXModifier() = 1#) And (PDImages.GetActiveImage.GetActiveLayer.GetLayerCanvasYModifier() = 1#)
-'        End If
-'
-'        If okToLoad Then
-'            chkAspectRatio.Value = .RetrievePresetData("move-size-lock-aspect-ratio", False)
-'        Else
-'            chkAspectRatio.Value = False
-'        End If
-'
+        Me.chkAllowGrowing.Value = .RetrievePresetData("crop-tool-allow-enlarge", False)
     End With
     
 End Sub
@@ -554,7 +554,7 @@ Private Sub tudCrop_Change(Index As Integer)
                 End If
                 
             End If
-                    
+            
     End Select
     
     'Free the tool engine
@@ -566,7 +566,11 @@ Private Sub tudCrop_Change(Index As Integer)
 End Sub
 
 Private Sub tudCrop_GotFocusAPI(Index As Integer)
-    If (Index = 4) Or (Index = 5) Then UpdateFlyout 0, True
+    If (Index = 2) Or (Index = 3) Then
+        UpdateFlyout 0, True
+    ElseIf (Index = 4) Or (Index = 5) Then
+        UpdateFlyout 1, True
+    End If
 End Sub
 
 Private Sub tudCrop_LostFocusAPI(Index As Integer)
@@ -593,6 +597,61 @@ Private Sub tudCrop_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPresse
 
 End Sub
 
+'When the active image changes (or the "allow growing" toggle changes), we should adjust max/min values
+' of spin controls to prevent the user from
+Private Sub SyncMinMaxAgainstImage()
+    
+    Const MAX_SPIN_VALUE As Long = 65000
+    
+    'To make this behavior more intuitive, max/min of spin controls should change to match.
+    
+    'Set minimums (only applies to position)...
+    If chkAllowGrowing.Value Or (Not PDImages.IsImageActive()) Then
+        tudCrop(0).Min = -1& * MAX_SPIN_VALUE
+        tudCrop(1).Min = tudCrop(0).Min
+    Else
+        tudCrop(0).Min = 0
+        tudCrop(1).Min = 0
+    End If
+    
+    '...and maximums (applies to position *and* size)
+    If chkAllowGrowing.Value Or (Not PDImages.IsImageActive()) Then
+        tudCrop(0).Max = MAX_SPIN_VALUE
+        tudCrop(1).Max = tudCrop(0).Max
+    Else
+        
+        'Redundant failsafe for image existence
+        If PDImages.IsImageActive Then
+            
+            'Position (x/y)
+            tudCrop(0).Max = PDImages.GetActiveImage.Width - 1
+            tudCrop(1).Max = PDImages.GetActiveImage.Height - 1
+            
+            'Size (w/h)
+            tudCrop(2).Max = PDImages.GetActiveImage.Width
+            tudCrop(3).Max = PDImages.GetActiveImage.Height
+            
+        End If
+        
+    End If
+    
+    'Relay any changes to the actual crop engine
+    If chkAllowGrowing.Value Then
+        Tools_Crop.SetCropAllowEnlarge True
+        Tools_Crop.NotifyCropMaxSizes 0, 0
+    Else
+        Tools_Crop.NotifyCropMaxSizes tudCrop(2).Max, tudCrop(3).Max
+        Tools_Crop.SetCropAllowEnlarge False
+    End If
+    
+End Sub
+
+'This panel *does* need to be notified of active image changes, because things like max/min of spin controls
+' may change based on user settings and image dimensions.
+Public Sub NotifyActiveImageChanged()
+    SyncMinMaxAgainstImage
+End Sub
+
 'Updating against the current theme accomplishes a number of things:
 ' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
 ' 2) All tooltips and captions are translated according to the current language.
@@ -601,13 +660,7 @@ End Sub
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'TODO:
-    
-    'UI images must be updated against theme-specific colors
-    'Dim buttonSize As Long
-    'buttonSize = Interface.FixDPI(32)
-    'cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
-    
+    'Lock/unlock buttons are standardized across *all* toolpanels
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(16)
     
@@ -618,11 +671,12 @@ Public Sub UpdateAgainstCurrentTheme()
         cmdLock(i).AssignTooltip "Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)"
     Next i
     
+    'Commit and cancel buttons use generic ok/cancel images
     cmdCommit(0).AssignImage "generic_ok", , buttonSize, buttonSize
     cmdCommit(1).AssignImage "generic_cancel", , buttonSize, buttonSize
     
-    'Tooltips must be localized
-    'cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+    'Next, apply localized tooltips
+    chkAllowGrowing.AssignTooltip "Allow cropping outside image boundaries (which will enlarge the image)."
     
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock

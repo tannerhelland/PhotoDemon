@@ -45,6 +45,11 @@ Private m_CornerCoords() As PointFloat, m_numCornerCoords As Long
 'To correctly detect clicks, we cache the current crop rect (if any) at _MouseDown
 Private m_CropRectAtMouseDown As RectF
 
+'Allow the crop to extend beyond image boundaries (for enlarging the image).  To accompany this,
+' the caller also needs to supply allowable max/min values (and if those change, we need to be
+' re-notified so we can update any existing crop region as necessary).
+Private m_AllowEnlarge As Boolean, m_MaxCropWidth As Long, m_MaxCropHeight As Long
+
 'Apply a crop operation from a param string constructed by the GetCropParamString() function.
 ' (This function is a thin wrapper to Crop_ApplyCrop(); it just extracts relevant params from the
 '  param string and forwards the results.)
@@ -445,6 +450,8 @@ Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift A
         
         'If the user is initiating a new crop, start it now
         If (m_idxMouseDown = poi_Undefined) Then
+            
+            'If the user wants cropping locked to image boundaries, apply that now
             ResetCropRectF imgX, imgY
             
         'The user is interacting with an existing crop boundary.
@@ -492,6 +499,37 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
                         tmpCornerCoords(i).x = m_CornerCoords(i).x + xOffset
                         tmpCornerCoords(i).y = m_CornerCoords(i).y + yOffset
                     Next i
+                End If
+                
+                'If the user is not allowed to enlarge, force points in-bounds.
+                ' (Note that a subsequent step - UpdateCropRectF() - will apply failsafe fixes to this as necessary.)
+                If (Not m_AllowEnlarge) Then
+                    
+                    Dim fixOffset As Single
+                    If (tmpCornerCoords(0).x < 0) Then
+                        fixOffset = Abs(tmpCornerCoords(0).x)
+                        For i = 0 To m_numCornerCoords - 1
+                            tmpCornerCoords(i).x = tmpCornerCoords(i).x + fixOffset
+                        Next i
+                    End If
+                    If (tmpCornerCoords(0).y < 0) Then
+                        fixOffset = Abs(tmpCornerCoords(0).y)
+                        For i = 0 To m_numCornerCoords - 1
+                            tmpCornerCoords(i).y = tmpCornerCoords(i).y + fixOffset
+                        Next i
+                    End If
+                    If (tmpCornerCoords(1).x > m_MaxCropWidth) Then
+                        fixOffset = m_MaxCropWidth - tmpCornerCoords(1).x
+                        For i = 0 To m_numCornerCoords - 1
+                            tmpCornerCoords(i).x = tmpCornerCoords(i).x + fixOffset
+                        Next i
+                    End If
+                    If (tmpCornerCoords(2).y > m_MaxCropHeight) Then
+                        fixOffset = m_MaxCropHeight - tmpCornerCoords(2).y
+                        For i = 0 To m_numCornerCoords - 1
+                            tmpCornerCoords(i).y = tmpCornerCoords(i).y + fixOffset
+                        Next i
+                    End If
                 End If
                 
             'The user is click-dragging a specific point.
@@ -612,6 +650,46 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
             Viewport.Stage4_FlipBufferAndDrawUI srcImage, FormMain.MainCanvas(0)
             
         End If
+        
+    End If
+    
+End Sub
+
+'Set new max crop bounds.  Should be called any time the active image is changed.
+Public Sub NotifyCropMaxSizes(ByVal newMaxWidth As Long, ByVal newMaxHeight As Long)
+    
+    'Standardize un-set max width/height against 0
+    If (newMaxWidth <= 0) Then m_MaxCropWidth = 0 Else m_MaxCropWidth = newMaxWidth
+    If (newMaxHeight <= 0) Then m_MaxCropHeight = 0 Else m_MaxCropHeight = newMaxHeight
+    
+    'Whenever max values change, we need to re-assess the current crop region (to make sure it fits in-bounds)
+    If (Not m_AllowEnlarge) Then ForceCropRectInBounds
+    
+End Sub
+
+Public Function GetCropAllowEnlarge() As Boolean
+    GetCropAllowEnlarge = m_AllowEnlarge
+End Function
+
+Public Sub SetCropAllowEnlarge(ByVal newValue As Boolean)
+    
+    If (m_AllowEnlarge <> newValue) Then
+        
+        m_AllowEnlarge = newValue
+        
+        'After allowing enlarge behavior, we may need to force the current crop rect in-bounds.
+        If m_AllowEnlarge Then
+            m_MaxCropWidth = 0
+            m_MaxCropHeight = 0
+        Else
+            ForceCropRectInBounds
+        End If
+        
+        'Changing this toggle can cause position or size to change; relay any changes back to the UI now
+        RelayCropChangesToUI
+        
+        'Update the viewport as necessary
+        If PDImages.IsImageActive Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
     End If
     
@@ -814,6 +892,13 @@ Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
         
     End With
     
+    'If the user wants the crop clamped to image boundaries, calculate overlap now.
+    If (Not m_AllowEnlarge) Then
+        Dim tmpOverlap As RectF
+        GDI_Plus.IntersectRectF tmpOverlap, m_CropRectF, PDImages.GetActiveImage.GetBoundaryRectF
+        m_CropRectF = tmpOverlap
+    End If
+    
     'Lock position and height to their nearest integer equivalent
     PDMath.GetIntClampedRectF m_CropRectF
     
@@ -912,12 +997,141 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optiona
         End With
         
     End If
-        
+    
+    'If the user wants the crop clamped to image boundaries, calculate a final, failsafe overlap now.
+    If (Not m_AllowEnlarge) Then
+        Dim tmpOverlap As RectF
+        GDI_Plus.IntersectRectF tmpOverlap, m_CropRectF, PDImages.GetActiveImage.GetBoundaryRectF
+        m_CropRectF = tmpOverlap
+    End If
+    
     'Lock position and height to their nearest integer equivalent
     PDMath.GetIntClampedRectF m_CropRectF
     
     'If the crop rect is valid, relay its values to the toolpanel
     If ValidateCropRectF() Then RelayCropChangesToUI
+    
+End Sub
+
+'If the crop is not allowed to enlarge the image, any crop changes must be forced in-bounds.
+' This is best handled in individual size modification steps (because it makes behavior more intuitive
+' for the user), but when toggling the "allow enlarge" setting, we need to forcibly bring the current
+' crop rect (if any) into bounds - this function will do that.
+Private Sub ForceCropRectInBounds()
+            
+    Debug.Print "Checking crop force"
+    
+    'If the user is not currently enforcing boundaries, do nothing
+    If m_AllowEnlarge Then Exit Sub
+    
+    Debug.Print "enlarging not allowed (good)"
+    
+    'The user is enforcing boundaries.  They *must* have set a max width/height in a previous step.
+    If (m_MaxCropWidth = 0) Or (m_MaxCropHeight = 0) Then Exit Sub
+    
+    Debug.Print "Still checking", m_MaxCropWidth, m_MaxCropHeight
+    
+    Dim widthOrHeightChanged As Boolean
+    widthOrHeightChanged = False
+    
+    'There's a nebulous interplay when the user locks width/height but those dimensions are too big.
+    ' When this happens, ignore the locked width/height values as necessary to enforce the max width/height.
+    If m_IsWidthLocked Then
+        If (m_CropRectF.Width > m_MaxCropWidth) Then
+            m_CropRectF.Width = m_MaxCropWidth
+            widthOrHeightChanged = True
+        End If
+        If (m_CropRectF.Height > m_MaxCropHeight) Then
+            m_CropRectF.Height = m_MaxCropHeight
+            widthOrHeightChanged = True
+        End If
+    End If
+    
+    'Now we get the fun of trying to make sure the crop rect "fits" within the boundaries set by the user.
+    
+    'Start with left/top position, which are the easiest to handle.
+    If (m_CropRectF.Left < 0) Then m_CropRectF.Left = 0
+    If (m_CropRectF.Top < 0) Then m_CropRectF.Top = 0
+    
+    'Next, reconcile width
+    If (m_CropRectF.Left + m_CropRectF.Width > m_MaxCropWidth) Then
+        
+        'First, attempt to bring the crop "in-bounds" by shifting it left.
+        m_CropRectF.Left = m_MaxCropWidth - m_CropRectF.Width
+        
+        'If that isn't enough to "fix" the crop, simply limit it to max size
+        If (m_CropRectF.Left < 0) Then
+            m_CropRectF.Left = 0
+            m_CropRectF.Width = m_MaxCropWidth
+            widthOrHeightChanged = True
+        End If
+        
+    End If
+    
+    'Repeat the above steps, but for height
+    If (m_CropRectF.Top + m_CropRectF.Height > m_MaxCropHeight) Then
+        
+        'First, attempt to bring the crop "in-bounds" by shifting it up.
+        m_CropRectF.Top = m_MaxCropHeight - m_CropRectF.Height
+        
+        'If that isn't enough to "fix" the crop, simply limit it to max size
+        If (m_CropRectF.Top < 0) Then
+            m_CropRectF.Top = 0
+            m_CropRectF.Height = m_MaxCropHeight
+            widthOrHeightChanged = True
+        End If
+        
+    End If
+    
+    'This function can only *shrink* width/height, not enlarge it - but that leaves us with the problem of aspect ratio.
+    ' If the above changes messed up a locked aspect ratio, try to preserve it.
+    If m_IsAspectLocked And (m_LockedAspectRatio <> 0#) And widthOrHeightChanged Then
+        
+        'We were forced to change width/height to bring the crop region in-bounds.
+        ' Try to fix the problem by adjusting the problematic dimensions.
+        If (m_LockedAspectRatio >= 1#) Then
+            m_CropRectF.Height = m_CropRectF.Width * (1# / m_LockedAspectRatio)
+            If (m_CropRectF.Height > m_MaxCropHeight) Then
+                m_CropRectF.Top = m_MaxCropHeight - m_CropRectF.Height
+                If (m_CropRectF.Top < 0) Then
+                    m_CropRectF.Top = 0
+                    m_CropRectF.Height = m_MaxCropHeight
+                    widthOrHeightChanged = True
+                End If
+            End If
+        Else
+            m_CropRectF.Width = m_CropRectF.Height * m_LockedAspectRatio
+            If (m_CropRectF.Width > m_MaxCropWidth) Then
+                m_CropRectF.Left = m_MaxCropWidth - m_CropRectF.Width
+                If (m_CropRectF.Left < 0) Then
+                    m_CropRectF.Left = 0
+                    m_CropRectF.Width = m_MaxCropWidth
+                    widthOrHeightChanged = True
+                End If
+            End If
+        End If
+        
+        
+            'm_CropRectF.Width * (1# / m_LockedAspectRatio)
+        
+'                'User is changing width
+'                If (changedProperty = pdd_Width) Then
+'                    If toolpanel_Crop.tudCrop(2).IsValid(False) Then
+'                        m_CropRectF.Width = newPropI
+'                        m_CropRectF.Height = m_CropRectF.Width * (1# / m_LockedAspectRatio)
+'                        toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
+'                    End If
+'
+'                'User is changing height
+'                Else
+'                    If toolpanel_Crop.tudCrop(3).IsValid(False) Then
+'                        m_CropRectF.Height = newPropI
+'                        m_CropRectF.Width = m_CropRectF.Height * m_LockedAspectRatio
+'                        toolpanel_Crop.tudCrop(2).Value = m_CropRectF.Width
+'                    End If
+'                End If
+        
+    End If
     
 End Sub
 
@@ -988,7 +1202,10 @@ End Sub
 
 'The crop toolpanel relays user input via this function.  Left/top/width/height as passed as integers; aspect ratio as a float.
 Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optional ByVal newPropI As Long = 0, Optional ByVal newPropF As Single = 0!)
-    
+        
+    'Used to prevent recursion when syncing with UI elements
+    'If Tools.GetToolBusyState() Then Exit Sub
+        
     Select Case changedProperty
         
         Case pdd_Left
@@ -1068,7 +1285,16 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
     End Select
     
     'After a property change, we must validate the crop rectangle to make sure no funny business occurred
-    ValidateCropRectF
+    If ValidateCropRectF() Then
+        
+        'If the crop region looks OK *and* the user doesn't want to allow enlarging, perform a final
+        ' forcible check to bring the region "back" in-bounds as necessary.
+        If (Not m_AllowEnlarge) Then
+            ForceCropRectInBounds
+            RelayCropChangesToUI
+        End If
+        
+    End If
     
     'We don't want to relay *all* crop settings back to the UI (because this function is meant to
     ' relay values *from* the UI), but we may need to adjust the apply/commit buttons if the user's
@@ -1085,4 +1311,3 @@ End Sub
 Private Sub InternalError(ByRef funcName As String, ByRef srcErrMsg As String)
     PDDebug.LogAction "WARNING!  Tools_Crop module error in " & funcName & ": " & srcErrMsg
 End Sub
-

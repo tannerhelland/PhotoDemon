@@ -765,6 +765,10 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
         ' What we do when changing images depends on this setting.
         If (g_CurrentTool = ND_MEASURE) Then toolpanel_Measure.NotifyActiveImageChanged
         
+        'An active crop region (if any) can be moved between images, but max/min values on the toolpanel's
+        ' spin controls need to change to match.
+        If (g_CurrentTool = ND_CROP) Then toolpanel_Crop.NotifyActiveImageChanged
+        
         'Paint tools are handled as a special case
         Dim toolIsPaint As Boolean
         toolIsPaint = (g_CurrentTool = PAINT_PENCIL) Or (g_CurrentTool = PAINT_SOFTBRUSH)
