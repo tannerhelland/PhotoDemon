@@ -149,6 +149,7 @@ Private Declare Function FindFirstFileW Lib "kernel32" (ByVal lpFileName As Long
 Private Declare Function FindNextFileW Lib "kernel32" (ByVal hFindFile As Long, ByVal lpFindFileData As Long) As Long
 Private Declare Function FlushViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long, ByVal dwNumberOfBytesToFlush As Long) As Long
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
+Private Declare Function GetFileAttributesExW Lib "kernel32" (ByVal lpFileName As Long, ByVal fInfoLevelId As Long, ByVal out_lpFileInformation As Long) As Long
 Private Declare Function GetFileSizeEx Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSize As Currency) As Long
 Private Declare Function GetFileTime Lib "kernel32" (ByVal hFile As Long, ByRef lpCreationTime As WAPI_FILETIME, ByRef lpLastAccessTime As WAPI_FILETIME, ByRef lpLastWriteTime As WAPI_FILETIME) As Long
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
@@ -618,6 +619,11 @@ Friend Function FileFind(ByRef searchParam As String, ByRef dstStack As pdString
     
 End Function
 
+'Returns TRUE if attributes were received successfully; FALSE otherwise.
+Friend Function FileGetAttributesBasic(ByRef srcFile As String, ByRef dstAttributes As WIN32_FILE_ATTRIBUTES_BASIC) As Boolean
+    FileGetAttributesBasic = (GetFileAttributesExW(StrPtr(srcFile), 0&, VarPtr(dstAttributes)) <> 0)
+End Function
+
 'After a file has been opened, you can use this function to query the current file pointer position
 Friend Function FileGetCurrentPointer(ByVal srcHandle As Long) As Long
     FileGetCurrentPointer = SetFilePointer(srcHandle, 0&, 0&, FILE_CURRENT)
@@ -735,39 +741,55 @@ Friend Function FileGetTimeAsCurrency(ByRef srcFile As String, Optional ByVal ty
     
     FileGetTimeAsCurrency = 0
     
-    Dim hFile As Long
-    If FileCreateHandle(srcFile, hFile, True) Then
-        
-        'Failsafe only
-        If (hFile <> 0) Then
-            
-            Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
-            If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
-            
-                Dim srcTime As WAPI_FILETIME
-                
-                If (typeOfTime = PDFT_AccessTime) Then
-                    srcTime = accessTime
-                ElseIf (typeOfTime = PDFT_WriteTime) Then
-                    srcTime = writeTime
-                Else
-                    srcTime = createTime
-                End If
-                
-                'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
-                ' comparison functions, but for now, you have to deal with times being returned as currency.
-                CopyMemoryStrict VarPtr(FileGetTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
-                CopyMemoryStrict VarPtr(FileGetTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
-            
-            End If
-            
-            CloseHandle hFile
-            
-        '/hFile != 0
-        End If
-        
-    End If
+    'NOTE: Win 11 24H2 experiences random, huge perf spikes when accessing file size this way.  Let's try a different approach?
+    'Via CreateFileW:
+'    Dim hFile As Long
+'    If FileCreateHandle(srcFile, hFile, True) Then
+'
+'        'Failsafe only
+'        If (hFile <> 0) Then
+'
+'            Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
+'            If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
+'
+'                Dim srcTime As WAPI_FILETIME
+'
+'                If (typeOfTime = PDFT_AccessTime) Then
+'                    srcTime = accessTime
+'                ElseIf (typeOfTime = PDFT_WriteTime) Then
+'                    srcTime = writeTime
+'                Else
+'                    srcTime = createTime
+'                End If
+'
+'                'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
+'                ' comparison functions, but for now, you have to deal with times being returned as currency.
+'                CopyMemoryStrict VarPtr(FileGetTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
+'                CopyMemoryStrict VarPtr(FileGetTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
+'
+'            End If
+'
+'            CloseHandle hFile
+'
+'        '/hFile != 0
+'        End If
+'
+'    End If
 
+    'New attempt in Win 11 24H2:
+    Dim tmpResult As WIN32_FIND_DATA
+    If (GetFileAttributesExW(StrPtr(srcFile), 0&, VarPtr(tmpResult)) <> 0) Then
+        If (typeOfTime = PDFT_AccessTime) Then
+            FileGetTimeAsCurrency = tmpResult.ftLastAccessTime
+        ElseIf (typeOfTime = PDFT_WriteTime) Then
+            FileGetTimeAsCurrency = tmpResult.ftLastWriteTime
+        Else
+            FileGetTimeAsCurrency = tmpResult.ftCreationTime
+        End If
+    Else
+        FileGetTimeAsCurrency = 0
+    End If
+    
 End Function
 
 'Return varies types of file times in currency format.  By default, WAPI functions return file times using a custom
@@ -874,12 +896,22 @@ End Function
 ' IMPORTANT!  It's assumed that the caller checked the file's existence PRIOR to calling this function.
 Friend Function FileLenW(ByRef srcPath As String) As Long
     
-    Dim hFile As Long
-    If Me.FileCreateHandle(srcPath, hFile, True) Then
-        If (hFile <> 0) Then
-            FileLenW = CLng(FileLenW_Large(hFile))
-            Me.FileCloseHandle hFile
-        End If
+    'NOTE: Win 11 24H2 experiences random, huge perf spikes when accessing file size this way.  Let's try a different approach?
+    'Via GetFileSizeEx:
+    'Dim hFile As Long
+    'If Me.FileCreateHandle(srcPath, hFile, True, False) Then
+    '    If (hFile <> 0) Then
+    '        FileLenW = CLng(FileLenW_Large(hFile))
+    '        Me.FileCloseHandle hFile
+    '    End If
+    'Else
+    '    FileLenW = 0
+    'End If
+    
+    'New attempt in Win 11 24H2:
+    Dim tmpResult As WIN32_FIND_DATA
+    If (GetFileAttributesExW(StrPtr(srcPath), 0&, VarPtr(tmpResult)) <> 0) Then
+        GetMem4 VarPtr(tmpResult.nFileSizeBig) + 4, FileLenW
     Else
         FileLenW = 0
     End If
