@@ -53,6 +53,9 @@ Option Explicit
 'NOTE: this class frequently uses a type called PDLanguageFile.  Because outside functions
 ' (like the Language Editor) also access this type, it is located in Public_Variables.
 
+'This class offers detailed performance tracking, but it pollutes debug logs so please DISABLE in production builds
+Private Const DETAILED_PERF_TRACKING As Boolean = False
+
 'Language-related WAPI
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
 Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
@@ -117,6 +120,9 @@ Private m_ObjectTranslationsExist As Boolean
 
 'In debug mode we track extra profiling data
 Private m_CacheHits As Long, m_CacheMisses As Long
+
+'Used for querying file attributes (at startup)
+Private m_FileAttributesBasic As WIN32_FILE_ATTRIBUTES_BASIC
 
 'External functions can request the a copy of all found languages.  The caller must provide
 ' a pdLanguageFile array; this function will fill it (with data retrieved by CheckAvailableLanguages()).
@@ -416,7 +422,17 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
     Dim listOfFiles As pdStringStack
     Set listOfFiles = New pdStringStack
     
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    Dim netTime1 As Double, netTime2 As Double, netTime3 As Double
+    
     If Files.RetrieveAllFiles(srcFolder, listOfFiles, False, False, "xml") Then
+        
+        If DETAILED_PERF_TRACKING Then
+            PDDebug.LogTiming "pdTranslate / TallyLanguageFilesInFolder / RetrieveAllFiles", VBHacks.GetTimerDifferenceNow(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
         
         'We need to checksum various files, so prep a crypto object in advance
         Set m_Crypto = New pdCrypto
@@ -433,6 +449,8 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
             ' we should have checksummed it and stored the result inside the user's preferences file.  If checksums
             ' match, we don't need to load and validate the file this time.
             
+            VBHacks.GetHighResTime startTime
+            
             'Look for an existing checksum
             chkXMLName = m_LangCacheXML.GetXMLSafeTagName(Files.FileGetName(chkFile, True))
             chkCachedValue = Trim$(m_LangCacheXML.GetUniqueTag_String(chkXMLName))
@@ -446,8 +464,12 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
                 PDDebug.LogAction "Note: no cache found for " & chkXMLName & ".  Validating language file manually..."
             End If
             
+            netTime1 = netTime1 + VBHacks.GetTimerDifferenceNow(startTime)
+            
             'If validation is required, we need to load the file from scratch and run some checks on it
             If fileValidationRequired Then
+                
+                VBHacks.GetHighResTime startTime
                 
                 If (tmpXMLEngine Is Nothing) Then
                     Set tmpXMLEngine = New pdXML
@@ -478,10 +500,14 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
                     End If
                     
                 End If
-            
+                
+                netTime2 = netTime2 + VBHacks.GetTimerDifferenceNow(startTime)
+                
             'If file validation is *not* required, pull previously cached values from the preference file
             Else
-            
+                
+                VBHacks.GetHighResTime startTime
+                
                 GetCachedLanguageInfo chkXMLName, m_AvailableLanguages(nLanguages)
                 m_AvailableLanguages(nLanguages).FileName = chkFile
                 m_AvailableLanguages(nLanguages).LangType = langTypeForThisFolder
@@ -489,6 +515,8 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
                 
                 nLanguages = nLanguages + 1
                 If (nLanguages > UBound(m_AvailableLanguages)) Then ReDim Preserve m_AvailableLanguages(0 To (nLanguages + 1) * 2) As PDLanguageFile
+                
+                netTime3 = netTime3 + VBHacks.GetTimerDifferenceNow(startTime)
             
             End If
             
@@ -497,24 +525,35 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
         
     End If
     
+    If DETAILED_PERF_TRACKING Then
+        PDDebug.LogTiming "pdTranslate / TallyLanguageFilesInFolder / IsValidationRequired", netTime1
+        PDDebug.LogTiming "pdTranslate / TallyLanguageFilesInFolder / ActualValidation", netTime2
+        PDDebug.LogTiming "pdTranslate / TallyLanguageFilesInFolder / PastValidation", netTime3
+    End If
+    
     TallyLanguageFilesInFolder = nLanguages - langOffset
 
 End Function
 
 Private Function GetLangFileChecksum(ByRef srcFile As String) As String
-
-    'Mix together the filename, file last access date, and file size to arrive at a "good enough" unique string.
-    Dim strHashSource As String
-    strHashSource = srcFile & "|" & CStr(Files.FileLenW(srcFile)) & "|" & CStr(Files.FileGetTimeAsCurrency(srcFile, PDFT_WriteTime))
     
-    'A dedicated crypto class handles the actual hashing
-    GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource)
-    
+    'Pull file attributes just once
+    If Files.FileGetAttributesBasic(srcFile, m_FileAttributesBasic) Then
+        
+        'Mix together the filename, file last access date, and file size to arrive at a "good enough" unique string.
+        Dim strHashSource As String
+        strHashSource = srcFile & "|" & CStr(m_FileAttributesBasic.nFileSizeBig) & "|" & CStr(m_FileAttributesBasic.ftLastWriteTime)
+        
+        'A dedicated crypto class handles the actual hashing
+        GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource)
+        
+    End If
+        
 End Function
 
 'Search the Languages folder, and make a list of all available languages
 Friend Sub CheckAvailableLanguages()
-        
+    
     Dim startTime As Currency
     VBHacks.GetHighResTime startTime
         
@@ -533,16 +572,25 @@ Friend Sub CheckAvailableLanguages()
     
     If Files.FileExists(langCacheFilename) Then cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
     
-    PDDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
-    VBHacks.GetHighResTime startTime
+    If DETAILED_PERF_TRACKING Then
+        PDDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'If the cache exists, we won't write it back out to file unless it somehow changes during this session
     ' (from a new language file being discovered, for example).  If it does *not* exist, we'll create it anew
     ' and force it to write out to file at the end of this initiation.
     If (Not cacheLoadedSuccessfully) Then
+    
         PDDebug.LogAction "Central language cache wasn't found.  Creating new cache now..."
         m_LangCacheXML.PrepareNewXML "PDLanguageCache"
         m_LangCacheChanged = True
+        
+        If DETAILED_PERF_TRACKING Then
+            PDDebug.LogTiming "pdTranslate / create new cache", VBHacks.GetTimerDifferenceNow(startTime)
+            VBHacks.GetHighResTime startTime
+        End If
+        
     End If
     
     'Before proceeding, perform some automatic language file cleanup.  In-place upgrades
@@ -550,17 +598,26 @@ Friend Sub CheckAvailableLanguages()
     ' similar names; we always want to remove the old ones, *if* they're in the official language folder.
     PerformLanguageFileCleanup
     
+    If DETAILED_PERF_TRACKING Then
+        PDDebug.LogTiming "pdTranslate / lang file clean-up", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
+    
     'Find all available OFFICIAL language files
     m_numOfLanguages = TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(False), 0, "Official")
     
-    PDDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
-    VBHacks.GetHighResTime startTime
+    If DETAILED_PERF_TRACKING Then
+        PDDebug.LogTiming "pdTranslate / scan official languages", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'Find all available USER language files
     m_numOfLanguages = m_numOfLanguages + TallyLanguageFilesInFolder(UserPrefs.GetLanguagePath(True), m_numOfLanguages, "Unofficial")
     
-    PDDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
-    VBHacks.GetHighResTime startTime
+    If DETAILED_PERF_TRACKING Then
+        PDDebug.LogTiming "pdTranslate / scan user languages", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
     m_AvailableLanguages(m_numOfLanguages).FileName = vbNullString
@@ -594,8 +651,10 @@ Friend Sub CheckAvailableLanguages()
     If m_LangCacheChanged Then m_LangCacheXML.WriteXMLToFile langCacheFilename
     Set m_LangCacheXML = Nothing
     
-    PDDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
-    VBHacks.GetHighResTime startTime
+    If DETAILED_PERF_TRACKING Then
+        PDDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
+    End If
     
     'TESTING: display the info we retrieved
     'Dim i As Long

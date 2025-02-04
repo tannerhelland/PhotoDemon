@@ -101,6 +101,17 @@ Private Type WIN32_PROCESS_INFORMATION
     dwThreadID As Long
 End Type
 
+'Made public in Win 11 24H2 to allow aller to retrieve multiple file attributes; the translation engine was seeing
+' random large perf hits post-hibernation or post-reboot when pulling file size and/or last access time, and cutting
+' the number of accesses of those properties in half reduces the odds of triggering weird 24H2 issues like that.
+Public Type WIN32_FILE_ATTRIBUTES_BASIC
+    dwFileAttributes As Long
+    ftCreationTime As Currency
+    ftLastAccessTime As Currency
+    ftLastWriteTime As Currency
+    nFileSizeBig As Currency
+End Type
+
 'Used to shell an external program, then wait until it completes
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function CreateProcessW Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As Long, ByRef lpProcessAttributes As Any, ByRef lpThreadAttributes As Any, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByRef lpEnvironment As Any, ByVal lpCurrentDriectory As Long, ByVal lpStartupInfo As Long, ByVal lpProcessInformation As Long) As Long
@@ -326,6 +337,10 @@ End Function
 
 Public Function FileExists(ByRef srcFile As String) As Boolean
     If InitializeFSO Then FileExists = m_FSO.FileExists(srcFile)
+End Function
+
+Public Function FileGetAttributesBasic(ByRef srcFile As String, ByRef dstAttributes As WIN32_FILE_ATTRIBUTES_BASIC) As Boolean
+    If InitializeFSO Then FileGetAttributesBasic = m_FSO.FileGetAttributesBasic(srcFile, dstAttributes)
 End Function
 
 Public Function FileGetExtension(ByRef srcFile As String) As String
