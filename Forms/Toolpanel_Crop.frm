@@ -30,6 +30,16 @@ Begin VB.Form toolpanel_Crop
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButtonToolbox cmdAspectSwap 
+      Height          =   345
+      Left            =   7320
+      TabIndex        =   18
+      Top             =   420
+      Width           =   315
+      _ExtentX        =   556
+      _ExtentY        =   609
+      AutoToggle      =   -1  'True
+   End
    Begin PhotoDemon.pdButton cmdCommit 
       Height          =   375
       Index           =   0
@@ -180,18 +190,6 @@ Begin VB.Form toolpanel_Crop
       _ExtentX        =   4392
       _ExtentY        =   423
       Caption         =   "position (x, y)"
-   End
-   Begin PhotoDemon.pdLabel lblColon 
-      Height          =   375
-      Index           =   0
-      Left            =   7320
-      Top             =   405
-      Width           =   270
-      _ExtentX        =   476
-      _ExtentY        =   661
-      Alignment       =   2
-      Caption         =   ":"
-      FontSize        =   12
    End
    Begin PhotoDemon.pdButtonToolbox cmdLock 
       Height          =   360
@@ -344,6 +342,14 @@ Attribute m_lastUsedSettings.VB_VarHelpID = -1
 ' take place in SyncMinMaxAgainstImage.
 Private Sub chkAllowGrowing_Click()
     SyncMinMaxAgainstImage
+End Sub
+
+Private Sub cmdAspectSwap_Click(ByVal Shift As ShiftConstants)
+    If tudCrop(4).IsValid And tudCrop(5).IsValid Then Tools_Crop.RelayCropChangesFromUI pdd_SwapAspectRatio
+End Sub
+
+Private Sub cmdAspectSwap_GotFocusAPI()
+    UpdateFlyout 1, True
 End Sub
 
 Private Sub cmdCommit_Click(Index As Integer)
@@ -675,7 +681,11 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdCommit(0).AssignImage "generic_ok", , buttonSize, buttonSize
     cmdCommit(1).AssignImage "generic_cancel", , buttonSize, buttonSize
     
-    'Next, apply localized tooltips
+    buttonSize = Interface.FixDPI(14)
+    cmdAspectSwap.AssignImage "edit_repeat", , buttonSize, buttonSize
+    cmdAspectSwap.AssignTooltip "Swap width and height"
+    
+    'Next, apply localized tooltips to any other UI items that require it
     chkAllowGrowing.AssignTooltip "Allow cropping outside image boundaries (which will enlarge the image)."
     
     'Flyout lock controls use the same behavior across all instances

@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Crop"
 'Crop tool interface
 'Copyright 2024-2025 by Tanner Helland
 'Created: 12/November/24
-'Last updated: 24/January/25
-'Last update: initial build
+'Last updated: 06/February/25
+'Last update: add aspect ratio swap, for converting between landscape and portrait modes
 '
 'The crop tool performs identical operations to the rectangular selection tool + Image > Crop menu.
 '
@@ -1018,18 +1018,12 @@ End Sub
 ' for the user), but when toggling the "allow enlarge" setting, we need to forcibly bring the current
 ' crop rect (if any) into bounds - this function will do that.
 Private Sub ForceCropRectInBounds()
-            
-    Debug.Print "Checking crop force"
     
     'If the user is not currently enforcing boundaries, do nothing
     If m_AllowEnlarge Then Exit Sub
     
-    Debug.Print "enlarging not allowed (good)"
-    
     'The user is enforcing boundaries.  They *must* have set a max width/height in a previous step.
     If (m_MaxCropWidth = 0) Or (m_MaxCropHeight = 0) Then Exit Sub
-    
-    Debug.Print "Still checking", m_MaxCropWidth, m_MaxCropHeight
     
     Dim widthOrHeightChanged As Boolean
     widthOrHeightChanged = False
@@ -1176,19 +1170,7 @@ Private Sub RelayCropChangesToUI()
     
     'Aspect ratio requires a bit of math
     Dim fracNumerator As Long, fracDenominator As Long
-    If (m_CropRectF.Width > 0!) And (m_CropRectF.Height > 0!) Then
-        PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
-    Else
-        fracNumerator = 1
-        fracDenominator = 1
-    End If
-    
-    'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-    If (fracDenominator = 5) Then
-        fracNumerator = fracNumerator * 2
-        fracDenominator = fracDenominator * 2
-    End If
-    
+    GetAspectRatioAsFraction fracNumerator, fracDenominator
     toolpanel_Crop.tudCrop(4).Value = fracNumerator
     toolpanel_Crop.tudCrop(5).Value = fracDenominator
     
@@ -1202,10 +1184,10 @@ End Sub
 
 'The crop toolpanel relays user input via this function.  Left/top/width/height as passed as integers; aspect ratio as a float.
 Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optional ByVal newPropI As Long = 0, Optional ByVal newPropF As Single = 0!)
-        
-    'Used to prevent recursion when syncing with UI elements
-    'If Tools.GetToolBusyState() Then Exit Sub
-        
+    
+    'For calculating aspect ratio as a fraction
+    Dim fracNumerator As Long, fracDenominator As Long
+    
     Select Case changedProperty
         
         Case pdd_Left
@@ -1250,24 +1232,10 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
                     If m_IsHeightLocked Then m_LockedHeight = m_CropRectF.Height
                 End If
                 
-                'Changes to width/height (with unlocked aspect ratio) will obviously change the
-                ' current aspect ratio.  Re-calculate aspect ratio and update those spinners accordingly.
-                Dim fracNumerator As Long, fracDenominator As Long
-                If (m_CropRectF.Width >= 1) And (m_CropRectF.Height >= 1) Then
-                    
-                    PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, fracNumerator, fracDenominator, 0.005
-                    
-                    'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-                    If (fracDenominator = 5) Then
-                        fracNumerator = fracNumerator * 2
-                        fracDenominator = fracDenominator * 2
-                    End If
-                    
-                    toolpanel_Crop.tudCrop(4).Value = fracNumerator
-                    toolpanel_Crop.tudCrop(5).Value = fracDenominator
-                    
-                End If
-                    
+                GetAspectRatioAsFraction fracNumerator, fracDenominator
+                toolpanel_Crop.tudCrop(4).Value = fracNumerator
+                toolpanel_Crop.tudCrop(5).Value = fracDenominator
+                
             End If
         
         'When changing aspect ratio, the UI passes both the new aspect ratio, and the current size of
@@ -1281,6 +1249,49 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
             m_CropRectF.Height = newPropI
             toolpanel_Crop.tudCrop(3).Value = newPropI
             If m_IsAspectLocked And (newPropF <> 0!) Then m_LockedAspectRatio = 1! / newPropF
+        
+        'Swap aspect ratio (e.g. 4:3 becomes 3:4).  This toggle ignores any/all locked values.
+        Case pdd_SwapAspectRatio
+            
+            Tools.SetToolBusyState True
+            
+            newPropF = m_CropRectF.Width
+            m_CropRectF.Width = m_CropRectF.Height
+            m_CropRectF.Height = newPropF
+            
+            'If the crop is currently constrained to image dimensions, shrink it as necessary
+            If (Not m_AllowEnlarge) Then
+                
+                'Width, then height
+                Dim allowedSize As Double, reduceFactor As Double
+                If (m_CropRectF.Left + m_CropRectF.Width > m_MaxCropWidth) Then
+                    allowedSize = m_MaxCropWidth - m_CropRectF.Left
+                    reduceFactor = allowedSize / m_CropRectF.Width
+                    m_CropRectF.Width = allowedSize
+                    m_CropRectF.Height = m_CropRectF.Height * reduceFactor
+                    If (m_CropRectF.Height < 1!) Then m_CropRectF.Height = 1!
+                End If
+                
+                If (m_CropRectF.Top + m_CropRectF.Height > m_MaxCropHeight) Then
+                    allowedSize = m_MaxCropHeight - m_CropRectF.Top
+                    reduceFactor = allowedSize / m_CropRectF.Height
+                    m_CropRectF.Height = allowedSize
+                    m_CropRectF.Width = m_CropRectF.Width * reduceFactor
+                    If (m_CropRectF.Width < 1!) Then m_CropRectF.Width = 1!
+                End If
+                
+            End If
+            
+            'Now we have to relay changes to a bunch of places: width/height/aspect ratio
+            toolpanel_Crop.tudCrop(2).Value = m_CropRectF.Width
+            toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
+            If m_IsAspectLocked And (m_CropRectF.Height >= 1!) Then m_LockedAspectRatio = m_CropRectF.Width / m_CropRectF.Height
+            
+            fracNumerator = toolpanel_Crop.tudCrop(4).Value
+            toolpanel_Crop.tudCrop(4).Value = toolpanel_Crop.tudCrop(5).Value
+            toolpanel_Crop.tudCrop(5).Value = fracNumerator
+                
+            Tools.SetToolBusyState False
             
     End Select
     
@@ -1305,6 +1316,28 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
     '...then request a viewport redraw to reflect any changes
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
+End Sub
+
+'Get the current aspect ratio of m_CropRectF, split into integer numerator and denominator values
+Private Sub GetAspectRatioAsFraction(ByRef dstNumerator As Long, ByRef dstDenominator As Long)
+
+    'Changes to width/height (with unlocked aspect ratio) will obviously change the
+    ' current aspect ratio.  Re-calculate aspect ratio and update those spinners accordingly.
+    If (m_CropRectF.Width >= 1!) And (m_CropRectF.Height >= 1!) Then
+        
+        PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, dstNumerator, dstDenominator, 0.005
+        
+        'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
+        If (dstDenominator = 5) Then
+            dstNumerator = dstNumerator * 2
+            dstDenominator = dstDenominator * 2
+        End If
+    
+    Else
+        dstNumerator = 1
+        dstDenominator = 1
+    End If
+        
 End Sub
 
 'Pass crop-tool-specific errors here

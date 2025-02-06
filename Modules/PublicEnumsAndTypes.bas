@@ -786,8 +786,9 @@ Public Enum PD_Dimension
     pdd_Height
     pdd_AspectRatioW
     pdd_AspectRatioH
+    pdd_SwapAspectRatio
 End Enum
 
 #If False Then
-    Private Const pdd_Left = 0, pdd_Top = 0, pdd_Width = 0, pdd_Height = 0, pdd_AspectRatioW = 0, pdd_AspectRatioH = 0
+    Private Const pdd_Left = 0, pdd_Top = 0, pdd_Width = 0, pdd_Height = 0, pdd_AspectRatioW = 0, pdd_AspectRatioH = 0, pdd_SwapAspectRatio = 0
 #End If
