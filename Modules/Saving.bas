@@ -577,7 +577,11 @@ Public Function SavePDI_Image(ByRef srcPDImage As pdImage, ByRef dstFileAndPath 
     ' memory-mapped file interface will silently handle that for us.)
     Dim pdiWriter As pdPackageChunky
     Set pdiWriter = New pdPackageChunky
-    pdiWriter.StartNewPackage_File dstFileAndPath, False, srcPDImage.EstimateRAMUsage, "PDIF"
+    
+    Dim initBufferSize As Double
+    initBufferSize = srcPDImage.EstimateRAMUsage()
+    If (initBufferSize > CDbl(LONG_MAX)) Then initBufferSize = 0#
+    pdiWriter.StartNewPackage_File dstFileAndPath, False, Int(initBufferSize), "PDIF"
     
     'The first node we'll add is a standard pdImage header, in XML format.
     
@@ -605,7 +609,7 @@ Public Function SavePDI_Image(ByRef srcPDImage As pdImage, ByRef dstFileAndPath 
     'Next, if the "write metadata" flag has been set, and this image has metadata, add a metadata entry to the file.
     If includeMetadata And (Not srcPDImage.ImgMetadata Is Nothing) Then
         
-        If srcPDImage.ImgMetadata.HasMetadata Then
+        If srcPDImage.ImgMetadata.HasMetadata() Then
             
             Dim mdStartTime As Currency
             VBHacks.GetHighResTime mdStartTime

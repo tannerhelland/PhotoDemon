@@ -344,7 +344,20 @@ Friend Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As L
         
     'The image has layers.  Extra work is involved
     Else
-
+        
+        'At load-time, memory is under especially tight crunch (as the source file or intermediary data
+        ' may occupy a lot of memory).  To try and improve the odds of successfully loading large images,
+        ' suspend the previous layer, if any, to memory before creating this one.
+        
+        'TEMPORARILY DISABLED PENDING FURTHER TESTING: this idea is interesting, but at load-time the layer
+        ' will simply be un-suspended when the initial composite is created; I'm not sure how to suspend *after*
+        ' that (because that's where we could save a *lot* of memory).
+        '
+        'Until that's solved, this optimization is basically undone by that composite render; solving is TBD.
+        'Dim idxPrevLayer As Long
+        'idxPrevLayer = m_curLayer
+        'If (Not imgLayers(idxPrevLayer).GetLayerDIB() Is Nothing) Then imgLayers(idxPrevLayer).SuspendLayer True
+        
         'If no layer has been specified, insert the new layer above the requested layer
         If (layerPosition = -1) Then m_curLayer = m_curLayer + 1 Else m_curLayer = layerPosition + 1
         
@@ -1701,14 +1714,14 @@ End Function
 'Estimate the RAM usage for this image, based on the number of layers and the size of each layer
 Friend Function EstimateRAMUsage() As Double
 
-    EstimateRAMUsage = 0
+    EstimateRAMUsage = 0#
 
     Dim i As Long
     
     For i = 0 To m_numOfLayers - 1
         
         'Layers provide their own RAM estimation, based on their current cache state, layer DIB, active styles, and more
-        EstimateRAMUsage = EstimateRAMUsage + imgLayers(i).EstimateRAMUsage
+        EstimateRAMUsage = EstimateRAMUsage + imgLayers(i).EstimateRAMUsage()
         
     Next i
     
