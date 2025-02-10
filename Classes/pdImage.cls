@@ -421,7 +421,10 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal 
             For i = 0 To Me.GetNumOfLayers() - 1
                 Me.GetLayerByIndex(i).NotifyOfDestructiveChanges
             Next i
-        
+            
+            'Notify the tool engine that image size may not be the same
+            Tools.NotifyImageSizeChanged
+            
         Case UNDO_ImageHeader
             m_CompositeCacheClean = False
             m_IsThumbClean = False

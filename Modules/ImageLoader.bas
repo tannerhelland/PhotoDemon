@@ -756,6 +756,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         Case UNDO_Everything
             ImageImporter.LoadPDI_Normal undoFile, tmpDIB, PDImages.GetActiveImage(), True
             PDImages.GetActiveImage.MainSelection.ReadSelectionFromFile undoFile & ".selection"
+            Tools.NotifyImageSizeChanged
             selectionDataLoaded = True
             
         'UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE: a full copy of the pdImage stack is wanted
@@ -763,6 +764,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             don't have to do any special processing to the file - just load the whole damn thing.
         Case UNDO_Image, UNDO_Image_VectorSafe
             ImageImporter.LoadPDI_Normal undoFile, tmpDIB, PDImages.GetActiveImage(), True
+            Tools.NotifyImageSizeChanged
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -777,6 +779,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '             the layer stack described by the file.
         Case UNDO_ImageHeader
             ImageImporter.LoadPDI_HeadersOnly undoFile, PDImages.GetActiveImage()
+            Tools.NotifyImageSizeChanged
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
             ' Unfortunately, subsequent changes to the pdImage header (or individual layers/layer headers) still need
@@ -858,7 +861,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
     If PDImages.GetActiveImage.IsSelectionActive Then PDImages.GetActiveImage.MainSelection.RequestNewMask
-        
+    
     'Render the image to the screen, if requested
     If (Not suspendRedraw) Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     

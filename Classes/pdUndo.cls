@@ -566,7 +566,8 @@ Friend Sub RestoreUndoData()
     Dim nearestDiffIndex As Long
     nearestDiffIndex = FindNearestDiffIndex(m_UndoNum, m_UndoStack(m_UndoNum).srcProcCall.pcUndoType, m_UndoStack(m_UndoNum).undoLayerID)
     
-    Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & m_UndoStack(nearestDiffIndex).srcProcCall.pcUndoType
+    'Want to know what decision the Undo engine made?  Here it is:
+    'Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & m_UndoStack(nearestDiffIndex).srcProcCall.pcUndoType
     
     'We now have to handle some tricky diff-related business.  If the Undo type is a full pdImage reconstruction (meaning the entire
     ' layer stack is being recreated as part of the Undo process), we have to re-apply all diffs in two steps: first, we have to
