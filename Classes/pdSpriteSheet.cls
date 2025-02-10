@@ -355,8 +355,12 @@ Friend Function GetSpriteWidth(ByVal srcImgID As Long) As Long
     
 End Function
 
-'AlphaBlend equivalent
-Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long, Optional ByVal customAlpha As Long = 255) As Boolean
+'AlphaBlend equivalent.
+'
+'The optional "allowMinimizeMemory " parameter will auto-suspend sheets to memory when the caller switches to
+' a new sheet; this may introduce subtle delays to the rendering, but it can produce very large memory savings -
+' so try to balance those competing needs at run-time.
+Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal srcImgID As Long, Optional ByVal customAlpha As Long = 255, Optional ByVal allowMinimizeMemory As Boolean = True) As Boolean
 
     'Resolve the image number into a sprite row and column
     Dim targetIndex As Long, targetRow As Long, targetColumn As Long
@@ -364,17 +368,26 @@ Friend Function PaintCachedImage(ByVal dstDC As Long, ByVal dstX As Long, ByVal 
         
         'Paint the result!
         If (m_ImageCache(targetIndex).numSheets > 0) Then
+            
             With m_ImageCache(targetIndex)
                 .imgSpriteSheets(targetColumn).AlphaBlendToDCEx dstDC, dstX, dstY, .spriteWidth, .spriteHeight, 0, targetRow * .spriteHeight, .spriteWidth, .spriteHeight, customAlpha
                 .imgSpriteSheets(targetColumn).FreeFromDC
             End With
             PaintCachedImage = True
+            
+            'Free past sheets as-we-go, if the user allows
+            If allowMinimizeMemory Then
+                If (m_LastSheetAccessed <> targetColumn) And (m_LastSheetAccessed >= 0) And (m_LastSheetAccessed <= UBound(m_ImageCache(targetIndex).imgSpriteSheets)) Then m_ImageCache(targetIndex).imgSpriteSheets(m_LastSheetAccessed).SuspendDIB cf_Lz4, False
+            End If
+            
+            m_LastSheetAccessed = targetColumn
+            
         Else
             PDDebug.LogAction "WARNING!  pdSpriteSheet.PaintCachedImage failed to paint image number " & srcImgID & " in spritesheet " & targetIndex
         End If
         
     End If
-        
+    
 End Function
 
 'GDI+ StretchBlt equivalent
