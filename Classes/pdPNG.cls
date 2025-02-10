@@ -1399,7 +1399,7 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
                 
                     'If the image has an embedded color profile, combine swizzling and color management
                     ' into a single step.
-                    If imgHasEmbeddedICC Then
+                    If imgHasEmbeddedICC And (Not dstTransform Is Nothing) Then
                         
                         For y = 0 To yFinal
                         
