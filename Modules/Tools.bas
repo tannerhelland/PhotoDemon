@@ -752,10 +752,12 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
     
 End Function
 
-'Some tools (paintbrushes, most notably), have to initialize themselves against the current image (prepping a scratch layer,
-' for example).  To reduce stuttering on first tool use, we initialize this behavior whenever...
+'Some tools (paintbrushes, most notably), have to initialize themselves against the current image
+' (prepping a scratch layer, for example).  To reduce stuttering on first tool use, we initialize
+'  this behavior whenever...
 ' 1) Such a tool is selected, or...
-' 2) The tool is already selected and the user switches images
+' 2) The tool is already selected and the user switches images, or...
+' 3) The active image's size changes
 Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As Boolean = False)
     
     If PDImages.IsImageActive() Then
@@ -820,6 +822,10 @@ End Sub
 Public Sub NotifyImageSizeChanged()
     If (g_CurrentTool = ND_MEASURE) Then
         Tools_Measure.ResetPoints True
+    ElseIf (g_CurrentTool = ND_CROP) Then
+        If PDImages.IsImageActive() Then
+            Tools_Crop.NotifyCropMaxSizes PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+        End If
     ElseIf (g_CurrentTool = PAINT_CLONE) Then
         Tools_Clone.NotifyImageSizeChanged
     End If
