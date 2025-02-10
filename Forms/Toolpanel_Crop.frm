@@ -715,12 +715,17 @@ Private Sub SyncMinMaxAgainstImage()
     End If
     
     'Relay any changes to the actual crop engine
+    Dim cropChanged As Boolean
     If chkAllowGrowing.Value Then
         Tools_Crop.SetCropAllowEnlarge True
-        Tools_Crop.NotifyCropMaxSizes 0, 0
+        cropChanged = Tools_Crop.NotifyCropMaxSizes(0, 0)
     Else
-        Tools_Crop.NotifyCropMaxSizes tudCrop(2).Max, tudCrop(3).Max
+        cropChanged = Tools_Crop.NotifyCropMaxSizes(tudCrop(2).Max, tudCrop(3).Max)
         Tools_Crop.SetCropAllowEnlarge False
+    End If
+    
+    If PDImages.IsImageActive() Then
+        If (Tools_Crop.IsValidCropActive() Or cropChanged) Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage, FormMain.MainCanvas(0)
     End If
     
 End Sub

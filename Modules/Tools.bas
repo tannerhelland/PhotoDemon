@@ -828,7 +828,7 @@ Public Sub NotifyImageSizeChanged()
         Tools_Measure.ResetPoints True
     ElseIf (g_CurrentTool = ND_CROP) Then
         If PDImages.IsImageActive() Then
-            Tools_Crop.NotifyCropMaxSizes PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+            toolpanel_Crop.NotifyActiveImageChanged
         Else
             Tools_Crop.RemoveCurrentCrop
         End If

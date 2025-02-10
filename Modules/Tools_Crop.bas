@@ -717,16 +717,18 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
 End Sub
 
 'Set new max crop bounds.  Should be called any time the active image is changed.
-Public Sub NotifyCropMaxSizes(ByVal newMaxWidth As Long, ByVal newMaxHeight As Long)
+'
+'Returns: TRUE if an active crop rectangle was modified by the newly set sizes
+Public Function NotifyCropMaxSizes(ByVal newMaxWidth As Long, ByVal newMaxHeight As Long) As Boolean
     
     'Standardize un-set max width/height against 0
     If (newMaxWidth <= 0) Then m_MaxCropWidth = 0 Else m_MaxCropWidth = newMaxWidth
     If (newMaxHeight <= 0) Then m_MaxCropHeight = 0 Else m_MaxCropHeight = newMaxHeight
     
     'Whenever max values change, we need to re-assess the current crop region (to make sure it fits in-bounds)
-    If (Not m_AllowEnlarge) Then ForceCropRectInBounds
+    If (Not m_AllowEnlarge) Then NotifyCropMaxSizes = ForceCropRectInBounds()
     
-End Sub
+End Function
 
 Public Function GetCropAllowEnlarge() As Boolean
     GetCropAllowEnlarge = m_AllowEnlarge
@@ -1105,13 +1107,17 @@ End Sub
 ' This is best handled in individual size modification steps (because it makes behavior more intuitive
 ' for the user), but when toggling the "allow enlarge" setting, we need to forcibly bring the current
 ' crop rect (if any) into bounds - this function will do that.
-Private Sub ForceCropRectInBounds()
+'
+'Returns: TRUE if the crop rect was changed as a result of forcing in-bounds
+Private Function ForceCropRectInBounds() As Boolean
+    
+    ForceCropRectInBounds = False
     
     'If the user is not currently enforcing boundaries, do nothing
-    If m_AllowEnlarge Then Exit Sub
+    If m_AllowEnlarge Then Exit Function
     
     'The user is enforcing boundaries.  They *must* have set a max width/height in a previous step.
-    If (m_MaxCropWidth = 0) Or (m_MaxCropHeight = 0) Then Exit Sub
+    If (m_MaxCropWidth = 0) Or (m_MaxCropHeight = 0) Then Exit Function
     
     Dim widthOrHeightChanged As Boolean
     widthOrHeightChanged = False
@@ -1193,29 +1199,11 @@ Private Sub ForceCropRectInBounds()
             End If
         End If
         
-        
-            'm_CropRectF.Width * (1# / m_LockedAspectRatio)
-        
-'                'User is changing width
-'                If (changedProperty = pdd_Width) Then
-'                    If toolpanel_Crop.tudCrop(2).IsValid(False) Then
-'                        m_CropRectF.Width = newPropI
-'                        m_CropRectF.Height = m_CropRectF.Width * (1# / m_LockedAspectRatio)
-'                        toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
-'                    End If
-'
-'                'User is changing height
-'                Else
-'                    If toolpanel_Crop.tudCrop(3).IsValid(False) Then
-'                        m_CropRectF.Height = newPropI
-'                        m_CropRectF.Width = m_CropRectF.Height * m_LockedAspectRatio
-'                        toolpanel_Crop.tudCrop(2).Value = m_CropRectF.Width
-'                    End If
-'                End If
-        
     End If
     
-End Sub
+    ForceCropRectInBounds = widthOrHeightChanged
+    
+End Function
 
 Private Sub ResetCropRectF(Optional ByVal initX As Single = 0!, Optional ByVal initY As Single = 0!)
     With m_CropRectF
