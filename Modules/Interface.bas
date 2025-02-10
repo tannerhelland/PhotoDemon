@@ -575,6 +575,11 @@ Private Sub SetUIMode_NoImages()
     ' with those images.  This helps minimize PD's memory usage at idle.
     If (PDImages.GetNumSessionImages >= 1) Then PDImages.ReleaseAllPDImageResources
     
+    'Some tools rely on image size (e.g. Crop, which can be constrained to image size, or Clone Stamp,
+    ' which may have sampled from a now-unloaded image).  Notify them of changes so they can potentially
+    ' free resources.
+    Tools.NotifyImageSizeChanged
+    
     'Forcibly blank out the current message if no images are loaded
     Message vbNullString
     

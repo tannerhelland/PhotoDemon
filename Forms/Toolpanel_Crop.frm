@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Crop
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   2955
+   ClientHeight    =   3240
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   12270
@@ -25,7 +25,7 @@ Begin VB.Form toolpanel_Crop
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   197
+   ScaleHeight     =   216
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
@@ -72,33 +72,77 @@ Begin VB.Form toolpanel_Crop
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1095
+      Height          =   2055
       Index           =   2
       Left            =   8400
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
-      _ExtentY        =   8705
+      _ExtentY        =   3625
+      Begin PhotoDemon.pdSlider sldHighlight 
+         Height          =   375
+         Left            =   1200
+         TabIndex        =   21
+         Top             =   1200
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   661
+         Min             =   1
+         Max             =   100
+         Value           =   50
+         DefaultValue    =   50
+      End
+      Begin PhotoDemon.pdColorSelector clrHighlight 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   20
+         Top             =   1200
+         Width           =   735
+         _ExtentX        =   1296
+         _ExtentY        =   661
+         curColor        =   0
+         ShowMainWindowColor=   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkHighlight 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   19
+         Top             =   405
+         Width           =   2895
+         _ExtentX        =   5106
+         _ExtentY        =   661
+         Caption         =   "highlight"
+      End
       Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
+         Height          =   300
          Index           =   1
          Left            =   120
-         Top             =   0
+         Top             =   30
          Width           =   3360
          _ExtentX        =   5927
-         _ExtentY        =   423
+         _ExtentY        =   529
          Caption         =   "display options"
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
-         Left            =   3210
+         Left            =   3240
          TabIndex        =   4
-         Top             =   600
+         Top             =   1665
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   300
+         Index           =   0
+         Left            =   240
+         Top             =   840
+         Width           =   3480
+         _ExtentX        =   5927
+         _ExtentY        =   529
+         Caption         =   "color and opacity"
       End
    End
    Begin PhotoDemon.pdSpinner tudCrop 
@@ -265,30 +309,30 @@ Begin VB.Form toolpanel_Crop
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   615
+      Height          =   540
       Index           =   0
       Left            =   0
       Top             =   960
       Visible         =   0   'False
-      Width           =   3975
-      _ExtentX        =   7011
-      _ExtentY        =   1085
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   953
       Begin PhotoDemon.pdCheckBox chkAllowGrowing 
          Height          =   375
-         Left            =   120
+         Left            =   30
          TabIndex        =   17
-         Top             =   120
-         Width           =   3255
-         _ExtentX        =   5741
+         Top             =   65
+         Width           =   2895
+         _ExtentX        =   5106
          _ExtentY        =   661
          Caption         =   "allow enlarging"
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
-         Left            =   3480
+         Left            =   3000
          TabIndex        =   15
-         Top             =   120
+         Top             =   65
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -342,6 +386,22 @@ Attribute m_lastUsedSettings.VB_VarHelpID = -1
 ' take place in SyncMinMaxAgainstImage.
 Private Sub chkAllowGrowing_Click()
     SyncMinMaxAgainstImage
+End Sub
+
+Private Sub chkHighlight_Click()
+    Tools_Crop.SetCropHighlight chkHighlight.Value
+End Sub
+
+Private Sub chkHighlight_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub clrHighlight_ColorChanged()
+    Tools_Crop.SetCropHighlightColor clrHighlight.Color
+End Sub
+
+Private Sub clrHighlight_GotFocusAPI()
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub cmdAspectSwap_Click(ByVal Shift As ShiftConstants)
@@ -444,6 +504,11 @@ Private Sub Form_Load()
     m_lastUsedSettings.SetParentForm Me
     m_lastUsedSettings.LoadAllControlValues True
     
+    'Because last-used settings may update crop render settings, immediately relay any changes to the crop tool
+    Tools_Crop.SetCropHighlight chkHighlight.Value
+    Tools_Crop.SetCropHighlightColor clrHighlight.Color
+    Tools_Crop.SetCropHighlightOpacity sldHighlight.Value
+    
     Tools.SetToolBusyState False
     
 End Sub
@@ -482,6 +547,14 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         Me.chkAllowGrowing.Value = .RetrievePresetData("crop-tool-allow-enlarge", False)
     End With
     
+End Sub
+
+Private Sub sldHighlight_Change()
+    Tools_Crop.SetCropHighlightOpacity sldHighlight.Value
+End Sub
+
+Private Sub sldHighlight_GotFocusAPI()
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)

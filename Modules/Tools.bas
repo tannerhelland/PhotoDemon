@@ -829,6 +829,8 @@ Public Sub NotifyImageSizeChanged()
     ElseIf (g_CurrentTool = ND_CROP) Then
         If PDImages.IsImageActive() Then
             Tools_Crop.NotifyCropMaxSizes PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+        Else
+            Tools_Crop.RemoveCurrentCrop
         End If
     ElseIf (g_CurrentTool = PAINT_CLONE) Then
         Tools_Clone.NotifyImageSizeChanged

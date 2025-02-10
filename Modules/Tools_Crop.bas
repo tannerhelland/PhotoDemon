@@ -50,6 +50,9 @@ Private m_CropRectAtMouseDown As RectF
 ' re-notified so we can update any existing crop region as necessary).
 Private m_AllowEnlarge As Boolean, m_MaxCropWidth As Long, m_MaxCropHeight As Long
 
+'Highlighting the retained area (by "shielding", as Photoshop calls it, the cut areas) is user-modifiable.
+Private m_HighlightCrop As Boolean, m_HighlightColor As Long, m_HighlightOpacity As Single
+
 'Apply a crop operation from a param string constructed by the GetCropParamString() function.
 ' (This function is a thin wrapper to Crop_ApplyCrop(); it just extracts relevant params from the
 '  param string and forwards the results.)
@@ -373,6 +376,65 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     Dim cropRectCanvas As RectF
     Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_CropRectF, cropRectCanvas, False
     
+    Dim i As Long
+    
+    'If the user wants the retained area highlighted (or more accurately, the cut regions shadowed),
+    ' we'll render that first, then render the outline and interactive bits atop it.
+    If m_HighlightCrop Then
+        
+        cSurface.SetSurfacePixelOffset P2_PO_Half
+        
+        'Get the current canvas image rectangle
+        Dim imgCanvasRectF As RectF
+        PDImages.GetActiveImage.ImgViewport.GetIntersectRectCanvas imgCanvasRectF
+        
+        'Because GDI+ precision is iffy, expand the image canvas rect by one pixel in each direction
+        imgCanvasRectF.Left = imgCanvasRectF.Left - 1!
+        imgCanvasRectF.Top = imgCanvasRectF.Top - 1!
+        imgCanvasRectF.Width = imgCanvasRectF.Width + 2!
+        imgCanvasRectF.Height = imgCanvasRectF.Height + 2!
+        
+        'Subtract the crop rect from the image rect, using regions.
+        Dim cShadowRegion As pd2DRegion
+        Set cShadowRegion = New pd2DRegion
+        cShadowRegion.AddRectangle_FromRectF imgCanvasRectF, P2_CM_Replace
+        
+        '(Again, note that we modify the rect slightly to ensure pretty rendering.)
+        Dim tmpCropCanvas As RectF
+        tmpCropCanvas.Left = cropRectCanvas.Left - 1!
+        tmpCropCanvas.Top = cropRectCanvas.Top - 1!
+        tmpCropCanvas.Width = cropRectCanvas.Width + 2!
+        tmpCropCanvas.Height = cropRectCanvas.Height + 2!
+        cShadowRegion.AddRectangle_FromRectF tmpCropCanvas, P2_CM_Exclude
+        
+        'Retrieve the final, composited region as a collection of rectangles
+        Dim numRects As Long, regionAsRectFs() As RectF
+        If cShadowRegion.GetRegionAsRectFs(numRects, regionAsRectFs) Then
+            
+            'Shadow each region using a brush filled with the user's highlight settings
+            Dim tmpCropBrush As pd2DBrush
+            Drawing2D.QuickCreateSolidBrush tmpCropBrush, m_HighlightColor, m_HighlightOpacity
+            
+            If (numRects > 0) Then
+                If (UBound(regionAsRectFs) >= numRects - 1) Then
+                    For i = 0 To numRects - 1
+                        PD2D.FillRectangleF_FromRectF cSurface, tmpCropBrush, regionAsRectFs(i)
+                    Next i
+                End If
+            End If
+            
+            Set tmpCropBrush = Nothing
+            
+        '/failed to convert the region to rectangles; the crop region is probably non-existent,
+        ' so no Else required
+        End If
+        
+        cSurface.SetSurfacePixelOffset P2_PO_Normal
+        
+    End If
+    
+    'Now it's time to render the crop outline and any on-canvas interactive UI bits
+    
     'We now want to add all lines to a path, which we'll render all at once
     Dim cropOutline As pd2DPath
     Set cropOutline = New pd2DPath
@@ -406,7 +468,6 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     idxActive = poi_Undefined
     If m_LMBDown Then idxActive = m_idxMouseDown Else idxActive = m_idxHover
     
-    Dim i As Long
     For i = 0 To numPoints - 1
         If (i = idxActive) Then
             PD2D.DrawRectangleF cSurface, basePenActive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
@@ -699,6 +760,33 @@ End Sub
 Public Function GetCropRectF() As RectF
     GetCropRectF = m_CropRectF
 End Function
+
+Public Function GetCropHighlight() As Boolean
+    GetCropHighlight = m_HighlightCrop
+End Function
+
+Public Sub SetCropHighlight(ByVal newValue As Boolean)
+    m_HighlightCrop = newValue
+    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+End Sub
+
+Public Function GetCropHighlightColor() As Long
+    GetCropHighlightColor = m_HighlightColor
+End Function
+
+Public Sub SetCropHighlightColor(ByVal newColor As Long)
+    m_HighlightColor = newColor
+    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+End Sub
+
+Public Function GetCropHighlightOpacity() As Single
+    GetCropHighlightOpacity = m_HighlightOpacity
+End Function
+
+Public Sub SetCropHighlightOpacity(ByVal newOpacity As Single)
+    m_HighlightOpacity = newOpacity
+    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+End Sub
 
 'Called whenever the crop tool is selected
 Public Sub InitializeCropTool()
