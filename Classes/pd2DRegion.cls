@@ -46,6 +46,9 @@ Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) 
 Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectF As RectF) As GP_Result
 Private Declare Function GdipGetRegionBoundsI Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectL As RectL) As GP_Result
 Private Declare Function GdipGetRegionHRgn Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstHRgn As Long) As GP_Result
+Private Declare Function GdipGetRegionScansCount Lib "gdiplus" (ByVal hRegion As Long, ByRef dstRectCount As Long, ByVal hMatrix As Long) As GP_Result
+Private Declare Function GdipGetRegionScans Lib "gdiplus" (ByVal hRegion As Long, ByVal ptrDstRectFs As Long, ByRef numRects As Long, ByVal hMatrix As Long) As GP_Result
+Private Declare Function GdipGetRegionScansI Lib "gdiplus" (ByVal hRegion As Long, ByVal ptrDstRectLs As Long, ByRef numRects As Long, ByVal hMatrix As Long) As GP_Result
 Private Declare Function GdipIsEmptyRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsEqualRegion Lib "gdiplus" (ByVal srcRegion1 As Long, ByVal srcRegion2 As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsInfiniteRegion Lib "gdiplus" (ByVal srcRegion As Long, ByVal srcGraphics As Long, ByRef dstResult As Long) As GP_Result
@@ -239,6 +242,48 @@ Friend Function GetRegionAsHRgn() As Long
     Dim tmpReturn As GP_Result
     tmpReturn = GdipGetRegionHRgn(m_RegionHandle, 0&, GetRegionAsHRgn)
     If (tmpReturn <> GP_OK) Then InternalError "GetRegionAsHRgn", "GDI+ failure", tmpReturn
+End Function
+
+'Return the current region as an array of RectFs.  The dstRectFs() array is guaranteed to be dimmed as
+' [0, dstNumRects - 1] on a successful call.
+Friend Function GetRegionAsRectFs(ByRef dstNumRects As Long, ByRef dstRectFs() As RectF, Optional ByVal hTransformMatrix As Long = 0&) As Boolean
+    
+    If (m_RegionHandle = 0) Then Exit Function
+    
+    'This function requires a transform matrix; generate one if one is not provided
+    Dim tmpMatrix As pd2DTransform
+    If (hTransformMatrix = 0) Then
+        Set tmpMatrix = New pd2DTransform
+        hTransformMatrix = tmpMatrix.GetHandle(True)
+    End If
+    
+    GetRegionAsRectFs = (GdipGetRegionScansCount(m_RegionHandle, dstNumRects, hTransformMatrix) = GP_OK)
+    If GetRegionAsRectFs And (dstNumRects > 0) Then
+        ReDim dstRectFs(0 To dstNumRects - 1) As RectF
+        GetRegionAsRectFs = (GdipGetRegionScans(m_RegionHandle, VarPtr(dstRectFs(0)), dstNumRects, hTransformMatrix) = GP_OK)
+    End If
+    
+End Function
+
+'Return the current region as an array of RectFs.  The dstRectFs() array is guaranteed to be dimmed as
+' [0, dstNumRects - 1] on a successful call.
+Friend Function GetRegionAsRectLs(ByRef dstNumRects As Long, ByRef dstRectLs() As RectL_WH, Optional ByVal hTransformMatrix As Long = 0&) As Boolean
+    
+    If (m_RegionHandle = 0) Then Exit Function
+    
+    'This function requires a transform matrix; generate one if one is not provided
+    Dim tmpMatrix As pd2DTransform
+    If (hTransformMatrix = 0) Then
+        Set tmpMatrix = New pd2DTransform
+        hTransformMatrix = tmpMatrix.GetHandle(True)
+    End If
+    
+    GetRegionAsRectLs = (GdipGetRegionScansCount(m_RegionHandle, dstNumRects, hTransformMatrix) = GP_OK)
+    If GetRegionAsRectLs And (dstNumRects > 0) Then
+        ReDim dstRectLs(0 To dstNumRects - 1) As RectL_WH
+        GetRegionAsRectLs = (GdipGetRegionScansI(m_RegionHandle, VarPtr(dstRectLs(0)), dstNumRects, hTransformMatrix) = GP_OK)
+    End If
+    
 End Function
 
 Friend Function HasRegion() As Boolean
