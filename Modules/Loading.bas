@@ -501,7 +501,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
         'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
         ' This provides a nice baseline for making sure PD's memory usage isn't out of whack for a given image.
-        PDDebug.LogAction "(FYI, expected delta was approximately " & Format$(targetImage.EstimateRAMUsage \ 1000, "#,#") & " K)"
+        PDDebug.LogAction "(FYI, expected delta was approximately " & Format$(targetImage.EstimateRAMUsage() / 1000#, "#,#") & " K)"
         
     'This ELSE block is hit when the image fails post-load verification checks.  Treat the load as unsuccessful.
     Else

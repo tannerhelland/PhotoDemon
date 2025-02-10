@@ -426,7 +426,11 @@ Friend Function SavePSD(ByRef srcPDImage As pdImage, ByVal dstFile As String, Op
     ' default caching behavior.
     Dim cStream As pdStream
     Set cStream = New pdStream
-    cStream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, srcPDImage.EstimateRAMUsage()
+    
+    Dim initBufferSize As Double
+    initBufferSize = srcPDImage.EstimateRAMUsage()
+    If (initBufferSize > CDbl(LONG_MAX)) Then initBufferSize = 0#
+    cStream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, Int(initBufferSize)
     
     'Start by writing out a basic PSD header.
     Dim keepGoing As PD_PSDResult

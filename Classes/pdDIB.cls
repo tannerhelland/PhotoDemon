@@ -864,7 +864,7 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
                 
             'If DIB creation failed, clear out the work we've done so far
             Else
-                PDDebug.LogAction "WARNING!  pdDIB failed to create a DIB at size (" & CStr(m_dibWidth) & "x" & CStr(m_dibHeight) & "); last API error was #" & Err.LastDllError
+                PDDebug.LogAction "WARNING!  pdDIB failed to create a DIB at size (" & CStr(m_dibWidth) & "x" & CStr(m_dibHeight) & "x" & m_dibColorDepth & "bpp); last API error was #" & Err.LastDllError
                 Me.EraseDIB
             End If
             
@@ -1052,8 +1052,8 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
     ' decompression time, or that we have to drop into APIs to move the data between buffers.)
     
     'As such, PD's various resource minimizers are set to automatically ignore suspend requests for
-    ' DIBs larger than some arbitrary size (currently 500kb).  This prevents noticeable UI lags.
-    If autoKeepIfLarge And (m_dibHeader.ImageSize > 500000) Then Exit Sub
+    ' DIBs larger than some arbitrary size (currently 128kb).  This prevents noticeable UI lags.
+    If autoKeepIfLarge And (m_dibHeader.ImageSize > 128000) Then Exit Sub
     
     'We need to store original and compressed sizes
     m_SizeUnsuspended = m_dibHeader.ImageSize
@@ -1136,8 +1136,8 @@ Private Sub UnsuspendDIB()
     'Make sure we have suspended data
     If (m_dibWidth = 0) Or (m_dibHeight = 0) Or (m_dibBits <> 0) Or (m_SizeSuspended = 0) Or (m_SizeUnsuspended = 0) Or (m_dibHeader.Size <> Len(m_dibHeader)) Then Exit Sub
     
-    'The existing DIB header can (and should) be used as-is, by design.  Suspending a DIB only
-    ' clears its pixel bits - *not* any of its other state trackers.
+    'The existing DIB header can (and should) be used as-is, by design.
+    ' Suspending a DIB only clears its pixel bits - *not* any of its other state trackers.
     
     'If we don't already have a compatible DC, create one now
     If (m_dibDC = 0) Then m_dibDC = GDI.GetMemoryDC()
@@ -1179,8 +1179,7 @@ Private Sub UnsuspendDIB()
         
         'If DIB creation failed, clear out the work we've done so far
         Else
-            PDDebug.LogAction "WARNING!  pdDIB failed to create a DIB at size (" & CStr(m_dibWidth) & "x" & CStr(m_dibHeight) & "); last API error was #" & Err.LastDllError
-            Me.EraseDIB
+            PDDebug.LogAction "WARNING!  pdDIB.UnsuspendDIB failed to create a DIB at size (" & CStr(m_dibWidth) & "x" & CStr(m_dibHeight) & ":" & m_dibColorDepth & "); last API error was #" & Err.LastDllError
         End If
         
         'Our parent may not use this DIB right away, so free it from its DC; the DC will be auto-created when
