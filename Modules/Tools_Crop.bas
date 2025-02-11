@@ -45,6 +45,10 @@ Private m_CornerCoords() As PointFloat, m_numCornerCoords As Long
 'To correctly detect clicks, we cache the current crop rect (if any) at _MouseDown
 Private m_CropRectAtMouseDown As RectF
 
+'Because we allow _DoubleClick events to trigger a final crop event, we need to set some flags
+' prior so that the subsequent _MouseUp doesn't cause UI flicker.
+Private m_CropInProgress As Boolean
+
 'Allow the crop to extend beyond image boundaries (for enlarging the image).  To accompany this,
 ' the caller also needs to supply allowable max/min values (and if those change, we need to be
 ' re-notified so we can update any existing crop region as necessary).
@@ -485,7 +489,41 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
 End Sub
 
+Public Sub NotifyDoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    If (Not IsValidCropActive()) Then Exit Sub
+    
+    If ((Button And pdLeftButton) = pdLeftButton) Then
+    
+        'Translate the canvas coordinates to image coordinates
+        Dim imgX As Double, imgY As Double
+        Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), x, y, imgX, imgY, False
+        
+        'TODO: add module flag here, and ignore other mouse events when flag is set (clear flag at commit end)
+        m_CropInProgress = True
+        
+        'Check mouse position.  If the mouse is *outside* the crop rect that existed at _MouseDown,
+        ' simply clear the current rect.
+        If PDMath.IsPointInRectF(imgX, imgY, m_CropRectAtMouseDown) Then
+            
+            'Set a module-level flag so that the subsequent _MouseUp doesn't fire
+            m_CropInProgress = True
+            CommitCurrentCrop
+            ResetCropRectF 'Failsafe because sometimes laptop touchpads generate superfluous mouse events
+            
+            'm_CropInProgress can only be reset by a subsequent _MouseDown; do not do anything with it here.
+            
+        End If
+        
+    End If
+    
+End Sub
+
 Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Single, ByVal canvasY As Single)
+    
+    'Reset the "in the midst of a double-click" flag
+    m_CropInProgress = False
     
     'Cache initial x/y positions
     m_LMBDown = ((Button And pdLeftButton) = pdLeftButton)
@@ -538,7 +576,7 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
     Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
     
     'Cache current x/y positions
-    If m_LMBDown Then
+    If m_LMBDown And (Not m_CropInProgress) Then
         
         'If the user is interacting with an existing crop, modify the crop rect accordingly.
         If (m_idxMouseDown <> poi_Undefined) Then
@@ -658,6 +696,13 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     ' a viewport redraw, if any, will wipe all UI elements we may have rendered over the canvas.)
     If ((Button And pdLeftButton) = pdLeftButton) Then m_LMBDown = False
     
+    'Ignore the _MouseUp event that follows a double-click (by design)
+    If m_CropInProgress Then
+        m_CropInProgress = False
+        RemoveCurrentCrop
+        Exit Sub
+    End If
+    
     'Convert the current x/y position from canvas to image coordinates
     Dim imgX As Double, imgY As Double
     Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
@@ -672,8 +717,6 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         ' simply clear the current rect.
         If (Not PDMath.IsPointInRectF(imgX, imgY, m_CropRectAtMouseDown)) Then
             RemoveCurrentCrop
-        Else
-            CommitCurrentCrop
         End If
         
     'If this is a click-drag event, we need to simply resize the crop area to match.
@@ -1216,13 +1259,13 @@ End Sub
 
 'Returns TRUE if the current crop rect is valid; if FALSE, do *not* attempt to crop
 Private Function ValidateCropRectF() As Boolean
-    
+        
     ValidateCropRectF = True
     
     'Validate left/right/width/height
     With m_CropRectF
         If (.Left = INVALID_X_COORD) Or (.Top = INVALID_Y_COORD) Then ValidateCropRectF = False
-        If (.Width <= 0) Or (.Height <= 0) Then ValidateCropRectF = False
+        If (.Width <= 0!) Or (.Height <= 0!) Then ValidateCropRectF = False
     End With
     
     'Next, ensure the crop rect actually overlaps the image *somewhere*.
@@ -1404,7 +1447,7 @@ Private Sub GetAspectRatioAsFraction(ByRef dstNumerator As Long, ByRef dstDenomi
         PDMath.ConvertToFraction m_CropRectF.Width / m_CropRectF.Height, dstNumerator, dstDenominator, 0.005
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
-        If (dstDenominator = 5) Then
+        If (dstDenominator = 5) Or (dstNumerator = 5) Then
             dstNumerator = dstNumerator * 2
             dstDenominator = dstDenominator * 2
         End If

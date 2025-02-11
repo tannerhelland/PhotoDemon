@@ -703,7 +703,11 @@ Private Sub CanvasView_DoubleClickCustom(ByVal Button As PDMouseButtonConstants,
     Dim imgX As Double, imgY As Double
     DisplayImageCoordinates x, y, PDImages.GetActiveImage(), Me, imgX, imgY
     
-    If (g_CurrentTool = SELECT_POLYGON) Then SelectionUI.NotifySelectionMouseDblClick Me, imgX, imgY
+    If (g_CurrentTool = SELECT_POLYGON) Then
+        SelectionUI.NotifySelectionMouseDblClick Me, imgX, imgY
+    ElseIf (g_CurrentTool = ND_CROP) Then
+        Tools_Crop.NotifyDoubleClick Button, Shift, x, y
+    End If
     
 End Sub
 
