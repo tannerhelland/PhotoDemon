@@ -39,6 +39,12 @@ Private m_idxHover As PD_PointOfInterest
 ' (If the user is creating a new Crop from scratch, this will be poi_Undefined.)
 Private m_idxMouseDown As PD_PointOfInterest
 
+'On _MouseMove events, the user may drag the current crop point past another crop point (for example,
+' drag the lower-right point above the upper-right point).  This would cause the current POI to change.
+' This constant stores the numerical index of the currently interacting point, *as defined by its
+' actual position in the crop rect right now*.
+Private m_idxMouseDownActual As Long
+
 'If the user is modifying an existing crop boundary, this list of coordinates will be filled in _MouseDown
 Private m_CornerCoords() As PointFloat, m_numCornerCoords As Long
 
@@ -446,7 +452,7 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
     Dim drawActiveOutline As Boolean
     drawActiveOutline = (m_idxHover = poi_Interior)
-    If m_LMBDown Then drawActiveOutline = drawActiveOutline And (m_idxMouseDown = poi_Interior)
+    If m_LMBDown Then drawActiveOutline = (m_idxMouseDown = poi_Interior)
     
     'Stroke the outline path
     If drawActiveOutline Then
@@ -470,7 +476,23 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
     Dim idxActive As PD_PointOfInterest
     idxActive = poi_Undefined
-    If m_LMBDown Then idxActive = m_idxMouseDown Else idxActive = m_idxHover
+    If m_LMBDown Then
+        If (m_idxMouseDown <> poi_Interior) Then idxActive = m_idxMouseDownActual
+    Else
+        idxActive = m_idxHover
+    End If
+    
+    'Convert from PD constants to numerical indices
+    Select Case idxActive
+        Case poi_CornerNW
+            idxActive = 0
+        Case poi_CornerNE
+            idxActive = 1
+        Case poi_CornerSW
+            idxActive = 2
+        Case poi_CornerSW
+            idxActive = 3
+    End Select
     
     For i = 0 To numPoints - 1
         If (i = idxActive) Then
@@ -500,7 +522,7 @@ Public Sub NotifyDoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift
         Dim imgX As Double, imgY As Double
         Drawing.ConvertCanvasCoordsToImageCoords FormMain.MainCanvas(0), PDImages.GetActiveImage(), x, y, imgX, imgY, False
         
-        'TODO: add module flag here, and ignore other mouse events when flag is set (clear flag at commit end)
+        'Set a module-level flag; other _MouseEvent handles will ignore mouse behavior until this flag is un-set
         m_CropInProgress = True
         
         'Check mouse position.  If the mouse is *outside* the crop rect that existed at _MouseDown,
@@ -512,7 +534,8 @@ Public Sub NotifyDoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift
             CommitCurrentCrop
             ResetCropRectF 'Failsafe because sometimes laptop touchpads generate superfluous mouse events
             
-            'm_CropInProgress can only be reset by a subsequent _MouseDown; do not do anything with it here.
+            'm_CropInProgress can only be reset by a subsequent _MouseDown or _MouseUp event;
+            ' do not clear it here.
             
         End If
         
@@ -522,7 +545,9 @@ End Sub
 
 Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Single, ByVal canvasY As Single)
     
-    'Reset the "in the midst of a double-click" flag
+    'As a failsafe only, reset the "in the midst of a double-click" flag.
+    ' (Under normal circumstances, this will be cleared by the _MouseUp that fires *after* a double-click flag,
+    '  but failsafes are useful because laptop touchpads and bluetooth mice do not always behave.)
     m_CropInProgress = False
     
     'Cache initial x/y positions
@@ -543,7 +568,7 @@ Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift A
         m_InitImgY = imgY
         m_LastImgX = imgX
         m_LastImgY = imgY
-    
+        
         'See if the user is creating a new crop, or interacting with an existing point
         m_idxMouseDown = UpdateMousePOI(imgX, imgY)
         
@@ -552,6 +577,10 @@ Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift A
             
             'If the user wants cropping locked to image boundaries, apply that now
             ResetCropRectF imgX, imgY
+            
+            'Notate the bottom-right point as the current interactive target.
+            m_idxMouseDown = poi_CornerSE
+            m_numCornerCoords = GetCropCorners(m_CornerCoords)
             
         'The user is interacting with an existing crop boundary.
         ' How we modify the crop rect depends on the point being interacted with.
@@ -575,11 +604,22 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
     Dim imgX As Double, imgY As Double
     Drawing.ConvertCanvasCoordsToImageCoords srcCanvas, srcImage, canvasX, canvasY, imgX, imgY, False
     
-    'Cache current x/y positions
+    'Cache current x/y positions.
+    ' (m_CropInProgress is TRUE in the midst of a double-click event, while the active crop is still being applied
+    '  It is not uncommon for touchpads or mice to fire one or two superfluous WM_MOUSEMOVE messages between clicks,
+    '  particularly at high sensitivity, and we want to ignore these until the _DoubleClick event completes.)
     If m_LMBDown And (Not m_CropInProgress) Then
         
         'If the user is interacting with an existing crop, modify the crop rect accordingly.
         If (m_idxMouseDown <> poi_Undefined) Then
+            
+            'If we're not allowed to enlarge, lock mouse positions to canvas boundaries
+            If (Not m_AllowEnlarge) Then
+                If (imgX < 0#) Then imgX = 0#
+                If (imgY < 0#) Then imgY = 0#
+                If (imgX > m_MaxCropWidth) Then imgX = m_MaxCropWidth
+                If (imgY > m_MaxCropHeight) Then imgY = m_MaxCropHeight
+            End If
             
             'Calculate an offset from the original click to this new location
             Dim xOffset As Long, yOffset As Long
@@ -667,15 +707,7 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
             End If
             
             'Update the crop rect to reflect any changes made to individual coordinates
-            UpdateCropRectF_FromPtFList tmpCornerCoords, (m_idxMouseDown = poi_Interior), m_idxMouseDown
-            
-        '...otherwise, simply create a new crop to match the mouse movement
-        Else
-            
-            'Move coordinates around to ensure positive width/height
-            UpdateCropRectF imgX, imgY
-            m_LastImgX = imgX
-            m_LastImgY = imgY
+            UpdateCropRectF_FromPtFList tmpCornerCoords, m_idxMouseDown, imgX, imgY
             
         End If
         
@@ -731,13 +763,17 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         'If the user is interacting with an existing crop, modify the crop rect accordingly.
         If (m_idxMouseDown <> poi_Undefined) Then
         
+            'TODO?
+            
+            'See if this is still necessary with the new crop approach
+        
         '...otherwise, simply create a new crop to match the mouse movement
         Else
                 
             'Update the crop rectangle against these (final) coordinates
-            UpdateCropRectF imgX, imgY
-            m_LastImgX = imgX
-            m_LastImgY = imgY
+            'UpdateCropRectF imgX, imgY
+            'm_LastImgX = imgX
+            'm_LastImgY = imgY
             
         End If
         
@@ -975,74 +1011,9 @@ Private Function GetCropCorners(ByRef dstCropPts() As PointFloat) As Long
     
 End Function
 
-Private Sub UpdateCropRectF(ByVal newX As Single, ByVal newY As Single)
-    
-    Dim newHeight As Single
-    If m_IsHeightLocked Then
-        newHeight = m_LockedHeight
-    Else
-        newHeight = Abs(m_InitImgY - newY)
-        If (newHeight < 1!) Then newHeight = 1!
-    End If
-    
-    Dim newWidth As Single
-    If m_IsWidthLocked Then
-        newWidth = m_LockedWidth
-    Else
-        If m_IsAspectLocked Then
-            newWidth = newHeight * m_LockedAspectRatio
-        Else
-            newWidth = Abs(m_InitImgX - newX)
-        End If
-        If (newWidth < 1!) Then newWidth = 1!
-    End If
-    
-    With m_CropRectF
-        
-        .Width = newWidth
-        
-        If (newX < m_InitImgX) Then
-            If (m_IsWidthLocked Or m_IsAspectLocked) Then
-                .Left = m_InitImgX - newWidth
-            Else
-                .Left = newX
-            End If
-        Else
-            .Left = m_InitImgX
-        End If
-        
-        .Height = newHeight
-        
-        If (newY < m_InitImgY) Then
-            If (m_IsHeightLocked Or m_IsAspectLocked) Then
-                .Top = m_InitImgY - newHeight
-            Else
-                .Top = newY
-            End If
-        Else
-            .Top = m_InitImgY
-        End If
-        
-    End With
-    
-    'If the user wants the crop clamped to image boundaries, calculate overlap now.
-    If (Not m_AllowEnlarge) Then
-        Dim tmpOverlap As RectF
-        GDI_Plus.IntersectRectF tmpOverlap, m_CropRectF, PDImages.GetActiveImage.GetBoundaryRectF
-        m_CropRectF = tmpOverlap
-    End If
-    
-    'Lock position and height to their nearest integer equivalent
-    PDMath.GetIntClampedRectF m_CropRectF
-    
-    'If the crop rect is valid, relay its values to the toolpanel
-    If ValidateCropRectF() Then RelayCropChangesToUI
-    
-End Sub
-
 'You can only pass a PointFloat array sized [0, 3] to this function.  It will use that array to produce an updated
 ' RectF of the boundary coords of the passed list.
-Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optional ByVal okToMove As Boolean = False, Optional ByVal srcPOI As PD_PointOfInterest = poi_Undefined)
+Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal srcPOI As PD_PointOfInterest, ByVal imgX As Double, ByVal imgY As Double)
     
     'Find the min/max points in the source point list
     Dim xMin As Single, yMin As Single, xMax As Single, yMax As Single
@@ -1059,73 +1030,162 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, Optiona
         If (srcPoints(i).y > yMax) Then yMax = srcPoints(i).y
     Next i
     
+    'Re-order the points in standard order (with index 0 = top-left, index 3 = bottom-right)
+    srcPoints(0).x = xMin
+    srcPoints(0).y = yMin
+    srcPoints(1).x = xMax
+    srcPoints(1).y = yMin
+    srcPoints(2).x = xMin
+    srcPoints(2).y = yMax
+    srcPoints(3).x = xMax
+    srcPoints(3).y = yMax
+    
+    'On a scale of [0, 3] figure out which point of the crop rect the user is *actually* interacting with.
+    ' (This is important because they may e.g. drag the lower-right corner above the upper-right corner,
+    ' causing the currently interactive point to switch position in the rect - and how we handle each
+    ' corner is different when maintaining aspect ratio (because we anchor against the *opposite* corner.)
+    Dim curDistance As Double, minDistance As Double
+    minDistance = DOUBLE_MAX
+    For i = 0 To 3
+        curDistance = PDMath.DistanceTwoPointsShortcut(imgX, imgY, srcPoints(i).x, srcPoints(i).y)
+        If (curDistance < minDistance) Then
+            minDistance = curDistance
+            m_idxMouseDownActual = i
+        End If
+    Next i
+    
+    
+    Debug.Print m_idxMouseDownActual, imgX, imgY, xMin, yMin, Timer
+    
+    'Moving the active crop rect is a much simpler modification.  (The only special modification
+    ' we have to provide is keeping the crop rect in-bounds.)  Separate that out as its own case.
+    Dim actionIsMoving As Boolean
+    actionIsMoving = (m_idxMouseDown = poi_Interior)
+    
     'We can now use the calculated max/min values to calculate a boundary rect (but note that we must
     ' also consider any locked dimensions and/or aspect ratio).
-    If m_IsAspectLocked And (Not okToMove) Then
+    
+    'When aspect ratio is locked and the user is click-dragging a corner point, this operation is actually
+    ' somewhat involved.  We need to shrink the current crop rectangle
+    If m_IsAspectLocked And (Not actionIsMoving) Then
         
-        'When aspect ratio is locked, we need to manually calculate new width/height values
+        'The caller will have already forced the mouse points in-bounds, as relevant.
+        ' We just need to apply the locked aspect ratio, as relevant.
+        
         Dim newWidth As Single, newHeight As Single
+        newWidth = xMax - xMin
+        If (newWidth < 1!) Then newWidth = 1!
         newHeight = yMax - yMin
         If (newHeight < 1!) Then newHeight = 1!
-        newWidth = Int(newHeight * m_LockedAspectRatio + 0.5!)
-        If (newWidth < 1!) Then newWidth = 1!
-        m_CropRectF.Width = newWidth
-        m_CropRectF.Height = newHeight
         
-        'We now need to position the selection to either the left or right, depending on the current POI
-        If (srcPOI = 0) Then
-            If (srcPoints(0).x < srcPoints(1).x) Then
-                m_CropRectF.Left = srcPoints(1).x - newWidth
-            Else
-                m_CropRectF.Left = xMin
-            End If
-            If (srcPoints(0).y < srcPoints(2).y) Then
-                m_CropRectF.Top = srcPoints(2).y - newHeight
-            Else
-                m_CropRectF.Top = yMin
-            End If
-        ElseIf (srcPOI = 1) Then
-            If (srcPoints(1).x < srcPoints(0).x) Then
-                m_CropRectF.Left = srcPoints(0).x - newWidth
-            Else
-                m_CropRectF.Left = xMin
-            End If
-            If (srcPoints(0).y < srcPoints(3).y) Then
-                m_CropRectF.Top = srcPoints(3).y - newHeight
-            Else
-                m_CropRectF.Top = yMin
-            End If
-        ElseIf (srcPOI = 2) Then
-            If (srcPoints(2).x < srcPoints(3).x) Then
-                m_CropRectF.Left = srcPoints(3).x - newWidth
-            Else
-                m_CropRectF.Left = xMin
-            End If
-            If (srcPoints(2).y < srcPoints(0).y) Then
-                m_CropRectF.Top = srcPoints(0).y - newHeight
-            Else
-                m_CropRectF.Top = yMin
-            End If
-        ElseIf (srcPOI = 3) Then
-            If (srcPoints(3).x < srcPoints(2).x) Then
-                m_CropRectF.Left = srcPoints(2).x - newWidth
-            Else
-                m_CropRectF.Left = xMin
-            End If
-            If (srcPoints(3).y < srcPoints(1).y) Then
-                m_CropRectF.Top = srcPoints(1).y - newHeight
-            Else
-                m_CropRectF.Top = yMin
-            End If
+        'Width > height (so shrink height as necessary)
+        If (m_LockedAspectRatio >= 1!) Then
+            newHeight = newWidth * (1# / m_LockedAspectRatio)
+            yMax = yMin + newHeight
+            
+        'Height > width (so shrink width as necessary)
+        Else
+            newWidth = newHeight * m_LockedAspectRatio
+            xMax = xMin + newWidth
         End If
+        
+        'With aspect ratio fixed, we now need to account for the newly calculated width or height
+        ' exceeding image bounds.
+
+'
+'        Debug.Print newWidth, newHeight
+'
+'        Dim xShrink As Single, yShrink As Single
+'        If (xMax > m_MaxCropWidth) Then
+'            xShrink = (xMax - m_MaxCropWidth) / newWidth
+'            xMax = xMin + newWidth * xShrink
+'            yMax = yMin + newHeight * xShrink
+'        End If
+'
+'        If (yMax > m_MaxCropHeight) Then
+'            yShrink = (yMax - m_MaxCropHeight) / newHeight
+'            yMax = yMin + newHeight * yShrink
+'            xMax = xMin + newWidth * yShrink
+'        End If
+'
+'        If (xMax < xMin + 1!) Then xMax = xMin + 1!
+'        If (yMax < yMin + 1!) Then yMax = yMin + 1!
+'
+        With m_CropRectF
+            .Left = xMin
+            .Top = yMin
+            .Width = xMax - xMin
+            .Height = yMax - yMin
+            Debug.Print .Left, .Top, .Width, .Height
+        End With
+        
+        'The crop rect is now guaranteed to be
+        
+        
+'        'Debug.Print "here", m_LockedAspectRatio, Timer
+'
+'        'When aspect ratio is locked, we need to manually calculate new width/height values,
+'        ' while also preserving aspect ratio.
+'
+'        newWidth = Int(newHeight * m_LockedAspectRatio + 0.5!)
+'
+'        m_CropRectF.Width = newWidth
+'        m_CropRectF.Height = newHeight
+'
+'        'We now need to position the selection to either the left or right, depending on the current POI
+'        If (srcPOI = 0) Then
+'            If (srcPoints(0).x < srcPoints(1).x) Then
+'                m_CropRectF.Left = srcPoints(1).x - newWidth
+'            Else
+'                m_CropRectF.Left = xMin
+'            End If
+'            If (srcPoints(0).y < srcPoints(2).y) Then
+'                m_CropRectF.Top = srcPoints(2).y - newHeight
+'            Else
+'                m_CropRectF.Top = yMin
+'            End If
+'        ElseIf (srcPOI = 1) Then
+'            If (srcPoints(1).x < srcPoints(0).x) Then
+'                m_CropRectF.Left = srcPoints(0).x - newWidth
+'            Else
+'                m_CropRectF.Left = xMin
+'            End If
+'            If (srcPoints(0).y < srcPoints(3).y) Then
+'                m_CropRectF.Top = srcPoints(3).y - newHeight
+'            Else
+'                m_CropRectF.Top = yMin
+'            End If
+'        ElseIf (srcPOI = 2) Then
+'            If (srcPoints(2).x < srcPoints(3).x) Then
+'                m_CropRectF.Left = srcPoints(3).x - newWidth
+'            Else
+'                m_CropRectF.Left = xMin
+'            End If
+'            If (srcPoints(2).y < srcPoints(0).y) Then
+'                m_CropRectF.Top = srcPoints(0).y - newHeight
+'            Else
+'                m_CropRectF.Top = yMin
+'            End If
+'        ElseIf (srcPOI = 3) Then
+'            If (srcPoints(3).x < srcPoints(2).x) Then
+'                m_CropRectF.Left = srcPoints(2).x - newWidth
+'            Else
+'                m_CropRectF.Left = xMin
+'            End If
+'            If (srcPoints(3).y < srcPoints(1).y) Then
+'                m_CropRectF.Top = srcPoints(1).y - newHeight
+'            Else
+'                m_CropRectF.Top = yMin
+'            End If
+'        End If
     
     'When aspect ratio is not locked, this step is easy: just use max/min values as calculated above
     Else
         
         With m_CropRectF
-            If okToMove Or (Not m_IsWidthLocked) Then .Left = xMin
+            If actionIsMoving Or (Not m_IsWidthLocked) Then .Left = xMin
             If (Not m_IsWidthLocked) Then .Width = xMax - xMin
-            If okToMove Or (Not m_IsHeightLocked) Then .Top = yMin
+            If actionIsMoving Or (Not m_IsHeightLocked) Then .Top = yMin
             If (Not m_IsHeightLocked) Then .Height = yMax - yMin
         End With
         
@@ -1411,6 +1471,61 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
             toolpanel_Crop.tudCrop(5).Value = fracNumerator
                 
             Tools.SetToolBusyState False
+            
+        'When neither width nor height is locked, the UI will pass aspect ratio as separate width/height values;
+        ' we need to ensure those stay the same while also keeping the active crop rectangle (if any) in-bounds.
+        Case pdd_AspectBoth
+            
+            'If aspect ratio is locked, store the updated value now
+            If (m_IsAspectLocked And (newPropF > 0!)) Then m_LockedAspectRatio = CDbl(newPropI) / newPropF
+            
+            If Tools_Crop.IsValidCropActive() Then
+                
+                'A crop is active.  While preserving aspect ratio, calculate new width/height for the current crop
+                ' (while also keeping it in-bounds, as necessary).
+                Tools.SetToolBusyState True
+                
+                Dim tmpRatio As Double
+                If (newPropF > 0!) Then
+                    tmpRatio = CDbl(newPropI) / newPropF
+                    m_CropRectF.Width = m_CropRectF.Height * tmpRatio
+                End If
+                
+                'We may now need to keep the crop in-bounds
+                If (Not m_AllowEnlarge) Then
+                    
+                    If (m_CropRectF.Left + m_CropRectF.Width > m_MaxCropWidth) Then
+                        allowedSize = m_MaxCropWidth - m_CropRectF.Left
+                        reduceFactor = allowedSize / m_CropRectF.Width
+                        m_CropRectF.Width = allowedSize
+                        m_CropRectF.Height = m_CropRectF.Height * reduceFactor
+                        If (m_CropRectF.Height < 1!) Then m_CropRectF.Height = 1!
+                    End If
+                    
+                    If (m_CropRectF.Top + m_CropRectF.Height > m_MaxCropHeight) Then
+                        allowedSize = m_MaxCropHeight - m_CropRectF.Top
+                        reduceFactor = allowedSize / m_CropRectF.Height
+                        m_CropRectF.Height = allowedSize
+                        m_CropRectF.Width = m_CropRectF.Width * reduceFactor
+                        If (m_CropRectF.Width < 1!) Then m_CropRectF.Width = 1!
+                    End If
+                    
+                End If
+                
+                'Now we have to relay changes to a bunch of places: width/height/aspect ratio
+                toolpanel_Crop.tudCrop(2).Value = m_CropRectF.Width
+                toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
+                If m_IsAspectLocked And (m_CropRectF.Height >= 1!) Then m_LockedAspectRatio = m_CropRectF.Width / m_CropRectF.Height
+                
+                'fracNumerator = toolpanel_Crop.tudCrop(4).Value
+                'toolpanel_Crop.tudCrop(4).Value = toolpanel_Crop.tudCrop(5).Value
+                'toolpanel_Crop.tudCrop(5).Value = fracNumerator
+                    
+                Tools.SetToolBusyState False
+                
+            'No crop is active; do nothing
+            'Else
+            End If
             
     End Select
     

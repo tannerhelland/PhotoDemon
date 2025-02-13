@@ -619,17 +619,25 @@ Private Sub tudCrop_Change(Index As Integer)
             
             If (aspW <> 0#) And (aspH <> 0#) Then
                 
-                'As a convenience, adjust width OR height depending on the aspect ratio value that is changing.
-                ' (Note that we also have to account for locked width or height here - if a dimension is locked,
-                '  we must adjust the *other* dimension.)
-                If ((Index = 4) And (Not cmdLock(0).Value)) Or cmdLock(1).Value Then
-                    aspFinal = aspW / aspH
-                    newDimension = tudCrop(3).Value * aspFinal
-                    Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioW, newDimension, CSng(aspFinal)
+                'If either of the width or height is locked, the user wants to retain that dimension - so we need
+                ' to calculate the *opposite* dimension and modify only that.
+                If (cmdLock(0).Value Or cmdLock(1).Value) Then
+                    
+                    If ((Index = 4) And (Not cmdLock(0).Value)) Or cmdLock(1).Value Then
+                        aspFinal = aspW / aspH
+                        newDimension = tudCrop(3).Value * aspFinal
+                        Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioW, newDimension, CSng(aspFinal)
+                    Else
+                        aspFinal = aspH / aspW
+                        newDimension = tudCrop(2).Value * aspFinal
+                        Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioH, newDimension, CSng(aspFinal)
+                    End If
+                    
+                'If neither width nor height is locked, it doesn't matter which one we modify - we simply want
+                ' to preserve the current aspect ratio (as a fraction), which can be tricky if the crop can't
+                ' easily be kept in-bounds.
                 Else
-                    aspFinal = aspH / aspW
-                    newDimension = tudCrop(2).Value * aspFinal
-                    Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioH, newDimension, CSng(aspFinal)
+                    Tools_Crop.RelayCropChangesFromUI pdd_AspectBoth, aspW, aspH
                 End If
                 
             End If

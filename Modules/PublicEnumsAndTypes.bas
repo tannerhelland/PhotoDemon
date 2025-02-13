@@ -664,13 +664,15 @@ Public Enum PD_PointOfInterest
     'The mouse is somewhere in the interior of this object, but not on a corner or edge
     poi_Interior = -2
     
-    'Corner POI constants.  Depending on context, this may mean the corner of a complex shape's bounding box (vs the shape itself).
+    'Corner POI constants.
+    ' Depending on context, this may mean the corner of a complex shape's bounding box (vs the shape itself).
     poi_CornerNW = -3
     poi_CornerNE = -4
     poi_CornerSE = -5
     poi_CornerSW = -6
     
-    'Edge POI constants.  Depending on context, this may mean the edge of a complex shape's bounding box (vs the shape itself).
+    'Edge POI constants.
+    ' Depending on context, this may mean the edge of a complex shape's bounding box (vs the shape itself).
     poi_EdgeN = -7
     poi_EdgeE = -8
     poi_EdgeS = -9
@@ -787,8 +789,9 @@ Public Enum PD_Dimension
     pdd_AspectRatioW
     pdd_AspectRatioH
     pdd_SwapAspectRatio
+    pdd_AspectBoth
 End Enum
 
 #If False Then
-    Private Const pdd_Left = 0, pdd_Top = 0, pdd_Width = 0, pdd_Height = 0, pdd_AspectRatioW = 0, pdd_AspectRatioH = 0, pdd_SwapAspectRatio = 0
+    Private Const pdd_Left = 0, pdd_Top = 0, pdd_Width = 0, pdd_Height = 0, pdd_AspectRatioW = 0, pdd_AspectRatioH = 0, pdd_SwapAspectRatio = 0, pdd_AspectBoth = 0
 #End If
