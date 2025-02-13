@@ -1054,24 +1054,30 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
         End If
     Next i
     
+    'm_idxMouseDownActual now points to the srcPoints index that the user is currently interacting with.
     
-    Debug.Print m_idxMouseDownActual, imgX, imgY, xMin, yMin, Timer
+    'Next, let's consider the different types of modifications the user may be performing
+    ' to the crop region.
     
-    'Moving the active crop rect is a much simpler modification.  (The only special modification
-    ' we have to provide is keeping the crop rect in-bounds.)  Separate that out as its own case.
+    'Moving the active crop rect is the simplest modification.  (The only special case we have to
+    ' consider is keeping the crop rect in-bounds, if canvas enlarging is disallowed.)
+    
+    'Because it's so simple, separate crop rect movement into its own case.
     Dim actionIsMoving As Boolean
     actionIsMoving = (m_idxMouseDown = poi_Interior)
     
-    'We can now use the calculated max/min values to calculate a boundary rect (but note that we must
-    ' also consider any locked dimensions and/or aspect ratio).
+    'We can now use the calculated max/min values to calculate a new crop boundary rect -
+    ' but first, we have to apply any locked dimensions and/or aspect ratios.
     
     'When aspect ratio is locked and the user is click-dragging a corner point, this operation is actually
-    ' somewhat involved.  We need to shrink the current crop rectangle
+    ' somewhat involved.  We need to reshape the current crop rectangle to match the requested aspect ratio,
+    ' while also keeping it in-bounds, anchored against the opposite corner of wherever the user is dragging.
     If m_IsAspectLocked And (Not actionIsMoving) Then
         
-        'The caller will have already forced the mouse points in-bounds, as relevant.
-        ' We just need to apply the locked aspect ratio, as relevant.
+        'The caller will have already forced all mouse points in-bounds, as relevant.
+        ' We just need to apply the locked aspect ratio to the current crop shape.
         
+        'Calculate the rect's current width/height
         Dim newWidth As Single, newHeight As Single
         newWidth = xMax - xMin
         If (newWidth < 1!) Then newWidth = 1!
@@ -1081,16 +1087,58 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
         'Width > height (so shrink height as necessary)
         If (m_LockedAspectRatio >= 1!) Then
             newHeight = newWidth * (1# / m_LockedAspectRatio)
-            yMax = yMin + newHeight
             
         'Height > width (so shrink width as necessary)
         Else
             newWidth = newHeight * m_LockedAspectRatio
-            xMax = xMin + newWidth
         End If
+        
+        'newWidth and newHeight now represent the current crop rectangle, corrected for aspect ratio.
+        
+        'If the caller is allowed to enlarge the crop area, simply use the new width and height values as-is
+        ' (because we don't care if they exceed image boundaries).
+        If m_AllowEnlarge Then
+            
+            With m_CropRectF
+                .Width = newWidth
+                .Height = newHeight
+                
+                'Anchor the resize against the opposite point of the active interaction node
+                Select Case m_idxMouseDownActual
+                    Case 0
+                        .Left = xMax - newWidth
+                        .Top = yMax - newHeight
+                    Case 1
+                        .Left = xMin
+                        .Top = yMax - newHeight
+                    Case 2
+                        .Left = xMax - newWidth
+                        .Top = yMin
+                    Case 3
+                        .Left = xMin
+                        .Top = yMin
+                End Select
+                
+            End With
+            
+        Else
+            
+            'PLACEHOLDER ONLY
+            'TODO: CALCULATE CORRECTLY
+            With m_CropRectF
+                .Left = xMin
+                .Top = yMin
+                .Width = xMax - xMin
+                .Height = yMax - yMin
+                Debug.Print .Left, .Top, .Width, .Height
+            End With
+            
+        End If
+        'Unfortunately, we're still not guaranteed that the crop actually exists in-bounds.
         
         'With aspect ratio fixed, we now need to account for the newly calculated width or height
         ' exceeding image bounds.
+        
 
 '
 '        Debug.Print newWidth, newHeight
@@ -1111,13 +1159,6 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
 '        If (xMax < xMin + 1!) Then xMax = xMin + 1!
 '        If (yMax < yMin + 1!) Then yMax = yMin + 1!
 '
-        With m_CropRectF
-            .Left = xMin
-            .Top = yMin
-            .Width = xMax - xMin
-            .Height = yMax - yMin
-            Debug.Print .Left, .Top, .Width, .Height
-        End With
         
         'The crop rect is now guaranteed to be
         
@@ -1192,6 +1233,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
     End If
     
     'If the user wants the crop clamped to image boundaries, calculate a final, failsafe overlap now.
+    ' (Nothing should change as a result of the above calculations, but better safe than sorry.)
     If (Not m_AllowEnlarge) Then
         Dim tmpOverlap As RectF
         GDI_Plus.IntersectRectF tmpOverlap, m_CropRectF, PDImages.GetActiveImage.GetBoundaryRectF
