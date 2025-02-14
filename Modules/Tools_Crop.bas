@@ -19,7 +19,7 @@ Option Explicit
 Private m_LMBDown As Boolean
 
 'Populated in _MouseDown
-Private Const INVALID_X_COORD As Double = DOUBLE_MAX, INVALID_Y_COORD As Double = DOUBLE_MAX
+Private Const INVALID_X_COORD As Single = SINGLE_MAX, INVALID_Y_COORD As Single = SINGLE_MAX
 Private m_InitImgX As Double, m_InitImgY As Double
 
 'Populate in _MouseMove
@@ -1068,6 +1068,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
     
     'We can now use the calculated max/min values to calculate a new crop boundary rect -
     ' but first, we have to apply any locked dimensions and/or aspect ratios.
+    Dim tmpOverlap As RectF
     
     'When aspect ratio is locked and the user is click-dragging a corner point, this operation is actually
     ' somewhat involved.  We need to reshape the current crop rectangle to match the requested aspect ratio,
@@ -1097,129 +1098,55 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
         
         'If the caller is allowed to enlarge the crop area, simply use the new width and height values as-is
         ' (because we don't care if they exceed image boundaries).
-        If m_AllowEnlarge Then
+        With m_CropRectF
+            .Width = newWidth
+            .Height = newHeight
             
-            With m_CropRectF
-                .Width = newWidth
-                .Height = newHeight
+            'Anchor the resize against the opposite point of the active interaction node
+            Select Case m_idxMouseDownActual
+                Case 0
+                    .Left = xMax - newWidth
+                    .Top = yMax - newHeight
+                Case 1
+                    .Left = xMin
+                    .Top = yMax - newHeight
+                Case 2
+                    .Left = xMax - newWidth
+                    .Top = yMin
+                Case 3
+                    .Left = xMin
+                    .Top = yMin
+            End Select
+            
+        End With
+        
+        'If we are *not* allowed to enlarge the image, we now need to make sure our calculated rect
+        ' actually fits within the image!
+        If (Not m_AllowEnlarge) Then
+            
+            'We have calculated a new width/height for the image, but unfortunately, we don't know
+            ' if our new sizes still fit within image boundaries.
+            
+            'Before doing anything else, try using the sizes as-is.  (If they work, great!)
+            PDMath.GetIntClampedRectF m_CropRectF
+            GDI_Plus.IntersectRectF tmpOverlap, m_CropRectF, PDImages.GetActiveImage.GetBoundaryRectF
+            PDMath.GetIntClampedRectF tmpOverlap
+            
+            If (Not VBHacks.MemCmp(VarPtr(m_CropRectF), VarPtr(tmpOverlap), 16)) Then
                 
-                'Anchor the resize against the opposite point of the active interaction node
-                Select Case m_idxMouseDownActual
-                    Case 0
-                        .Left = xMax - newWidth
-                        .Top = yMax - newHeight
-                    Case 1
-                        .Left = xMin
-                        .Top = yMax - newHeight
-                    Case 2
-                        .Left = xMax - newWidth
-                        .Top = yMin
-                    Case 3
-                        .Left = xMin
-                        .Top = yMin
-                End Select
+                Debug.Print m_CropRectF.Width, tmpOverlap.Width, m_CropRectF.Height, tmpOverlap.Height
+                Debug.Print m_CropRectF.Left, tmpOverlap.Left, m_CropRectF.Top, tmpOverlap.Top, Timer
                 
-            End With
-            
-        Else
-            
-            'PLACEHOLDER ONLY
-            'TODO: CALCULATE CORRECTLY
-            With m_CropRectF
-                .Left = xMin
-                .Top = yMin
-                .Width = xMax - xMin
-                .Height = yMax - yMin
-                Debug.Print .Left, .Top, .Width, .Height
-            End With
+                'Argh, our newly calculated rectangle doesn't work.  We need to calculate a new
+                ' aspect-ratio-preserved rectangle that actually fits within image boundaries.
+                
+                'TODO!
+                Debug.Print "fail", Timer
+                
+            End If
             
         End If
-        'Unfortunately, we're still not guaranteed that the crop actually exists in-bounds.
         
-        'With aspect ratio fixed, we now need to account for the newly calculated width or height
-        ' exceeding image bounds.
-        
-
-'
-'        Debug.Print newWidth, newHeight
-'
-'        Dim xShrink As Single, yShrink As Single
-'        If (xMax > m_MaxCropWidth) Then
-'            xShrink = (xMax - m_MaxCropWidth) / newWidth
-'            xMax = xMin + newWidth * xShrink
-'            yMax = yMin + newHeight * xShrink
-'        End If
-'
-'        If (yMax > m_MaxCropHeight) Then
-'            yShrink = (yMax - m_MaxCropHeight) / newHeight
-'            yMax = yMin + newHeight * yShrink
-'            xMax = xMin + newWidth * yShrink
-'        End If
-'
-'        If (xMax < xMin + 1!) Then xMax = xMin + 1!
-'        If (yMax < yMin + 1!) Then yMax = yMin + 1!
-'
-        
-        'The crop rect is now guaranteed to be
-        
-        
-'        'Debug.Print "here", m_LockedAspectRatio, Timer
-'
-'        'When aspect ratio is locked, we need to manually calculate new width/height values,
-'        ' while also preserving aspect ratio.
-'
-'        newWidth = Int(newHeight * m_LockedAspectRatio + 0.5!)
-'
-'        m_CropRectF.Width = newWidth
-'        m_CropRectF.Height = newHeight
-'
-'        'We now need to position the selection to either the left or right, depending on the current POI
-'        If (srcPOI = 0) Then
-'            If (srcPoints(0).x < srcPoints(1).x) Then
-'                m_CropRectF.Left = srcPoints(1).x - newWidth
-'            Else
-'                m_CropRectF.Left = xMin
-'            End If
-'            If (srcPoints(0).y < srcPoints(2).y) Then
-'                m_CropRectF.Top = srcPoints(2).y - newHeight
-'            Else
-'                m_CropRectF.Top = yMin
-'            End If
-'        ElseIf (srcPOI = 1) Then
-'            If (srcPoints(1).x < srcPoints(0).x) Then
-'                m_CropRectF.Left = srcPoints(0).x - newWidth
-'            Else
-'                m_CropRectF.Left = xMin
-'            End If
-'            If (srcPoints(0).y < srcPoints(3).y) Then
-'                m_CropRectF.Top = srcPoints(3).y - newHeight
-'            Else
-'                m_CropRectF.Top = yMin
-'            End If
-'        ElseIf (srcPOI = 2) Then
-'            If (srcPoints(2).x < srcPoints(3).x) Then
-'                m_CropRectF.Left = srcPoints(3).x - newWidth
-'            Else
-'                m_CropRectF.Left = xMin
-'            End If
-'            If (srcPoints(2).y < srcPoints(0).y) Then
-'                m_CropRectF.Top = srcPoints(0).y - newHeight
-'            Else
-'                m_CropRectF.Top = yMin
-'            End If
-'        ElseIf (srcPOI = 3) Then
-'            If (srcPoints(3).x < srcPoints(2).x) Then
-'                m_CropRectF.Left = srcPoints(2).x - newWidth
-'            Else
-'                m_CropRectF.Left = xMin
-'            End If
-'            If (srcPoints(3).y < srcPoints(1).y) Then
-'                m_CropRectF.Top = srcPoints(1).y - newHeight
-'            Else
-'                m_CropRectF.Top = yMin
-'            End If
-'        End If
-    
     'When aspect ratio is not locked, this step is easy: just use max/min values as calculated above
     Else
         
@@ -1235,7 +1162,6 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
     'If the user wants the crop clamped to image boundaries, calculate a final, failsafe overlap now.
     ' (Nothing should change as a result of the above calculations, but better safe than sorry.)
     If (Not m_AllowEnlarge) Then
-        Dim tmpOverlap As RectF
         GDI_Plus.IntersectRectF tmpOverlap, m_CropRectF, PDImages.GetActiveImage.GetBoundaryRectF
         m_CropRectF = tmpOverlap
     End If
