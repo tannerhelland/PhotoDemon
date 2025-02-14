@@ -822,10 +822,12 @@ End Sub
 Public Sub NotifyImageSizeChanged()
     If (g_CurrentTool = ND_MEASURE) Then
         Tools_Measure.ResetPoints True
-    ElseIf (g_CurrentTool = ND_CROP) Then
-        If PDImages.IsImageActive() Then
-            Tools_Crop.NotifyCropMaxSizes PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
-        End If
+    'TODO Crop tool
+    'Temporarily commented out until crop tool is integrated:
+    'ElseIf (g_CurrentTool = ND_CROP) Then
+    '    If PDImages.IsImageActive() Then
+    '        Tools_Crop.NotifyCropMaxSizes PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
+    '    End If
     ElseIf (g_CurrentTool = PAINT_CLONE) Then
         Tools_Clone.NotifyImageSizeChanged
     End If
