@@ -343,21 +343,11 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
         
         Const TEXT_BETWEEN_DIMENSIONS As String = " x "
         
-        Dim unitWidth As Double, unitHeight As Double
+        'Convert pixel measurements to the current unit, then convert those to a human-readable string.
         Dim sizeString As String
+        sizeString = Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, srcImage.Width, srcImage.GetDPI(), srcImage.Width) & TEXT_BETWEEN_DIMENSIONS & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
         
-        'Convert pixel measurements to the current unit, then convert those to a string.
-        ' (Different measurements support different significant digits in the size readout.)
-        If (m_UnitOfMeasurement = mu_Pixels) Or (m_UnitOfMeasurement = mu_Percent) Then
-            unitWidth = CStr(srcImage.Width)
-            unitHeight = CStr(srcImage.Height)
-            sizeString = Units.GetValueFormattedForUnit_FromPixel(mu_Pixels, unitWidth) & TEXT_BETWEEN_DIMENSIONS & Units.GetValueFormattedForUnit_FromPixel(mu_Pixels, unitHeight)
-        Else
-            unitWidth = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Width, srcImage.GetDPI(), srcImage.Width)
-            unitHeight = ConvertPixelToOtherUnit(m_UnitOfMeasurement, srcImage.Height, srcImage.GetDPI(), srcImage.Height)
-            sizeString = Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, unitWidth, srcImage.GetDPI(), srcImage.Width) & TEXT_BETWEEN_DIMENSIONS & Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, unitHeight, srcImage.GetDPI(), srcImage.Height)
-        End If
-        
+        'Display the dimensions in the status bar, then reflow neighboring controls to fit
         lblImgSize.Caption = sizeString
         ReflowStatusBar True
         
