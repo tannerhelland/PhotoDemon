@@ -976,7 +976,7 @@ Private Function LoadLUTFromFile_CUBE(ByRef srcFile As String) As Boolean
                         'Lines with certain prefixes have special meaning
                         If Strings.LeftMatches(curLine, "LUT_3D_SIZE", True) Then
                             If firstLineHit Then InternalProblem "LoadLUTFromFile", "bad line order"
-                            m_LutSize = Strings.RightByChar(curLine, spaceChar)
+                            m_LutSize = Val(Strings.RightByChar(curLine, spaceChar))
                             m_LutLoopSize = m_LutSize - 1
                             
                         'Minimum values, typically 0.0
@@ -985,17 +985,17 @@ Private Function LoadLUTFromFile_CUBE(ByRef srcFile As String) As Boolean
                             
                             'Retrieve all three values
                             Set wordsInLine = Strings.GetListOfWordsFromString(curLine)
-                            m_MinR = wordsInLine.GetString(1)
-                            m_MinG = wordsInLine.GetString(2)
-                            m_MinB = wordsInLine.GetString(3)
+                            m_MinR = Val(wordsInLine.GetString(1))
+                            m_MinG = Val(wordsInLine.GetString(2))
+                            m_MinB = Val(wordsInLine.GetString(3))
                             
                         ElseIf Strings.LeftMatches(curLine, "DOMAIN_MAX", True) Then
                             If firstLineHit Then InternalProblem "LoadLUTFromFile", "bad line order"
                             
                             Set wordsInLine = Strings.GetListOfWordsFromString(curLine)
-                            m_MaxR = wordsInLine.GetString(1)
-                            m_MaxG = wordsInLine.GetString(2)
-                            m_MaxB = wordsInLine.GetString(3)
+                            m_MaxR = Val(wordsInLine.GetString(1))
+                            m_MaxG = Val(wordsInLine.GetString(2))
+                            m_MaxB = Val(wordsInLine.GetString(3))
                             
                         ElseIf (Left$(curLine, 5) = "TITLE") Then
                             'Retrieving the title (if any) is TODO

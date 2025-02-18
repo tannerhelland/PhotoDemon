@@ -5527,7 +5527,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>Просмотр журнала отладки этого сеанса</translation>
 </phrase>
 
 <phrase>
@@ -12499,12 +12499,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>выровнять по пиксельной сетке</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>Этот параметр принудительно выравнивает мазки по центральным точкам пиксельной сетки. Это повышает точность (особенно при небольших размерах кисти), но мазки кисти могут получаться менее естественными.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13007,7 +13007,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fill background</original>
-<translation>Залить фона</translation>
+<translation>Залить фон</translation>
 </phrase>
 
 <phrase>

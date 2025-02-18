@@ -3996,6 +3996,12 @@ End Sub
 ' (e.g. selections comprised of multiple independent selections).
 Private Sub CreateViewportOutlineForMask(ByRef srcRefRectF As RectF, ByRef imgViewportRectL As RectL_WH, ByRef viewportByteCopy() As Byte, ByRef viewportByteRect As RectL_WH, ByRef viewportDIB As pdDIB, ByRef dstOutline As pd2DPath)
     
+    'Failsafe checks
+    If (srcRefRectF.Width < 0) Or (srcRefRectF.Height < 0) Then
+        If (m_ViewportEdges Is Nothing) Then Set m_ViewportEdges = New pdEdgeDetector
+        Exit Sub
+    End If
+    
     'm_ViewportRefRectF stores the coordinates of where the current selection was rendered onto the cached image.
     ' (Note that it may not be located at position (0, 0), especially if the image is zoomed out!)
     '
