@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Crop"
 'Crop tool interface
 'Copyright 2024-2025 by Tanner Helland
 'Created: 12/November/24
-'Last updated: 06/February/25
-'Last update: add aspect ratio swap, for converting between landscape and portrait modes
+'Last updated: 18/February/25
+'Last update: finalize implementing all combinations of "lock aspect ratio" and "force crop in-bounds"
 '
 'The crop tool performs identical operations to the rectangular selection tool + Image > Crop menu.
 '
@@ -613,14 +613,6 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
         'If the user is interacting with an existing crop, modify the crop rect accordingly.
         If (m_idxMouseDown <> poi_Undefined) Then
             
-            'If we're not allowed to enlarge, lock mouse positions to canvas boundaries
-            If (Not m_AllowEnlarge) Then
-                If (imgX < 0#) Then imgX = 0#
-                If (imgY < 0#) Then imgY = 0#
-                If (imgX > m_MaxCropWidth) Then imgX = m_MaxCropWidth
-                If (imgY > m_MaxCropHeight) Then imgY = m_MaxCropHeight
-            End If
-            
             'Calculate an offset from the original click to this new location
             Dim xOffset As Long, yOffset As Long
             xOffset = imgX - m_InitImgX
@@ -706,7 +698,8 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
                 
             End If
             
-            'Update the crop rect to reflect any changes made to individual coordinates
+            'Update the crop rect to reflect any changes made to individual coordinates.
+            ' (This will also handle locked aspect ratio, and "force crop in-bounds" settings.)
             UpdateCropRectF_FromPtFList tmpCornerCoords, m_idxMouseDown, imgX, imgY
             
         End If
@@ -741,8 +734,8 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         
     'In Photoshop, double-click commits the crop.  In GIMP, it's single-click.
     '
-    'I'm still debating which way to go in PD, but I'm currently leaning toward GIMP as it's also the
-    ' traditional PD convention (click-outside-to-cancel, click-inside-to-apply).
+    'PD uses double-click-inside-the-rect to commit.  Single-click outside to reset.
+    ' (I tried using single-click-inside to commit, but it was way too easy to accidentally apply the crop!)
     If clickEventAlsoFiring Then
         
         'Check mouse position.  If the mouse is *outside* the crop rect that existed at _MouseDown,
@@ -759,25 +752,7 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         ' (by e.g. disabling the "commit crop" button)
         Dim cropAintGood As Boolean
         cropAintGood = False
-            
-        'If the user is interacting with an existing crop, modify the crop rect accordingly.
-        If (m_idxMouseDown <> poi_Undefined) Then
         
-            'TODO?
-            
-            'See if this is still necessary with the new crop approach
-        
-        '...otherwise, simply create a new crop to match the mouse movement
-        Else
-                
-            'Update the crop rectangle against these (final) coordinates
-            'UpdateCropRectF imgX, imgY
-            'm_LastImgX = imgX
-            'm_LastImgY = imgY
-            
-        End If
-        
-        'Bail if any of the final coordinates produce an unuseable crop rect
         If (m_InitImgX = INVALID_X_COORD) Or (m_InitImgY = INVALID_Y_COORD) Then cropAintGood = True
         If (Not ValidateCropRectF()) Then cropAintGood = True
         If cropAintGood Then
@@ -1073,10 +1048,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
     'When aspect ratio is locked and the user is click-dragging a corner point, this operation is actually
     ' somewhat involved.  We need to reshape the current crop rectangle to match the requested aspect ratio,
     ' while also keeping it in-bounds, anchored against the opposite corner of wherever the user is dragging.
-    If m_IsAspectLocked And (Not actionIsMoving) Then
-        
-        'The caller will have already forced all mouse points in-bounds, as relevant.
-        ' We just need to apply the locked aspect ratio to the current crop shape.
+    If m_IsAspectLocked And (Not actionIsMoving) And (m_LockedAspectRatio > 0!) Then
         
         'Calculate the rect's current width/height
         Dim newWidth As Single, newHeight As Single
@@ -1134,14 +1106,38 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
             
             If (Not VBHacks.MemCmp(VarPtr(m_CropRectF), VarPtr(tmpOverlap), 16)) Then
                 
-                Debug.Print m_CropRectF.Width, tmpOverlap.Width, m_CropRectF.Height, tmpOverlap.Height
-                Debug.Print m_CropRectF.Left, tmpOverlap.Left, m_CropRectF.Top, tmpOverlap.Top, Timer
-                
                 'Argh, our newly calculated rectangle doesn't work.  We need to calculate a new
                 ' aspect-ratio-preserved rectangle that actually fits within image boundaries.
                 
-                'TODO!
-                Debug.Print "fail", Timer
+                'Calculate what happens when we shrink either width or height (because based on anchor positioning,
+                ' there's no guarantee which direction we should shrink to keep the rect in-bounds).
+                Dim testRectF As RectF, testRectF2 As RectF
+                testRectF = tmpOverlap
+                
+                Dim areaOne As Single
+                testRectF.Height = testRectF.Width * (1# / m_LockedAspectRatio)
+                areaOne = testRectF.Width * testRectF.Height
+                
+                testRectF2 = tmpOverlap
+                testRectF2.Width = testRectF2.Height * m_LockedAspectRatio
+                
+                'Take the smaller of the two areas and save it to testRectF
+                If ((testRectF2.Width * testRectF2.Height) < areaOne) Then testRectF = testRectF2
+                
+                '...then use that as the basis for m_CropRectF
+                m_CropRectF = testRectF
+                
+                'Finally, anchor the modified rectangle against the *opposite* point the user is interacting with
+                Select Case m_idxMouseDownActual
+                    Case 0
+                        m_CropRectF.Left = (tmpOverlap.Left + tmpOverlap.Width) - testRectF.Width
+                        m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
+                    Case 1
+                        m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
+                    Case 2
+                        m_CropRectF.Left = (tmpOverlap.Left + tmpOverlap.Width) - testRectF.Width
+                    Case 3
+                End Select
                 
             End If
             
