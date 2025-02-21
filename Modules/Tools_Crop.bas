@@ -570,7 +570,11 @@ Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift A
         m_LastImgY = imgY
         
         'See if the user is creating a new crop, or interacting with an existing point
-        m_idxMouseDown = UpdateMousePOI(imgX, imgY)
+        If IsValidCropActive Then
+            m_idxMouseDown = UpdateMousePOI(imgX, imgY)
+        Else
+            m_idxMouseDown = poi_Undefined
+        End If
         
         'If the user is initiating a new crop, start it now
         If (m_idxMouseDown = poi_Undefined) Then
@@ -579,14 +583,14 @@ Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift A
             ResetCropRectF imgX, imgY
             
             'Notate the bottom-right point as the current interactive target.
-            m_idxMouseDown = poi_CornerSE
+            m_idxMouseDown = 3
             m_numCornerCoords = GetCropCorners(m_CornerCoords)
             
         'The user is interacting with an existing crop boundary.
         ' How we modify the crop rect depends on the point being interacted with.
         Else
             
-            'Cache a full list of boundary coordinates
+            'Cache a full list of current boundary coordinates
             m_numCornerCoords = GetCropCorners(m_CornerCoords)
             
         End If
@@ -663,7 +667,7 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
                     End If
                 End If
                 
-            'The user is click-dragging a specific point.
+            'The user is click-dragging a specific point or edge.
             Else
                 
                 'Failsafe only; _MouseDown will always set m_numCornerCoords to 4
@@ -672,27 +676,52 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
                     For i = 0 To m_numCornerCoords - 1
                         tmpCornerCoords(i).x = m_CornerCoords(i).x
                         tmpCornerCoords(i).y = m_CornerCoords(i).y
-                        If (i = m_idxMouseDown) Then
-                            tmpCornerCoords(i).x = tmpCornerCoords(i).x + xOffset
-                            tmpCornerCoords(i).y = tmpCornerCoords(i).y + yOffset
-                        End If
                     Next i
                     
-                    'Because the point-list-to-rect function operates on max/min values, we need to adjust adjoining
-                    ' corners too.
-                    If (m_idxMouseDown = 0) Then
-                        tmpCornerCoords(1).y = tmpCornerCoords(1).y + yOffset
-                        tmpCornerCoords(2).x = tmpCornerCoords(2).x + xOffset
-                    ElseIf (m_idxMouseDown = 1) Then
-                        tmpCornerCoords(0).y = tmpCornerCoords(0).y + yOffset
-                        tmpCornerCoords(3).x = tmpCornerCoords(3).x + xOffset
-                    ElseIf (m_idxMouseDown = 2) Then
-                        tmpCornerCoords(0).x = tmpCornerCoords(0).x + xOffset
-                        tmpCornerCoords(3).y = tmpCornerCoords(3).y + yOffset
-                    Else
-                        tmpCornerCoords(1).x = tmpCornerCoords(1).x + xOffset
-                        tmpCornerCoords(2).y = tmpCornerCoords(2).y + yOffset
-                    End If
+                    'Check edges first; we need to manually match corner IDs for them
+                    Select Case m_idxMouseDown
+                    
+                        Case poi_EdgeN
+                            tmpCornerCoords(0).y = tmpCornerCoords(0).y + yOffset
+                            tmpCornerCoords(1).y = tmpCornerCoords(1).y + yOffset
+                        Case poi_EdgeE
+                            tmpCornerCoords(1).x = tmpCornerCoords(1).x + xOffset
+                            tmpCornerCoords(3).x = tmpCornerCoords(3).x + xOffset
+                        Case poi_EdgeS
+                            tmpCornerCoords(2).y = tmpCornerCoords(2).y + yOffset
+                            tmpCornerCoords(3).y = tmpCornerCoords(3).y + yOffset
+                        Case poi_EdgeW
+                            tmpCornerCoords(0).x = tmpCornerCoords(0).x + xOffset
+                            tmpCornerCoords(2).x = tmpCornerCoords(2).x + xOffset
+                        
+                        'Any remaining cases refer to specific corner node indices
+                        Case Else
+                            
+                            If (m_idxMouseDown >= 0) And (m_idxMouseDown <= 3) Then
+                                
+                                'Add the cursor offsets to the point being interacted with
+                                tmpCornerCoords(m_idxMouseDown).x = tmpCornerCoords(m_idxMouseDown).x + xOffset
+                                tmpCornerCoords(m_idxMouseDown).y = tmpCornerCoords(m_idxMouseDown).y + yOffset
+                                
+                                'Because the point-list-to-rect function operates on max/min values,
+                                ' we need to adjust adjoining corners too.
+                                If (m_idxMouseDown = 0) Then
+                                    tmpCornerCoords(1).y = tmpCornerCoords(1).y + yOffset
+                                    tmpCornerCoords(2).x = tmpCornerCoords(2).x + xOffset
+                                ElseIf (m_idxMouseDown = 1) Then
+                                    tmpCornerCoords(0).y = tmpCornerCoords(0).y + yOffset
+                                    tmpCornerCoords(3).x = tmpCornerCoords(3).x + xOffset
+                                ElseIf (m_idxMouseDown = 2) Then
+                                    tmpCornerCoords(0).x = tmpCornerCoords(0).x + xOffset
+                                    tmpCornerCoords(3).y = tmpCornerCoords(3).y + yOffset
+                                Else
+                                    tmpCornerCoords(1).x = tmpCornerCoords(1).x + xOffset
+                                    tmpCornerCoords(2).y = tmpCornerCoords(2).y + yOffset
+                                End If
+                                
+                            End If
+                            
+                    End Select
                     
                 End If
                 
@@ -920,7 +949,17 @@ Public Sub ReadyForCursor(ByRef srcCanvasView As pdCanvasView)
             srcCanvasView.RequestCursor_System IDC_SIZENESW
         Case 3
             srcCanvasView.RequestCursor_System IDC_SIZENWSE
-        
+            
+        'Mouse is over a crop edge (horizontal or vertical)
+        Case poi_EdgeN
+            srcCanvasView.RequestCursor_System IDC_SIZENS
+        Case poi_EdgeE
+            srcCanvasView.RequestCursor_System IDC_SIZEWE
+        Case poi_EdgeS
+            srcCanvasView.RequestCursor_System IDC_SIZENS
+        Case poi_EdgeW
+            srcCanvasView.RequestCursor_System IDC_SIZEWE
+            
         'Should never trigger; failsafe only
         Case Else
             srcCanvasView.RequestCursor_System IDC_ARROW
@@ -952,16 +991,63 @@ Private Function UpdateMousePOI(ByVal imgX As Long, ByVal imgY As Long) As PD_Po
     UpdateMousePOI = PDMath.FindClosestPointInFloatArray(imgX, imgY, minDistance, cropCorners)
     
     'If the mouse is not near a corner, perform an additional check for the crop rect's interior
-    If (UpdateMousePOI = poi_Undefined) Then
+    If (UpdateMousePOI = poi_Undefined) And (numPoints = 4) And IsValidCropActive() Then
         
-        Dim tmpPath As pd2DPath
-        Set tmpPath = New pd2DPath
-        tmpPath.AddRectangle_RectF m_CropRectF
+        'Next, look check the cursor against horizontal annd vertical edges of the crop rect
+        Dim testPath As pd2DPath
+        Set testPath = New pd2DPath
         
-        If tmpPath.IsPointInsidePathF(imgX, imgY) Then
-            UpdateMousePOI = poi_Interior
-        Else
-            UpdateMousePOI = poi_Undefined
+        Dim testPen As pd2DPen
+        Set testPen = New pd2DPen
+        testPen.SetPenWidth mouseAccuracy * 2
+        testPen.CreatePen
+        testPen.SetPenLineCap P2_LC_Flat
+        
+        Dim i As Long, idxOtherPoint As Long
+        For i = 0 To numPoints - 1
+            testPath.ResetPath
+            Select Case i
+                Case 0
+                    idxOtherPoint = 1
+                Case 1
+                    idxOtherPoint = 3
+                Case 2
+                    idxOtherPoint = 0
+                Case 3
+                    idxOtherPoint = 2
+            End Select
+            
+            'Add the line and convert it to radius [mouseAccuracy]
+            testPath.AddLine cropCorners(i).x, cropCorners(i).y, cropCorners(idxOtherPoint).x, cropCorners(idxOtherPoint).y
+            testPath.ConvertPath_PenTrace testPen
+            
+            If testPath.IsPointInsidePathF(imgX, imgY) Then
+                Select Case i
+                    Case 0
+                        UpdateMousePOI = poi_EdgeN
+                    Case 1
+                        UpdateMousePOI = poi_EdgeE
+                    Case 2
+                        UpdateMousePOI = poi_EdgeW
+                    Case 3
+                        UpdateMousePOI = poi_EdgeS
+                End Select
+            End If
+            
+        Next i
+        
+        If (UpdateMousePOI = poi_Undefined) Then
+            
+            Dim tmpPath As pd2DPath
+            Set tmpPath = New pd2DPath
+            tmpPath.AddRectangle_RectF m_CropRectF
+            
+            If tmpPath.IsPointInsidePathF(imgX, imgY) Then
+                UpdateMousePOI = poi_Interior
+            Else
+                UpdateMousePOI = poi_Undefined
+            End If
+            
         End If
         
     End If
