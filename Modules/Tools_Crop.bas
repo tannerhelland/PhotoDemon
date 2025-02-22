@@ -1117,6 +1117,49 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
     
     'm_idxMouseDownActual now points to the srcPoints index that the user is currently interacting with.
     
+    'In the event that the user is dragging a crop edge (e.g. a line segment), we also want to know
+    ' the nearest line-segment of the crop boundary rect.
+    Dim nearestEdge As PD_PointOfInterest
+    minDistance = DOUBLE_MAX
+    For i = 0 To 3
+        Select Case i
+            Case 0
+                curDistance = PDMath.DistancePerpendicular(imgX, imgY, srcPoints(0).x, srcPoints(0).y, srcPoints(1).x, srcPoints(1).y)
+            Case 1
+                curDistance = PDMath.DistancePerpendicular(imgX, imgY, srcPoints(1).x, srcPoints(1).y, srcPoints(3).x, srcPoints(3).y)
+            Case 2
+                curDistance = PDMath.DistancePerpendicular(imgX, imgY, srcPoints(0).x, srcPoints(0).y, srcPoints(2).x, srcPoints(2).y)
+            Case 3
+                curDistance = PDMath.DistancePerpendicular(imgX, imgY, srcPoints(2).x, srcPoints(2).y, srcPoints(3).x, srcPoints(3).y)
+        End Select
+        If (curDistance < minDistance) Then
+            minDistance = curDistance
+            nearestEdge = i
+        End If
+    Next i
+    
+    'Translate the final "nearest edge" index into a POI constant
+    If (nearestEdge = 0) Then
+        nearestEdge = poi_EdgeN
+    ElseIf (nearestEdge = 1) Then
+        nearestEdge = poi_EdgeE
+    ElseIf (nearestEdge = 2) Then
+        nearestEdge = poi_EdgeW
+    ElseIf (nearestEdge = 3) Then
+        nearestEdge = poi_EdgeS
+    End If
+    
+    'nearestEdge now points to the crop edge that the user is currently interacting with.
+    
+    'To simplify further handling, check the "interaction POI at _MouseDown" value to determine if the user
+    ' is edge-dragging or corner-dragging.
+    Dim userIsCornerDragging As Boolean, userIsEdgeDragging As Boolean
+    If (m_idxMouseDown >= 0) And (m_idxMouseDown <= 3) Then
+        userIsCornerDragging = True
+    ElseIf (m_idxMouseDown >= poi_EdgeW) And (m_idxMouseDown <= poi_EdgeN) Then
+        userIsEdgeDragging = True
+    End If
+    
     'Next, let's consider the different types of modifications the user may be performing
     ' to the crop region.
     
@@ -1133,7 +1176,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
     
     'When aspect ratio is locked and the user is click-dragging a corner point, this operation is actually
     ' somewhat involved.  We need to reshape the current crop rectangle to match the requested aspect ratio,
-    ' while also keeping it in-bounds, anchored against the opposite corner of wherever the user is dragging.
+    ' while also keeping it in-bounds, anchored against the opposite corner/edge of wherever the user is dragging.
     If m_IsAspectLocked And (Not actionIsMoving) And (m_LockedAspectRatio > 0!) Then
         
         'Calculate the rect's current width/height
@@ -1143,13 +1186,27 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
         newHeight = yMax - yMin
         If (newHeight < 1!) Then newHeight = 1!
         
-        'Width > height (so shrink height as necessary)
-        If (m_LockedAspectRatio >= 1!) Then
-            newHeight = newWidth * (1# / m_LockedAspectRatio)
+        'Split handling by edge-dragging vs corner-dragging.  When edge-dragging, we *always* want to leave
+        ' the dimension being dragged as-is (and adjust the *opposite* dimension for aspect-ratio).
+        If userIsEdgeDragging Then
             
-        'Height > width (so shrink width as necessary)
+            If (nearestEdge = poi_EdgeE) Or (nearestEdge = poi_EdgeW) Then
+                newHeight = newWidth * (1# / m_LockedAspectRatio)
+            Else
+                newWidth = newHeight * m_LockedAspectRatio
+            End If
+            
         Else
-            newWidth = newHeight * m_LockedAspectRatio
+            
+            'Width > height (so adjust height as necessary)
+            If (m_LockedAspectRatio >= 1!) Then
+                newHeight = newWidth * (1# / m_LockedAspectRatio)
+                
+            'Height > width (so adjust width as necessary)
+            Else
+                newWidth = newHeight * m_LockedAspectRatio
+            End If
+            
         End If
         
         'newWidth and newHeight now represent the current crop rectangle, corrected for aspect ratio.
@@ -1161,20 +1218,38 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
             .Height = newHeight
             
             'Anchor the resize against the opposite point of the active interaction node
-            Select Case m_idxMouseDownActual
-                Case 0
-                    .Left = xMax - newWidth
-                    .Top = yMax - newHeight
-                Case 1
-                    .Left = xMin
-                    .Top = yMax - newHeight
-                Case 2
-                    .Left = xMax - newWidth
-                    .Top = yMin
-                Case 3
-                    .Left = xMin
-                    .Top = yMin
-            End Select
+            If userIsCornerDragging Then
+                
+                Select Case m_idxMouseDownActual
+                    Case 0
+                        .Left = xMax - newWidth
+                        .Top = yMax - newHeight
+                    Case 1
+                        .Left = xMin
+                        .Top = yMax - newHeight
+                    Case 2
+                        .Left = xMax - newWidth
+                        .Top = yMin
+                    Case 3
+                        .Left = xMin
+                        .Top = yMin
+                End Select
+                
+            ElseIf userIsEdgeDragging Then
+                
+                Select Case nearestEdge
+                    Case poi_EdgeN
+                        .Left = xMin
+                        .Top = yMax - newHeight
+                    Case poi_EdgeW
+                        .Left = xMax - newWidth
+                        .Top = yMin
+                    Case Else
+                        .Left = xMin
+                        .Top = yMin
+                End Select
+                
+            End If
             
         End With
         
@@ -1213,17 +1288,32 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
                 '...then use that as the basis for m_CropRectF
                 m_CropRectF = testRectF
                 
-                'Finally, anchor the modified rectangle against the *opposite* point the user is interacting with
-                Select Case m_idxMouseDownActual
-                    Case 0
-                        m_CropRectF.Left = (tmpOverlap.Left + tmpOverlap.Width) - testRectF.Width
-                        m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
-                    Case 1
-                        m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
-                    Case 2
-                        m_CropRectF.Left = (tmpOverlap.Left + tmpOverlap.Width) - testRectF.Width
-                    Case 3
-                End Select
+                'Finally, anchor the modified rectangle against the *opposite* point/edge the user is interacting with
+                If userIsCornerDragging Then
+                    
+                    Select Case m_idxMouseDownActual
+                        Case 0
+                            m_CropRectF.Left = (tmpOverlap.Left + tmpOverlap.Width) - testRectF.Width
+                            m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
+                        Case 1
+                            m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
+                        Case 2
+                            m_CropRectF.Left = (tmpOverlap.Left + tmpOverlap.Width) - testRectF.Width
+                        Case 3
+                    End Select
+                    
+                ElseIf userIsEdgeDragging Then
+                    
+                    Select Case nearestEdge
+                        Case poi_EdgeN
+                            m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
+                        Case poi_EdgeS
+                        Case poi_EdgeE
+                        Case poi_EdgeW
+                            m_CropRectF.Left = (tmpOverlap.Left + tmpOverlap.Width) - testRectF.Width
+                    End Select
+                    
+                End If
                 
             End If
             
