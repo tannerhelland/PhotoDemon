@@ -169,7 +169,7 @@ Begin VB.Form toolpanel_Crop
       Height          =   345
       Index           =   0
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   420
       Width           =   1080
       _ExtentX        =   1905
@@ -182,7 +182,7 @@ Begin VB.Form toolpanel_Crop
       Height          =   345
       Index           =   1
       Left            =   1320
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   420
       Width           =   1080
       _ExtentX        =   1905
@@ -416,6 +416,10 @@ Private Sub chkAllowGrowing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boole
     If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(1).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
 End Sub
 
+Private Sub chkDelete_Click()
+    Tools_Crop.SetCropDeletePixels chkDelete.Value
+End Sub
+
 Private Sub chkDelete_GotFocusAPI()
     UpdateFlyout 2, True
 End Sub
@@ -616,6 +620,8 @@ Private Sub m_LastUsedSettings_AddCustomPresetData()
     
     With m_lastUsedSettings
         .AddPresetData "crop-tool-allow-enlarge", Me.chkAllowGrowing.Value
+        .AddPresetData "crop-tool-delete-pixels", Me.chkDelete.Value
+        .AddPresetData "crop-tool-highlight", Me.chkHighlight.Value
     End With
 
 End Sub
@@ -624,6 +630,8 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
 
     With m_lastUsedSettings
         Me.chkAllowGrowing.Value = .RetrievePresetData("crop-tool-allow-enlarge", False)
+        Me.chkDelete.Value = .RetrievePresetData("crop-tool-delete-pixels", True)
+        Me.chkHighlight.Value = .RetrievePresetData("crop-tool-highlight", True)
     End With
     
 End Sub
@@ -642,10 +650,6 @@ End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
-End Sub
-
-Private Sub ttlPanel_GotFocusAPI(Index As Integer)
-    UpdateFlyout Index, True
 End Sub
 
 Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)

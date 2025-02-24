@@ -63,6 +63,10 @@ Private m_AllowEnlarge As Boolean, m_MaxCropWidth As Long, m_MaxCropHeight As Lo
 'Highlighting the retained area (by "shielding", as Photoshop calls it, the cut areas) is user-modifiable.
 Private m_HighlightCrop As Boolean, m_HighlightColor As Long, m_HighlightOpacity As Single
 
+'PhotoDemon can retain pixels outside the crop area (e.g. non-destructive cropping).
+' This setting is user-modifiable.
+Private m_DeleteCroppedPixels As Boolean
+
 'Apply a crop operation from a param string constructed by the GetCropParamString() function.
 ' (This function is a thin wrapper to Crop_ApplyCrop(); it just extracts relevant params from the
 '  param string and forwards the results.)
@@ -929,6 +933,14 @@ End Sub
 Public Function GetCropRectF() As RectF
     GetCropRectF = m_CropRectF
 End Function
+
+Public Function GetCropDeletePixels() As Boolean
+    GetCropDeletePixels = m_DeleteCroppedPixels
+End Function
+
+Public Sub SetCropDeletePixels(ByVal newValue As Boolean)
+    m_DeleteCroppedPixels = newValue
+End Sub
 
 Public Function GetCropHighlight() As Boolean
     GetCropHighlight = m_HighlightCrop
