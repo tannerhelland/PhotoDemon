@@ -42,8 +42,8 @@ Private m_idxMouseDown As PD_PointOfInterest
 'On _MouseMove events, the user may drag the current crop point past another crop point (for example,
 ' drag the lower-right point above the upper-right point).  This would cause the current POI to change.
 ' This constant stores the numerical index of the currently interacting point, *as defined by its
-' actual position in the crop rect right now*.
-Private m_idxMouseDownActual As Long
+' actual position in the crop rect right now*.  (Same goes for edge-dragging.)
+Private m_idxMouseDownActual As Long, m_poiEdgeMouseDownActual As PD_PointOfInterest
 
 'If the user is modifying an existing crop boundary, this list of coordinates will be filled in _MouseDown
 Private m_CornerCoords() As PointFloat, m_numCornerCoords As Long
@@ -445,22 +445,103 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     
     'Now it's time to render the crop outline and any on-canvas interactive UI bits
     
-    'We now want to add all lines to a path, which we'll render all at once
-    Dim cropOutline As pd2DPath
-    Set cropOutline = New pd2DPath
-    cropOutline.AddRectangle_RectF cropRectCanvas
+    'Determine if the user is interacting with a corner node or edge node (or by correlation, neither)
+    Dim userIsCornerDragging As Boolean, userIsEdgeDragging As Boolean
+    If (m_idxMouseDown >= 0) And (m_idxMouseDown <= 3) Then
+        userIsCornerDragging = True
+    ElseIf (m_idxMouseDown >= poi_EdgeW) And (m_idxMouseDown <= poi_EdgeN) Then
+        userIsEdgeDragging = True
+    End If
+    
+    Dim userIsCornerHover As Boolean, userIsEdgeHover As Boolean
+    If (m_idxHover >= 0) And (m_idxHover <= 3) Then
+        userIsCornerHover = True
+    ElseIf (m_idxHover >= poi_EdgeW) And (m_idxHover <= poi_EdgeN) Then
+        userIsEdgeHover = True
+    End If
     
     Dim drawActiveOutline As Boolean
-    drawActiveOutline = (m_idxHover = poi_Interior)
-    If m_LMBDown Then drawActiveOutline = (m_idxMouseDown = poi_Interior)
     
-    'Stroke the outline path
-    If drawActiveOutline Then
-        PD2D.DrawPath cSurface, basePenActive, cropOutline
-        PD2D.DrawPath cSurface, topPenActive, cropOutline
+    'Edge boundaries need to be rendered individually, because we highlight the currently interacted edge
+    ' (if any).
+    If (userIsEdgeDragging Or userIsEdgeHover) Then
+        
+        'Use the current hovered or clicked edge index, whichever is relevant to mouse state
+        Dim targetPOI As PD_PointOfInterest
+        targetPOI = m_idxHover
+        If m_LMBDown Then targetPOI = m_idxMouseDown
+        
+        'Map that to a 0-based index
+        Dim idxTarget As Long
+        Select Case targetPOI
+            Case poi_EdgeN
+                idxTarget = 0
+            Case poi_EdgeE
+                idxTarget = 1
+            Case poi_EdgeS
+                idxTarget = 2
+            Case poi_EdgeW
+                idxTarget = 3
+            Case Else
+                idxTarget = -1
+        End Select
+        
+        'Map the crop rectangle to an arbitrary list of points, and include the first point twice
+        ' (once at the start, once at the end to simplify rendering).
+        Dim listOfRectPts() As PointFloat
+        ReDim listOfRectPts(0 To 4) As PointFloat
+        With cropRectCanvas
+            listOfRectPts(0).x = .Left
+            listOfRectPts(0).y = .Top
+            listOfRectPts(1).x = .Left + .Width
+            listOfRectPts(1).y = .Top
+            listOfRectPts(2).x = .Left + .Width
+            listOfRectPts(2).y = .Top + .Height
+            listOfRectPts(3).x = .Left
+            listOfRectPts(3).y = .Top + .Height
+        End With
+        
+        listOfRectPts(4) = listOfRectPts(0)
+        
+        'Render each edge in turn, highlighting as relevant
+        Dim basePenToUse As pd2DPen, topPenToUse As pd2DPen
+        For i = 0 To 3
+                
+            If (idxTarget = i) Then
+                Set basePenToUse = basePenActive
+                Set topPenToUse = topPenActive
+            Else
+                Set basePenToUse = basePenInactive
+                Set topPenToUse = topPenInactive
+            End If
+            
+            PD2D.DrawLineF_FromPtF cSurface, basePenToUse, listOfRectPts(i), listOfRectPts(i + 1)
+            PD2D.DrawLineF_FromPtF cSurface, topPenToUse, listOfRectPts(i), listOfRectPts(i + 1)
+            
+        Next i
+        
+        Set basePenToUse = Nothing: Set topPenToUse = Nothing
+        
     Else
-        PD2D.DrawPath cSurface, basePenInactive, cropOutline
-        PD2D.DrawPath cSurface, topPenInactive, cropOutline
+        
+        Dim cropOutline As pd2DPath
+        Set cropOutline = New pd2DPath
+        cropOutline.AddRectangle_RectF cropRectCanvas
+        
+        'If mouse is down, use the clicked corner instead of the hovered one (as the hovered one may change if
+        ' corner nodes are dragged extremely close together).
+        drawActiveOutline = (m_idxHover = poi_Interior)
+        If m_LMBDown Then drawActiveOutline = (m_idxMouseDown = poi_Interior)
+        
+        'Stroke the outline path
+        If drawActiveOutline Then
+            PD2D.DrawPath cSurface, basePenActive, cropOutline
+            PD2D.DrawPath cSurface, topPenActive, cropOutline
+        Else
+            PD2D.DrawPath cSurface, basePenInactive, cropOutline
+            PD2D.DrawPath cSurface, topPenInactive, cropOutline
+        End If
+        
     End If
     
     'Next, we want to render drag outlines over the four corner vertices.
@@ -495,7 +576,7 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
     End Select
     
     For i = 0 To numPoints - 1
-        If (i = idxActive) Then
+        If (i = idxActive) And Not (userIsEdgeDragging Or userIsEdgeHover) Then
             PD2D.DrawRectangleF cSurface, basePenActive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
             PD2D.DrawRectangleF cSurface, topPenActive, ptCorners(i).x - halfCornerSize, ptCorners(i).y - halfCornerSize, cornerSize, cornerSize
         Else
@@ -748,7 +829,10 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
     
     'Update cached button status now, before handling the actual event.  (This ensures that
     ' a viewport redraw, if any, will wipe all UI elements we may have rendered over the canvas.)
-    If ((Button And pdLeftButton) = pdLeftButton) Then m_LMBDown = False
+    If ((Button And pdLeftButton) = pdLeftButton) Then
+        m_LMBDown = False
+        m_idxMouseDown = poi_Undefined
+    End If
     
     'Ignore the _MouseUp event that follows a double-click (by design)
     If m_CropInProgress Then
@@ -1119,7 +1203,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
     
     'In the event that the user is dragging a crop edge (e.g. a line segment), we also want to know
     ' the nearest line-segment of the crop boundary rect.
-    Dim nearestEdge As PD_PointOfInterest
+    m_poiEdgeMouseDownActual = poi_Undefined
     minDistance = DOUBLE_MAX
     For i = 0 To 3
         Select Case i
@@ -1134,22 +1218,22 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
         End Select
         If (curDistance < minDistance) Then
             minDistance = curDistance
-            nearestEdge = i
+            m_poiEdgeMouseDownActual = i
         End If
     Next i
     
     'Translate the final "nearest edge" index into a POI constant
-    If (nearestEdge = 0) Then
-        nearestEdge = poi_EdgeN
-    ElseIf (nearestEdge = 1) Then
-        nearestEdge = poi_EdgeE
-    ElseIf (nearestEdge = 2) Then
-        nearestEdge = poi_EdgeW
-    ElseIf (nearestEdge = 3) Then
-        nearestEdge = poi_EdgeS
+    If (m_poiEdgeMouseDownActual = 0) Then
+        m_poiEdgeMouseDownActual = poi_EdgeN
+    ElseIf (m_poiEdgeMouseDownActual = 1) Then
+        m_poiEdgeMouseDownActual = poi_EdgeE
+    ElseIf (m_poiEdgeMouseDownActual = 2) Then
+        m_poiEdgeMouseDownActual = poi_EdgeW
+    ElseIf (m_poiEdgeMouseDownActual = 3) Then
+        m_poiEdgeMouseDownActual = poi_EdgeS
     End If
     
-    'nearestEdge now points to the crop edge that the user is currently interacting with.
+    'm_poiEdgeMouseDownActual now points to the crop edge that the user is currently interacting with.
     
     'To simplify further handling, check the "interaction POI at _MouseDown" value to determine if the user
     ' is edge-dragging or corner-dragging.
@@ -1190,7 +1274,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
         ' the dimension being dragged as-is (and adjust the *opposite* dimension for aspect-ratio).
         If userIsEdgeDragging Then
             
-            If (nearestEdge = poi_EdgeE) Or (nearestEdge = poi_EdgeW) Then
+            If (m_poiEdgeMouseDownActual = poi_EdgeE) Or (m_poiEdgeMouseDownActual = poi_EdgeW) Then
                 newHeight = newWidth * (1# / m_LockedAspectRatio)
             Else
                 newWidth = newHeight * m_LockedAspectRatio
@@ -1237,7 +1321,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
                 
             ElseIf userIsEdgeDragging Then
                 
-                Select Case nearestEdge
+                Select Case m_poiEdgeMouseDownActual
                     Case poi_EdgeN
                         .Left = xMin
                         .Top = yMax - newHeight
@@ -1304,7 +1388,7 @@ Private Sub UpdateCropRectF_FromPtFList(ByRef srcPoints() As PointFloat, ByVal s
                     
                 ElseIf userIsEdgeDragging Then
                     
-                    Select Case nearestEdge
+                    Select Case m_poiEdgeMouseDownActual
                         Case poi_EdgeN
                             m_CropRectF.Top = (tmpOverlap.Top + tmpOverlap.Height) - testRectF.Height
                         Case poi_EdgeS
