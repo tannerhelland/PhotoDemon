@@ -506,7 +506,7 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
         'Render each edge in turn, highlighting as relevant
         Dim basePenToUse As pd2DPen, topPenToUse As pd2DPen
         For i = 0 To 3
-                
+            
             If (idxTarget = i) Then
                 Set basePenToUse = basePenActive
                 Set topPenToUse = topPenActive

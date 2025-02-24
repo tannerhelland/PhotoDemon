@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Crop
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   3240
+   ClientHeight    =   4005
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   12270
@@ -25,7 +25,7 @@ Begin VB.Form toolpanel_Crop
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   216
+   ScaleHeight     =   267
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
@@ -72,7 +72,7 @@ Begin VB.Form toolpanel_Crop
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2055
+      Height          =   2895
       Index           =   2
       Left            =   8400
       Top             =   960
@@ -81,11 +81,11 @@ Begin VB.Form toolpanel_Crop
       _ExtentY        =   3625
       Begin PhotoDemon.pdSlider sldHighlight 
          Height          =   375
-         Left            =   1200
+         Left            =   1140
          TabIndex        =   21
-         Top             =   1200
-         Width           =   2415
-         _ExtentX        =   4260
+         Top             =   2040
+         Width           =   2490
+         _ExtentX        =   4392
          _ExtentY        =   661
          Min             =   1
          Max             =   100
@@ -96,7 +96,7 @@ Begin VB.Form toolpanel_Crop
          Height          =   375
          Left            =   360
          TabIndex        =   20
-         Top             =   1200
+         Top             =   2040
          Width           =   735
          _ExtentX        =   1296
          _ExtentY        =   661
@@ -107,9 +107,9 @@ Begin VB.Form toolpanel_Crop
          Height          =   375
          Left            =   240
          TabIndex        =   19
-         Top             =   405
-         Width           =   2895
-         _ExtentX        =   5106
+         Top             =   1275
+         Width           =   3255
+         _ExtentX        =   5741
          _ExtentY        =   661
          Caption         =   "highlight"
       End
@@ -117,7 +117,7 @@ Begin VB.Form toolpanel_Crop
          Height          =   300
          Index           =   1
          Left            =   120
-         Top             =   30
+         Top             =   930
          Width           =   3360
          _ExtentX        =   5927
          _ExtentY        =   529
@@ -128,7 +128,7 @@ Begin VB.Form toolpanel_Crop
          Index           =   2
          Left            =   3240
          TabIndex        =   4
-         Top             =   1665
+         Top             =   2505
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -137,12 +137,32 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   300
          Index           =   0
-         Left            =   240
-         Top             =   840
+         Left            =   255
+         Top             =   1680
          Width           =   3480
          _ExtentX        =   5927
          _ExtentY        =   529
          Caption         =   "color and opacity"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   300
+         Index           =   3
+         Left            =   120
+         Top             =   120
+         Width           =   3360
+         _ExtentX        =   5927
+         _ExtentY        =   529
+         Caption         =   "crop options"
+      End
+      Begin PhotoDemon.pdCheckBox chkDelete 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   22
+         Top             =   450
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   661
+         Caption         =   "delete cropped pixels"
       End
    End
    Begin PhotoDemon.pdSpinner tudCrop 
@@ -388,12 +408,40 @@ Private Sub chkAllowGrowing_Click()
     SyncMinMaxAgainstImage
 End Sub
 
+Private Sub chkAllowGrowing_GotFocusAPI()
+    UpdateFlyout 0, True
+End Sub
+
+Private Sub chkAllowGrowing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(1).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+End Sub
+
+Private Sub chkDelete_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub chkDelete_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        If cmdCommit(1).Enabled Then
+            newTargetHwnd = cmdCommit(1).hWnd
+        Else
+            newTargetHwnd = Me.ttlPanel(2).hWnd
+        End If
+    Else
+        newTargetHwnd = chkHighlight.hWnd
+    End If
+End Sub
+
 Private Sub chkHighlight_Click()
     Tools_Crop.SetCropHighlight chkHighlight.Value
 End Sub
 
 Private Sub chkHighlight_GotFocusAPI()
     UpdateFlyout 2, True
+End Sub
+
+Private Sub chkHighlight_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = chkDelete.hWnd Else newTargetHwnd = clrHighlight.hWnd
 End Sub
 
 Private Sub clrHighlight_ColorChanged()
@@ -404,12 +452,20 @@ Private Sub clrHighlight_GotFocusAPI()
     UpdateFlyout 2, True
 End Sub
 
+Private Sub clrHighlight_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.chkHighlight.hWnd Else newTargetHwnd = Me.sldHighlight.hWndSlider
+End Sub
+
 Private Sub cmdAspectSwap_Click(ByVal Shift As ShiftConstants)
     If tudCrop(4).IsValid And tudCrop(5).IsValid Then Tools_Crop.RelayCropChangesFromUI pdd_SwapAspectRatio
 End Sub
 
 Private Sub cmdAspectSwap_GotFocusAPI()
     UpdateFlyout 1, True
+End Sub
+
+Private Sub cmdAspectSwap_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = tudCrop(4).hWnd Else newTargetHwnd = tudCrop(5).hWnd
 End Sub
 
 Private Sub cmdCommit_Click(Index As Integer)
@@ -427,6 +483,14 @@ Private Sub cmdCommit_GotFocusAPI(Index As Integer)
     UpdateFlyout 2, True
 End Sub
 
+Private Sub cmdCommit_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Index = 0) Then
+        If shiftTabWasPressed Then newTargetHwnd = Me.ttlPanel(2).hWnd Else newTargetHwnd = cmdCommit(1).hWnd
+    Else
+        If shiftTabWasPressed Then newTargetHwnd = Me.cmdCommit(0).hWnd Else newTargetHwnd = chkDelete.hWnd
+    End If
+End Sub
+
 Private Sub cmdFlyoutLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     If (Not m_Flyout Is Nothing) Then m_Flyout.UpdateLockStatus Me.cntrPopOut(Index).hWnd, cmdFlyoutLock(Index).Value, cmdFlyoutLock(Index)
 End Sub
@@ -438,15 +502,11 @@ End Sub
 Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     Select Case Index
         Case 0
-            'If shiftTabWasPressed Then newTargetHwnd = Me.cboLayerResizeQuality.hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.chkAllowGrowing.hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
         Case 1
-            'If shiftTabWasPressed Then newTargetHwnd = Me.sltLayerShearY.hWndSpinner Else newTargetHwnd = Me.ttlPanel(2).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(2).hWnd Else newTargetHwnd = Me.ttlPanel(2).hWnd
         Case 2
-            If shiftTabWasPressed Then
-                'newTargetHwnd = Me.chkRotateNode.hWnd
-            Else
-                newTargetHwnd = Me.ttlPanel(0).hWnd
-            End If
+            If shiftTabWasPressed Then newTargetHwnd = Me.sldHighlight.hWndSpinner Else newTargetHwnd = Me.tudCrop(0).hWnd
     End Select
 End Sub
 
@@ -485,6 +545,25 @@ Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
         Tools_Crop.UnlockProperty Index
     End If
     
+End Sub
+
+Private Sub cmdLock_GotFocusAPI(Index As Integer)
+    If (Index = 0) Or (Index = 1) Then
+        UpdateFlyout 0, True
+    ElseIf (Index = 2) Then
+        UpdateFlyout 1, True
+    End If
+End Sub
+
+Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    Select Case Index
+        Case 0
+            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(2).hWnd Else newTargetHwnd = Me.tudCrop(3).hWnd
+        Case 1
+            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(3).hWnd Else newTargetHwnd = Me.chkAllowGrowing.hWnd
+        Case 2
+            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(5).hWnd Else newTargetHwnd = cmdFlyoutLock(1).hWnd
+    End Select
 End Sub
 
 Private Sub Form_Activate()
@@ -557,15 +636,23 @@ Private Sub sldHighlight_GotFocusAPI()
     UpdateFlyout 2, True
 End Sub
 
+Private Sub sldHighlight_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.clrHighlight.hWnd Else newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+End Sub
+
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     UpdateFlyout Index, newState
+End Sub
+
+Private Sub ttlPanel_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
 End Sub
 
 Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         Select Case Index
             Case 0
-                newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+                newTargetHwnd = tudCrop(1).hWnd
             Case 1
                 newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
             Case 2
@@ -574,11 +661,15 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
     Else
         Select Case Index
             Case 0
-                newTargetHwnd = Me.tudCrop(0).hWnd
+                newTargetHwnd = Me.tudCrop(2).hWnd
             Case 1
-                'newTargetHwnd = Me.sltLayerAngle.hWndSlider
+                newTargetHwnd = Me.tudCrop(4).hWnd
             Case 2
-                'newTargetHwnd = Me.chkAutoActivateLayer.hWnd
+                If Me.cmdCommit(0).Enabled Then
+                    newTargetHwnd = Me.cmdCommit(0).hWnd
+                Else
+                    newTargetHwnd = Me.chkDelete.hWnd
+                End If
         End Select
     End If
 End Sub
@@ -669,17 +760,35 @@ End Sub
 Private Sub tudCrop_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     
     If shiftTabWasPressed Then
-        If (Index > 0) Then
-            newTargetHwnd = tudCrop(Index - 1).hWnd
-        Else
-            newTargetHwnd = Me.ttlPanel(0).hWnd
-        End If
+        Select Case Index
+            Case 0
+                newTargetHwnd = cmdFlyoutLock(2).hWnd
+            Case 1
+                newTargetHwnd = tudCrop(0).hWnd
+            Case 2
+                newTargetHwnd = ttlPanel(0).hWnd
+            Case 3
+                newTargetHwnd = cmdLock(0).hWnd
+            Case 4
+                newTargetHwnd = ttlPanel(1).hWnd
+            Case 5
+                newTargetHwnd = cmdAspectSwap.hWnd
+        End Select
     Else
-        If (Index < 3) Then
-            newTargetHwnd = tudCrop(Index + 1).hWnd
-        Else
-            'newTargetHwnd = chkAspectRatio.hWnd
-        End If
+        Select Case Index
+            Case 0
+                newTargetHwnd = tudCrop(1).hWnd
+            Case 1
+                newTargetHwnd = ttlPanel(0).hWnd
+            Case 2
+                newTargetHwnd = cmdLock(0).hWnd
+            Case 3
+                newTargetHwnd = cmdLock(1).hWnd
+            Case 4
+                newTargetHwnd = cmdAspectSwap.hWnd
+            Case 5
+                newTargetHwnd = cmdLock(2).hWnd
+        End Select
     End If
 
 End Sub
