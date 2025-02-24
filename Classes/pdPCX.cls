@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PCX (ZSoft "PiCture eXchange") Image Decoder
 'Copyright 2025-2025 by Tanner Helland
 'Created: 02/January/25
-'Last updated: 13/February/25
-'Last update: tweak importer to allow 4-bpp, 4-plane data, but as I only have one test image I'm not sure
-'             the result is correct.  (At least you can recover image data this way...)
+'Last updated: 24/February/25
+'Last update: tweak importer to fix recovery of 4-bpp, 4-plane data, but as I only have one test image
+'             with these settings I'm *still* not sure this handling is correct.
 '
 'The PCX file format is nearly as old as I am!  PhotoDemon originally handled PCX files via the 3rd-party
 ' FreeImage library, but FreeImage doesn't support some valid PCX files and has unreliable behavior on
@@ -668,17 +668,36 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             ' in-file information unless absolutely necessary).  Newer versions of GIMP have also added
             ' a pop-up prompt where you can choose between the PCX's embedded palette and a standard
             ' monochrome black-and-white palette.  This is such an incredibly esoteric use-case that I'm
-            ' not sure I care to follow it, but it could be added in the future as an option.
+            ' not sure I care to mimic it, but it could be added in the future as an option.
             '
             '(Note also that if the file is explicitly marked as "no embedded palette" (e.g. v3),
-            ' we could forcibly override the embedded palette with black/white, but doing this breaks
-            ' some PCX files with valid embedded palettes so there's no right answer here; I've chosen
-            ' to preserve embedded palettes as much as possible for now.)
+            ' we should ignore the embedded palette; this does potentially risk breaking some images with
+            ' incorrectly marked headers, but if we use the embedded palette all the time we'll break
+            ' images that are encoded correctly.  There's no right answer; "try to favor preserving
+            ' correctly encoded images wherever possible" is the current strategy.)
             If (actualBPP = 1) Then
-                If VBHacks.MemCmp(VarPtr(m_Palette(0)), VarPtr(m_Palette(1)), 4) Then
+                
+                'Files explicitly marked as "no embedded palette" need to manually set palette
+                ' entries 0 and 1 to black and white, respectively
+                If (m_Header.pcx_VersionNumber = 1) Or (m_Header.pcx_VersionNumber = 3) Then
                     m_Palette(0) = Colors.GetRGBQuadFromHex("#000000")
                     m_Palette(1) = Colors.GetRGBQuadFromHex("#FFFFFF")
+                
+                'Otherwise, rely on heuristics.  (Presently, if the RGB values in the first two
+                ' palette entries have a difference of just 0 or 1, use black and white; I use this
+                ' heuristic because some "in the wild" images inexplicably set the color values of
+                ' the embedded palette to their *numerical index*, either 0/1/2/3... etc or
+                ' reverse-ordered 15/14/13/12... etc.  This is presumably a glitch or deliberate
+                ' flag of some sort, but it produces unusable images.)
+                Else
+                    If (Abs(CLng(m_Palette(0).Red) - CLng(m_Palette(1).Red)) < 2) And _
+                    (Abs(CLng(m_Palette(0).Green) - CLng(m_Palette(1).Green)) < 2) And _
+                    (Abs(CLng(m_Palette(0).Red) - CLng(m_Palette(1).Red)) < 2) Then
+                        m_Palette(0) = Colors.GetRGBQuadFromHex("#000000")
+                        m_Palette(1) = Colors.GetRGBQuadFromHex("#FFFFFF")
+                    End If
                 End If
+                
             End If
             
             'If this image is a PCX (not a DCX), save this palette to the target image object
@@ -736,6 +755,19 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                 bitFlags(2) = 2 ^ 2
                 bitFlags(3) = 1
             End If
+        
+        'I only have one test image with these settings, so I'm forced to imagine what the correct solution is!
+        ' This produces a useable image so we're running with it for now...
+        ElseIf (actualBPP = 16) Then
+            ReDim bitFlags(0 To 7) As Byte
+            bitFlags(0) = 2 ^ 7
+            bitFlags(1) = 2 ^ 6
+            bitFlags(2) = 2 ^ 5
+            bitFlags(3) = 2 ^ 4
+            bitFlags(4) = 2 ^ 3
+            bitFlags(5) = 2 ^ 2
+            bitFlags(6) = 2 ^ 1
+            bitFlags(7) = 1
         End If
         
         'The PCX spec explicitly disallows RLE runs from crossing scanlines.  (This makes a lot of
@@ -886,7 +918,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             '24- and 32-bpp data require no additional processing, so we'll access direct bytes
             ' in the destination image instead of referring to palette quads.
             Dim useBareBytes As Boolean
-            If (actualBPP >= 24) Then useBareBytes = True
+            If (actualBPP >= 16) Then useBareBytes = True
             
             'Point a VB array at the target scanline in the final layer
             If useBareBytes Then
@@ -896,6 +928,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             End If
             
             Dim numBytesThisChannel As Long
+            Dim powFlag As Long
             
             'From here, pixel placement is separated by bit-depth
             If (actualBPP >= 24) Then
@@ -925,20 +958,53 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             ' whether or not that's what you'd actually expect to see is a different question...
             ElseIf (actualBPP = 16) Then
                 
+                powFlag = 1
+                numBytesThisChannel = 0
+                
+                'Count pixels and iterate as we go (so we can ignore dead space at the end
+                ' of individual scanlines).
                 x = 0: xOffset = 0: curChannel = 0
                 Do While (x < imgWidth) And (curChannel <= maxChannels)
                     
+                    'Pull the full byte from the post-RLE stream and iterate bits
                     curByte = uncompressedBytes(xOffset)
-                    dstPixelsRGBQuad(x) = m_Palette((curByte \ 16) And &HF)
-                    x = x + 1
+                    For j = 0 To 7
+                        
+                        If (x < imgWidth) And (curChannel <= maxChannels) Then
+                        
+                            'Use our pre-built LUT for simplicity, and set the corresponding
+                            ' color channel to maximum intensity (255).
+                            If (bitFlags(j) = (curByte And bitFlags(j))) Then
+                                dstPixels(x * 4 + curChannel) = 255
+                            End If
+                            
+                            'Update the power flag as we rotate through channels
+                            x = x + 1
+                            If (x >= imgWidth) Then
+                                x = 0
+                                curChannel = curChannel + 1
+                                powFlag = 2 ^ curChannel
+                                
+                                'Ensure padding is maintained if image width doesn't map cleanly
+                                ' to scanline widths at this bit-depth.
+                                If (numBytesThisChannel < bytesPerSingleScanline - 1) Then xOffset = xOffset + 1
+                                
+                                'Reset how many bytes we've read *for this channel* (to -1,
+                                ' because it will be incremented again outside the for loop)
+                                numBytesThisChannel = -1
+                                
+                                Exit For
+                            End If
+                            
+                        Else
+                            Exit For
+                        End If
+                        
+                    Next j
                     
-                    If (x < imgWidth) Then
-                        dstPixelsRGBQuad(x) = m_Palette(curByte And &HF)
-                        x = x + 1
-                    End If
-
                     xOffset = xOffset + 1
-
+                    numBytesThisChannel = numBytesThisChannel + 1
+                    
                 Loop
                 
             '8-bpp data can be copied directly from that palette (which was constructed as BGRA)
@@ -1001,10 +1067,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                         curChannel = 0
                         VBHacks.FillMemory VarPtr(shuffledBytes(0)), UBound(shuffledBytes) + 1, 0
                         
-                        Dim powFlag As Long
                         powFlag = 1
-                        
-                        
                         numBytesThisChannel = 0
                         
                         'Count pixels and iterate as we go (so we can ignore dead space at the end
