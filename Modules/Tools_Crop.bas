@@ -3,10 +3,14 @@ Attribute VB_Name = "Tools_Crop"
 'Crop tool interface
 'Copyright 2024-2025 by Tanner Helland
 'Created: 12/November/24
-'Last updated: 18/February/25
-'Last update: finalize implementing all combinations of "lock aspect ratio" and "force crop in-bounds"
+'Last updated: 24/February/25
+'Last update: implement destructive/non-destructive toggle for cropped pixels
 '
-'The crop tool performs identical operations to the rectangular selection tool + Image > Crop menu.
+'The crop tool performs a roughly identical task as "rectangular selection tool + Image > Crop menu".
+'
+'Because a number of crop-related options are user-exposed via this tool, this function has its own
+' crop function (so it can handle the complex matrix of options and how they all interact).  Cropping
+' via selection uses a separate function.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -80,6 +84,7 @@ Public Sub Crop_ApplyFromString(ByRef paramString As String)
     cParams.SetParamString paramString
     
     Dim targetCropRectF As RectF
+    Dim applyNonDestructively As Boolean
     
     'Only rectangular crops are currently supported
     If Strings.StringsNotEqual("rect", cParams.GetString("type", "rect", True), True) Then
@@ -92,9 +97,10 @@ Public Sub Crop_ApplyFromString(ByRef paramString As String)
             targetCropRectF.Top = .GetDouble("top", 0#, True)
             targetCropRectF.Width = .GetDouble("width", 0#, True)
             targetCropRectF.Height = .GetDouble("height", 0#, True)
+            applyNonDestructively = Not .GetBool("delete-pixels", m_DeleteCroppedPixels, True)
         End With
         
-        Crop_ApplyCropRect targetCropRectF
+        Crop_ApplyCropRect targetCropRectF, -1, applyNonDestructively
     
     End If
     
@@ -342,6 +348,7 @@ Private Function GetCropParamString() As String
         .AddParam "top", m_CropRectF.Top
         .AddParam "width", m_CropRectF.Width
         .AddParam "height", m_CropRectF.Height
+        .AddParam "delete-pixels", m_DeleteCroppedPixels
     End With
     
     GetCropParamString = cParams.GetParamString()

@@ -630,8 +630,13 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
 
     With m_lastUsedSettings
         Me.chkAllowGrowing.Value = .RetrievePresetData("crop-tool-allow-enlarge", False)
+        Tools_Crop.SetCropAllowEnlarge chkAllowGrowing.Value
         Me.chkDelete.Value = .RetrievePresetData("crop-tool-delete-pixels", True)
+        Tools_Crop.SetCropDeletePixels chkDelete.Value
         Me.chkHighlight.Value = .RetrievePresetData("crop-tool-highlight", True)
+        Tools_Crop.SetCropHighlight chkHighlight.Value
+        Tools_Crop.SetCropHighlightColor Me.clrHighlight.Color
+        Tools_Crop.SetCropHighlightOpacity Me.sldHighlight.Value
     End With
     
 End Sub
