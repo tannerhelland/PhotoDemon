@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Crop"
 'Crop tool interface
 'Copyright 2024-2025 by Tanner Helland
 'Created: 12/November/24
-'Last updated: 24/February/25
-'Last update: implement destructive/non-destructive toggle for cropped pixels
+'Last updated: 25/February/25
+'Last update: implement "target image" vs "target layer" setting
 '
 'The crop tool performs a roughly identical task as "rectangular selection tool + Image > Crop menu".
 '

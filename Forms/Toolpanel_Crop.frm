@@ -373,8 +373,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Crop Tool Panel
 'Copyright 2024-2025 by Tanner Helland
 'Created: 11/November/24
-'Last updated: 01/February/25
-'Last update: with core functions complete, time to start adding optional toggles
+'Last updated: 25/February/25
+'Last update: add toggle for image vs layer targets
 '
 'This form includes all user-editable settings for the on-canvas Crop tool.
 '
