@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Crop
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   4005
+   ClientHeight    =   4035
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   12270
@@ -25,7 +25,7 @@ Begin VB.Form toolpanel_Crop
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   267
+   ScaleHeight     =   269
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
@@ -59,12 +59,23 @@ Begin VB.Form toolpanel_Crop
       Width           =   3975
       _ExtentX        =   7011
       _ExtentY        =   3625
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         Top             =   120
+         Width           =   3735
+         _ExtentX        =   6588
+         _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   ""
+      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
          Left            =   3480
          TabIndex        =   3
-         Top             =   480
+         Top             =   540
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -78,12 +89,23 @@ Begin VB.Form toolpanel_Crop
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
-      _ExtentY        =   3625
+      _ExtentY        =   5106
+      Begin PhotoDemon.pdButtonStrip btsTarget 
+         Height          =   855
+         Left            =   120
+         TabIndex        =   23
+         Top             =   90
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   1508
+         Caption         =   "target"
+         FontSizeCaption =   10
+      End
       Begin PhotoDemon.pdSlider sldHighlight 
          Height          =   375
          Left            =   1140
          TabIndex        =   21
-         Top             =   2040
+         Top             =   1920
          Width           =   2490
          _ExtentX        =   4392
          _ExtentY        =   661
@@ -94,73 +116,43 @@ Begin VB.Form toolpanel_Crop
       End
       Begin PhotoDemon.pdColorSelector clrHighlight 
          Height          =   375
-         Left            =   360
+         Left            =   480
          TabIndex        =   20
-         Top             =   2040
-         Width           =   735
-         _ExtentX        =   1296
+         Top             =   1920
+         Width           =   615
+         _ExtentX        =   1085
          _ExtentY        =   661
          curColor        =   0
          ShowMainWindowColor=   0   'False
       End
       Begin PhotoDemon.pdCheckBox chkHighlight 
          Height          =   375
-         Left            =   240
-         TabIndex        =   19
-         Top             =   1275
-         Width           =   3255
-         _ExtentX        =   5741
-         _ExtentY        =   661
-         Caption         =   "highlight"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   300
-         Index           =   1
          Left            =   120
-         Top             =   930
-         Width           =   3360
-         _ExtentX        =   5927
-         _ExtentY        =   529
-         Caption         =   "display options"
+         TabIndex        =   19
+         Top             =   1500
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   661
+         Caption         =   "highlight crop area"
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   2
          Left            =   3240
          TabIndex        =   4
-         Top             =   2505
+         Top             =   2400
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
          StickyToggle    =   -1  'True
       End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   300
-         Index           =   0
-         Left            =   255
-         Top             =   1680
-         Width           =   3480
-         _ExtentX        =   5927
-         _ExtentY        =   529
-         Caption         =   "color and opacity"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   300
-         Index           =   3
-         Left            =   120
-         Top             =   120
-         Width           =   3360
-         _ExtentX        =   5927
-         _ExtentY        =   529
-         Caption         =   "crop options"
-      End
       Begin PhotoDemon.pdCheckBox chkDelete 
          Height          =   375
-         Left            =   240
+         Left            =   120
          TabIndex        =   22
-         Top             =   450
-         Width           =   3255
-         _ExtentX        =   5741
+         Top             =   1080
+         Width           =   3495
+         _ExtentX        =   6165
          _ExtentY        =   661
          Caption         =   "delete cropped pixels"
       End
@@ -401,6 +393,31 @@ Attribute m_Flyout.VB_VarHelpID = -1
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
+Private Sub btsTarget_Click(ByVal buttonIndex As Long)
+    Tools_Crop.SetCropAllLayers (btsTarget.ListIndex = 0)
+    UpdateEnabledControls
+End Sub
+
+Private Sub btsTarget_GotFocusAPI()
+    UpdateFlyout 2, True
+End Sub
+
+Private Sub btsTarget_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        If Me.cmdCommit(1).Enabled Then
+            newTargetHwnd = Me.cmdCommit(1).hWnd
+        Else
+            newTargetHwnd = Me.ttlPanel(2).Enabled
+        End If
+    Else
+        If Me.chkDelete.Enabled Then
+            newTargetHwnd = Me.chkDelete.hWnd
+        Else
+            newTargetHwnd = Me.chkHighlight.hWnd
+        End If
+    End If
+End Sub
+
 'When toggling the allow/don't allow enlarge setting, we also need to modify min/max values of
 ' the position and size spin controls.  All handling (including relaying changes back to the crop engine)
 ' take place in SyncMinMaxAgainstImage.
@@ -426,11 +443,7 @@ End Sub
 
 Private Sub chkDelete_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        If cmdCommit(1).Enabled Then
-            newTargetHwnd = cmdCommit(1).hWnd
-        Else
-            newTargetHwnd = Me.ttlPanel(2).hWnd
-        End If
+        newTargetHwnd = Me.btsTarget.hWnd
     Else
         newTargetHwnd = chkHighlight.hWnd
     End If
@@ -445,7 +458,15 @@ Private Sub chkHighlight_GotFocusAPI()
 End Sub
 
 Private Sub chkHighlight_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = chkDelete.hWnd Else newTargetHwnd = clrHighlight.hWnd
+    If shiftTabWasPressed Then
+        If Me.chkDelete.Enabled Then
+            newTargetHwnd = Me.chkDelete.hWnd
+        Else
+            newTargetHwnd = Me.btsTarget.hWnd
+        End If
+    Else
+        newTargetHwnd = clrHighlight.hWnd
+    End If
 End Sub
 
 Private Sub clrHighlight_ColorChanged()
@@ -491,7 +512,7 @@ Private Sub cmdCommit_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPres
     If (Index = 0) Then
         If shiftTabWasPressed Then newTargetHwnd = Me.ttlPanel(2).hWnd Else newTargetHwnd = cmdCommit(1).hWnd
     Else
-        If shiftTabWasPressed Then newTargetHwnd = Me.cmdCommit(0).hWnd Else newTargetHwnd = chkDelete.hWnd
+        If shiftTabWasPressed Then newTargetHwnd = Me.cmdCommit(0).hWnd Else newTargetHwnd = Me.btsTarget.hWnd
     End If
 End Sub
 
@@ -582,12 +603,19 @@ Private Sub Form_Load()
     
     Tools.SetToolBusyState True
     
+    'Populate any run-time UI elements
+    btsTarget.AddItem "image", 0
+    btsTarget.AddItem "layer", 1
+    btsTarget.ListIndex = 0
+    
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
     m_lastUsedSettings.SetParentForm Me
     m_lastUsedSettings.LoadAllControlValues True
     
     'Because last-used settings may update crop render settings, immediately relay any changes to the crop tool
+    Tools_Crop.SetCropAllowEnlarge Me.chkAllowGrowing.Value
+    Tools_Crop.SetCropDeletePixels Me.chkDelete.Value
     Tools_Crop.SetCropHighlight chkHighlight.Value
     Tools_Crop.SetCropHighlightColor clrHighlight.Color
     Tools_Crop.SetCropHighlightOpacity sldHighlight.Value
@@ -618,25 +646,34 @@ End Sub
 'Non-measurement settings are stored between sessions
 Private Sub m_LastUsedSettings_AddCustomPresetData()
     
+    'LOCALIZATION!
     With m_lastUsedSettings
-        .AddPresetData "crop-tool-allow-enlarge", Me.chkAllowGrowing.Value
-        .AddPresetData "crop-tool-delete-pixels", Me.chkDelete.Value
-        .AddPresetData "crop-tool-highlight", Me.chkHighlight.Value
+        .AddPresetData "crop-tool-allow-enlarge", Trim$(Str$(Me.chkAllowGrowing.Value))
+        .AddPresetData "crop-tool-delete-pixels", Trim$(Str$(Me.chkDelete.Value))
+        .AddPresetData "crop-tool-highlight", Trim$(Str$(Me.chkHighlight.Value))
+        .AddPresetData "crop-tool-target-image", Trim$(Str$((Me.btsTarget.ListIndex = 0)))
     End With
 
 End Sub
 
 Private Sub m_LastUsedSettings_ReadCustomPresetData()
 
+    Const STR_FALSE As String = "False", STR_TRUE As String = "True"
     With m_lastUsedSettings
-        Me.chkAllowGrowing.Value = .RetrievePresetData("crop-tool-allow-enlarge", False)
+        Me.chkAllowGrowing.Value = Strings.StringsEqual(.RetrievePresetData("crop-tool-allow-enlarge", STR_FALSE), STR_TRUE, True)
         Tools_Crop.SetCropAllowEnlarge chkAllowGrowing.Value
-        Me.chkDelete.Value = .RetrievePresetData("crop-tool-delete-pixels", True)
+        Me.chkDelete.Value = Strings.StringsEqual(.RetrievePresetData("crop-tool-delete-pixels", STR_TRUE), STR_TRUE, True)
         Tools_Crop.SetCropDeletePixels chkDelete.Value
-        Me.chkHighlight.Value = .RetrievePresetData("crop-tool-highlight", True)
+        Me.chkHighlight.Value = Strings.StringsEqual(.RetrievePresetData("crop-tool-highlight", STR_TRUE), STR_TRUE, True)
         Tools_Crop.SetCropHighlight chkHighlight.Value
         Tools_Crop.SetCropHighlightColor Me.clrHighlight.Color
         Tools_Crop.SetCropHighlightOpacity Me.sldHighlight.Value
+        If Strings.StringsEqual(.RetrievePresetData("crop-tool-target-image", STR_TRUE), STR_TRUE, True) Then
+            Me.btsTarget.ListIndex = 0
+        Else
+            Me.btsTarget.ListIndex = 1
+        End If
+        UpdateEnabledControls
     End With
     
 End Sub
@@ -650,7 +687,7 @@ Private Sub sldHighlight_GotFocusAPI()
 End Sub
 
 Private Sub sldHighlight_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = Me.clrHighlight.hWnd Else newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+    If shiftTabWasPressed Then newTargetHwnd = Me.clrHighlight.hWnd Else newTargetHwnd = Me.btsTarget.hWnd
 End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
@@ -677,7 +714,7 @@ Private Sub ttlPanel_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPress
                 If Me.cmdCommit(0).Enabled Then
                     newTargetHwnd = Me.cmdCommit(0).hWnd
                 Else
-                    newTargetHwnd = Me.chkDelete.hWnd
+                    newTargetHwnd = Me.btsTarget.hWnd
                 End If
         End Select
     End If
@@ -870,6 +907,11 @@ End Sub
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
     
+    'TEMPORARY ONLY:
+    Dim doNotTranslate As String
+    doNotTranslate = "(presets coming soon)"
+    lblOptions(0).Caption = doNotTranslate
+    
     'Lock/unlock buttons are standardized across *all* toolpanels
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(16)
@@ -897,6 +939,15 @@ Public Sub UpdateAgainstCurrentTheme()
     
     Interface.ApplyThemeAndTranslations Me
     
+End Sub
+
+Private Sub UpdateEnabledControls()
+    If (Me.btsTarget.ListIndex = 0) Then
+        Me.chkDelete.Enabled = True
+    Else
+        Me.chkDelete.Value = True
+        Me.chkDelete.Enabled = False
+    End If
 End Sub
 
 'Update the actively displayed flyout (if any).  Note that the flyout manager will automatically

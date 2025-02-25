@@ -71,6 +71,9 @@ Private m_HighlightCrop As Boolean, m_HighlightColor As Long, m_HighlightOpacity
 ' This setting is user-modifiable.
 Private m_DeleteCroppedPixels As Boolean
 
+'Users can crop either the full image (default) or only the active layer.
+Private m_CropAllLayers As Boolean
+
 'Apply a crop operation from a param string constructed by the GetCropParamString() function.
 ' (This function is a thin wrapper to Crop_ApplyCrop(); it just extracts relevant params from the
 '  param string and forwards the results.)
@@ -84,7 +87,7 @@ Public Sub Crop_ApplyFromString(ByRef paramString As String)
     cParams.SetParamString paramString
     
     Dim targetCropRectF As RectF
-    Dim applyNonDestructively As Boolean
+    Dim applyNonDestructively As Boolean, targetLayerOnly As Boolean, idxTargetLayer As Long
     
     'Only rectangular crops are currently supported
     If Strings.StringsNotEqual("rect", cParams.GetString("type", "rect", True), True) Then
@@ -98,9 +101,13 @@ Public Sub Crop_ApplyFromString(ByRef paramString As String)
             targetCropRectF.Width = .GetDouble("width", 0#, True)
             targetCropRectF.Height = .GetDouble("height", 0#, True)
             applyNonDestructively = Not .GetBool("delete-pixels", m_DeleteCroppedPixels, True)
+            targetLayerOnly = .GetBool("target-layer", False, True)
         End With
         
-        Crop_ApplyCropRect targetCropRectF, -1, applyNonDestructively
+        idxTargetLayer = -1
+        If targetLayerOnly Then idxTargetLayer = PDImages.GetActiveImage.GetActiveLayerIndex
+        
+        Crop_ApplyCropRect targetCropRectF, idxTargetLayer, applyNonDestructively
     
     End If
     
@@ -349,6 +356,7 @@ Private Function GetCropParamString() As String
         .AddParam "width", m_CropRectF.Width
         .AddParam "height", m_CropRectF.Height
         .AddParam "delete-pixels", m_DeleteCroppedPixels
+        .AddParam "target-layer", (Not m_CropAllLayers)
     End With
     
     GetCropParamString = cParams.GetParamString()
@@ -907,6 +915,14 @@ Public Function NotifyCropMaxSizes(ByVal newMaxWidth As Long, ByVal newMaxHeight
     If (Not m_AllowEnlarge) Then NotifyCropMaxSizes = ForceCropRectInBounds()
     
 End Function
+
+Public Function GetCropAllLayers() As Boolean
+    GetCropAllLayers = m_CropAllLayers
+End Function
+
+Public Sub SetCropAllLayers(ByVal newValue As Boolean)
+    m_CropAllLayers = newValue
+End Sub
 
 Public Function GetCropAllowEnlarge() As Boolean
     GetCropAllowEnlarge = m_AllowEnlarge
