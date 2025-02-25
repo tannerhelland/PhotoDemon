@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.42</langversion>
+<langversion>9.0.43</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -3405,6 +3405,13 @@ Por favor, introduzca un valor numérico.</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>Crop tool</original>
+<translation></translation>
+</phrase>
+
+<!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Fill tool</original>
@@ -12316,11 +12323,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Crop tool</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Rectangle selection tool</original>
 <translation>Herramienta de selección de rectángulo</translation>
 </phrase>
@@ -12410,7 +12412,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 148 phrases. 81 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12495,6 +12497,58 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>target</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight crop area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete cropped pixels</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>posición (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>tamaño (w, h)</translation>
+</phrase>
+
+<phrase>
+<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
+<translation>Bloquea este valor.  (Sólo se puede bloquear un valor a la vez.  Si bloquea un nuevo valor, los valores bloqueados anteriormente se desbloquearán).</translation>
+</phrase>
+
+<phrase>
+<original>Swap width and height</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Allow cropping outside image boundaries (which will enlarge the image).</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -12650,11 +12704,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
-<original>size (w, h)</original>
-<translation>tamaño (w, h)</translation>
-</phrase>
-
-<phrase>
 <original>lock aspect ratio</original>
 <translation>relación de aspecto de bloqueo</translation>
 </phrase>
@@ -12705,11 +12754,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>posición (x, y)</translation>
-</phrase>
-
-<phrase>
 <original>shear (x, y)</original>
 <translation>cizalla (x, y)</translation>
 </phrase>
@@ -12739,11 +12783,11 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Hacer que las transformaciones de la capa actual (tamaño, ángulo y corte) sean permanentes.  Esta acción nunca es necesaria, pero si la representación de la vista es lenta, puede mejorar el rendimiento.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 28 phrases. 12 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- Toolpanel_Paintbrush.frm contains 11 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>animate</original>
@@ -12846,11 +12890,6 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 </phrase>
 
 <phrase>
-<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
-<translation>Bloquea este valor.  (Sólo se puede bloquear un valor a la vez.  Si bloquea un nuevo valor, los valores bloqueados anteriormente se desbloquearán).</translation>
-</phrase>
-
-<phrase>
 <original>This option controls how smoothly selection edges blend with their surroundings.</original>
 <translation>Esta opción controla la suavidad con una selección se funde con su entorno.</translation>
 </phrase>
@@ -12910,7 +12949,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 75 phrases. 43 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -14547,10 +14586,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2754</phrasecount>
+<phrasecount>2761</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5849 phrases. -->
-<!-- 3095 are duplicates, so only 2754 unique phrases have been written to file. -->
-<!-- These 2754 phrases contain approximately 11952 total words. -->
+<!-- As of this build, PhotoDemon contains 5873 phrases. -->
+<!-- 3112 are duplicates, so only 2761 unique phrases have been written to file. -->
+<!-- These 2761 phrases contain approximately 11976 total words. -->
 
 </pdData>

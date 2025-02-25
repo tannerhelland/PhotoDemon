@@ -400,88 +400,118 @@ Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     End If
 End Sub
 
-'External functions can call this to set the current selection state
+'External functions can call this to set the current "selection" state
 ' (which updates the status bar with a little selection size notification).
+'
+'Note that it doesn't need to be used exclusively for selections - anything that represents an "area"
+' can use this function to display a "selected area" region in the status bar.
 Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
+    
+    'If a message *is* displayed, we'll assemble it using a pdString instance
+    Dim cString As pdString
+    
+    'Retrieve the contained rect into this struct
+    Dim selectRect As RectF
     
     'The position displayed changes based on the current measurement unit (px, in, cm)
     If newSelectionState Then
     
         If PDImages.IsImageActive() Then
-            If PDImages.GetActiveImage.IsSelectionActive() Then
+            
+            'Different tools can use this area in different ways
+            If Tools.IsSelectionToolActive() Then
                 
-                'Some rectangle selections are allowed to display "in-progress" measurements.
-                newSelectionState = PDImages.GetActiveImage.MainSelection.IsLockedIn()
-                
-                'If the selection is *not* locked in, we can still display a boundary rect under
-                ' certain conditions.
-                If (Not newSelectionState) Then
-                    Select Case PDImages.GetActiveImage.MainSelection.GetSelectionShape
+                If PDImages.GetActiveImage.IsSelectionActive() Then
+                    
+                    'Some rectangle selections are allowed to display "in-progress" measurements.
+                    newSelectionState = PDImages.GetActiveImage.MainSelection.IsLockedIn()
+                    
+                    'If the selection is *not* locked in, we can still display a boundary rect under
+                    ' certain conditions.
+                    If (Not newSelectionState) Then
+                        Select Case PDImages.GetActiveImage.MainSelection.GetSelectionShape
+                            
+                            'Rectangle and ellipse selections are *always* okay to display, because even while
+                            ' being drawn they have clear "boundary rects"
+                            Case ss_Rectangle, ss_Circle
+                                newSelectionState = True
+                            Case ss_Polygon
+                                newSelectionState = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState()
+                            Case ss_Lasso
+                                newSelectionState = PDImages.GetActiveImage.MainSelection.GetLassoClosedState()
+                            Case ss_Wand
+                                newSelectionState = True
+                            Case ss_Raster
+                                newSelectionState = True
+                        End Select
                         
-                        'Rectangle and ellipse selections are *always* okay to display, because even while
-                        ' being drawn they have clear "boundary rects"
-                        Case ss_Rectangle, ss_Circle
-                            newSelectionState = True
-                        Case ss_Polygon
-                            newSelectionState = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState()
-                        Case ss_Lasso
-                            newSelectionState = PDImages.GetActiveImage.MainSelection.GetLassoClosedState()
-                        Case ss_Wand
-                            newSelectionState = True
-                        Case ss_Raster
-                            newSelectionState = True
-                    End Select
-                    
-                End If
-                    
-                If newSelectionState Then
-                    
-                    'The way we retrieve selection boundaries varies by selection type, and may also
-                    ' depend on whether the selection is locked in (i.e. "finished")
-                    Dim selectRect As RectF
-                    Select Case PDImages.GetActiveImage.MainSelection.GetSelectionShape
+                    End If
                         
-                        'Rectangle and ellipse selections are *always* okay to display, because even while
-                        ' being drawn they have clear "boundary rects"
-                        Case ss_Rectangle, ss_Circle
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect()
-                        Case ss_Polygon
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
-                        Case ss_Lasso
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
-                        Case ss_Wand
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
-                        Case ss_Raster
-                            selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
-                    End Select
-                    
-                    'We're also going to assemble the final display string using a pdString instance
-                    Const LOWERCASE_X As String = " x "
-                    Dim cString As pdString
-                    Set cString = New pdString
-                    
-                    cString.Append Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, selectRect.Width, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
-                    cString.Append LOWERCASE_X
-                    cString.Append Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, selectRect.Height, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
-                    
-                    'Also append the selection's aspect ratio, in the form X : 1
-                    If (selectRect.Height <> 0!) Then
-                        cString.Append "  ("
-                        cString.Append Format$(selectRect.Width / selectRect.Height, "0.0#")
-                        cString.Append ":1)"
+                    If newSelectionState Then
+                        
+                        'The way we retrieve selection boundaries varies by selection type, and may also
+                        ' depend on whether the selection is locked in (i.e. "finished")
+                        Select Case PDImages.GetActiveImage.MainSelection.GetSelectionShape
+                            
+                            'Rectangle and ellipse selections are *always* okay to display, because even while
+                            ' being drawn they have clear "boundary rects"
+                            Case ss_Rectangle, ss_Circle
+                                selectRect = PDImages.GetActiveImage.MainSelection.GetCornersLockedRect()
+                            Case ss_Polygon
+                                selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
+                            Case ss_Lasso
+                                selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
+                            Case ss_Wand
+                                selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
+                            Case ss_Raster
+                                selectRect = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect()
+                        End Select
+                        
                     End If
                     
-                    lblCoordinates(1).Caption = cString.ToString()
-                    
+                '/IsSelectionActive
+                Else
+                    newSelectionState = False
+                End If
+            
+            '/Non-selection tools can also be handled here
+            ElseIf (g_CurrentTool = ND_CROP) Then
+                
+                If Tools_Crop.IsValidCropActive() Then
+                    newSelectionState = True
+                    selectRect = Tools_Crop.GetCropRectF
                 End If
                 
-            Else
-                newSelectionState = False
             End If
+        
+        '/IsImageActive
         Else
             newSelectionState = False
         End If
         
+    '/!newSelectionState
+    End If
+    
+    'Build a display message as relevant
+    If newSelectionState Then
+        
+        'We're also going to assemble the final display string using a pdString instance
+        Set cString = New pdString
+        
+        cString.Append Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, selectRect.Width, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Width, False)
+        Const LOWERCASE_X As String = " x "
+        cString.Append LOWERCASE_X
+        cString.Append Units.GetValueFormattedForUnit_FromPixel(m_UnitOfMeasurement, selectRect.Height, PDImages.GetActiveImage.GetDPI(), PDImages.GetActiveImage.Height, False)
+        
+        'Also append the selection's aspect ratio, in the form X : 1
+        If (selectRect.Height <> 0!) Then
+            cString.Append "  ("
+            cString.Append Format$(selectRect.Width / selectRect.Height, "0.0#")
+            cString.Append ":1)"
+        End If
+        
+        lblCoordinates(1).Caption = cString.ToString()
+    
     End If
     
     lblCoordinates(1).Visible = newSelectionState

@@ -446,10 +446,10 @@ Private Sub SyncUI_CurrentImageSettings()
     Else
         FormMain.Caption = Interface.GetWindowCaption(PDImages.GetActiveImage())
     End If
-            
+    
     'Display the image's size in the status bar
     If (PDImages.GetActiveImage.Width <> 0) Then Interface.DisplaySize PDImages.GetActiveImage()
-            
+    
     'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
     If (PDImages.GetActiveImage.GetImageIcon(False) = 0) Or (PDImages.GetActiveImage.GetImageIcon(True) = 0) Then IconsAndCursors.CreateCustomFormIcons PDImages.GetActiveImage()
     IconsAndCursors.ChangeAppIcons PDImages.GetActiveImage.GetImageIcon(False), PDImages.GetActiveImage.GetImageIcon(True)
@@ -574,6 +574,11 @@ Private Sub SetUIMode_NoImages()
     'If no images are currently open, but images were previously opened during this session, release any memory associated
     ' with those images.  This helps minimize PD's memory usage at idle.
     If (PDImages.GetNumSessionImages >= 1) Then PDImages.ReleaseAllPDImageResources
+    
+    'Some tools rely on image size (e.g. Crop, which can be constrained to image size, or Clone Stamp,
+    ' which may have sampled from a now-unloaded image).  Notify them of changes so they can potentially
+    ' free resources.
+    Tools.NotifyImageSizeChanged
     
     'Forcibly blank out the current message if no images are loaded
     Message vbNullString

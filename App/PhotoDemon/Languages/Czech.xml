@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.3</langversion>
+<langversion>1.0.4</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -3520,6 +3520,13 @@ Zadejte číselnou hodnotu.</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>Crop tool</original>
+<translation>Nástroj oříznutí</translation>
+</phrase>
+
+<!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Fill tool</original>
@@ -12943,11 +12950,6 @@ aplikace - Windows 95, 98, ME
 </phrase>
 
 <phrase>
-<original>Crop tool</original>
-<translation>Nástroj oříznutí</translation>
-</phrase>
-
-<phrase>
 <original>Rectangle selection tool</original>
 <translation>Nástroj pro výběr obdélníku</translation>
 </phrase>
@@ -13037,7 +13039,7 @@ aplikace - Windows 95, 98, ME
 <translation>Přepnout kurzor štětce</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 144 phrases. 76 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 148 phrases. 81 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13122,6 +13124,58 @@ aplikace - Windows 95, 98, ME
 </phrase>
 
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>target</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight crop area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete cropped pixels</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>pozice (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>velikost (š,v)</translation>
+</phrase>
+
+<phrase>
+<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
+<translation>Uzamkněte tuto hodnotu.  (Najednou lze uzamknout pouze jednu hodnotu. Pokud uzamknete novou hodnotu, odemknou se dříve zamknuté hodnoty.)</translation>
+</phrase>
+
+<phrase>
+<original>Swap width and height</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Allow cropping outside image boundaries (which will enlarge the image).</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -13277,11 +13331,6 @@ aplikace - Windows 95, 98, ME
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
-<original>size (w, h)</original>
-<translation>velikost (š,v)</translation>
-</phrase>
-
-<phrase>
 <original>lock aspect ratio</original>
 <translation>uzamknout poměr stran</translation>
 </phrase>
@@ -13333,11 +13382,6 @@ aplikace - Windows 95, 98, ME
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>pozice (x, y)</translation>
-</phrase>
-
-<phrase>
 <original>shear (x, y)</original>
 <translation>zkosení (x, y)</translation>
 </phrase>
@@ -13367,11 +13411,11 @@ aplikace - Windows 95, 98, ME
 <translation>Udělejte transformace aktuální vrstvy (velikost, úhel a smyk) trvalé.  Tato akce není nikdy vyžadována, ale pokud je vykreslování výřezu pomalé, může to zlepšit výkon.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 28 phrases. 12 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- Toolpanel_Paintbrush.frm contains 11 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>animate</original>
@@ -13475,11 +13519,6 @@ aplikace - Windows 95, 98, ME
 </phrase>
 
 <phrase>
-<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
-<translation>Uzamkněte tuto hodnotu.  (Najednou lze uzamknout pouze jednu hodnotu. Pokud uzamknete novou hodnotu, odemknou se dříve zamknuté hodnoty.)</translation>
-</phrase>
-
-<phrase>
 <original>This option controls how smoothly selection edges blend with their surroundings.</original>
 <translation>Tato možnost řídí, jak hladce splývají okraje výběru s okolím.</translation>
 </phrase>
@@ -13539,7 +13578,7 @@ aplikace - Windows 95, 98, ME
 <translation>Tato možnost určuje, jaká kritéria kouzelná hůlka používá k porovnání obrazových bodů s cílovou barvou.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 75 phrases. 43 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -15191,10 +15230,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2754</phrasecount>
+<phrasecount>2761</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5849 phrases. -->
-<!-- 3095 are duplicates, so only 2754 unique phrases have been written to file. -->
-<!-- These 2754 phrases contain approximately 11952 total words. -->
+<!-- As of this build, PhotoDemon contains 5873 phrases. -->
+<!-- 3112 are duplicates, so only 2761 unique phrases have been written to file. -->
+<!-- These 2761 phrases contain approximately 11976 total words. -->
 
 </pdData>

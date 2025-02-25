@@ -1434,21 +1434,8 @@ Public Sub GetIntClampedRectF(ByRef srcRectF As RectF)
     yOffset = srcRectF.Top - Int(srcRectF.Top)
     srcRectF.Left = Int(srcRectF.Left)
     srcRectF.Top = Int(srcRectF.Top)
-    srcRectF.Width = Int(srcRectF.Width + xOffset + 0.9999)
-    srcRectF.Height = Int(srcRectF.Height + yOffset + 0.9999)
-End Sub
-
-'Given a RectF object, adjust the boundaries to produce an integer-only RectF that approximates the
-' original rect as closely as possible.  (This rect *may* be smaller than the original; for a rect
-' guaranteed to encompass the entire original area, use GetIntClampedRectF(), above.)
-Public Sub GetNearestIntRectF(ByRef srcRectF As RectF)
-    Dim xOffset As Single, yOffset As Single
-    xOffset = PDMath.Frac(srcRectF.Left)
-    yOffset = PDMath.Frac(srcRectF.Top)
-    srcRectF.Left = Int(srcRectF.Left)
-    srcRectF.Top = Int(srcRectF.Top)
-    If (PDMath.Frac(srcRectF.Width + xOffset) >= 0.5) Then srcRectF.Width = Int(srcRectF.Width + 1#) Else srcRectF.Width = Int(srcRectF.Width)
-    If (PDMath.Frac(srcRectF.Height + yOffset) >= 0.5) Then srcRectF.Height = Int(srcRectF.Height + 1#) Else srcRectF.Height = Int(srcRectF.Height)
+    srcRectF.Width = Int(srcRectF.Width + xOffset + 0.9999!)
+    srcRectF.Height = Int(srcRectF.Height + yOffset + 0.9999!)
 End Sub
 
 'Note that GDI rects (and possibly others) have strict requirements about the way right/bottom coords are defined,
