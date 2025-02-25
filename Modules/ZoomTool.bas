@@ -266,5 +266,5 @@ Private Sub FillZoomRect_ImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage
     
     rectImageCoords.Width = newX - rectImageCoords.Left
     rectImageCoords.Height = newY - rectImageCoords.Top
-        
+    
 End Sub

@@ -767,6 +767,10 @@ Public Sub InitializeToolsDependentOnImage(Optional ByVal activeImageChanged As 
         ' What we do when changing images depends on this setting.
         If (g_CurrentTool = ND_MEASURE) Then toolpanel_Measure.NotifyActiveImageChanged
         
+        'An active crop region (if any) can be moved between images, but max/min values on the toolpanel's
+        ' spin controls need to change to match.
+        If (g_CurrentTool = ND_CROP) Then toolpanel_Crop.NotifyActiveImageChanged
+        
         'Paint tools are handled as a special case
         Dim toolIsPaint As Boolean
         toolIsPaint = (g_CurrentTool = PAINT_PENCIL) Or (g_CurrentTool = PAINT_SOFTBRUSH)
@@ -822,12 +826,12 @@ End Sub
 Public Sub NotifyImageSizeChanged()
     If (g_CurrentTool = ND_MEASURE) Then
         Tools_Measure.ResetPoints True
-    'TODO Crop tool
-    'Temporarily commented out until crop tool is integrated:
-    'ElseIf (g_CurrentTool = ND_CROP) Then
-    '    If PDImages.IsImageActive() Then
-    '        Tools_Crop.NotifyCropMaxSizes PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height
-    '    End If
+    ElseIf (g_CurrentTool = ND_CROP) Then
+        If PDImages.IsImageActive() Then
+            toolpanel_Crop.NotifyActiveImageChanged
+        Else
+            Tools_Crop.RemoveCurrentCrop
+        End If
     ElseIf (g_CurrentTool = PAINT_CLONE) Then
         Tools_Clone.NotifyImageSizeChanged
     End If
@@ -1101,6 +1105,8 @@ Public Function GetNameOfTool(ByVal toolIndex As PDTools) As String
             GetNameOfTool = "Color picker"
         Case ND_MEASURE
             GetNameOfTool = "Measure"
+        Case ND_CROP
+            GetNameOfTool = "Crop"
         Case SELECT_RECT
             GetNameOfTool = "Rectangle selection"
         Case SELECT_CIRC

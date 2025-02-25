@@ -79,7 +79,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   5
+      Index           =   6
       Left            =   120
       TabIndex        =   4
       Top             =   4440
@@ -90,7 +90,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   6
+      Index           =   7
       Left            =   840
       TabIndex        =   5
       Top             =   4440
@@ -101,7 +101,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   7
+      Index           =   8
       Left            =   1560
       TabIndex        =   6
       Top             =   4440
@@ -112,7 +112,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   8
+      Index           =   9
       Left            =   120
       TabIndex        =   7
       Top             =   5040
@@ -123,7 +123,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   9
+      Index           =   10
       Left            =   840
       TabIndex        =   8
       Top             =   5040
@@ -230,7 +230,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   10
+      Index           =   11
       Left            =   120
       TabIndex        =   17
       Top             =   6000
@@ -241,7 +241,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   11
+      Index           =   12
       Left            =   840
       TabIndex        =   18
       Top             =   6000
@@ -252,7 +252,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   12
+      Index           =   13
       Left            =   120
       TabIndex        =   19
       Top             =   7080
@@ -323,7 +323,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   13
+      Index           =   14
       Left            =   840
       TabIndex        =   0
       Top             =   7080
@@ -347,7 +347,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   14
+      Index           =   15
       Left            =   1560
       TabIndex        =   26
       Top             =   7080
@@ -358,7 +358,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   15
+      Index           =   16
       Left            =   120
       TabIndex        =   27
       Top             =   7680
@@ -380,7 +380,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   16
+      Index           =   17
       Left            =   840
       TabIndex        =   29
       Top             =   7680
@@ -391,7 +391,7 @@ Begin VB.Form toolbar_Toolbox
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
-      Index           =   17
+      Index           =   18
       Left            =   1560
       TabIndex        =   30
       Top             =   7680
@@ -405,6 +405,17 @@ Begin VB.Form toolbar_Toolbox
       Index           =   4
       Left            =   840
       TabIndex        =   31
+      Top             =   3480
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+      CustomDragDropEnabled=   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   5
+      Left            =   1560
+      TabIndex        =   32
       Top             =   3480
       Width           =   720
       _ExtentX        =   1270
@@ -512,23 +523,28 @@ Private Enum PD_ToolPanels
     TP_MoveSize = 0
     TP_ColorPicker = 1
     TP_Measure = 2
-    TP_Selections = 3
-    TP_Text = 4
-    TP_Typography = 5
-    TP_Pencil = 6
-    TP_Paintbrush = 7
-    TP_Eraser = 8
-    TP_Clone = 9
-    TP_Fill = 10
-    TP_Gradient = 11
+    TP_Crop = 3
+    
+    TP_Selections = 4
+    
+    TP_Text = 5
+    TP_Typography = 6
+    
+    TP_Pencil = 7
+    TP_Paintbrush = 8
+    TP_Eraser = 9
+    TP_Clone = 10
+    TP_Fill = 11
+    TP_Gradient = 12
 End Enum
 
 Private Const NUM_OF_TOOL_PANELS As Long = TP_Gradient + 1
 
 #If False Then
-    Private Const TP_None = -1, TP_MoveSize = 0, TP_ColorPicker = 1, TP_Measure = 2, TP_Selections = 3
-    Private Const TP_Text = 4, TP_Typography = 5, TP_Pencil = 6, TP_Paintbrush = 7, TP_Eraser = 8
-    Private Const TP_Clone = 9, TP_Fill = 10, TP_Gradient = 11
+    Private Const TP_None = -1, TP_MoveSize = 0, TP_ColorPicker = 1, TP_Measure = 2, TP_Crop = 3
+    Private Const TP_Selections = 4
+    Private Const TP_Text = 5, TP_Typography = 6
+    Private Const TP_Pencil = 7, TP_Paintbrush = 8, TP_Eraser = 9, TP_Clone = 10, TP_Fill = 11, TP_Gradient = 12
 #End If
 
 'The currently active tool panel will be mirrored to this value
@@ -810,10 +826,10 @@ Private Sub ReflowToolboxLayout()
     
     'Layout group
     PositionToolLabel 2, cmdFile(FILE_REDO), hOffset, vOffset
-    ReflowButtonSet 2, True, NAV_DRAG, ND_MEASURE, hOffset, vOffset
+    ReflowButtonSet 2, True, NAV_DRAG, ND_CROP, hOffset, vOffset
     
     'Selection group
-    PositionToolLabel 3, cmdTools(ND_MEASURE), hOffset, vOffset
+    PositionToolLabel 3, cmdTools(ND_CROP), hOffset, vOffset
     ReflowButtonSet 3, True, SELECT_RECT, SELECT_WAND, hOffset, vOffset
     
     'Vector group
@@ -910,6 +926,10 @@ Private Sub NewToolSelected()
             Tools_Measure.InitializeMeasureTool
             Tools_Measure.ResetPoints True
         
+        'Crop tool
+        Case ND_CROP
+            Tools_Crop.InitializeCropTool
+            
         'Selection tools
         Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
         
@@ -1064,7 +1084,14 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             toolpanel_Measure.UpdateAgainstCurrentTheme
             m_ActiveToolPanel = TP_Measure
             m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Measure.hWnd
-            
+        
+        'Crop tool
+        Case ND_CROP
+            Load toolpanel_Crop
+            toolpanel_Crop.UpdateAgainstCurrentTheme
+            m_ActiveToolPanel = TP_Crop
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Crop.hWnd
+        
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             Load toolpanel_Selections
@@ -1371,6 +1398,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(NAV_MOVE).AssignImage "nd_move", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
     cmdTools(COLOR_PICKER).AssignImage "color_picker", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
     cmdTools(ND_MEASURE).AssignImage "nd_measure", Nothing, buttonImageSize, buttonImageSize, resampleAlgorithm:=GP_IM_NearestNeighbor
+    cmdTools(ND_CROP).AssignImage "image_crop", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_CatmullRom
     
     cmdTools(SELECT_RECT).AssignImage "select_rect", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_Box
     cmdTools(SELECT_CIRC).AssignImage "select_circle", Nothing, buttonImageSize, buttonImageSize, usePDResamplerInstead:=rf_CatmullRom
@@ -1439,6 +1467,9 @@ Public Sub UpdateAgainstCurrentTheme()
     shortcutText = g_Language.TranslateMessage("Measure angles and distances")
     If Hotkeys.GetHotkeyText_FromAction("tool_colorselect", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
     cmdTools(ND_MEASURE).AssignTooltip shortcutText
+    shortcutText = g_Language.TranslateMessage("Crop")
+    If Hotkeys.GetHotkeyText_FromAction("tool_crop", hotkeyText) Then shortcutText = shortcutText & vbCrLf & g_Language.TranslateMessage("Shortcut key: %1", hotkeyText)
+    cmdTools(ND_CROP).AssignTooltip shortcutText
     
     '...then selections...
     shortcutText = g_Language.TranslateMessage("Rectangular Selection")

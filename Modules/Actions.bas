@@ -1560,6 +1560,9 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
         Case "tool_measure"
             toolbar_Toolbox.SelectNewTool ND_MEASURE, (actionSource = pdas_Search), True
         
+        Case "tool_crop"
+            toolbar_Toolbox.SelectNewTool ND_CROP, (actionSource = pdas_Search), True
+        
         Case "tool_select_rect"
             If (actionSource = pdas_Hotkey) Then
                 If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT

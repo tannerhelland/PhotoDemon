@@ -67,7 +67,8 @@ Private Const PCX_DEBUG_RESCUE_BROKEN As Boolean = True
 'PCX files use a single-byte (!!!) marker to start
 Private Const ZSOFT_VALIDATION_BYTE As Byte = &HA
 
-'The full header is copied into this struct at validation time.
+'At validation time, the full header is copied into this struct.  (Fields are manually copied in one-at-a-time
+' to avoid alignment issues.)
 Private Type PD_PCXHeader
     pcx_ValidationByte As Byte
     pcx_VersionNumber As Byte
@@ -89,32 +90,32 @@ Private Type PD_PCXHeader
     pcx_Reserved2(0 To 53) As Byte  'Reserved for future use, should be 0s
 End Type
 
-'Filled by any call to IsFilePCX; contents are unreliable if IsFilePCX returns FALSE
+'Filled by any call to IsFilePCX; contents are unreliable when IsFilePCX returns FALSE
 Private m_Header As PD_PCXHeader
 
 'Will be TRUE if IsFilePCX validated the header successfully
 Private m_HeaderValid As Boolean
 
-'Current palette, if any; will contain the contents of the EGA palette by default,
-' but can be overridden by a trailing palette if the file defines one.
+'Current palette, if any; will contain the contents of the header's EGA palette by default,
+' but can be overridden by a trailing palette when the file defines one.
 Private m_Palette() As RGBQuad
 
 'Byte-by-byte access is provided, as always, by a pdStream instance.
 Private m_Stream As pdStream
 
 'The last filename loaded.  We use this to skip validation during loading, if the caller already called
-' IsFilePCX on the current filename they want loaded.
+' IsFilePCX() on the filename they want loaded.
 Private m_OpenFilename As String
 
 'These properties are filled after loading, and primarily exist as helpers so PD can store basic data
-' if the user chooses "use original esttings" at export time.
+' if the user chooses "use original settings" at export time.
 Private m_EquivalentColorDepth As Long
 Private m_HasAlpha As Boolean
 Private m_IsGrayscale As Boolean
 
 'PCX uses simple RLE encoding.  Each scanline is encoded individually.  The spec is explicit that RLE runs
 ' should *NOT* cross scanlines, but as with many older image formats, there are images in the wild that
-' ignore this.  Instead of just throwing those files out, let's try and rescue them.
+' ignore this.  Instead of just throwing those files out, we try and rescue them.
 Private m_BadRLECount() As Long, m_BadRLEValue() As Long
 
 'This class handles both PCX and DCX images.  DCX images are a set of PCX images with a small header
@@ -122,8 +123,8 @@ Private m_BadRLECount() As Long, m_BadRLEValue() As Long
 ' at validation time.
 Private m_DCXMode As Boolean
 
-'If a file is DCX, we'll pre-load all PCX offsets and attempt to load each to a separate frame inside
-' the pdImage object.
+'If a file is DCX, we pre-load all PCX offsets and attempt to load each frame as a separate layer inside
+' the destination pdImage object.
 Private m_dcxCount As Long, m_dcxOffsets() As Long
 
 'PCX files use a simple but well-defined header (https://en.wikipedia.org/wiki/PCX#PCX_file_format).
@@ -195,7 +196,7 @@ BadPCXFile:
     
 End Function
 
-'DCX files are multi-frame PCX images.  We can load each individual frame as a layer in PD.
+'DCX files are multi-frame PCX images.  We can load each frame as a layer in PD.
 Private Function LoadDCXHeader() As Boolean
 
     Const FUNC_NAME = "LoadDCXHeader"
@@ -215,10 +216,10 @@ Private Function LoadDCXHeader() As Boolean
         If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "DCX header found.  Scanning frame list..."
         
         'This is very likely a DCX file.  Set the class-wide DCX flag, then pre-load the
-        ' table of PCX offsets and store it.
+        ' initial table of PCX offsets and store it at module-level.
         
         '(Note that DCX files impose a hard max-limit of 1024 frames.  Files will almost never
-        ' include that many frames, but for compatibility reasons they will likely still include
+        ' include that many frames, but for compatibility reasons they may still include
         ' [1024-n] blank entries to ensure a fixed-size header.)
         Const MAX_OFFSET As Long = 4 * 1024
         
@@ -233,7 +234,8 @@ Private Function LoadDCXHeader() As Boolean
             If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "First PCX frame found at offset " & posNextFrame
         End If
         
-        'Prep storage for all frames (including an extra position, "just in case")
+        'Prep storage for all frames (including an extra position, "just in case", to avoid
+        ' [n+1] allocation problems)
         ReDim m_dcxOffsets(0 To 1025) As Long
         
         Do
@@ -288,9 +290,13 @@ Private Function LoadPCXHeader() As Boolean
         If PCX_DEBUG_VERBOSE Then InternalError FUNC_NAME, "not a PCX image (will check DCX next)"
         m_Stream.SetPosition initStreamPos
         Exit Function
+    Else
+        LoadPCXHeader = True
+        If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Frame appears to be PCX format; loading rest of header..."
     End If
     
-    'If we're still here, the image might be a PCX file.
+    'If we're still here, the image might be a PCX file.  Load expected fields and we'll perform
+    ' bulk validation at the end.
     With m_Header
         .pcx_VersionNumber = m_Stream.ReadByte()
         .pcx_Compression = m_Stream.ReadByte()
@@ -313,10 +319,6 @@ Private Function LoadPCXHeader() As Boolean
     
     'The file offset should now be 128.  Validate relevant header bits before exiting.
     With m_Header
-        
-        'Validate marker byte
-        LoadPCXHeader = (.pcx_ValidationByte = ZSOFT_VALIDATION_BYTE)
-        If (LoadPCXHeader And PCX_DEBUG_VERBOSE) Then PDDebug.LogAction "Frame appears to be PCX format"
         
         'Validate compression
         If LoadPCXHeader Then
@@ -369,7 +371,7 @@ BadPCXFile:
 End Function
 
 'If the source file was loaded as a multi-frame DCX, this will return TRUE.
-' (Note: return value is not guaranteed useful if IsFilePCX() initially returned FALSE.)
+' (Note: return value is not useful if IsFilePCX() initially returned FALSE.)
 Friend Function IsFileActuallyDCX() As Boolean
     IsFileActuallyDCX = m_DCXMode
 End Function
@@ -416,7 +418,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
             m_dcxOffsets(0) = 0
         End If
         
-        'Try loading each frame in turn.  As a frame is generated, we'll add it to the running pdImage object.
+        'Try loading each PCX frame in turn.  As frames are generated, we'll add it to the running pdImage object.
         Dim i As Long, numPagesAdded As Long
         numPagesAdded = 0
         
@@ -433,7 +435,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 numPagesAdded = numPagesAdded + 1
                         
                 'PCX files do not support color management and should be premultiplied
-                ' (although non-255 alpha shouldn't really exist, owing to the format's age)
+                ' (although non-255 alpha is extremely rare, owing to the format's age)
                 dstDIB.SetColorManagementState cms_ProfileConverted
                 dstDIB.SetAlphaPremultiplication True
                 
@@ -444,15 +446,16 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                 Dim tmpLayer As pdLayer
                 Set tmpLayer = dstImage.GetLayerByID(newLayerID)
                 
+                'Layer name will be frame index in DCX files; filename in PCX files
                 Dim nameOfLayer As String
                 If (m_dcxCount = 1) Then
                     nameOfLayer = Layers.GenerateInitialLayerName(m_OpenFilename, srcImage:=dstImage)
                 Else
                     nameOfLayer = g_Language.TranslateMessage("Page %1", numPagesAdded)
                 End If
-                tmpLayer.InitializeNewLayer PDL_Image, nameOfLayer, dstDIB, True ' (m_dcxCount > 1)
+                tmpLayer.InitializeNewLayer PDL_Image, nameOfLayer, dstDIB, True
                 
-                'Fill in any remaining layer properties
+                'Fill any remaining layer properties with default values
                 tmpLayer.SetLayerBlendMode BM_Normal
                 tmpLayer.SetLayerOpacity 100!
                 
@@ -465,6 +468,7 @@ Friend Function LoadPCX_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
                     tmpLayer.SetLayerOffsetY 0
                 End If
                 
+                'In multi-frame files, only the first frame is visible by default
                 tmpLayer.SetLayerVisibility (numPagesAdded = 1)
                 
                 'Notify the layer and image of new changes, so it knows to regenerate internal caches
@@ -511,7 +515,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
     If (m_Stream Is Nothing) Then Exit Function
     If (Not m_Stream.IsOpen()) Then Exit Function
     
-    'So we have an open stream and some previous function validated it as "likely" a PCX file.
+    'We are now guaranteed an open stream which some previous function validated as holding PCX contents.
     
     'Starting from the current offset, load this frame's header
     m_Stream.SetPosition posInit, FILE_BEGIN
@@ -527,7 +531,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
         m_Stream.SetPosition posInit + 128, FILE_BEGIN
         
         'Construct a default palette object using the contents of the file header.
-        ' (We may overwrite this with other data later, as necessary - later PCX files can store
+        ' (We may overwrite this with other data later, as necessary - v5 PCX files can store
         '  a trailing palette at the end of the file.)
         Dim i As Long, palOffset As Long
         palOffset = 0
@@ -544,10 +548,11 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
         'If the header specifies EGA mode, overwrite the embedded palette (which may be all-zeroes)
         ' with a stock system palette instead.  (Technically an EGA palette should be used, but Adobe
         ' uses a slightly modified version of an EGA palette and it seems to produce better-looking
-        ' PCX images than I've been able to do - so I'm just stealing their palette and running with it!)
+        ' PCX images than a bare EGA one - so I've just stolen their palette here!)
         If (m_Header.pcx_VersionNumber < 2) Or (m_Header.pcx_VersionNumber = 3) Then Palettes.GetStockPalette pdsp_PSLegacy, m_Palette, False
         
-        'Untested, but as a failsafe: if a PCX specifies a grayscale palette, explicitly populate that now
+        'I don't have a way to test this (no relevant images found "in the wild" yet),
+        ' but if a PCX specifies a grayscale palette, should we explicitly populate one...?
         If (m_Header.pcx_PaletteMode = 2) Then
             If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Palette marked as grayscale; replacing colors now..."
             Palettes.GetPalette_GrayscaleEx m_Palette, 16, True
@@ -556,15 +561,15 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             m_IsGrayscale = False
         End If
         
-        'PCX files use max/min dimensions; convert these to 0-based
+        'PCX files use max/min dimensions; convert these to normal 1-based width/height
         Dim imgWidth As Long, imgHeight As Long, imgStrideInBytes As Long
         imgWidth = (m_Header.pcx_XMax - m_Header.pcx_XMin) + 1
         imgHeight = (m_Header.pcx_YMax - m_Header.pcx_YMin) + 1
         imgStrideInBytes = m_Header.pcx_BytesPerScanline * m_Header.pcx_ChannelCount
         
-        'Multi-plane images at low bit-depths (a quirk of PCX encoding) can be cumbersome to track
+        'Multi-plane images at low bit-depths (a quirk of PCX encoding) make it cumbersome to track
         ' where one plane ends and another begins due to the way PCX alignment works.  Cache the
-        ' bytes-per-scanline value in a local, non-UDT value so we can access it faster in the
+        ' bytes-per-scanline value in a local, non-UDT value so we can access it faster inside the
         ' decoding loop.
         Dim bytesPerSingleScanline As Long
         bytesPerSingleScanline = m_Header.pcx_BytesPerScanline
@@ -600,6 +605,11 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             Case 32
                 m_EquivalentColorDepth = 32
                 m_HasAlpha = True
+            
+            'Failsafe only
+            Case Else
+                If PCX_DEBUG_VERBOSE Then PDDebug.LogAction "Unknown equivalent bit-depth: " & actualBPP
+            
         End Select
         
         'Note the current file position and store it; we'll forcibly calculate correct offsets
@@ -637,8 +647,9 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             
         End If
         
-        'Palettes in PCX files are complex, and may require further processing.
-        ' (This link was very helpful: https://moddingwiki.shikadi.net/wiki/PCX_Format)
+        'PCX files have relatively complex palette behavior, owing to the format's age.
+        ' This link was very helpful in understanding some of the nuances:
+        ' https://moddingwiki.shikadi.net/wiki/PCX_Format
         If (actualBPP < 24) Then
             
             If PCX_DEBUG_VERBOSE Then
@@ -700,7 +711,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             
         End If
         
-        'Prepare a destination DIB (we'll fill its contents as we go).
+        'Initialize the destination DIB (we'll fill its contents as we go).
         If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank imgWidth, imgHeight, 32, 0, 255
         
@@ -711,14 +722,16 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
         Dim uncompressedBytes() As Byte
         ReDim uncompressedBytes(0 To imgStrideInBytes * 2) As Byte  'Extra padding included for overrun safety; only imgStrideInBytes is strictly necessary
         
+        'Some bit-depth/color-plane combinations require us to decode RLE data, then shuffle bit-flags
+        ' to arrive at actual palette indices.
         Dim compressedBytes() As Byte
         ReDim compressedBytes(0 To imgStrideInBytes * 2) As Byte
         
         Dim shuffledBytes() As Byte
         ReDim shuffledBytes(0 To imgWidth - 1) As Byte
         
-        'Supposedly there are PCX files "in the wild" that do not use compression.
-        ' If this happens, we'll try to accommodate them (even though that's against-spec!).
+        'Some software is capable of writing PCX files without compression (ImageMagick?).
+        ' This is against-spec, but we can handle it without too much extra code.
         Dim noCompression As Boolean
         noCompression = (m_Header.pcx_Compression = 0)
         
@@ -760,28 +773,29 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
         'The PCX spec explicitly disallows RLE runs from crossing scanlines.  (This makes a lot of
         ' sense for the era in which PCX was designed - you only wanted a one-line buffer for pixel
         ' values as you loaded them, to minimize memory requirements.)  Unfortunately, like any
-        ' old image format there are images "in the wild" that don't follow this rule.  We'll try
-        ' and rescue them by noting bad runs and overflowing them onto the next line.  Note,
-        ' however, that this solution is *not* foolproof - for security reasons, we'll never
-        ' overflow multiple lines at once, which means that tiny images with RLE runs that span
-        ' more than two lines will *not* load correctly (which I'm fine with).
+        ' old image format there are plenty of real-world images that don't follow this rule.
+        '
+        'We try to rescue faulty RLE runs by noting overflows and (safely) overflowing relevant bits
+        ' onto the next line.  Note, however, that this solution is *not* foolproof - for security
+        ' reasons, I never overflow multiple lines at once, which means that tiny images with RLE runs
+        ' that span more than two lines will *not* load correctly (which I'm fine with).
         '
         'Note also that these arrays are explicitly allocated with an extra trailing line, so we
         ' don't need to check boundaries when writing "next line" values to the array.
         ReDim m_BadRLECount(0 To imgHeight) As Long
         ReDim m_BadRLEValue(0 To imgHeight) As Long
         
-        'Start iterating scanlines.  We'll build the image one line at a time as we go.
+        'Start iterating scanlines.  We'll construct the final image one line at a time as we go.
         Dim x As Long, y As Long, j As Long, curChannel As Long, maxChannels As Long
         maxChannels = m_Header.pcx_ChannelCount - 1
         
         For y = 0 To imgHeight - 1
             
             'Start by decompressing the current scanline.  This step will migrate data from its simple
-            ' RLE format to an "uncompressed bytes" array.
+            ' RLE format to a temporary "uncompressed bytes" buffer.
             
-            'For speed purposes, pull a worst-case number of compressed bytes into memory.
-            ' (Operating on this will be much faster than touching the file on every RLE byte.)
+            'For speed purposes, we always pull a worst-case number of compressed bytes into memory.
+            ' (Operating on this is much faster than touching the file on each and every RLE byte.)
             Dim worstCaseBytes As Long
             worstCaseBytes = imgStrideInBytes * 2
             
@@ -793,7 +807,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             End If
             m_Stream.ReadBytes compressedBytes, imgStrideInBytes * 2, False
             
-            'Reset the offset into the uncompressed data holder
+            'Reset all offsets
             Dim xOffset As Long, srcBytesRead As Long
             xOffset = 0
             srcBytesRead = 0
@@ -805,12 +819,12 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                 VBHacks.CopyMemoryStrict VarPtr(uncompressedBytes(0)), VarPtr(compressedBytes(0)), imgStrideInBytes
                 srcBytesRead = imgStrideInBytes
                 
-            '99.9% of PCX files use simple RLE compression
+            '99.99% of PCX files use simple RLE compression
             Else
                 
                 'Before iterating x values, pre-fill the start of the line with any "leftover" RLE
-                ' runs from the previous line.  (This will only occur on broken PCX files, but I'd
-                ' like to try and recover them if I can.)
+                ' runs from the previous line.  (This only occurs on broken PCX files, but doing this
+                ' often allows us to successfully recover them.)
                 If (m_BadRLECount(y) > 0) Then
                     
                     Dim amtToFill As Long
@@ -824,8 +838,8 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                     
                 End If
                 
-                'Keep decoding until a full scanline has been processed.  (Per the spec, RLE runs cannot
-                ' extend across scanlines; we enforce this strictly.)
+                'Keep decoding until a full scanline has been processed.
+                ' (Per the spec, RLE runs cannot extend across scanlines; we enforce this strictly.)
                 Do While (xOffset < imgStrideInBytes)
                     
                     Dim curByte As Byte
@@ -854,10 +868,6 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                                 ' rescue the encoding there.
                                 m_BadRLECount(y + 1) = (xOffset + runLength) - imgStrideInBytes
                                 m_BadRLEValue(y + 1) = curByte
-                                
-                                'This RLE runs breaks spec and extends to the next line.  Decoding from this
-                                ' point forward may not work, but you could theoretically attempt to fix this
-                                ' by prepending the run to the next line, then going from there.
                                 runLength = imgStrideInBytes - xOffset
                                 
                             End If
@@ -869,9 +879,9 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
                         'Failsafe check for null run lengths
                         If (runLength <= 0) Then
                             
-                            'Technically, a run of 0 shouldn't be valid - but some files "in the wild"
+                            'Technically, a run of 0 shouldn't be valid - but some real-world files
                             ' contain these and Photoshop loads them without complaint.
-                            ' Let's do the same here (by simply treating this is a nop).
+                            ' Let's do the same here (by simply treating this as a nop).
                             
                         Else
                             
@@ -905,9 +915,8 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             Dim srcOffset As Long
             srcOffset = 0
             
-            '24- and 32-bpp data (which we'll load, even though it's technically "not allowed"),
-            ' require no additional processing, so we'll access direct bytes in the image instead
-            ' of palette quads.
+            '24- and 32-bpp data require no additional processing, so we'll access direct bytes
+            ' in the destination image instead of referring to palette quads.
             Dim useBareBytes As Boolean
             If (actualBPP >= 16) Then useBareBytes = True
             
@@ -924,8 +933,7 @@ Private Function LoadPCXFrame(ByVal posInit As Long, ByVal posEOF As Long, ByRef
             'From here, pixel placement is separated by bit-depth
             If (actualBPP >= 24) Then
                 
-                '24-bpp mode is easy: iterate channels, and simply copy data into the final pixel buffer
-                ' as we go!
+                '24/32-bpp mode is easy: iterate channels, and copy data as-is into the final pixel buffer
                 For curChannel = 0 To maxChannels
                     
                     'R/B channels need to be swizzled
@@ -1224,21 +1232,21 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         Exit Function
     End If
     
-    'PCX doesn't support multiple frames.  (We may add DCX support someday - that variant *does* support frames.)
+    'PCX doesn't support multiple frames.  (We could add DCX export support someday - that variant *does* support frames.)
     ' As such, grab a composited copy of the current image.
+    ' (NOTE: if exporting to 32-bpp is enabled in the future, you will want to set premultiplied alpha to FALSE here.)
     Dim compositeDIB As pdDIB
     srcImage.GetCompositedImage compositeDIB, True
     
-    'For now, composite against white.  (32-bit export works, but is largely unsupported elsewhere.)
-    compositeDIB.CompositeBackgroundColor 255, 255, 255
-    
-    'Color-depth is currently locked at 24/32-bit export (other depths remain TODO).
+    'Export color-depth is currently limited to <= 24-bit.
     ' Note that 32-bit PCX images aren't really a "thing", given that the PCX spec was last
-    ' (officially) updated in 2025.  However, some apps *will* load 32-bit PCX images.
+    ' (officially) updated in 1995.  However, some apps *will* load 32-bit PCX images.
     '
-    'I'm happy to disable this pending user feedback, but for now, PD will try and preserve alpha.
+    'I'm happy to enable 32-bit output pending user feedback, but for now, PD forcibly removes alpha.
     ' (Loading a PCX, editing it, then saving it back out to file is likely the most common use-case,
     '  and that's not gonna add transparency anyway - so this may all be a moot point.)
+    compositeDIB.CompositeBackgroundColor 255, 255, 255
+    
     Dim outputColorDepth As Long, numColorsInPalette As Long, pxIndexed() As Byte
     numColorsInPalette = 257
     
@@ -1412,7 +1420,7 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     Dim tmpSA1D As SafeArray1D, srcPixels() As Byte
     
     'Image stride (in bytes) represents how many bytes we *must* encode into a single RLE stream before
-    ' breaking for the next line.  (This amount is non-negotiable, even though it potentiall adds empty
+    ' breaking for the next line.  (This amount is non-negotiable, even though it potentially adds empty
     ' bytes at the end of the RLE stream since PCXs enforce a strict rule of "scanlines must be even".)
     Dim imgStrideInBytes As Long
     imgStrideInBytes = bpScanline * channelCount
@@ -1603,7 +1611,7 @@ Friend Function SavePCX_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
             'This item can be encoded as an RLE run.
             Else
                 
-                'See how many times we can repeat this pixel.  Note that we must stop repeating under
+                'See how many times we can repeat this byte.  Note that we must stop repeating under
                 ' several conditions:
                 ' 1) End of scanline
                 ' 2) Byte that no longer matches the run value

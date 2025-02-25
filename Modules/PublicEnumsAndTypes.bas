@@ -41,29 +41,36 @@ End Type
 ' double-check everything!)
 Public Enum PDTools
     TOOL_UNDEFINED = -1
+    
     NAV_DRAG = 0
     NAV_ZOOM = 1
     NAV_MOVE = 2
     COLOR_PICKER = 3
     ND_MEASURE = 4
-    SELECT_RECT = 5
-    SELECT_CIRC = 6
-    SELECT_POLYGON = 7
-    SELECT_LASSO = 8
-    SELECT_WAND = 9
-    TEXT_BASIC = 10
-    TEXT_ADVANCED = 11
-    PAINT_PENCIL = 12
-    PAINT_SOFTBRUSH = 13
-    PAINT_ERASER = 14
-    PAINT_CLONE = 15
-    PAINT_FILL = 16
-    PAINT_GRADIENT = 17
+    ND_CROP = 5
+    
+    SELECT_RECT = 6
+    SELECT_CIRC = 7
+    SELECT_POLYGON = 8
+    SELECT_LASSO = 9
+    SELECT_WAND = 10
+    
+    TEXT_BASIC = 11
+    TEXT_ADVANCED = 12
+    
+    PAINT_PENCIL = 13
+    PAINT_SOFTBRUSH = 14
+    PAINT_ERASER = 15
+    PAINT_CLONE = 16
+    PAINT_FILL = 17
+    PAINT_GRADIENT = 18
 End Enum
 
 #If False Then
-    Private Const TOOL_UNDEFINED = -1, NAV_DRAG = 0, NAV_ZOOM = 1, NAV_MOVE = 2, COLOR_PICKER = 3, ND_MEASURE = 4, SELECT_RECT = 5, SELECT_CIRC = 6, SELECT_POLYGON = 7, SELECT_LASSO = 8, SELECT_WAND = 9
-    Private Const TEXT_BASIC = 10, TEXT_ADVANCED = 11, PAINT_PENCIL = 12, PAINT_SOFTBRUSH = 13, PAINT_ERASER = 14, PAINT_CLONE = 15, PAINT_FILL = 16, PAINT_GRADIENT = 17
+    Private Const TOOL_UNDEFINED = -1, NAV_DRAG = 0, NAV_ZOOM = 1, NAV_MOVE = 2, COLOR_PICKER = 3, ND_MEASURE = 4, ND_CROP = 5
+    Private Const SELECT_RECT = 6, SELECT_CIRC = 7, SELECT_POLYGON = 8, SELECT_LASSO = 9, SELECT_WAND = 10
+    Private Const TEXT_BASIC = 11, TEXT_ADVANCED = 12
+    Private Const PAINT_PENCIL = 13, PAINT_SOFTBRUSH = 14, PAINT_ERASER = 15, PAINT_CLONE = 16, PAINT_FILL = 17, PAINT_GRADIENT = 18
 #End If
 
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.
@@ -286,7 +293,8 @@ End Enum
     Private Const PD_PERF_BESTQUALITY = 0, PD_PERF_BALANCED = 1, PD_PERF_FASTEST = 2
 #End If
 
-'PhotoDemon supports multiple image encoders and decoders.
+'PhotoDemon supports multiple image encoders and decoders.  Many of these are internal homebrew parsers,
+' but sometimes we lean on 3rd-party libraries as relevant.  (Anything that ends in "_Parser" is homebrew.)
 Public Enum PD_ImageDecoder
     id_Failure = -1
     id_GDIPlus = 0
@@ -520,41 +528,42 @@ Public Type PDCachedColor
     OrigColorValues As PDThemeColor
 End Type
 
-'Supported file formats.  Note that the import/export/feature availability of these formats is complex, and not
-' always symmetrical (e.g. just because we can read a given format doesn't mean we can also write it).  You will need
-' to refer to the pdFormats class for specific details on each format.
+'Supported file formats.  Note that the import/export/feature availability of these formats is complex,
+' and not always symmetrical (i.e. just because we read a given format doesn't mean we also write it).
+' For details on a specific format's import/export available, refer to the ImageFormats module.
 '
-'This list of formats is based heavily off the matching list of FIF_ constants in the FreeImage module.  Changes there
-' should ideally be reflected here, to avoid problems when offloading esoteric formats to FreeImage.
+'For historical reasons, this list of formats was originally based off a matching list of FIF_ constants
+' used by the 3rd-party FreeImage module.  FreeImage is no longer used for most formats in PD, but identifiers
+' have been kept to avoid breaking old code paths.
 Public Enum PD_IMAGE_FORMAT
     PDIF_UNKNOWN = -1
     PDIF_BMP = 0
-    PDIF_ICO = 1    'FreeImage is *not* used to load/save icons; we use our own internal parser
+    PDIF_ICO = 1    'internal parser used
     PDIF_JPEG = 2
     PDIF_JNG = 3
     PDIF_KOALA = 4
     PDIF_LBM = 5
     PDIF_IFF = PDIF_LBM
-    PDIF_MNG = 6
+    PDIF_MNG = 6    'not currently supported
     PDIF_PBM = 7
     PDIF_PBMRAW = 8
     PDIF_PCD = 9
-    PDIF_PCX = 10
+    PDIF_PCX = 10   'internal parser used
     PDIF_PGM = 11
     PDIF_PGMRAW = 12
-    PDIF_PNG = 13   'FreeImage is *not* used to load/save PNGs; we use our own internal parser
+    PDIF_PNG = 13   'internal parser used
     PDIF_PPM = 14
     PDIF_PPMRAW = 15
     PDIF_RAS = 16
     PDIF_TARGA = 17
     PDIF_TIFF = 18
-    PDIF_WBMP = 19
-    PDIF_PSD = 20   'FreeImage is *not* used to load/save PSDs; we use our own internal parser
+    PDIF_WBMP = 19  'internal parser used
+    PDIF_PSD = 20   'internal parser used
     PDIF_CUT = 21
-    PDIF_XBM = 22
+    PDIF_XBM = 22   'internal parser used
     PDIF_XPM = 23
     PDIF_DDS = 24
-    PDIF_GIF = 25   'FreeImage is *not* used to load/save GIFs; we use our own internal parser
+    PDIF_GIF = 25   'internal parser used
     PDIF_HDR = 26
     PDIF_FAXG3 = 27
     PDIF_SGI = 28
@@ -572,7 +581,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_RAWBUFFER = 101
     PDIF_TMPFILE = 102
     
-    'Other image formats supported by PhotoDemon, but not by FreeImage
+    'Other image formats supported by PhotoDemon (these are unsupported by FreeImage and do not map to their FIF constants)
     PDIF_WMF = 110
     PDIF_EMF = 111
     PDIF_PNM = 112      'Catch-all for various portable pixmap filetypes
@@ -655,13 +664,15 @@ Public Enum PD_PointOfInterest
     'The mouse is somewhere in the interior of this object, but not on a corner or edge
     poi_Interior = -2
     
-    'Corner POI constants.  Depending on context, this may mean the corner of a complex shape's bounding box (vs the shape itself).
+    'Corner POI constants.
+    ' Depending on context, this may mean the corner of a complex shape's bounding box (vs the shape itself).
     poi_CornerNW = -3
     poi_CornerNE = -4
     poi_CornerSE = -5
     poi_CornerSW = -6
     
-    'Edge POI constants.  Depending on context, this may mean the edge of a complex shape's bounding box (vs the shape itself).
+    'Edge POI constants.
+    ' Depending on context, this may mean the edge of a complex shape's bounding box (vs the shape itself).
     poi_EdgeN = -7
     poi_EdgeE = -8
     poi_EdgeS = -9
@@ -769,3 +780,18 @@ Public Type PD_PNGHeader
     BitDepth As Byte
     BitsPerPixel As Byte
 End Type
+
+Public Enum PD_Dimension
+    pdd_Left
+    pdd_Top
+    pdd_Width
+    pdd_Height
+    pdd_AspectRatioW
+    pdd_AspectRatioH
+    pdd_SwapAspectRatio
+    pdd_AspectBoth
+End Enum
+
+#If False Then
+    Private Const pdd_Left = 0, pdd_Top = 0, pdd_Width = 0, pdd_Height = 0, pdd_AspectRatioW = 0, pdd_AspectRatioH = 0, pdd_SwapAspectRatio = 0, pdd_AspectBoth = 0
+#End If

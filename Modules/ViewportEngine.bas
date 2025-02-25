@@ -3,8 +3,8 @@ Attribute VB_Name = "Viewport"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 29/November/16
-'Last update: reinstate all color management code under LittleCMS (instead of the Windows ICM engine, which is a hot mess)
+'Last updated: 20/November/24
+'Last update: add switch for crop tool UI rendering
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
 '
@@ -146,7 +146,10 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             ElseIf (g_CurrentTool = ND_MEASURE) Then
                 Tools_Measure.RenderMeasureUI dstCanvas
-            
+                
+            ElseIf (g_CurrentTool = ND_CROP) Then
+                Tools_Crop.DrawCanvasUI dstCanvas, srcImage
+                
             'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
             ' they only support the "move" interaction, which is applied by click-dragging anywhere in the lasso region.)
@@ -573,13 +576,6 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 .Left = Int((canvasRect_ActualPixels.Width * 0.5) - (.Width * 0.5))
                 .Top = Int((canvasRect_ActualPixels.Height * 0.5) - (.Height * 0.5))
             End With
-            
-            'NEW IN 7.0: convert our calculated RectFs to their nearest integer-only estimates.
-            ' This should solve some obnoxious, persistent issues with edge handling during rendering.
-            ' (I have suspended this feature pending further testing.)
-            'PDMath.GetNearestIntRectF canvasRect_ActualPixels
-            'PDMath.GetNearestIntRectF canvasRect_ImageCoords
-            'PDMath.GetNearestIntRectF imageRect_CanvasCoords
             
             'imageRect_CanvasCoords now contains a RECTF of the image, with zoom applied, centered over the
             ' canvas.  Its (.Top, .Left) coordinate pair represents the (0, 0) position of the image, when the
