@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 111.1</langversion>
+<langversion>2024.12 Alpha - Build 198</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4162,7 +4162,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
-<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows® für eine einzelne Laden-Operation einkalkuliert. Bitte versuchen Sie es erneut mit einem kleineren Set an Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set an Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -7435,7 +7435,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>in the future, automatically apply these settings</original>
-<translation>In Zukunft automatisch diese Einstellungen anwenden</translation>
+<translation>In Zukunft diese Einstellungen automatisch anwenden</translation>
 </phrase>
 
 <phrase>
@@ -12498,22 +12498,22 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>Ziel</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>Zuschneidebereich hervorheben</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>Zugeschnittene Pixel löschen</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>Anwenden</translation>
 </phrase>
 
 <phrase>
@@ -12523,7 +12523,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>Vergrößerung erlauben</translation>
 </phrase>
 
 <phrase>
@@ -12538,12 +12538,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>Breite und Höhe tauschen</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>Cropping außerhalb Bildgrenzen erlauben (wodurch das Bild vergrößert wird).</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -12904,7 +12904,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>Dieser "Weiche Kante"-Schieberegler kalkuliert unmittelbare Anpassungen der weichen Kante mit ein. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere weiche Kante-Radien verwenden Sie bitte das Menü "Auswahl > Weiche Kante".</translation>
+<translation>Dieser "Weiche Kante"-Schieberegler erlaubt unmittelbare Anpassungen der weichen Kante. Aus Performance-Gründen ist es auf kleine Radien limitiert. Für größere weiche Kante-Radien verwenden Sie bitte das Menü "Auswahl > Weiche Kante".</translation>
 </phrase>
 
 <phrase>
@@ -14313,7 +14313,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon kann Sie benachrichtigen, wenn es bereit ist, ein Update anzuwenden. Dies ermöglicht Ihnen, die aktualiserte Version unmittelbar zu verwenden.</translation>
+<translation>PhotoDemon kann Sie benachrichtigen, wenn es bereit ist, ein Update anzuwenden. Dies ermöglicht Ihnen, die aktualiserte Version sofort zu verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -14329,7 +14329,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates involvieren schlichtweg das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neuesten Versionsnummern von Software, Plug-ins und Sprachen. Wenn aktualisierte Versionen gefunden werden und die Benutzervoreinstellungen es zulassen, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Developer von PhotoDemon nehmen Privatsphäre und Datenschutz sehr ernst, sodass keine Informationen - statistisch oder anderweitig - während des Update-Prozesses hochgeladen werden. Updates involvieren schlichtweg das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neuesten Versionsnummern von Software, Plug-ins und Sprachen. Wenn aktualisierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um nach neuen Versionen zu suchen.</translation>
 </phrase>
