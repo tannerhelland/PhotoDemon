@@ -673,6 +673,7 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         Else
             Me.btsTarget.ListIndex = 1
         End If
+        Tools_Crop.SetCropAllLayers (Me.btsTarget.ListIndex = 0)
         UpdateEnabledControls
     End With
     
@@ -944,8 +945,10 @@ End Sub
 Private Sub UpdateEnabledControls()
     If (Me.btsTarget.ListIndex = 0) Then
         Me.chkDelete.Enabled = True
+        Tools_Crop.SetCropDeletePixels Me.chkDelete.Value
     Else
         Me.chkDelete.Value = True
+        Tools_Crop.SetCropDeletePixels True
         Me.chkDelete.Enabled = False
     End If
 End Sub

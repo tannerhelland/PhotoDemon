@@ -928,6 +928,7 @@ Private Sub NewToolSelected()
         
         'Crop tool
         Case ND_CROP
+            If Selections.SelectionsAllowed(False) Then Process "Remove selection", createUndo:=UNDO_Selection
             Tools_Crop.InitializeCropTool
             
         'Selection tools

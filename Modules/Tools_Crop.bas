@@ -132,6 +132,9 @@ Private Sub Crop_ApplyCropRect(ByRef cropRectF As RectF, Optional ByVal targetLa
         Exit Sub
     End If
     
+    'Before we apply a crop, selections must be removed
+    If Selections.SelectionsAllowed(False) Then Selections.RemoveCurrentSelection False
+    
     'Just an FYI before we begin: an important distinction between this tool and selection-based cropping
     ' is that this tool can explicitly *grow* image dimensions if/when the crop boundary lies outside the image.
     ' As such, the overlap between any given layer and the crop rect is highly variable, and it's fully
