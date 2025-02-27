@@ -34,7 +34,8 @@ Private m_CropRectF As RectF
 
 'Some crop attributes can be independently locked (e.g. aspect ratio).
 Private m_IsWidthLocked As Boolean, m_IsHeightLocked As Boolean, m_IsAspectLocked As Boolean
-Private m_LockedWidth As Long, m_LockedHeight As Long, m_LockedAspectRatio As Double
+Private m_LockedWidth As Long, m_LockedHeight As Long
+Private m_LockedAspectNumerator As Double, m_LockedAspectDenominator As Double, m_LockedAspectRatio As Double
 
 'Index of the current mouse_over point, if any.
 Private m_idxHover As PD_PointOfInterest
@@ -1008,7 +1009,7 @@ End Function
 
 'Some properties can be independently locked (e.g. width or height or aspect ratio).
 ' When a property is locked, it cannot be changed by additional UI inputs.
-Public Sub LockProperty(ByVal selProperty As PD_SelectionLockable, ByVal lockedValue As Variant)
+Public Sub LockProperty(ByVal selProperty As PD_SelectionLockable, ByVal lockedValue As Variant, Optional ByVal lockedValue2 As Variant)
 
     If (selProperty = pdsl_Width) Then
         m_IsWidthLocked = True
@@ -1022,7 +1023,13 @@ Public Sub LockProperty(ByVal selProperty As PD_SelectionLockable, ByVal lockedV
         m_IsAspectLocked = False
     ElseIf (selProperty = pdsl_AspectRatio) Then
         m_IsAspectLocked = True
-        m_LockedAspectRatio = lockedValue
+        m_LockedAspectNumerator = lockedValue
+        m_LockedAspectDenominator = lockedValue2
+        If (m_LockedAspectNumerator > 0#) And (m_LockedAspectDenominator > 0#) Then
+            m_LockedAspectRatio = m_LockedAspectNumerator / m_LockedAspectDenominator
+        Else
+            m_LockedAspectRatio = 1#
+        End If
         m_IsWidthLocked = False
         m_IsHeightLocked = False
     End If
@@ -1612,8 +1619,13 @@ Private Sub RelayCropChangesToUI()
     'Aspect ratio requires a bit of math
     Dim fracNumerator As Long, fracDenominator As Long
     GetAspectRatioAsFraction fracNumerator, fracDenominator
-    toolpanel_Crop.tudCrop(4).Value = fracNumerator
-    toolpanel_Crop.tudCrop(5).Value = fracDenominator
+    If m_IsAspectLocked Then
+        toolpanel_Crop.tudCrop(4).Value = m_LockedAspectNumerator
+        toolpanel_Crop.tudCrop(5).Value = m_LockedAspectDenominator
+    Else
+        toolpanel_Crop.tudCrop(4).Value = fracNumerator
+        toolpanel_Crop.tudCrop(5).Value = fracDenominator
+    End If
     
     toolpanel_Crop.cmdCommit(0).Enabled = Tools_Crop.IsValidCropActive()
     toolpanel_Crop.cmdCommit(1).Enabled = Tools_Crop.IsValidCropActive()
@@ -1624,7 +1636,7 @@ Private Sub RelayCropChangesToUI()
 End Sub
 
 'The crop toolpanel relays user input via this function.  Left/top/width/height as passed as integers; aspect ratio as a float.
-Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optional ByVal newPropI As Long = 0, Optional ByVal newPropF As Single = 0!)
+Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optional ByVal newPropI As Long = 0, Optional ByVal newPropF As Single = 0!, Optional ByVal newPropI2 As Long = 0&)
     
     'For calculating aspect ratio as a fraction
     Dim fracNumerator As Long, fracDenominator As Long
@@ -1684,12 +1696,28 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
         Case pdd_AspectRatioW
             m_CropRectF.Width = newPropI
             toolpanel_Crop.tudCrop(2).Value = newPropI
-            If m_IsAspectLocked Then m_LockedAspectRatio = newPropF
+            If m_IsAspectLocked Then
+                m_LockedAspectNumerator = newPropF
+                m_LockedAspectDenominator = newPropI2
+                If (m_LockedAspectNumerator > 0) And (m_LockedAspectDenominator > 0) Then
+                    m_LockedAspectRatio = m_LockedAspectNumerator / m_LockedAspectDenominator
+                Else
+                    m_LockedAspectRatio = 1!
+                End If
+            End If
             
         Case pdd_AspectRatioH
             m_CropRectF.Height = newPropI
             toolpanel_Crop.tudCrop(3).Value = newPropI
-            If m_IsAspectLocked And (newPropF <> 0!) Then m_LockedAspectRatio = 1! / newPropF
+            If m_IsAspectLocked Then
+                m_LockedAspectNumerator = newPropF
+                m_LockedAspectDenominator = newPropI2
+                If (m_LockedAspectNumerator > 0) And (m_LockedAspectDenominator > 0) Then
+                    m_LockedAspectRatio = m_LockedAspectNumerator / m_LockedAspectDenominator
+                Else
+                    m_LockedAspectRatio = 1!
+                End If
+            End If
         
         'Swap aspect ratio (e.g. 4:3 becomes 3:4).  This toggle ignores any/all locked values.
         Case pdd_SwapAspectRatio
@@ -1726,12 +1754,28 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
             'Now we have to relay changes to a bunch of places: width/height/aspect ratio
             toolpanel_Crop.tudCrop(2).Value = m_CropRectF.Width
             toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
-            If m_IsAspectLocked And (m_CropRectF.Height >= 1!) Then m_LockedAspectRatio = m_CropRectF.Width / m_CropRectF.Height
             
-            fracNumerator = toolpanel_Crop.tudCrop(4).Value
-            toolpanel_Crop.tudCrop(4).Value = toolpanel_Crop.tudCrop(5).Value
-            toolpanel_Crop.tudCrop(5).Value = fracNumerator
+            Dim tmpDouble As Double
+            If m_IsAspectLocked And (m_CropRectF.Height >= 1!) Then
                 
+                'Swap the stored numerator and denominator values
+                tmpDouble = m_LockedAspectDenominator
+                m_LockedAspectDenominator = m_LockedAspectNumerator
+                m_LockedAspectNumerator = tmpDouble
+                
+                'Calculate a new locked aspect ratio, then relay the changes back to the UI
+                m_LockedAspectRatio = m_CropRectF.Width / m_CropRectF.Height
+            
+                toolpanel_Crop.tudCrop(4).Value = m_LockedAspectNumerator
+                toolpanel_Crop.tudCrop(5).Value = m_LockedAspectDenominator
+            
+            'Simply swap the text box values as-is
+            Else
+                tmpDouble = toolpanel_Crop.tudCrop(4).Value
+                toolpanel_Crop.tudCrop(4).Value = toolpanel_Crop.tudCrop(5).Value
+                toolpanel_Crop.tudCrop(5).Value = Int(tmpDouble)
+            End If
+            
             Tools.SetToolBusyState False
             
         'When neither width nor height is locked, the UI will pass aspect ratio as separate width/height values;
@@ -1739,7 +1783,11 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
         Case pdd_AspectBoth
             
             'If aspect ratio is locked, store the updated value now
-            If (m_IsAspectLocked And (newPropF > 0!)) Then m_LockedAspectRatio = CDbl(newPropI) / newPropF
+            If (m_IsAspectLocked And (newPropF > 0!)) Then
+                m_LockedAspectRatio = CDbl(newPropI) / newPropF
+                m_LockedAspectNumerator = newPropI
+                m_LockedAspectDenominator = newPropF
+            End If
             
             If Tools_Crop.IsValidCropActive() Then
                 
@@ -1779,6 +1827,7 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
                 toolpanel_Crop.tudCrop(3).Value = m_CropRectF.Height
                 If m_IsAspectLocked And (m_CropRectF.Height >= 1!) Then m_LockedAspectRatio = m_CropRectF.Width / m_CropRectF.Height
                 
+                'Don't relay aspect ratio; we want to leave the current UI values untouched
                 'fracNumerator = toolpanel_Crop.tudCrop(4).Value
                 'toolpanel_Crop.tudCrop(4).Value = toolpanel_Crop.tudCrop(5).Value
                 'toolpanel_Crop.tudCrop(5).Value = fracNumerator

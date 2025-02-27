@@ -537,16 +537,18 @@ End Sub
 
 Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     
-    Dim lockedValue As Variant
+    Dim lockedValue As Variant, lockedValue2 As Variant
     If (Index = 0) Then
         lockedValue = tudCrop(2).Value
     ElseIf (Index = 1) Then
         lockedValue = tudCrop(3).Value
     Else
         If (tudCrop(4).Value <> 0#) And (tudCrop(5).Value <> 0#) Then
-            lockedValue = tudCrop(4).Value / tudCrop(5).Value
+            lockedValue = tudCrop(4).Value
+            lockedValue2 = tudCrop(5).Value
         Else
             lockedValue = 1#
+            lockedValue2 = 1#
         End If
     End If
 
@@ -565,7 +567,7 @@ Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     End If
     
     If cmdLock(Index).Value Then
-        Tools_Crop.LockProperty Index, lockedValue
+        Tools_Crop.LockProperty Index, lockedValue, lockedValue2
     Else
         Tools_Crop.UnlockProperty Index
     End If
@@ -764,11 +766,11 @@ Private Sub tudCrop_Change(Index As Integer)
                     If ((Index = 4) And (Not cmdLock(0).Value)) Or cmdLock(1).Value Then
                         aspFinal = aspW / aspH
                         newDimension = tudCrop(3).Value * aspFinal
-                        Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioW, newDimension, CSng(aspFinal)
+                        Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioW, newDimension, tudCrop(4).Value, tudCrop(5).Value
                     Else
                         aspFinal = aspH / aspW
                         newDimension = tudCrop(2).Value * aspFinal
-                        Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioH, newDimension, CSng(aspFinal)
+                        Tools_Crop.RelayCropChangesFromUI pdd_AspectRatioH, newDimension, tudCrop(4).Value, tudCrop(5).Value
                     End If
                     
                 'If neither width nor height is locked, it doesn't matter which one we modify - we simply want
