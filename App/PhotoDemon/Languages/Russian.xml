@@ -5729,7 +5729,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Help</original>
-<translation>Помощь</translation>
+<translation>Справка</translation>
 </phrase>
 
 <phrase>
@@ -12501,22 +12501,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>Кадровка</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>Затемнить область обрезки</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>Удалить обрезанные пиксели</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>Применить</translation>
 </phrase>
 
 <phrase>
@@ -12526,7 +12526,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>Разрешить увеличение</translation>
 </phrase>
 
 <phrase>
@@ -12541,12 +12541,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>Изменить высоту и ширину</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>Разрешить обрезку за пределами изображения (это увеличит изображение).</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -14513,7 +14513,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>End recording</original>
-<translation>Запись завершена</translation>
+<translation>Остановить запись</translation>
 </phrase>
 
 <phrase>
