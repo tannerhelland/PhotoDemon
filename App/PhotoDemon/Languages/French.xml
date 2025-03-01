@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.635</langversion>
+<langversion>6.7.636</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -6406,6 +6406,11 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
+<original>use moving average</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>max count</original>
 <translation>nombre maxi</translation>
 </phrase>
@@ -6415,7 +6420,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Mise à jour de l'histogramme</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 40 phrases. 29 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 41 phrases. 29 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>radius</original>
@@ -12417,7 +12422,7 @@ Vous pouvez alors si besoin
 <translation>Commuter le curseur de brosse</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 148 phrases. 81 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -14596,10 +14601,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2761</phrasecount>
+<phrasecount>2762</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5873 phrases. -->
-<!-- 3112 are duplicates, so only 2761 unique phrases have been written to file. -->
-<!-- These 2761 phrases contain approximately 11976 total words. -->
+<!-- As of this build, PhotoDemon contains 5875 phrases. -->
+<!-- 3113 are duplicates, so only 2762 unique phrases have been written to file. -->
+<!-- These 2762 phrases contain approximately 11979 total words. -->
 
 </pdData>

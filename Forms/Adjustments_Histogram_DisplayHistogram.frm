@@ -26,6 +26,19 @@ Begin VB.Form FormHistogram
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   706
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSlider sldSmoothing 
+      Height          =   375
+      Left            =   7200
+      TabIndex        =   8
+      Top             =   6480
+      Width           =   3255
+      _ExtentX        =   5741
+      _ExtentY        =   661
+      Min             =   1
+      Max             =   100
+      Value           =   50
+      DefaultValue    =   50
+   End
    Begin PhotoDemon.pdCommandBarMini cmdBar 
       Align           =   2  'Align Bottom
       Height          =   735
@@ -56,7 +69,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Left            =   7200
       TabIndex        =   0
-      Top             =   5160
+      Top             =   5640
       Width           =   3225
       _ExtentX        =   5689
       _ExtentY        =   582
@@ -112,7 +125,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Left            =   7200
       TabIndex        =   5
-      Top             =   5640
+      Top             =   5160
       Width           =   3225
       _ExtentX        =   5689
       _ExtentY        =   582
@@ -143,8 +156,8 @@ Begin VB.Form FormHistogram
    End
    Begin PhotoDemon.pdLabel lblMouseInstructions 
       Height          =   450
-      Left            =   480
-      Top             =   7800
+      Left            =   360
+      Top             =   7680
       Width           =   9885
       _ExtentX        =   0
       _ExtentY        =   0
@@ -306,6 +319,16 @@ Begin VB.Form FormHistogram
       ForeColor       =   -2147483640
       Layout          =   2
    End
+   Begin PhotoDemon.pdCheckBox chkSmooth 
+      Height          =   330
+      Left            =   7200
+      TabIndex        =   7
+      Top             =   6120
+      Width           =   3225
+      _ExtentX        =   5689
+      _ExtentY        =   582
+      Caption         =   "use moving average"
+   End
 End
 Attribute VB_Name = "FormHistogram"
 Attribute VB_GlobalNameSpace = False
@@ -316,9 +339,9 @@ Attribute VB_Exposed = False
 'Histogram Handler
 'Copyright 2001-2025 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 17/May/19
-'Last update: UI overhaul and major code cleanup; pd2D and pdCompositor are now used for rendering
-'             the histogram overlays, which greatly simplifies the code and greatly improves performance
+'Last updated: 28/February/25
+'Last update: merge rendering code from Histograms.GenerateHistogramImages(), so this dialog uses an identical
+'             rendering strategy to the Curves, Levels, etc dialogs
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -347,12 +370,9 @@ Private m_hData() As Long
 Private m_hDataLog() As Double
 
 'Maximum histogram values (r/g/b/luminance)
-'NOTE: As of 2012, a single max value is calculated for red, green, blue, and luminance (because all lines are drawn simultaneously).  No longer needed: Private HMax(0 To 3) As Double
-Private m_hMax As Long, m_hMaxLog As Double
 Private m_channelMax() As Long
 Private m_channelMaxLog() As Double
 Private m_channelMaxPosition() As Byte
-Private m_maxChannel As PD_HistogramChannel  'Channel with the highest value (RGB only)
 
 'To improve histogram render performance, we cache a number of translated strings; this saves us having to re-translate them
 ' every time the histogram is redrawn.
@@ -364,9 +384,9 @@ Private m_strLevel As String
 'Rendering surface for the histogram and the small gradient indicator beneath the histogram
 Private m_HistogramImage As pdDIB, m_HistogramGradientImage As pdDIB
 
-'Width/height padding for the histogram image itself
+'Width/height padding for the histogram image itself; mirrors values from Histograms.GenerateHistogramImages()
 Private Const HIST_WIDTH_PADDING As Single = 2!
-Private Const HIST_HEIGHT_PADDING As Single = 3!
+Private Const HIST_HEIGHT_PADDING As Single = 8!
 
 'When channels are enabled or disabled, redraw the histogram
 Private Sub chkChannel_Click(Index As Integer)
@@ -387,12 +407,20 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
     'If histogram data hasn't been generated, exit
     If (Not m_histogramGenerated) Then Exit Sub
     
-    'Refresh our backbuffer
-    If (m_HistogramImage.GetDIBWidth <> picH.GetWidth) Or (m_HistogramImage.GetDIBHeight <> picH.GetHeight) Then m_HistogramImage.CreateBlank picH.GetWidth, picH.GetHeight, 32
-    m_HistogramImage.ResetDIB 0
+    'This dialog is resizable, so dimensions are calculated at run-time
+    Dim imgWidth As Long, imgHeight As Long
+    imgWidth = picH.GetWidth
+    imgHeight = picH.GetHeight
     
-    'We want to overlay the various histogram layers using custom blend modes, which means we need
-    ' a temporary image buffer and a compositor object
+    'Initialize (as necessary) and reset the backbuffer to full transparency
+    If (m_HistogramImage Is Nothing) Then Set m_HistogramImage = New pdDIB
+    If (m_HistogramImage.GetDIBWidth <> imgWidth) Or (m_HistogramImage.GetDIBHeight <> imgHeight) Then m_HistogramImage.CreateBlank picH.GetWidth, picH.GetHeight, 32
+    m_HistogramImage.ResetDIB 0
+    m_HistogramImage.SetInitialAlphaPremultiplicationState True
+    
+    'We want to overlay histogram layers using custom blend modes, which means we need both...
+    ' 1) a temporary image buffer (as the source surface), and...
+    ' 2) a compositor object (for blending)
     Dim tmpImage As pdDIB
     Set tmpImage = New pdDIB
     tmpImage.CreateBlank m_HistogramImage.GetDIBWidth, m_HistogramImage.GetDIBHeight, 32, 0, 0
@@ -400,13 +428,32 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
     Dim cCompositor As pdCompositor
     Set cCompositor = New pdCompositor
     
-    'tHeight is used to determine the height of the maximum value in the histogram.  We want it to be slightly
-    ' shorter than the height of the picture box; this way the tallest histogram value fills the entire box
-    Dim dstWidth As Single, dstHeight As Single
-    dstWidth = picH.GetWidth - HIST_WIDTH_PADDING * 2
-    dstHeight = picH.GetHeight - HIST_HEIGHT_PADDING
+    'We now need to calculate a max histogram value based on which RGB channels are enabled.
+    ' (Unlike other dialogs, the user can freely turn specific channels on/off here.)
+    Dim maxRGB As Long, maxLum As Long
+    Dim maxRGBLog As Double, maxLumLog As Double
+    Dim maxChannel As PD_HistogramChannel
     
-    'pd2D will be used for rendering, so we simply need to construct a polyline for it to draw.
+    Dim i As Long, x As Long
+    For i = hc_Red To hc_Blue
+        If (chkChannel(i).Value And (m_channelMax(i) > maxRGB)) Then
+            maxRGB = m_channelMax(i)
+            maxRGBLog = m_channelMaxLog(i)
+            maxChannel = i
+        End If
+    Next i
+    
+    maxLum = m_channelMax(hc_Luminance)
+    maxLumLog = m_channelMaxLog(hc_Luminance)
+    
+    'dstHeight is used to determine the height of the maximum value in the histogram.
+    ' We want it to be slightly shorter than the height of the picture box;
+    ' this way the tallest histogram value fills the entire box.
+    Dim dstWidth As Single, dstHeight As Single
+    dstWidth = imgWidth - HIST_WIDTH_PADDING * 2
+    dstHeight = imgHeight - HIST_HEIGHT_PADDING
+    
+    'pd2D will be used for rendering, so we simply need to construct a polyline to hand it.
     ' If the user wants us to *fill* the histogram, we will need to add corner points to the
     ' finished line to construct a filled shape - two extra points exist so that the left and right
     ' histogram points extend to the edge of the image (so 255 + 2), plus another 2 points for the
@@ -414,35 +461,37 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
     Dim listOfPoints() As PointFloat
     ReDim listOfPoints(0 To 259) As PointFloat
     
-    'We now need to calculate a max histogram value based on which RGB channels are enabled
-    m_hMax = 0
-    m_hMaxLog = 0
-    m_maxChannel = hc_NumOfChannels  'Set maxChannel to an arbitrary value higher than any channel ID
+    'Build a look-up table of x-positions for the histogram data;
+    ' these are equally distributed across the width of the target image
+    ' (with a little room on either side for padding).
+    Dim hLookupX() As Double
+    ReDim hLookupX(0 To 255) As Double
+    For x = 0 To 255
+        hLookupX(x) = (CSng(x + 1) / 257#) * CSng(imgWidth)
+    Next x
     
-    Dim i As Long
-    For i = 0 To 2
-        If chkChannel(i).Value And (m_channelMax(i) > m_hMax) Then
-            m_hMax = m_channelMax(i)
-            m_hMaxLog = m_channelMaxLog(i)
-            m_maxChannel = i
-        End If
-    Next i
+    'Necessary pd2D rendering objects
+    Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
     
     'We'll need to draw up to four lines - one each for red, green, blue, and luminance,
-    ' depending on what channels the user has enabled.
+    ' depending on what channels the user has enabled in the UI.
+    Dim curMax As Long, curMaxLog As Double
     Dim hType As PD_HistogramChannel, targetColor As Long
     
+    'Iterate channels and render each in turn
     For hType = 0 To hc_NumOfChannels - 1
-    
-        'Only draw this histogram channel if the user has requested it
+
+        'Only draw this histogram channel if the user requests it
         If chkChannel(hType).Value Then
-        
+            
+            'Reset the temporary surface (which only holds the rendering for *this* channel)
             tmpImage.ResetDIB 0
-        
+            tmpImage.SetInitialAlphaPremultiplicationState True
+
             'The type of histogram we're drawing will determine the color of the histogram
             'line - we'll make it match what we're drawing (red/green/blue/black)
             Select Case hType
-                
+
                 Case hc_Red
                     targetColor = g_Themer.GetGenericUIColor(UI_ChannelRed)
                 Case hc_Green
@@ -451,97 +500,124 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
                     targetColor = g_Themer.GetGenericUIColor(UI_ChannelBlue)
                 Case hc_Luminance
                     targetColor = g_Themer.GetGenericUIColor(UI_GrayDark)
-                    
+
             End Select
-            
+
             'The luminance channel is a special case - it uses its own max values, so check for that here
             If (hType = hc_Luminance) Then
-                m_hMax = m_channelMax(hType)
-                m_hMaxLog = m_channelMaxLog(hType)
+                curMax = maxLum
+                curMaxLog = maxLumLog
+            Else
+                curMax = maxRGB
+                curMaxLog = maxRGBLog
             End If
             
+            'Failsafe only (should never trigger)
+            If (curMax < 1) Then curMax = 1
+            If (curMaxLog < 1#) Then curMaxLog = 1#
+            
             'Iterate through the histogram and construct a matching on-screen point for each value
-            Dim x As Long
             For x = 0 To 255
-                listOfPoints(x + 1).x = HIST_WIDTH_PADDING + (CSng(x) / 255!) * dstWidth
+                listOfPoints(x + 1).x = HIST_WIDTH_PADDING + (CSng(x) * dstWidth) / 255!
                 If chkLog.Value Then
-                    listOfPoints(x + 1).y = dstHeight - (m_hDataLog(hType, x) / m_hMaxLog) * dstHeight + HIST_HEIGHT_PADDING
+                    listOfPoints(x + 1).y = HIST_HEIGHT_PADDING + (dstHeight - (m_hDataLog(hType, x) * dstHeight) / curMaxLog)
                 Else
-                    listOfPoints(x + 1).y = dstHeight - (m_hData(hType, x) / m_hMax) * dstHeight + HIST_HEIGHT_PADDING
+                    listOfPoints(x + 1).y = HIST_HEIGHT_PADDING + (dstHeight - (m_hData(hType, x) * dstHeight) / curMax)
                 End If
             Next x
             
-            'Manually populate the first and last points
+            'Manually populate the first and last points in the collection (staged slightly off-screen)
             listOfPoints(0).x = 0!
             listOfPoints(0).y = listOfPoints(1).y
-            listOfPoints(257).x = picH.GetWidth
+            listOfPoints(257).x = imgWidth
             listOfPoints(257).y = listOfPoints(256).y
             
+            'Apply gentle smoothing to the line to improve its visual appearance.
+            ' (This better matches behavior in other editors - and looks nicer - but the user can
+            '  toggle it on/off depending on what they need from the histogram.)
+            Dim numOfPoints As Long
+            numOfPoints = 257
+            If chkSmooth.Value Then
+                PDMath.SmoothLineY listOfPoints, numOfPoints, sldSmoothing.Value / 100!
+                PDMath.SimplifyLine listOfPoints, numOfPoints
+            End If
+            
+            'Re-fill the first and last points; this helps the curvature of the render correctly point
+            ' in the direction of either line endpoint.
+            listOfPoints(0).x = 0!
+            listOfPoints(0).y = listOfPoints(1).y
+            listOfPoints(numOfPoints).x = imgWidth
+            listOfPoints(numOfPoints).y = listOfPoints(numOfPoints - 1).y
+            numOfPoints = numOfPoints + 1
+            
             'Assemble a drawing surface
-            Dim cSurface As pd2DSurface
             Drawing2D.QuickCreateSurfaceFromDIB cSurface, tmpImage, True
             cSurface.SetSurfacePixelOffset P2_PO_Half
             
             'If the user wants the histogram filled, render the fill prior to stroking the outline.
-            ' (Note that we don't fill the luminance curve, however, since it would just be gray.)
+            ' (Note that we don't fill the luminance curve, however, since it would just be gray
+            '  and blow out the other colors beneath it.)
             If chkFillCurve.Value And (hType <> hc_Luminance) Then
-                
-                'Fill in the end points of the polyline, so we can treat it as a polygon
-                listOfPoints(258).x = picH.GetWidth
-                listOfPoints(258).y = picH.GetHeight
-                listOfPoints(259).x = 0!
-                listOfPoints(259).y = picH.GetHeight
-                
-                'Construct a matching fill brush
-                Dim cBrush As pd2DBrush
+                    
+                'Connect either end of the polyline, because we can only fill a polygon
+                listOfPoints(numOfPoints).x = imgWidth + 1
+                listOfPoints(numOfPoints).y = imgHeight * 2
+                listOfPoints(numOfPoints + 1).x = -1!
+                listOfPoints(numOfPoints + 1).y = imgHeight
+                numOfPoints = numOfPoints + 2
+
+                'Construct a matching fill brush for the target color, then fill the region beneath the curve
                 Drawing2D.QuickCreateSolidBrush cBrush, targetColor, 15!
-                
-                'Fill the histogram region
-                PD2D.FillPolygonF_FromPtF cSurface, cBrush, 260, VarPtr(listOfPoints(0)), True
-                
+                PD2D.FillPolygonF_FromPtF cSurface, cBrush, numOfPoints, VarPtr(listOfPoints(0)), True, 0.25
                 Set cBrush = Nothing
-            
+
             End If
-            
-            'Stroke the outline, then free all rendering objects
-            Dim cPen As pd2DPen
-            Drawing2D.QuickCreateSolidPen cPen, 1!, targetColor, , P2_LJ_Round
-            
-            PD2D.DrawLinesF_FromPtF cSurface, cPen, 258, VarPtr(listOfPoints(0)), True
-            
+
+            'Stroke the histogram outline, then free all rendering objects.
+            ' (They will be re-created on the next pass with new attributes.)
+            Drawing2D.QuickCreateSolidPen cPen, 1!, targetColor, 100!, P2_LJ_Round, P2_LC_Round
+            PD2D.DrawLinesF_FromPtF cSurface, cPen, numOfPoints, VarPtr(listOfPoints(0)), True, 0.25
+
             Set cSurface = Nothing
             Set cPen = Nothing
-            
-            'Merge this temporary image onto the base image
-            cCompositor.QuickMergeTwoDibsOfEqualSize m_HistogramImage, tmpImage, BM_Screen
+
+            'Merge this temporary image onto the base image using the Overlay blend mode
+            ' (which prevents the colors from becoming a gray mess).
+            cCompositor.QuickMergeTwoDibsOfEqualSize m_HistogramImage, tmpImage, BM_Overlay
             
         End If
-                
+
     Next hType
     
-    '"Flip" our backbuffer to the screen
+    'With all chosen colors rendered, we now want to merge the result onto the UI background color.
+    tmpImage.ResetDIB 0
+    tmpImage.FillWithColor g_Themer.GetGenericUIColor(UI_Background), 100!
+    m_HistogramImage.AlphaBlendToDC tmpImage.GetDIBDC
+    Set m_HistogramImage = tmpImage
+    
+    'Flip the assembled image to the screen
     If refreshScreen Then picH.CopyDIB m_HistogramImage, False, True, True
     
-    'Last but not least, generate the statistics at the bottom of the form
+    'Last but not least, generate the statistics at the bottom of the form.
     
     'Total number of pixels
     lblTotalPixels.Caption = m_strTotalPixels & (PDImages.GetActiveImage.Width * PDImages.GetActiveImage.Height)
     
-    'Maximum value; if a color channel is enabled, use that, otherwise use luminance
+    'Assemble the string using a pdString object
     Dim cString As pdString
     Set cString = New pdString
-    
     With cString
         
+        'Maximum value; if a color channel is enabled, list that maximum (otherwise we'll use luminance)
         If (chkChannel(0).Value Or chkChannel(1).Value Or chkChannel(2).Value) Then
             
-            'Reset hMax, which may have been changed if the luminance histogram was rendered
-            m_hMax = m_channelMax(m_maxChannel)
+            'Grab the maximum channel value
+            curMax = m_channelMax(maxChannel)
             .Append m_strMaxCount
-            .Append CStr(m_hMax)
+            .Append CStr(curMax)
             
-            'Also display the channel with that max value, if applicable
-            Select Case m_maxChannel
+            'Also display the name of that channel
+            Select Case maxChannel
                 Case 0
                     .Append " (" & m_strRed
                 Case 1
@@ -551,10 +627,10 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
             End Select
             
             .Append ", " & m_strLevel
-            .Append " " & m_channelMaxPosition(m_maxChannel)
+            .Append " " & m_channelMaxPosition(maxChannel)
             .Append ")"
             
-        'Otherwise, default to luminance
+        'If no colors are being rendered, default to max luminance
         ElseIf chkChannel(3).Value Then
             .Append m_strMaxCount
             .Append CStr(m_channelMax(3))
@@ -568,6 +644,19 @@ Public Sub DrawHistogram(Optional ByVal refreshScreen As Boolean = True)
         
     End With
         
+End Sub
+
+Private Sub chkSmooth_Click()
+    UpdateSmoothingVisibility
+    DrawHistogram
+End Sub
+
+Private Sub UpdateSmoothingVisibility()
+    sldSmoothing.Visible = chkSmooth.Value
+End Sub
+
+Private Sub Form_Activate()
+    UpdateSmoothingVisibility
 End Sub
 
 Private Sub Form_Deactivate()
@@ -587,6 +676,7 @@ Private Sub Form_Load()
     
     'Apply visual themes and translations
     ApplyThemeAndTranslations Me
+    UpdateSmoothingVisibility
     
     'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
     m_strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
@@ -602,8 +692,8 @@ Private Sub Form_Load()
     lblValue(2).ForeColor = g_Themer.GetGenericUIColor(UI_ChannelGreen)
     lblValue(3).ForeColor = g_Themer.GetGenericUIColor(UI_ChannelBlue)
     
-    'Blank out the specific level labels populated by moving the mouse across the form
-    ' Also, align the value labels with their (potentially translated) corresponding title labels
+    'Blank out the specific level labels populated by moving the mouse across the form.
+    ' (Also, align the value labels with their (potentially translated) corresponding title labels.)
     Dim i As Long
     For i = 0 To lblValue.Count - 1
         lblValue(i).SetLeft lblValueTitle(i).GetLeft + lblValueTitle(i).GetWidth + Interface.FixDPI(8)
@@ -688,14 +778,9 @@ Public Sub TallyHistogramValues()
     Next i
     
     'Use our new external function to fill the important histogram arrays
-    FillHistogramArrays m_hData, m_hDataLog, m_channelMax, m_channelMaxLog, m_channelMaxPosition
-    
-    'If the histogram has already been used, we need to clear out two additional maximum values
-    m_hMax = 0
-    m_hMaxLog = 0
+    Histograms.FillHistogramArrays m_hData, m_hDataLog, m_channelMax, m_channelMaxLog, m_channelMaxPosition
     
     m_histogramGenerated = True
-    
     Message "Finished."
 
 End Sub
@@ -719,4 +804,8 @@ Private Sub picH_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal S
     lblValue(3).Caption = m_hData(2, xCalc)
     lblValue(4).Caption = m_hData(3, xCalc)
     
+End Sub
+
+Private Sub sldSmoothing_Change()
+    DrawHistogram
 End Sub

@@ -240,7 +240,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Long, ByRef channelM
             listOfPoints(0).x = 0!
             listOfPoints(0).y = listOfPoints(1).y
             listOfPoints(numOfPoints).x = imgWidth
-            listOfPoints(numOfPoints).y = listOfPoints(numOfPoints).y
+            listOfPoints(numOfPoints).y = listOfPoints(numOfPoints - 1).y
             
             'Also fill in the end points of the polyline, so we can treat it as a polygon
             listOfPoints(numOfPoints + 1).x = imgWidth + 1

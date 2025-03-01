@@ -612,7 +612,7 @@ Private Sub Form_Load()
     
     'Generate matching overlay images
     Histograms.GenerateHistogramImages m_hData, m_hMax, m_hDIB, picDraw.GetWidth - (PREVIEW_BORDER_PX * 2), picDraw.GetHeight - (PREVIEW_BORDER_PX * 2)
-        
+    
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me, True, True
     

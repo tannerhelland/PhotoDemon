@@ -703,16 +703,17 @@ End Function
 ' of points in the final, simplified polyline array.  (Note that points beyond the final index of the
 ' simplified polyline *are not guaranteed to be zeroed-out*; their value is technically "undefined".)
 '
-'The strategy currently used is of my own invention.  I doubt I'm the first person to think of this
-' approach, but I wanted something faster than the traditional Ramer–Douglas–Peucker algorithm
-' (which is awkward to implement in VB6 since recursion is a non-starter, and stack conversions are
-' cumbersome).  My algorithm is O(n) and it requires no new allocations; the points are returned
-' as-is in the source array, shifted as necessary to remove unimportant points.  It's very fast,
-' with excellent accuracy, even on very gradual curves where traditional perpendicular-distance
-' algorithms can fail - this is achieved by accumulating errors when removing points, and adding the
-' accumulated error to the current point distance.  (The error tracker is reset when a point is *not*
-' removed.)  You can control the amount of errorFade with the same-named parameter; set the value to
-' 0 to disable error diffusion entirely.
+'The strategy used is of my own invention.  I doubt I'm the first person to think of this approach,
+' but I wanted something faster than the traditional Ramer–Douglas–Peucker algorithm (which is
+' awkward to implement in VB6 since recursion is a non-starter, and stack conversions are cumbersome).
+' My algorithm is O(n) and it requires no new allocations; the points are returned as-is in the
+' source array, shifted as necessary to remove unimportant points.  It's very fast, with excellent
+' accuracy, even on very gradual curves where traditional perpendicular-distance algorithms can fail -
+' this is achieved by accumulating errors when removing points, and adding the accumulated error to
+' the current point distance.  (The error tracker is reset when a point is *not* removed.)
+'
+'You can control the amount of errorFade with the same-named parameter; set the value to 0 to disable
+' error diffusion entirely.
 Public Function SimplifyLine(ByRef listOfPoints() As PointFloat, ByRef numOfPoints As Long, Optional ByVal epsilon As Single = 0.1!, Optional ByVal errorFade As Single = 0.25!) As Long
     
     'If we want to (possibly) remove points, we need at least three points to start!
@@ -1242,12 +1243,11 @@ Public Sub SmoothLineY(ByRef listOfPoints() As PointFloat, ByRef numOfPoints As 
     Dim invStrength As Single
     invStrength = 1! - strength
     
-    Dim newY As Single
-    
     Dim i As Long
     For i = 1 To numOfPoints - 2
         
         'Calculate an average y value
+        Dim newY As Single
         newY = (copyOfPoints(i - 1).y + copyOfPoints(i).y + copyOfPoints(i + 1).y) * 0.3333333!
         
         'Average using the "strength" parameter

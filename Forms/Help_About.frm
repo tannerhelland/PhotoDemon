@@ -363,6 +363,7 @@ Private Sub Form_Load()
     GenerateContributor "Google Translate", "http://translate.google.com"
     GenerateContributor "Graeme Gill", "http://argyllcms.com/"
     GenerateContributor "Hans Nolte", "https://github.com/hansnolte"
+    GenerateContributor "Heiner Dietz"
     GenerateContributor "Helmut Kuerbiss"
     GenerateContributor "Hidayat Suriapermana"
     GenerateContributor "J. Scott Elblein", "https://geekdrop.com"
