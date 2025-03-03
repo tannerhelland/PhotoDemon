@@ -3125,6 +3125,9 @@ Private Sub ApplyBlendMode_Overwrite(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
+    Dim invAlphaModifier As Single
+    invAlphaModifier = 1! - alphaModifier
+    
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
     Dim bottomScanlineSize As Long, bottomDIBPointer As Long
@@ -3178,15 +3181,15 @@ Private Sub ApplyBlendMode_Overwrite(ByRef topDIB As pdDIB, ByRef bottomDIB As p
             topR = intToFloat(topPixels(x + 2))
             topA = intToFloat(topPixels(x + 3))
             
-            newB = topB * alphaModifier + bottomB * (1! - alphaModifier)
-            newG = topG * alphaModifier + bottomG * (1! - alphaModifier)
-            newR = topR * alphaModifier + bottomR * (1! - alphaModifier)
-            newA = topA * alphaModifier + bottomA * (1! - alphaModifier)
+            newB = topB * alphaModifier + bottomB * invAlphaModifier
+            newG = topG * alphaModifier + bottomG * invAlphaModifier
+            newR = topR * alphaModifier + bottomR * invAlphaModifier
+            newA = topA * alphaModifier + bottomA * invAlphaModifier
             
-            bottomPixels(x) = Int(newB * 255!)
-            bottomPixels(x + 1) = Int(newG * 255!)
-            bottomPixels(x + 2) = Int(newR * 255!)
-            bottomPixels(x + 3) = Int(newA * 255!)
+            bottomPixels(x) = Int(newB * 255#)
+            bottomPixels(x + 1) = Int(newG * 255#)
+            bottomPixels(x + 2) = Int(newR * 255#)
+            bottomPixels(x + 3) = Int(newA * 255#)
             
         End If
         

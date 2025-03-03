@@ -24,11 +24,35 @@ Begin VB.Form FormColorize
    ScaleHeight     =   438
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   777
+   Begin PhotoDemon.pdSlider sldOpacity 
+      Height          =   735
+      Left            =   8760
+      TabIndex        =   7
+      Top             =   4320
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   1296
+      Caption         =   "opacity"
+      Max             =   100
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
+   End
+   Begin PhotoDemon.pdDropDown ddBlendMode 
+      Height          =   735
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   4320
+      Width           =   2655
+      _ExtentX        =   9551
+      _ExtentY        =   1296
+      Caption         =   "blend mode"
+   End
    Begin PhotoDemon.pdButtonStrip btsSaturation 
       Height          =   1095
       Left            =   6000
       TabIndex        =   4
-      Top             =   1485
+      Top             =   1440
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1931
@@ -73,7 +97,7 @@ Begin VB.Form FormColorize
       Index           =   1
       Left            =   6000
       TabIndex        =   3
-      Top             =   2685
+      Top             =   2640
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1244
@@ -82,31 +106,19 @@ Begin VB.Form FormColorize
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   50
-   End
-   Begin PhotoDemon.pdButtonStrip btsLuminance 
-      Height          =   1095
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   3480
-      Width           =   5415
-      _ExtentX        =   9551
-      _ExtentY        =   1931
-      Caption         =   "luminance"
    End
    Begin PhotoDemon.pdSlider sldHSL 
       Height          =   705
       Index           =   2
       Left            =   6000
-      TabIndex        =   6
-      Top             =   4680
+      TabIndex        =   5
+      Top             =   3480
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1244
+      Caption         =   "luminance"
+      Min             =   -100
       Max             =   100
-      SliderTrackStyle=   2
-      Value           =   50
-      NotchPosition   =   2
-      NotchValueCustom=   50
    End
 End
 Attribute VB_Name = "FormColorize"
@@ -118,8 +130,8 @@ Attribute VB_Exposed = False
 'Colorize Form
 'Copyright 2006-2025 by Tanner Helland
 'Created: 12/January/07
-'Last updated: 19/April/20
-'Last update: perf improvements; allow user to control saturation and luminance (if not preserving)
+'Last updated: 03/March/25
+'Last update: add blend mode and opacity support; change luminance to scaling (instead of fixing)
 '
 'This dialog has slowly morphed over the years, and now it bears a lot of similarity to
 ' the HSL adjustment dialog.  The difference here is that values can be forced to a specific
@@ -132,10 +144,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub btsLuminance_Click(ByVal buttonIndex As Long)
-    UpdatePreview
-    ReflowInterface
-End Sub
+'To improve performance, we cache a local temporary DIB when previewing the effect
+Private m_tmpDIB As pdDIB
 
 Private Sub btsSaturation_Click(ByVal buttonIndex As Long)
     UpdatePreview
@@ -175,7 +185,6 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
         sToUse = cParams.GetDouble("saturation", 0.5, True) / 100#
     End If
     
-    maintainLuminance = cParams.GetBool("preserve-luminance", True, True)
     lToUse = cParams.GetDouble("luminance", 0.5, True) / 100#
     
     'Convert HSL values to safe ranges
@@ -186,12 +195,21 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     If (sToUse < 0#) Then sToUse = 0#
     If (sToUse > 1#) Then sToUse = 1#
     
-    If (lToUse < 0#) Then lToUse = 0#
+    If (lToUse < -1#) Then lToUse = -1#
     If (lToUse > 1#) Then lToUse = 1#
+    
+    Dim fxBlendMode As PD_BlendMode, fxOpacity As Single
+    fxBlendMode = Colors.GetBlendModeIDFromString(cParams.GetString("blendmode", Colors.GetBlendModeStringFromID(BM_Overwrite), True))
+    fxOpacity = cParams.GetDouble("blend-opacity", sldOpacity.Value, True)
+    If (fxOpacity < 0!) Then fxOpacity = 0!
+    If (fxOpacity > 100!) Then fxOpacity = 100!
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim imageData() As Byte, tmpSA As SafeArray2D, tmpSA1D As SafeArray1D
     EffectPrep.PrepImageData tmpSA, toPreview, dstPic
+    
+    If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
+    m_tmpDIB.CreateFromExistingDIB workingDIB
     
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left * 4
@@ -214,7 +232,7 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     
     'Loop through each pixel in the image, converting values as we go
     For y = initY To finalY
-        workingDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
+        m_tmpDIB.WrapArrayAroundScanline imageData, tmpSA1D, y
     For x = initX To finalX Step 4
         
         'Get the source pixel color values
@@ -231,13 +249,17 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
         
         'Convert back to RGB using our artificial hue value
         If (Not maintainSaturation) Then s = sToUse
-        If (Not maintainLuminance) Then l = lToUse
+        If (Not maintainLuminance) Then
+            l = l + lToUse
+            If (l > 1#) Then l = 1#
+            If (l < 0#) Then l = 0#
+        End If
         Colors.PreciseHSLtoRGB hToUse, s, l, rFloat, gFloat, bFloat
         
         'Assign the new values to each color channel
-        imageData(x) = bFloat * 255#
-        imageData(x + 1) = gFloat * 255#
-        imageData(x + 2) = rFloat * 255#
+        imageData(x) = Int(bFloat * 255# + 0.5)
+        imageData(x + 1) = Int(gFloat * 255# + 0.5)
+        imageData(x + 2) = Int(rFloat * 255# + 0.5)
         
     Next x
         If (Not toPreview) Then
@@ -249,16 +271,26 @@ Public Sub ColorizeImage(ByVal effectParams As String, Optional ByVal toPreview 
     Next y
     
     'Safely deallocate imageData()
-    workingDIB.UnwrapArrayFromDIB imageData
+    m_tmpDIB.UnwrapArrayFromDIB imageData
+    m_tmpDIB.SetAlphaPremultiplication True
+    workingDIB.SetAlphaPremultiplication True
     
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    EffectPrep.FinalizeImageData toPreview, dstPic
+    'Merge the result down, then exit
+    Dim cCompositor As pdCompositor
+    Set cCompositor = New pdCompositor
+    cCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpDIB, fxBlendMode, fxOpacity
+    EffectPrep.FinalizeImageData toPreview, dstPic, True
     
 End Sub
 
 'Reset the hue bar to the center position
 Private Sub cmdBar_ResetClick()
     sldHSL(0).Value = 180#
+    ddBlendMode.ListIndex = BM_Overwrite
+End Sub
+
+Private Sub ddBlendMode_Click()
+    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -269,11 +301,9 @@ Private Sub Form_Load()
     btsSaturation.AddItem "custom", 1
     btsSaturation.ListIndex = 0
     
-    btsLuminance.AddItem "preserve", 0
-    btsLuminance.AddItem "custom", 1
-    btsLuminance.ListIndex = 0
-    
     ReflowInterface
+    Interface.PopulateBlendModeDropDown ddBlendMode, BM_Overwrite, True
+    
     ApplyThemeAndTranslations Me, True, True
     
     cmdBar.SetPreviewStatus True
@@ -320,10 +350,10 @@ Private Sub ReflowInterface()
     If sldHSL(1).Visible Then RedrawSaturationSlider
     
     yOffset = yOffset + Interface.FixDPI(4)
-    btsLuminance.SetTop yOffset
-    yOffset = yOffset + btsLuminance.GetHeight + Interface.FixDPI(8)
     sldHSL(2).SetTop yOffset
-    sldHSL(2).Visible = (btsLuminance.ListIndex = 1)
+    yOffset = yOffset + sldHSL(2).GetHeight + Interface.FixDPI(8)
+    ddBlendMode.SetTop yOffset
+    sldOpacity.SetTop yOffset
     
 End Sub
 
@@ -336,8 +366,9 @@ Private Function GetLocalParamString() As String
         .AddParam "hue", sldHSL(0).Value
         .AddParam "preserve-saturation", (btsSaturation.ListIndex = 0)
         .AddParam "saturation", sldHSL(1).Value
-        .AddParam "preserve-luminance", (btsLuminance.ListIndex = 0)
         .AddParam "luminance", sldHSL(2).Value
+        .AddParam "blendmode", Colors.GetBlendModeStringFromID(ddBlendMode.ListIndex)
+        .AddParam "blend-opacity", sldOpacity.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()
@@ -345,5 +376,9 @@ Private Function GetLocalParamString() As String
 End Function
 
 Private Sub sldHSL_Change(Index As Integer)
+    UpdatePreview
+End Sub
+
+Private Sub sldOpacity_Change()
     UpdatePreview
 End Sub
