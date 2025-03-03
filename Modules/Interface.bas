@@ -1729,7 +1729,7 @@ Public Sub EnableUserInput()
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes
-Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As PD_BlendMode = BM_Normal)
+Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As PD_BlendMode = BM_Normal, Optional ByVal allowReplaceMode As Boolean = False)
     
     dstCombo.SetAutomaticRedraws False
     
@@ -1762,10 +1762,10 @@ Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVa
     dstCombo.AddItem "Grain extract"
     dstCombo.AddItem "Grain merge", , True
     dstCombo.AddItem "Erase", , True
-    dstCombo.AddItem "Behind"
+    dstCombo.AddItem "Behind", , allowReplaceMode
     
-    'Overwrite mode is currently TODO!
-    'dstCombo.AddItem "Overwrite"
+    'Overwrite mode is only allowed in certain tools
+    If allowReplaceMode Then dstCombo.AddItem "Replace"
     
     dstCombo.ListIndex = blendIndex
     

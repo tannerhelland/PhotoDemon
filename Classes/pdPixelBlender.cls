@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Pixel Blender class
 'Copyright 2014-2025 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 22/October/20
-'Last update: ongoing performance improvements
+'Last updated: 03/March/25
+'Last update: implement "Overwrite/Replace" blend mode
 '
 'This class exists for a single purpose: blending colors from two DIBs, using any of the
 ' blend and/or alpha modes supported by PhotoDemon.
@@ -174,8 +174,12 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
                 '"Behind" mode is handled by the final blend step (see below)
                 
             Case BM_Overwrite
-                'Note that overwrite mode also requires a mask - this is so that paint strokes can be correctly composited.
-                'TODO
+                'Note that overwrite mode is *NOT* always available.  Like other photo editors,
+                ' it exists primarily for adjustment and effect tools.  It does not work on paint tools,
+                ' because a separate mask would be required (for the brush outline).
+                '
+                'As such, this function may not even be accessible from some calling paths, by design.
+                ApplyBlendMode_Overwrite m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, alphaModifier
             
             'Some blendmodes don't have dedicated, optimized subs just yet.  This catch-all function handles their code for now.
             Case Else
@@ -220,8 +224,10 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
             'All other blend modes behave normally
             Else
             
-                'Some blend modes ignore this step (Erase, at present)
-                If (blendMode <> BM_Erase) Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, Int(alphaModifier * 255! + 0.5!)
+                'Some blend modes ignore this step (Erase and Replace, at present)
+                If (blendMode <> BM_Erase) And (blendMode <> BM_Overwrite) Then
+                    m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, Int(alphaModifier * 255! + 0.5!)
+                End If
                 'Debug.Print "Blending this many pixels: " & CStr((finalX - initX + 1) * (finalY - initY + 1))
             
             End If
@@ -3098,6 +3104,104 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
 End Sub
 
+'Optimized "overwrite" or "replace" blend mode function.
+' - Unlike other blend modes, *the bottom DIB is changed by this function*!  Do NOT apply a separate alpha-blend
+'   after this function returns.
+' - Unlike other blend modes, *the top DIB is returned unchanged*!
+' - Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Overwrite(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal alphaModifier As Single = 1!)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = CSng(i) * ONE_DIV_255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SafeArray1D, topPixels() As Byte, topSA As SafeArray1D
+    bottomDIB.WrapArrayAroundDIB_1D bottomPixels, bottomSA
+    topDIB.WrapArrayAroundDIB_1D topPixels, topSA
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Simple as can be, replace the bottom DIB values with the top DIB values
+        If (alphaModifier = 1!) Then
+            bottomPixels(bottomX) = topPixels(x)
+            bottomPixels(bottomX + 1) = topPixels(x + 1)
+            bottomPixels(bottomX + 2) = topPixels(x + 2)
+            bottomPixels(bottomX + 3) = topPixels(x + 3)
+        Else
+            
+            'At lower opacities, "fade" the replacement with the original pixels
+            bottomB = intToFloat(bottomPixels(bottomX))
+            bottomG = intToFloat(bottomPixels(bottomX + 1))
+            bottomR = intToFloat(bottomPixels(bottomX + 2))
+            bottomA = intToFloat(bottomPixels(bottomX + 3))
+            
+            topB = intToFloat(topPixels(x))
+            topG = intToFloat(topPixels(x + 1))
+            topR = intToFloat(topPixels(x + 2))
+            topA = intToFloat(topPixels(x + 3))
+            
+            newB = topB * alphaModifier + bottomB * (1! - alphaModifier)
+            newG = topG * alphaModifier + bottomG * (1! - alphaModifier)
+            newR = topR * alphaModifier + bottomR * (1! - alphaModifier)
+            newA = topA * alphaModifier + bottomA * (1! - alphaModifier)
+            
+            bottomPixels(x) = Int(newB * 255!)
+            bottomPixels(x + 1) = Int(newG * 255!)
+            bottomPixels(x + 2) = Int(newR * 255!)
+            bottomPixels(x + 3) = Int(newA * 255!)
+            
+        End If
+        
+    Next x
+    Next y
+    
+    'Clear all unsafe array references
+    bottomDIB.UnwrapArrayFromDIB bottomPixels
+    topDIB.UnwrapArrayFromDIB topPixels
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
 'Optimized "pin light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
 ' blendmode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
@@ -3199,7 +3303,7 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                 ' (A final, blended alpha value will be handled by a subsequent function.)
                 topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
-                    
+                
             End If
             
         End If
@@ -3543,10 +3647,10 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
                 End If
                 
                 '"Soft light" blend mode is very simple
-                newR = (1! - 2# * topR) * bottomR * bottomR + 2# * bottomR * topR
-                newG = (1! - 2# * topG) * bottomG * bottomG + 2# * bottomG * topG
-                newB = (1! - 2# * topB) * bottomB * bottomB + 2# * bottomB * topB
-                    
+                newR = (1# - 2# * topR) * bottomR * bottomR + 2# * bottomR * topR
+                newG = (1# - 2# * topG) * bottomG * bottomG + 2# * bottomG * topG
+                newB = (1# - 2# * topB) * bottomB * bottomB + 2# * bottomB * topB
+                
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
                 If (bottomA <> 1!) Then
