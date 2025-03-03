@@ -302,7 +302,7 @@ Private Sub Form_Load()
     cmdBar.SetPreviewStatus False
     
     'Populate the blend mode drop-down
-    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal
+    Interface.PopulateBlendModeDropDown cboBlendMode, BM_Normal, True
     
     'Populate button strips
     btsType.AddItem "simple", 0
