@@ -3158,42 +3158,52 @@ Private Sub ApplyBlendMode_Overwrite(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
         topSA.pvData = topDIBPointer + topScanlineSize * y
         
-    For x = initX To finalX Step 4
-        
-        bottomX = (xOffset + x)
-        
-        'Simple as can be, replace the bottom DIB values with the top DIB values
+        'If alpha isn't changing, this is a simple copy op, replacing the old pixels with the new ones
         If (alphaModifier = 1!) Then
-            bottomPixels(bottomX) = topPixels(x)
-            bottomPixels(bottomX + 1) = topPixels(x + 1)
-            bottomPixels(bottomX + 2) = topPixels(x + 2)
-            bottomPixels(bottomX + 3) = topPixels(x + 3)
+            VBHacks.CopyMemoryStrict VarPtr(bottomPixels(xOffset)), VarPtr(topPixels(0)), finalX - initX
         Else
-            
-            'At lower opacities, "fade" the replacement with the original pixels
-            bottomB = intToFloat(bottomPixels(bottomX))
-            bottomG = intToFloat(bottomPixels(bottomX + 1))
-            bottomR = intToFloat(bottomPixels(bottomX + 2))
-            bottomA = intToFloat(bottomPixels(bottomX + 3))
-            
-            topB = intToFloat(topPixels(x))
-            topG = intToFloat(topPixels(x + 1))
-            topR = intToFloat(topPixels(x + 2))
-            topA = intToFloat(topPixels(x + 3))
-            
-            newB = topB * alphaModifier + bottomB * invAlphaModifier
-            newG = topG * alphaModifier + bottomG * invAlphaModifier
-            newR = topR * alphaModifier + bottomR * invAlphaModifier
-            newA = topA * alphaModifier + bottomA * invAlphaModifier
-            
-            bottomPixels(x) = Int(newB * 255#)
-            bottomPixels(x + 1) = Int(newG * 255#)
-            bottomPixels(x + 2) = Int(newR * 255#)
-            bottomPixels(x + 3) = Int(newA * 255#)
+                
+            For x = initX To finalX Step 4
+                
+                bottomX = (xOffset + x)
+                
+                'Simple as can be, replace the bottom DIB values with the top DIB values.
+                ' (Note that this manual path is no longer needed; see the above branch for details!)
+                If (alphaModifier = 1!) Then
+                    bottomPixels(bottomX) = topPixels(x)
+                    bottomPixels(bottomX + 1) = topPixels(x + 1)
+                    bottomPixels(bottomX + 2) = topPixels(x + 2)
+                    bottomPixels(bottomX + 3) = topPixels(x + 3)
+                
+                'At lower opacities, "fade" the replacement with the original pixels
+                Else
+                    
+                    bottomB = intToFloat(bottomPixels(bottomX))
+                    bottomG = intToFloat(bottomPixels(bottomX + 1))
+                    bottomR = intToFloat(bottomPixels(bottomX + 2))
+                    bottomA = intToFloat(bottomPixels(bottomX + 3))
+                    
+                    topB = intToFloat(topPixels(x))
+                    topG = intToFloat(topPixels(x + 1))
+                    topR = intToFloat(topPixels(x + 2))
+                    topA = intToFloat(topPixels(x + 3))
+                    
+                    newB = topB * alphaModifier + bottomB * invAlphaModifier
+                    newG = topG * alphaModifier + bottomG * invAlphaModifier
+                    newR = topR * alphaModifier + bottomR * invAlphaModifier
+                    newA = topA * alphaModifier + bottomA * invAlphaModifier
+                    
+                    bottomPixels(x) = Int(newB * 255#)
+                    bottomPixels(x + 1) = Int(newG * 255#)
+                    bottomPixels(x + 2) = Int(newR * 255#)
+                    bottomPixels(x + 3) = Int(newA * 255#)
+                    
+                End If
+                
+            Next x
             
         End If
         
-    Next x
     Next y
     
     'Clear all unsafe array references
