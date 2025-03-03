@@ -82,7 +82,7 @@ Public Sub FillHistogramArrays(ByRef hData() As Long, ByRef hDataLog() As Double
     Dim lumLookup(0 To 765) As Byte
     
     For x = 0 To 765
-        lumLookup(x) = x \ 3
+        lumLookup(x) = Int(CDbl(x) / 3# + 0.5)
     Next x
     
     Dim dibPtr As Long, dibStride As Long
