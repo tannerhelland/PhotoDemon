@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 198.1</langversion>
+<langversion>2024.12 Alpha - Build 208</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -6408,7 +6408,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>Gleitenden Durchschnitt verwenden</translation>
 </phrase>
 
 <phrase>
