@@ -1253,7 +1253,8 @@ Friend Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Op
             Exit Function
         
         'The move failed.  This should not happen (as the target file is known to not exist), but if it does,
-        ' no harm is done as we haven't changed the filesystem at all.
+        ' no harm is done as we haven't changed the filesystem at all.  The most likely explanation of this error
+        ' is that the target drive was removed and/or disconnected before the save completed.
         Else
             FSOError "FileReplace", "Impossible outcome 10 occurred in FileReplace.  Please investigate."
             FileReplace = FPR_FAIL_NOTHING_CHANGED
