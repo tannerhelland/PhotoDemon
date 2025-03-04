@@ -225,7 +225,10 @@ Private Sub CmdOK_Click()
 End Sub
 
 Private Sub HandleOKButton()
-
+    
+    'Save the current window location
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SaveWindowLocation UserControl.Parent, False
+    
     'Let the caller know that OK was pressed
     RaiseEvent OKClick
     

@@ -1021,32 +1021,41 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     Dim dialogHWnd As Long
     dialogHWnd = dialogForm.hWnd
     
-    'Get the rect of the main form, which we will use to calculate a center position
-    Dim ownerRect As winRect
-    GetWindowRect FormMain.hWnd, ownerRect
+    'If the window has a previous position stored, use that.
+    Dim prevPositionStored As Boolean
+    If (Not g_WindowManager Is Nothing) Then prevPositionStored = g_WindowManager.IsPreviousPositionStored(dialogForm)
     
-    'Determine the center of that rect
-    Dim centerX As Long, centerY As Long
-    centerX = ownerRect.x1 + (ownerRect.x2 - ownerRect.x1) \ 2
-    centerY = ownerRect.y1 + (ownerRect.y2 - ownerRect.y1) \ 2
-    
-    'Get the rect of the child dialog
-    Dim dialogRect As winRect
-    GetWindowRect dialogHWnd, dialogRect
-    
-    'Determine an upper-left point for the dialog based on its size
-    Dim newLeft As Long, newTop As Long
-    newLeft = centerX - ((dialogRect.x2 - dialogRect.x1) \ 2)
-    newTop = centerY - ((dialogRect.y2 - dialogRect.y1) \ 2)
-    
-    'If this position results in the dialog sitting off-screen, move it so that its bottom-right corner is always on-screen.
-    ' (All PD dialogs have bottom-right OK/Cancel buttons, so that's the most important part of the dialog to show.)
-    If newLeft + (dialogRect.x2 - dialogRect.x1) > g_Displays.GetDesktopRight Then newLeft = g_Displays.GetDesktopRight - (dialogRect.x2 - dialogRect.x1)
-    If newTop + (dialogRect.y2 - dialogRect.y1) > g_Displays.GetDesktopBottom Then newTop = g_Displays.GetDesktopBottom - (dialogRect.y2 - dialogRect.y1)
-    
-    'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
-    MoveWindow dialogHWnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
-    
+    'If a previous position is *not* stored, center it against the main dialog.
+    If (Not prevPositionStored) Then
+        
+        'Get the rect of the main form, which we will use to calculate a center position
+        Dim ownerRect As winRect
+        GetWindowRect FormMain.hWnd, ownerRect
+        
+        'Determine the center of that rect
+        Dim centerX As Long, centerY As Long
+        centerX = ownerRect.x1 + (ownerRect.x2 - ownerRect.x1) \ 2
+        centerY = ownerRect.y1 + (ownerRect.y2 - ownerRect.y1) \ 2
+        
+        'Get the rect of the child dialog
+        Dim dialogRect As winRect
+        GetWindowRect dialogHWnd, dialogRect
+        
+        'Determine an upper-left point for the dialog based on its size
+        Dim newLeft As Long, newTop As Long
+        newLeft = centerX - ((dialogRect.x2 - dialogRect.x1) \ 2)
+        newTop = centerY - ((dialogRect.y2 - dialogRect.y1) \ 2)
+        
+        'If this position results in the dialog sitting off-screen, move it so that its bottom-right corner is always on-screen.
+        ' (All PD dialogs have bottom-right OK/Cancel buttons, so that's the most important part of the dialog to show.)
+        If newLeft + (dialogRect.x2 - dialogRect.x1) > g_Displays.GetDesktopRight Then newLeft = g_Displays.GetDesktopRight - (dialogRect.x2 - dialogRect.x1)
+        If newTop + (dialogRect.y2 - dialogRect.y1) > g_Displays.GetDesktopBottom Then newTop = g_Displays.GetDesktopBottom - (dialogRect.y2 - dialogRect.y1)
+        
+        'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
+        MoveWindow dialogHWnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
+        
+    End If
+        
     'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
     ' on older OSes, even though a toolbox window has focus.
     Interface.FixPopupWindow dialogHWnd, True
@@ -1406,6 +1415,9 @@ ControlIsNotPD:
     'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption;
     ' everything else is handled internally.
     If g_Language.TranslationActive And dstForm.Enabled Then g_Language.ApplyTranslations dstForm
+    
+    'Finally, restore the previous window position (if any)
+    If handleAutoResize And (Not g_WindowManager Is Nothing) Then g_WindowManager.RestoreWindowLocation dstForm
     
     'Report timing results here:
     PDDebug.LogAction "Interface.ApplyThemeAndTranslations updated " & dstForm.Name & " in " & VBHacks.GetTimeDiffNowAsString(startTime)

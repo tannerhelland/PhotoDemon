@@ -746,6 +746,9 @@ Private Sub HandleOKButton()
     'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
     StorePreset
     
+    'Save the current window location
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SaveWindowLocation UserControl.Parent, False
+    
     'Notify the central Interface handler that OK was clicked; this lets other functions know that a UI sync is required
     Interface.NotifyShowDialogResult vbOK
     

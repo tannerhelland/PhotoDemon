@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright 2013-2025 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 04/May/20
-'Last update: remove workarounds for old Win 10 builds (which are no longer relevant)
+'Last updated: 04/March/25
+'Last update: improve saving/restoring window location for child windows
 '
 'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago,
 ' I rewrote it as an MDI project, and in 2013 I rewrote it again - this time, to a
@@ -550,6 +550,19 @@ Friend Sub SetFirstRunMainWindowPosition()
 
 End Sub
 
+'If a window has a previous position stored, this will return TRUE
+Friend Function IsPreviousPositionStored(ByRef frmReference As Form) As Boolean
+
+    'Start by looking for this form's location data in the XML engine.
+    Dim windowName As String
+    windowName = m_XML.GetXMLSafeTagName(frmReference.Name)
+    
+    'If an entry is found, restore the window to that location.
+    Dim tagPos As Long
+    IsPreviousPositionStored = m_XML.DoesTagExist("WindowEntry", "id", windowName, tagPos)
+    
+End Function
+
 'If a window had location data previously stored, this function will retrieve that data and move the window into place.
 'Returns: TRUE if a previous location was stored; FALSE otherwise.
 Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
@@ -574,7 +587,7 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
             .x2 = m_XML.GetUniqueTag_Long("WindowRight", 0, tagPos)
             .y2 = m_XML.GetUniqueTag_Long("WindowBottom", 0, tagPos)
         End With
-            
+        
         'Window state (so that maximized windows are handled correctly if the primary display has changed resolution)
         frmReference.WindowState = m_XML.GetUniqueTag_Long("WindowState", vbNormal, tagPos)
         
@@ -589,7 +602,7 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
         'Calculate a difference between the old and new DPIs, and apply that modifier to our saved values, as necessary
         tmpDPIModifier = Interface.GetSystemDPIRatio() / tmpDPIModifier
         
-        If (tmpDPIModifier <> 1) Then
+        If (tmpDPIModifier <> 1!) Then
             With tmpRect
                 .x1 = .x1 * tmpDPIModifier
                 .y1 = .y1 * tmpDPIModifier
@@ -598,43 +611,65 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
             End With
         End If
         
-        'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user detached a
-        ' secondary monitor on which PhotoDemon was being used), change the values to ensure this window appears on-screen.
+        'Make sure the location values will result in an on-screen form.
+        ' If they will not (for example, if the user detached a secondary monitor on which PhotoDemon was being used),
+        ' change the values to ensure this window appears on-screen.
         
-        'Note that this check relies on access to PD's g_Displays class, which returns the full virtual desktop dimensions, and
-        ' not just the primary monitor's (as VB's Screen object does).
+        'Note that this check relies on access to PD's g_Displays class, which returns the full
+        ' virtual desktop dimensions, and not just the primary monitor's (as VB's Screen object does).
         If (frmReference.WindowState <> vbMaximized) Then
+        
+            'Position the window on-screen
+            EnsureWindowRectIsOnScreen tmpRect
         
             Dim winWidth As Long, winHeight As Long
             With tmpRect
-            
                 winWidth = .x2 - .x1
                 winHeight = .y2 - .y1
-                
-                If ((.x1 + winWidth) < g_Displays.GetDesktopLeft) Then
-                    .x1 = g_Displays.GetDesktopLeft
-                    .x2 = .x1 + winWidth
-                End If
-                
-                If (.x1 > (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)) Then
-                    .x1 = (g_Displays.GetDesktopWidth - winWidth)
-                    .x2 = .x1 + winWidth
-                End If
-                
-                If (.y1 < g_Displays.GetDesktopTop) Then
-                    .y1 = g_Displays.GetDesktopTop
-                    .y2 = .y1 + winHeight
-                End If
-                
-                If (.y1 > g_Displays.GetDesktopHeight) Then
-                    .y1 = (g_Displays.GetDesktopHeight - winHeight)
-                    .y2 = .y1 + winHeight
-                End If
-                
-                'If the loaded positions are valid, restore them now
-                If ((.x2 > .x1) And (.y2 > .y1)) Then MoveWindow frmReference.hWnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 1
-                
             End With
+            
+            'If the loaded positions are valid, restore them now.
+            If ((winWidth > 0) And (winHeight > 0)) Then
+                
+                'So far, everything has been done in screen coordinates.  However, everything in PD
+                ' (except for FormMain) is a child window of FormMain, and MoveWindow uses client coordinates.
+                ' As such, let's translate coordinates as necessary.
+                Dim winIsTopLevel As Boolean
+                winIsTopLevel = Strings.StringsEqual(frmReference.Name, "FormMain", True)
+                
+                'If this *is* a top-level window, translate coordinates to be relative to the parent window.
+                If (Not winIsTopLevel) Then
+                    
+                    Dim rectMain As winRect
+                    GetWindowRect FormMain.hWnd, VarPtr(rectMain)
+                    With tmpRect
+                        winWidth = .x2 - .x1
+                        winHeight = .y2 - .y1
+                        .x1 = .x1 + rectMain.x1
+                        .x2 = .x1 + winWidth
+                        .y1 = .y1 + rectMain.y1
+                        .y2 = .y1 + winHeight
+                    End With
+                    
+                    'We now have the correct coordinates, *in screen coordinate space*.
+                    
+                    'Perform one final check for on-screen-ness.
+                    EnsureWindowRectIsOnScreen tmpRect
+                    
+                    'Translate those to the target hWnd space, then move the window into place!
+                    MapWindowPoints 0&, GetParent(frmReference.hWnd), VarPtr(tmpRect), 2
+                    With tmpRect
+                        MoveWindow frmReference.hWnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 1
+                    End With
+                    
+                'If this is FormMain, restore it immediately without modification
+                Else
+                    With tmpRect
+                        MoveWindow frmReference.hWnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 1
+                    End With
+                End If
+                
+            End If
             
         End If
         
@@ -643,6 +678,48 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
     End If
 
 End Function
+
+'Ensure a given window rectangle is on-screen.  The window will be forcibly moved in-bounds, as necessary.
+Private Sub EnsureWindowRectIsOnScreen(ByRef srcWinRect As winRect)
+    
+    'Failsafe only
+    If (g_Displays Is Nothing) Then Exit Sub
+    
+    Dim winWidth As Long, winHeight As Long
+    With srcWinRect
+        
+        'Calculate window width/height in advance (window rects use corner coordinates)
+        winWidth = .x2 - .x1
+        winHeight = .y2 - .y1
+        
+        'First ensure left/right window boundaries are on-screen
+        If (.x1 < g_Displays.GetDesktopLeft) Then
+            .x1 = g_Displays.GetDesktopLeft
+            .x2 = .x1 + winWidth
+        ElseIf ((.x1 + winWidth) > (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)) Then
+            .x1 = (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth) - winWidth
+            If (.x1 < g_Displays.GetDesktopLeft) Then .x1 = g_Displays.GetDesktopLeft
+            .x2 = .x1 + winWidth
+        End If
+        
+        'Having done that, shrink the window as necessary to ensure it's in-bounds
+        If (.x2 > (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)) Then .x2 = (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)
+        
+        'Repeat the above steps in the y-direction
+        If (.y1 < g_Displays.GetDesktopTop) Then
+            .y1 = g_Displays.GetDesktopTop
+            .y2 = .y1 + winHeight
+        ElseIf ((.y1 + winHeight) > (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight)) Then
+            .y1 = (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight) - winHeight
+            If (.y1 < g_Displays.GetDesktopTop) Then .y1 = g_Displays.GetDesktopTop
+            .y2 = .y1 + winWidth
+        End If
+        
+        If (.y2 > (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight)) Then .y2 = (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight)
+        
+    End With
+    
+End Sub
 
 'Load previous window locations from file.
 Friend Function LoadAllWindowLocations() As Boolean
@@ -655,18 +732,20 @@ Friend Function LoadAllWindowLocations() As Boolean
     End If
     
     If (Not windowLoadSuccessful) Then
-        Debug.Print "No window location data found.  A new window location file has been created."
+        PDDebug.LogAction "No window location data found.  A new window location file has been created."
         ResetXMLData
     End If
     
-    'We don't actually load window locations now.  Now that the XML data is safely inside our XML engine, we load window data
-    ' from it on-demand as windows are registered with the window manager.
+    'We don't actually load window locations now.  Now that the XML data is safely inside our XML engine,
+    ' we load window data from it on-demand as windows are registered with the window manager.
 
 End Function
 
-'Write the current locations of all windows to the XML engine.  (These will be used to restore the window location on subsequent loads.)
+'Write the current locations of all windows to the XML engine.
+' (These will be used to restore the window location on subsequent loads.)
 Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal writeLocationsToFile As Boolean = False) As Boolean
     
+    'Generate a name to be used in the settings file
     Dim windowName As String
     windowName = m_XML.GetXMLSafeTagName(frmReference.Name)
     
@@ -680,6 +759,27 @@ Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
     'Now that the section is guaranteed to exist, generate a window rect for this window and save it accordingly
     Dim tmpRect As winRect
     GetWindowRect frmReference.hWnd, VarPtr(tmpRect)
+    
+    'GetWindowRect always returns screen coordinates.  This is fine for e.g. the main window (FormMain),
+    ' but for any child windows, we want coordinates *relative to FormMain*.
+    Dim winIsTopLevel As Boolean
+    winIsTopLevel = Strings.StringsEqual(frmReference.Name, "FormMain", True)
+    
+    'If this is *not* a top-level window, translate coordinates to be relative to FormMain.
+    If (Not winIsTopLevel) Then
+        
+        Dim rectMain As winRect, winWidth As Long, winHeight As Long
+        GetWindowRect FormMain.hWnd, VarPtr(rectMain)
+        With tmpRect
+            winWidth = .x2 - .x1
+            winHeight = .y2 - .y1
+            .x1 = .x1 - rectMain.x1
+            .x2 = .x1 + winWidth
+            .y1 = .y1 - rectMain.y1
+            .y2 = .y1 + winHeight
+        End With
+        
+    End If
     
     With m_XML
         .UpdateTag "WindowLeft", tmpRect.x1, "WindowEntry", "id", windowName
