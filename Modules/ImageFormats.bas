@@ -232,7 +232,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "G3 - Digital Fax Format", "*.g3", PDIF_FAXG3
     End If
     
-    AddInputFormat "GIF - Graphics Interchange Format", "*.gif", PDIF_GIF
+    AddInputFormat "GIF - Graphics Interchange Format", "*.gif;*.agif", PDIF_GIF
     
     If m_FreeImageEnabled Then AddInputFormat "HDR - High Dynamic Range", "*.hdr", PDIF_HDR
     
@@ -320,7 +320,7 @@ Public Sub GenerateInputFormats()
     AddInputFormat "TIF/TIFF - Tagged Image File Format", "*.tif;*.tiff", PDIF_TIFF
         
     'In v10, I wrote a custom WBMP parser
-    AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm", PDIF_WBMP
+    AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm;*.wap", PDIF_WBMP
         
     'libwebp is our preferred handler for WebP files, but if it goes missing,
     ' we can fall back to FreeImage (albeit with a greatly reduced feature-set).
@@ -607,6 +607,136 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
         
         Case Else
             GetExtensionFromPDIF = vbNullString
+    
+    End Select
+
+End Function
+
+'Given a PDIF (PhotoDemon image format constant), return TRUE if the extension passed is safely associated
+' with that format.  (If it isn't, PD will auto-suggest a correct extension instead of using whatever extension
+' the file originally had.)
+'
+'Returns: TRUE if the passed extension is OK; FALSE otherwise.
+'         If FALSE is returned, please substitute a correct extension (obtainable from GetExtensionFromPDIF, above).
+Public Function IsExtensionOkayForPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT, ByRef srcExtension As String) As Boolean
+
+    Select Case srcPDIF
+        
+        Case PDIF_AVIF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "avif", "avci", "avcs", "avifs")
+        Case PDIF_BMP
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "bmp")
+        Case PDIF_CBZ
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "cbz")
+        Case PDIF_CUT
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "cut")
+        Case PDIF_DDS
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "dds")
+        Case PDIF_EMF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "emf")
+        Case PDIF_EXR
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "exr")
+        Case PDIF_FAXG3
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "g3")
+        Case PDIF_GIF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "gif", "agif")
+        Case PDIF_HDR
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "hdr")
+        Case PDIF_HEIF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "heif", "heic", "heifs", "heics", "hif")
+        Case PDIF_HGT
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "hgt")
+        Case PDIF_ICO
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "ico", "cur")
+        Case PDIF_IFF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "iff", "lbm")
+        Case PDIF_J2K
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "j2k", "j2c")
+        Case PDIF_JLS
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jls")
+        Case PDIF_JNG
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jng")
+        Case PDIF_JP2
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jp2", "j2k", "jpc", "jpx", "jpf")
+        Case PDIF_JPEG
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jpg", "jpeg", "jpe", "jfif", "jif")
+        Case PDIF_JXL
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jxl")
+        Case PDIF_JXR
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jxr", "wdp", "hdp")
+        Case PDIF_KOALA
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "koa", "koala")
+        Case PDIF_LBM
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "lbm", "iff")
+        Case PDIF_MBM
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "mbm", "mbw", "mcl", "aif", "abw", "acl")
+        Case PDIF_MNG
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "mng")
+        Case PDIF_ORA
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "ora")
+        'Case PDIF_PBM                      'NOTE: for simplicity, all PPM extensions are condensed to PNM
+        '    GetExtensionFromPDIF = "pbm"
+        'Case PDIF_PBMRAW
+        '    GetExtensionFromPDIF = "pbm"
+        Case PDIF_PCD
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "pcd")
+        Case PDIF_PCX
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "pcx", "pcc", "dcx")
+        Case PDIF_PDF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "pdf")
+        Case PDIF_PDI
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "pdi")
+        'Case PDIF_PFM
+        '    GetExtensionFromPDIF = "pfm"
+        'Case PDIF_PGM
+        '    GetExtensionFromPDIF = "pgm"
+        'Case PDIF_PGMRAW
+        '    GetExtensionFromPDIF = "pgm"
+        Case PDIF_PICT
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "pic", "pict", "pct")
+        Case PDIF_PNG
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "png", "apng")
+        Case PDIF_PBM, PDIF_PBMRAW, PDIF_PFM, PDIF_PGM, PDIF_PGMRAW, PDIF_PNM, PDIF_PPM, PDIF_PPMRAW
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "ppm", "pbm", "pfm", "pgm", "pnm")
+        'Case PDIF_PPM
+        '    GetExtensionFromPDIF = "ppm"
+        'Case PDIF_PPMRAW
+        '    GetExtensionFromPDIF = "ppm"
+        Case PDIF_PSD
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "psd", "psb")
+        Case PDIF_PSP
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "psp", "pspimage", "tub", "psptube", "pfr", "pspframe", "msk", "pspmask", "pspbrush")
+        Case PDIF_QOI
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "qoi")
+        Case PDIF_RAS
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "ras")
+        'RAW is an interesting case; because PD can write HDR images, which support nearly all features
+        ' of all major RAW formats, we use HDR as the default extension for RAW-type images.
+        Case PDIF_RAW
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "hdr", "3fr", "arw", "bay", "bmq", "cap", "cine", "cr2", "crw", "cs1", "dc2", "dcr", "dng", "drf", "dsc", "erf", "fff", "ia", "iiq", "k25", "kc2", "kdc", "mdc", "mef", "mos", "mrw", "nef", "nrw", "orf", "pef", "ptx", "pxn", "qtk", "raf", "raw", "rdc", "rw2", "rwz", "sr2", "srf", "sti")
+        Case PDIF_SGI
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "sgi", "rgb", "rgba", "bw", "int", "inta")
+        Case PDIF_SVG
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "svg", "svgz")
+        Case PDIF_TARGA
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "tga", "targa")
+        Case PDIF_TIFF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "tif", "tiff")
+        Case PDIF_WBMP
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "wbm", "wbmp", "wap")
+        Case PDIF_WEBP
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "webp")
+        Case PDIF_WMF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "wmf")
+        Case PDIF_XBM
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "xbm")
+        Case PDIF_XCF
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "xcf", "xcfgz", "gz")
+        Case PDIF_XPM
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "xpm")
+        
+        Case Else
+            IsExtensionOkayForPDIF = False
     
     End Select
 
