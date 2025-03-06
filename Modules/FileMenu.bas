@@ -3,10 +3,10 @@ Attribute VB_Name = "FileMenu"
 'File Menu Handler
 'Copyright 2001-2025 by Tanner Helland
 'Created: 15/Apr/01
-'Last updated: 15/August/23
-'Last update: after a "Save As" dialog is raised, look for manually edited file extensions and use valid target
-'             image formats if found.  (Note that this only works, by design, if the file format dropdown was *not*
-'             modified from its initial value - if it *was* modified, we defer to it as the "authoritative" intent.)
+'Last updated: 06/March/25
+'Last update: in "Save As", correctly detect weird edge-case of mismatched file extension and file type in
+'             source file, followed by the user manually typing in a custom file extension (at save time)
+'             that maps to a known file format, but not the *target* file format.
 '
 'Functions for controlling standard file menu options.  Currently only handles "open image" and "save image".
 '
@@ -495,9 +495,12 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
     ' This is relevant for formats with ill-defined extensions, like JPEG (e.g. JPE, JPG, JPEG)
     Else
         dstSuggestedExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension")
-        If (LenB(dstSuggestedExtension) = 0) Then dstSuggestedExtension = ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
+        If (LenB(dstSuggestedExtension) = 0) Or (Not ImageFormats.IsExtensionOkayForPDIF(GetSuggestedSaveFormatAndExtension, dstSuggestedExtension)) Then
+            PDDebug.LogAction "WARNING: current file extension (" & dstSuggestedExtension & ") doesn't match target format (" & ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension) & "); switching to target output format instead..."
+            dstSuggestedExtension = ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
+        End If
     End If
-            
+    
 End Function
 
 'Save a lossless copy of the current image.  I've debated a lot of small details about how to best implement this (e.g. how to

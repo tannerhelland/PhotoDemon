@@ -587,7 +587,7 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_PNM = 112      'Catch-all for various portable pixmap filetypes
     PDIF_SVG = 113      'Support is currently experimental *only*!  Recommend disabling in production builds.
     PDIF_ORA = 114      'OpenRaster support was added in 8.0 nightly builds
-    PDIF_HEIF = 115     'Loaded via WIC; requires Win 8.1 or later and possible downloads from the MS store
+    PDIF_HEIF = 115     'Loaded via libheif
     PDIF_MBM = 116      'Symbian MBM support (including .aif and similar variants) was added in 9.0
     PDIF_PSP = 117      'JASC/Corel PaintShop Pro support was added in 9.0
     PDIF_CBZ = 118      'Comic book archives (zip format only) were added in 9.0
