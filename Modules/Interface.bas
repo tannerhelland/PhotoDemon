@@ -1417,7 +1417,7 @@ ControlIsNotPD:
     If g_Language.TranslationActive And dstForm.Enabled Then g_Language.ApplyTranslations dstForm
     
     'Finally, restore the previous window position (if any)
-    If handleAutoResize And (Not g_WindowManager Is Nothing) Then g_WindowManager.RestoreWindowLocation dstForm
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.RestoreWindowLocation dstForm
     
     'Report timing results here:
     PDDebug.LogAction "Interface.ApplyThemeAndTranslations updated " & dstForm.Name & " in " & VBHacks.GetTimeDiffNowAsString(startTime)
