@@ -294,6 +294,6 @@ End Sub
 ' doing this.  Typically, suspending an image should be saved for things like switching to a new active image
 ' (and the old image gets suspended), or opening a high-resource-usage tool and the background image won't be
 ' accessible for awhile.
-Public Sub SuspendImage(ByVal imgID As Long)
-    If PDImages.IsImageNonNull(imgID) Then m_PDImages(imgID).SuspendImage
+Public Sub SuspendImage(ByVal imgID As Long, Optional ByVal suspendToDisk As Boolean = False)
+    If PDImages.IsImageNonNull(imgID) Then m_PDImages(imgID).SuspendImage suspendToDisk
 End Sub

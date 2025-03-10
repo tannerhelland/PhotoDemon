@@ -785,12 +785,15 @@ Friend Sub ReverseLayerOrder()
 End Sub
 
 'Non-destructively suspend as many image resources as we can to either disk or memory.
-Friend Sub SuspendImage()
+Friend Sub SuspendImage(Optional ByVal suspendToDisk As Boolean = False, Optional ByVal alsoSuspendSharedBuffer As Boolean = True)
+    
+    'Normally we just suspend to a compressed memory stream, but if the user wants the image suspended to disk,
+    ' that's a little more aggressive.
     
     'Start by suspending all layers
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        If (Not imgLayers(i) Is Nothing) Then imgLayers(i).SuspendLayer True
+        If (Not imgLayers(i) Is Nothing) Then imgLayers(i).SuspendLayer True, suspendToDisk
     Next i
     
     'Suspend any other internal DIBs
@@ -805,7 +808,7 @@ Friend Sub SuspendImage()
     ' this is a large ask, and while there may be a slight stutter the next time the buffer needs
     ' to be compressed, that's a lesser usability evil than leaving behind a massive, momentarily
     ' unnecessary memory chunk.
-    UIImages.FreeSharedCompressBuffer
+    If alsoSuspendSharedBuffer Then UIImages.FreeSharedCompressBuffer
     
 End Sub
 
@@ -1239,7 +1242,7 @@ End Function
 '
 'For even more resource reduction, ask for a full layer suspension too - this will ask all child layers
 ' to suspend their DIBs to compressed buffers.
-Friend Sub DeactivateImage(Optional ByVal suspendLayersToo As Boolean = True)
+Friend Sub DeactivateImage(Optional ByVal suspendLayersToo As Boolean = True, Optional ByVal suspendToDisk As Boolean = False)
 
     'Scratch layers aren't needed unless the image is actively being edited
     Set ScratchLayer = Nothing
@@ -1249,7 +1252,7 @@ Friend Sub DeactivateImage(Optional ByVal suspendLayersToo As Boolean = True)
     
     'Layer suspension is the biggest gain, but it also has a perf penalty so the caller may
     ' choose to avoid this.
-    If suspendLayersToo Then Me.SuspendImage
+    If suspendLayersToo Then Me.SuspendImage suspendToDisk
     
 End Sub
 

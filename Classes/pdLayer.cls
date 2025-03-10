@@ -2499,10 +2499,10 @@ Friend Sub ResetLayerParameters()
 End Sub
 
 'Non-destructively suspend as many layer resources as we can to either disk or memory.
-Friend Sub SuspendLayer(Optional ByVal suspendViewportToo As Boolean = False)
+Friend Sub SuspendLayer(Optional ByVal suspendViewportToo As Boolean = False, Optional ByVal suspendToDisk As Boolean = False)
     
     'Layer DIB is the most obvious target for memory reduction
-    If (Not m_LayerDIB Is Nothing) Then m_LayerDIB.SuspendDIB cf_Lz4, False
+    If (Not m_LayerDIB Is Nothing) Then m_LayerDIB.SuspendDIB cf_Lz4, False, suspendToDisk
     
     'Thumbnail is an easy target too (since it's small, suspending is roughly instantaneous)
     If (Not m_LayerThumbnail Is Nothing) Then m_LayerThumbnail.SuspendDIB cf_Lz4, False

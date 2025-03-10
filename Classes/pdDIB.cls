@@ -15,10 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2025 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 14/April/22
-'Last update: replace RenderToPictureBox with RenderToDIB; this legacy function was no longer used,
-'             but it's helpful to have a similar function for just "dumping" a DIB to another one,
-'             with support for auto-centering and fitting
+'Last updated: 10/March/25
+'Last update: new option to suspend DIBs to disk; this can free a lot of memory when under pressure,
+'             and should allow me to better handle tight memory situations in the future.
 '
 'This class manages pixel data for almost everything inside PhotoDemon.  From image layers to UI
 ' elements, all are managed as pdDIB objects (a name that exists for historical reasons, but which
@@ -36,6 +35,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'For additional debug data, set this to TRUE.  (This should be set to FALSE in release builds.)
+Private Const DIB_DEBUG_VERBOSE As Boolean = False
 
 'Note that some critical structs, declares and enums are used in other ways throughout PD so they
 ' are not declared here.  To use this as a standalone class, you will need to do some copy+paste work
@@ -124,8 +126,12 @@ Private m_IsAlphaPremultiplied As Boolean
 ' doing this repeatedly comes with obvious performance penalties, but for e.g. UI DIBs whose appearance
 ' doesn't change frequently, the performance savings can be large.  Also, header bits like DIB size can
 ' still be queried freely - only the pixel bits themselves get "suspended".
+'
+'(In 2025.3, suspend was updated to allow for suspending to compressed memory *or* disk; the latter can
+' now be used when memory constraints are tight.)
 Private m_IsSuspended As Boolean, m_SuspensionBuffer() As Byte, m_SizeSuspended As Long, m_SizeUnsuspended As Long
 Private m_SuspendFormat As PD_CompressionFormat
+Private m_SuspendFilename As String
 
 'Get/set alpha premultiplication.
 ' IMPORTANT NOTE!  To make it explicitly clear that modifying this property DOES NOT ACTUALLY MODIFY THE IMAGE, the Set instruction is
@@ -1020,6 +1026,10 @@ Friend Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     m_SizeUnsuspended = 0
     Erase m_SuspensionBuffer
     m_IsSuspended = False
+    If (LenB(m_SuspendFilename) <> 0) Then
+        Files.FileDeleteIfExists m_SuspendFilename
+        m_SuspendFilename = vbNullString
+    End If
     
     'Finally, release the memory-mapped file backing the DIB, if one exists
     If (Not m_FileMM Is Nothing) Then m_FileMM.CloseFile
@@ -1041,7 +1051,7 @@ Friend Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
 End Sub
 
 '"Suspend" this DIB by converting it to a compressed memory stream and freeing all associated GDI handles.
-Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal autoKeepIfLarge As Boolean = True)
+Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal autoKeepIfLarge As Boolean = True, Optional ByVal suspendToDisk As Boolean = False)
     
     'If this DIB doesn't exist (or if it's already suspended), quit now
     If m_IsSuspended Then Exit Sub
@@ -1053,6 +1063,7 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
     
     'As such, PD's various resource minimizers are set to automatically ignore suspend requests for
     ' DIBs larger than some arbitrary size (currently 128kb).  This prevents noticeable UI lags.
+    ' That said, the caller is allowed to ignore this if they desperately need to cut memory.
     If autoKeepIfLarge And (m_dibHeader.ImageSize > 128000) Then Exit Sub
     
     'We need to store original and compressed sizes
@@ -1061,23 +1072,83 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
     
     'Because of quirks with the order that some UI elements get loaded, PD may attempt to suspend
     ' some DIBs before various compression libraries are made available.  If this happens, we'll
-    ' still perform a suspend, but we'll do it *without* compression
+    ' still perform a suspend, but we'll do it *without* compression.  (This saves on GDI objects
+    ' and user-space handles, but does nothing for memory reduction.)
     m_SuspendFormat = cmpFormat
     If (Not Compression.IsFormatSupported(m_SuspendFormat)) Then m_SuspendFormat = cf_None
     
     'Request access to the shared UI compression buffer, then compress our pixel data
     Dim dstBufferPtr As Long, dstBufferSize As Long
-    dstBufferPtr = UIImages.GetSharedCompressBuffer(dstBufferSize, m_SizeUnsuspended, m_SuspendFormat)
-    Compression.CompressPtrToPtr dstBufferPtr, dstBufferSize, m_dibBits, m_SizeUnsuspended, m_SuspendFormat
-    
-    'Create a precisely sized local buffer to hold the compressed data, then copy it over
-    m_SizeSuspended = dstBufferSize
-    If VBHacks.IsArrayInitialized(m_SuspensionBuffer) Then
-        If (m_SizeSuspended > UBound(m_SuspensionBuffer) + 1) Then ReDim m_SuspensionBuffer(0 To m_SizeSuspended - 1) As Byte
-    Else
-        ReDim m_SuspensionBuffer(0 To m_SizeSuspended - 1) As Byte
+    If suspendToDisk Then
+        
+        m_SuspendFilename = OS.UniqueTempFilename()
+        
+        Dim worstCaseSize As Long
+        worstCaseSize = Compression.GetWorstCaseSize(m_SizeUnsuspended, m_SuspendFormat)
+        
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, m_SuspendFilename, worstCaseSize, optimizeAccess:=OptimizeSequentialAccess) Then
+            
+            dstBufferPtr = cStream.Peek_PointerOnly(0, worstCaseSize)
+            dstBufferSize = worstCaseSize
+            If Compression.CompressPtrToPtr(dstBufferPtr, dstBufferSize, m_dibBits, m_SizeUnsuspended, m_SuspendFormat) Then
+                
+                'Shrink the file size to match the actual compressed bytes, then release to disk
+                m_SizeSuspended = dstBufferSize
+                cStream.SetSizeExternally m_SizeSuspended
+                cStream.StopStream True
+                If DIB_DEBUG_VERBOSE Then PDDebug.LogAction "Suspended DIB to file " & m_SuspendFilename & ", " & m_SizeUnsuspended & " bytes saved"
+                
+                'If the suspension buffer was used previously, it may still be allocated; free it now
+                Erase m_SuspensionBuffer
+                
+            'If compression failed, attempt a memory suspend instead
+            Else
+                cStream.StopStream True
+                Files.FileDeleteIfExists m_SuspendFilename
+                m_SuspendFilename = vbNullString
+                suspendToDisk = False
+            End If
+            
+            'UIImages.GetSharedCompressBuffer(dstBufferSize, m_SizeUnsuspended, m_SuspendFormat)
+            
+        'Something went wrong with disk access; attempt a memory suspend instead
+        Else
+            m_SuspendFilename = vbNullString
+            suspendToDisk = False
+        End If
+        
+        Set cStream = Nothing
+        
     End If
-    CopyMemoryStrict VarPtr(m_SuspensionBuffer(0)), dstBufferPtr, m_SizeSuspended
+    
+    If (Not suspendToDisk) Then
+        
+        m_SuspendFilename = vbNullString
+        dstBufferPtr = UIImages.GetSharedCompressBuffer(dstBufferSize, m_SizeUnsuspended, m_SuspendFormat)
+        If Compression.CompressPtrToPtr(dstBufferPtr, dstBufferSize, m_dibBits, m_SizeUnsuspended, m_SuspendFormat) Then
+            
+            'Create a precisely sized local buffer to hold the compressed data, then copy it over
+            m_SizeSuspended = dstBufferSize
+            If VBHacks.IsArrayInitialized(m_SuspensionBuffer) Then
+                If (m_SizeSuspended > UBound(m_SuspensionBuffer) + 1) Then ReDim m_SuspensionBuffer(0 To m_SizeSuspended - 1) As Byte
+            Else
+                ReDim m_SuspensionBuffer(0 To m_SizeSuspended - 1) As Byte
+            End If
+            CopyMemoryStrict VarPtr(m_SuspensionBuffer(0)), dstBufferPtr, m_SizeSuspended
+            
+            'Suspend info is actually a little *too* verbose for me!
+            'If DIB_DEBUG_VERBOSE Then PDDebug.LogAction "Suspended DIB to memory, " & (m_SizeUnsuspended - m_SizeSuspended) & " bytes saved"
+            
+        'Something went wrong with compression.  Abandon ship!
+        Else
+            m_SizeUnsuspended = 0
+            m_SizeSuspended = 0
+            Exit Sub
+        End If
+        
+    End If
     
     '*Selectively* free only our local pixel bits
     If (m_dibDC <> 0) Then
@@ -1152,26 +1223,65 @@ Private Sub UnsuspendDIB()
             m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
         End If
         
+        'TODO: check failure, and force memory reduction elsewhere as necessary (then try again)
+        
         'If successful, select the newly created dib into our DC
         If (m_dibHandle <> 0) Then
             
             'Inside debug mode, update a global counter (for leak tracking)
             PDDebug.UpdateResourceTracker PDRT_hDIB, 1
             
-            'Decompress our local copy of pixel data into the newly created DIB
-            If Compression.DecompressPtrToPtr(m_dibBits, m_SizeUnsuspended, VarPtr(m_SuspensionBuffer(0)), m_SizeSuspended, m_SuspendFormat) Then
+            'Compression could have occurred to disk or memory
+            If (LenB(m_SuspendFilename) <> 0) Then
                 
-                'A lot of different strategies are possible here, but for now, let's keep the suspend
-                ' buffer intact for small images.  These are likely to suspend/unsuspend many times
-                ' as part of UI rendering, and the cost of keeping the suspend buffer intact is less
-                ' than the cost of constant small re-allocations.
-                If (m_SizeSuspended > 16384) Then Erase m_SuspensionBuffer
+                If DIB_DEBUG_VERBOSE Then PDDebug.LogAction "Unsuspending DIB from file " & m_SuspendFilename & ", " & m_SizeUnsuspended & " bytes expected"
                 
-                m_SizeSuspended = 0
-                m_SizeUnsuspended = 0
+                Dim cStream As pdStream
+                Set cStream = New pdStream
+                If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, m_SuspendFilename, m_SizeSuspended, optimizeAccess:=OptimizeSequentialAccess) Then
+                    
+                    Dim ptrImageData As Long
+                    ptrImageData = cStream.Peek_PointerOnly(0, m_SizeSuspended)
+                    
+                    'Dump the data directly into the zip!
+                    If Compression.DecompressPtrToPtr(m_dibBits, m_SizeUnsuspended, ptrImageData, m_SizeSuspended, m_SuspendFormat) Then
+                        
+                        cStream.StopStream True
+                        Files.FileDeleteIfExists m_SuspendFilename
+                        
+                        m_SuspendFilename = vbNullString
+                        m_SizeSuspended = 0
+                        m_SizeUnsuspended = 0
+                        If DIB_DEBUG_VERBOSE Then PDDebug.LogAction "DIB unsuspended successfully!"
+                        
+                    Else
+                        PDDebug.LogAction "WARNING!  pdDIB couldn't decompress DIB from disk."
+                    End If
+                    
+                Else
+                    PDDebug.LogAction "WARNING!  pdDIB couldn't unsuspend DIB from disk."
+                End If
+                
+                Set cStream = Nothing
                 
             Else
-                PDDebug.LogAction "WARNING!  pdDIB couldn't unsuspend DIB."
+                
+                'Decompress our local copy of pixel data into the newly created DIB
+                If Compression.DecompressPtrToPtr(m_dibBits, m_SizeUnsuspended, VarPtr(m_SuspensionBuffer(0)), m_SizeSuspended, m_SuspendFormat) Then
+                    
+                    'A lot of different strategies are possible here, but for now, let's keep the suspend
+                    ' buffer intact for small images.  These are likely to suspend/unsuspend many times
+                    ' as part of UI rendering, and the cost of keeping the suspend buffer intact is less
+                    ' than the cost of constant small re-allocations.
+                    If (m_SizeSuspended > 16384) Then Erase m_SuspensionBuffer
+                    
+                    m_SizeSuspended = 0
+                    m_SizeUnsuspended = 0
+                    
+                Else
+                    PDDebug.LogAction "WARNING!  pdDIB couldn't unsuspend DIB from memory."
+                End If
+                
             End If
             
             'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB

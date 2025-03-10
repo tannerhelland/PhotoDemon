@@ -368,9 +368,9 @@ Public Function AppMemoryUsage(Optional returnPeakValue As Boolean = False) As L
         If (GetProcessMemoryInfo(procHandle, procMemInfo, procMemInfo.cb) <> 0) Then
             
             If returnPeakValue Then
-                AppMemoryUsage = procMemInfo.PeakWorkingSetSize / 1024#
+                AppMemoryUsage = CDbl(procMemInfo.PeakWorkingSetSize) / 1024#
             Else
-                AppMemoryUsage = procMemInfo.WorkingSetSize / 1024#
+                AppMemoryUsage = CDbl(procMemInfo.WorkingSetSize) / 1024#
             End If
             
         End If
