@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 208</langversion>
+<langversion>2024.12 Alpha - Build 208.2</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2069,6 +2069,11 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 </phrase>
 
 <phrase>
+<original>Replace</original>
+<translation>Ersetzen</translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>Übernehmen</translation>
 </phrase>
@@ -2143,7 +2148,7 @@ Um die Unterstützung für dieses Bildformat zu aktivieren, kopieren Sie bitte d
 <translation>Preview nicht verfügbar</translation>
 </phrase>
 
-<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2306,6 +2311,26 @@ Bitte schließen Sie diese Datei in jeglichen anderen laufenden Programmen, dann
 </phrase>
 
 <phrase>
+<original>This file has the extension "%1", but it is actually in "%2" format.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>May PhotoDemon rename the file with a correct extension?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(If you choose "Yes", the file will be renamed to "%1")</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Bad file extension</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Image loaded successfully.</original>
 <translation>Bild erfolgreich geladen.</translation>
 </phrase>
@@ -2369,7 +2394,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 <translation>Bildduplikation abgeschlossen.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Loading.bas contains 38 phrases. 17 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -5117,11 +5142,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Replace</original>
-<translation>Ersetzen</translation>
-</phrase>
-
-<phrase>
 <original>Order</original>
 <translation>Reihenfolge</translation>
 </phrase>
@@ -5839,7 +5859,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>Sprache erfolgreich geändert.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 407 phrases. 217 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14589,10 +14609,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2762</phrasecount>
+<phrasecount>2766</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5875 phrases. -->
-<!-- 3113 are duplicates, so only 2762 unique phrases have been written to file. -->
-<!-- These 2762 phrases contain approximately 11979 total words. -->
+<!-- As of this build, PhotoDemon contains 5886 phrases. -->
+<!-- 3120 are duplicates, so only 2766 unique phrases have been written to file. -->
+<!-- These 2766 phrases contain approximately 12012 total words. -->
 
 </pdData>

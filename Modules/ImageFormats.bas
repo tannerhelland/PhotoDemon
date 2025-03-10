@@ -742,6 +742,22 @@ Public Function IsExtensionOkayForPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT, ByRef s
 
 End Function
 
+'Given a file extension, attempt to match it to *any* known file format.
+' Returns PDIF_UNKNOWN if no matching format+extension combo is found.
+Public Function IsExtensionOkayForAnyPDIF(ByRef srcExtension As String) As PD_IMAGE_FORMAT
+        
+    IsExtensionOkayForAnyPDIF = PDIF_UNKNOWN
+    
+    Dim i As PD_IMAGE_FORMAT
+    For i = 0 To PDIF_MAX_ID
+        If IsExtensionOkayForPDIF(i, srcExtension) Then
+            IsExtensionOkayForAnyPDIF = i
+            Exit Function
+        End If
+    Next i
+    
+End Function
+
 'Given a file extension, return the corresponding best-guess PDIF (PhotoDemon image format constant).
 '
 'By default, this function will *NOT* return PDIF_UNKNOWN for extensions without a corresponding format.

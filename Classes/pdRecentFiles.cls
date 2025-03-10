@@ -351,7 +351,7 @@ Private Sub WriteAllThumbnails()
     'Now, write out all of our internally cached thumbnails
     Dim i As Long
     For i = 0 To m_ItemCount - 1
-        If (Not m_Items(i).imgThumbnail Is Nothing) And (Len(m_Items(i).fullThumbPathAndFilename) <> 0) Then
+        If (Not m_Items(i).imgThumbnail Is Nothing) And (LenB(m_Items(i).fullThumbPathAndFilename) <> 0) Then
             If m_Items(i).hasChangedThisSession Then m_Items(i).imgThumbnail.WriteToFile m_Items(i).fullThumbPathAndFilename, cf_Lz4
         End If
     Next i
@@ -444,6 +444,39 @@ Friend Sub AddFileToList(ByRef srcFile As String, Optional ByRef srcImage As pdI
     End With
     
     'Apply any necessary UI changes
+    UpdateUI_NonEmptyList
+    
+End Sub
+
+'Replace an existing filename in the MRU list with a new filename.
+' (This is done when loading a file with a bad extension - when the bad extension is detected, PD offers to
+'  rename the file with a *correct* extension - but this happens after an MRU update.)
+'
+'Do not use outside that very specific use-case!
+Friend Sub ReplaceExistingEntry(ByRef oldFile As String, ByRef newFile As String)
+    
+    oldFile = Strings.TrimNull(oldFile)
+    newFile = Strings.TrimNull(newFile)
+    
+    Dim i As Long
+    For i = 0 To m_ItemCount - 1
+        If Strings.StringsEqual(m_Items(i).fullPathAndFilename, oldFile, True) Then
+            m_Items(i).fullPathAndFilename = newFile
+            m_Items(i).hashedFilename = GetHashedFilename(newFile)
+            
+            If Files.FileExists(m_Items(i).fullThumbPathAndFilename) Then
+                Dim newThumbFile As String
+                newThumbFile = UserPrefs.GetIconPath & m_Items(i).hashedFilename & ".pdtmp"
+                Files.FileMove m_Items(i).fullThumbPathAndFilename, newThumbFile, True
+                m_Items(i).fullThumbPathAndFilename = newThumbFile
+            Else
+                Set m_Items(i).imgThumbnail = Nothing
+            End If
+            
+            Exit For
+        End If
+    Next i
+    
     UpdateUI_NonEmptyList
     
 End Sub

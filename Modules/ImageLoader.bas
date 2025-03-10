@@ -2378,7 +2378,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     
     'Notify the UI manager that it now has one more image to deal with
     If (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageAdded srcImage.imageID
-                            
+    
     'Add this file to the MRU list (unless specifically told not to)
     If addToRecentFiles And (Macros.GetMacroStatus <> MacroBATCH) Then g_RecentFiles.AddFileToList srcFile, srcImage
     

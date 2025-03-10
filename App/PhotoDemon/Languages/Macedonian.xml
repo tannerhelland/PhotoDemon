@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1741</langversion>
+<langversion>8.9.1743</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2066,6 +2066,11 @@ To овозможи поддршка за овој формат на слика,
 </phrase>
 
 <phrase>
+<original>Replace</original>
+<translation>Замени</translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>наследат</translation>
 </phrase>
@@ -2140,7 +2145,7 @@ To овозможи поддршка за овој формат на слика,
 <translation>преглед не се достапни</translation>
 </phrase>
 
-<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2301,6 +2306,26 @@ Please close this file in any other running programs, then try again.</original>
 </phrase>
 
 <phrase>
+<original>This file has the extension "%1", but it is actually in "%2" format.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>May PhotoDemon rename the file with a correct extension?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(If you choose "Yes", the file will be renamed to "%1")</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Bad file extension</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Image loaded successfully.</original>
 <translation>Слика успешно вчитан.</translation>
 </phrase>
@@ -2364,7 +2389,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>дуплирање сликата заврши.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Loading.bas contains 38 phrases. 17 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -5107,11 +5132,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Replace</original>
-<translation>Замени</translation>
-</phrase>
-
-<phrase>
 <original>Order</original>
 <translation>Со цел</translation>
 </phrase>
@@ -5829,7 +5849,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Јазик успешно променет.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 407 phrases. 217 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14577,10 +14597,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2762</phrasecount>
+<phrasecount>2766</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5875 phrases. -->
-<!-- 3113 are duplicates, so only 2762 unique phrases have been written to file. -->
-<!-- These 2762 phrases contain approximately 11979 total words. -->
+<!-- As of this build, PhotoDemon contains 5886 phrases. -->
+<!-- 3120 are duplicates, so only 2766 unique phrases have been written to file. -->
+<!-- These 2766 phrases contain approximately 12012 total words. -->
 
 </pdData>

@@ -1039,6 +1039,33 @@ Friend Function FileMapView(ByVal srcHandle As Long, ByVal startPos As Long, ByV
     FileMapView = MapViewOfFile(srcHandle, fFlags, 0&, startPos, mapSize)
 End Function
 
+Friend Function FileMove(ByVal oldFile As String, ByVal newFile As String, Optional ByVal delNewFileFirstIfExists As Boolean = False) As Boolean
+    
+    Const FUNC_NAME As String = "FileMove"
+    
+    If Me.FileExists(oldFile) Then
+        
+        If Me.FileExists(newFile) Then
+            If delNewFileFirstIfExists Then
+                Me.FileDelete newFile
+            Else
+                FSOError FUNC_NAME, "new file exists, but I can't delete it!"
+            End If
+        End If
+        
+        If (Not Me.FileExists(newFile)) Then
+            FileMove = (MoveFileExW(StrPtr(oldFile), StrPtr(newFile), 0&) <> 0)
+            If (Not FileMove) Then FSOError FUNC_NAME, "MoveFileExFailed; LastDLLError was #" & Err.LastDllError
+        Else
+            FSOError FUNC_NAME, "new file already exists!"
+        End If
+        
+    Else
+        FSOError FUNC_NAME, "old file doesn't exist!"
+    End If
+    
+End Function
+
 'After a file has been opened, you can use this function to manually move the file pointer around
 Friend Function FileMovePointer(ByVal srcHandle As Long, ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
     FileMovePointer = (SetFilePointer(srcHandle, newPosition, 0&, startingPosition) <> INVALID_SET_FILE_POINTER)

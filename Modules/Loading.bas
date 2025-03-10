@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'General-purpose image and data import interface
 'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 09/December/22
-'Last update: ensure EMF/WMF images that are "quick-loaded" do not display a size prompt UI
+'Last updated: 10/March/25
+'Last update: warn the user about mismatched file extensions (and offer to fix them)
 '
 'This module provides high-level "load" functionality for getting image files into PD.
 ' There are a number of different ways to do this; for example, loading a user-facing image
@@ -56,15 +56,16 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     '*** AND NOW, AN IMPORTANT MESSAGE ABOUT DOEVENTS ***
     
-    'Normally, PD avoids DoEvents for all the obvious reasons.  This function is a stark exception to that rule.
-    ' Why?
+    'Normally, PhotoDemon avoids calling DoEvents for all the obvious reasons.
+    ' This function is an exception to that rule.
     
     'While this function stays busy loading the image in question, the ExifTool plugin runs asynchronously,
     ' parsing image metadata and forwarding the results to a pdPipeAsync instance on PD's primary form.
-    ' By using DoEvents throughout this function, we periodically yield control to that pdPipeAsync instance,
-    ' which allows it to clear stdout so ExifTool can continue pushing metadata through.  (If we don't do this,
-    ' ExifTool will freeze when stdout fills its buffer, which is not just possible but *probable*, given how
-    ' much metadata the average JPEG contains.)
+    ' By using DoEvents throughout this function (specifically, a custom-built version that only allows
+    ' timer messages through, named "VBHacks.DoEventsTimersOnly"), we periodically yield control to that
+    ' pdPipeAsync instance, which allows it to clear stdout so ExifTool can continue pushing metadata through.
+    ' (If we don't do this, ExifTool will freeze when stdout fills its buffer, which is not just possible but
+    ' *probable*, given how much metadata the average photo file contains.)
     
     'That said, please note that a LOT of precautions have been taken to make sure DoEvents doesn't cause reentry
     ' and other issues.  Do *not* mimic this behavior in your own code unless you understand the repercussions!
@@ -544,6 +545,108 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Report success/failure back to the user
     LoadFileAsNewImage = loadSuccessful And (Not targetImage Is Nothing)
+    
+    'NEW IN 2025: look for mismatches between file extension and file type in the source file.
+    ' If this happens, warn the user and offer to rename the underlying file with a correct extension.
+    ' (Like anything else that raises a modal dialog, this check is disabled during batch processes.)
+    If LoadFileAsNewImage And (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) Then
+        
+        'Ignore images that didn't originate from disk
+        If (LenB(suggestedFilename) = 0) Then
+        
+        'Ignore image originating from temp files (common when e.g. loading from a .zip file)
+        If (targetImage.GetOriginalFileFormat <> PDIF_UNKNOWN) And (targetImage.GetOriginalFileFormat <> PDIF_RAWBUFFER) _
+            And (targetImage.GetOriginalFileFormat <> PDIF_TMPFILE) Then
+    
+            'The file appears to be a normal on-disk image file.
+            
+            'See what file format is expected for this particular extension.
+            Dim expectedFormatForExtension As PD_IMAGE_FORMAT
+            expectedFormatForExtension = ImageFormats.IsExtensionOkayForAnyPDIF(Files.FileGetExtension(srcFile))
+            
+            'Compare the expected extension to the one we got.
+            Dim warnUser As Boolean
+            warnUser = (expectedFormatForExtension <> targetImage.GetOriginalFileFormat)
+            
+            'Hmmm, the file's contents don't match its format!  We don't want to mess with images
+            ' in a custom format, but if the image file has an extension that *is* associated with another format
+            ' (like e.g. a JPEG image with a PNG extension), we *do* want to warn the user.
+            If warnUser And (expectedFormatForExtension <> PDIF_UNKNOWN) Then
+                
+                PDDebug.LogAction "WARNING: bad file extension found.  If the correctly named version doesn't exist, we'll offer to rename..."
+                
+                Dim correctExtension As String
+                correctExtension = ImageFormats.GetExtensionFromPDIF(expectedFormatForExtension)
+                
+                Dim renamedFilename As String
+                renamedFilename = Files.FileGetPath(srcFile) & Files.FileGetName(srcFile, True) & "." & ImageFormats.GetExtensionFromPDIF(targetImage.GetOriginalFileFormat)
+                
+                If (Not Files.FileExists(renamedFilename)) Then
+                    
+                    Dim msgBadExtension As pdString
+                    Set msgBadExtension = New pdString
+                    msgBadExtension.AppendLine g_Language.TranslateMessage("This file has the extension ""%1"", but it is actually in ""%2"" format.", Files.FileGetExtension(srcFile), ImageFormats.GetExtensionFromPDIF(targetImage.GetOriginalFileFormat))
+                    msgBadExtension.AppendLineBreak
+                    msgBadExtension.AppendLine g_Language.TranslateMessage("May PhotoDemon rename the file with a correct extension?")
+                    msgBadExtension.AppendLineBreak
+                    msgBadExtension.AppendLine g_Language.TranslateMessage("(If you choose ""Yes"", the file will be renamed to ""%1"")", renamedFilename)
+                    
+                    Dim renameResult As VbMsgBoxResult
+                    renameResult = PDMsgBox(msgBadExtension.ToString(), vbExclamation Or vbYesNo Or vbApplicationModal, "Bad file extension")
+                    
+                    If (renameResult = vbYes) Then
+                        
+                        'The user wants us to rename the file.  This requires us to "rewind" some choices made
+                        ' earlier in the load process, and update various tracking bits (like MRU menus) accordingly.
+                        
+                        'Before doing anything, don't proceed until metadata has finished loading.
+                        If (Not targetImage.ImgMetadata.HasMetadata) Then
+                            
+                            'Let metadata process in a separate thread, because if we try to rename the file while Exiftool is
+                            ' touching it, either (or both) operations will fail.
+                            '
+                            '(We don't want this to go on forever, though, so after a few seconds, attempt anyway -
+                            ' something may have gone wrong on ExifTool's end.)
+                            Dim totalTimeElapsed As Long
+                            Do While (Not ExifTool.IsMetadataFinished) And (totalTimeElapsed < 2000)
+                                VBHacks.SleepAPI 200
+                                totalTimeElapsed = totalTimeElapsed + 200
+                            Loop
+                            
+                        End If
+                        
+                        'Attempt the rename.
+                        If Files.FileMove(srcFile, renamedFilename, False) Then
+                            
+                            'We replaced the file without trouble.  Now we need to update a bunch of internal stuff
+                            ' that's no longer relevant (like MRUs).
+                            targetImage.ImgStorage.AddEntry "CurrentLocationOnDisk", renamedFilename
+                            targetImage.ImgStorage.AddEntry "OriginalFileName", Files.FileGetName(renamedFilename, True)
+                            targetImage.ImgStorage.AddEntry "OriginalFileExtension", Files.FileGetExtension(renamedFilename)
+                            If addToRecentFiles Then g_RecentFiles.ReplaceExistingEntry srcFile, renamedFilename
+                            If handleUIDisabling Then Interface.SyncInterfaceToCurrentImage
+                            
+                        Else
+                            PDDebug.LogAction "WARNING: file copy failed."
+                            If handleUIDisabling Then Processor.MarkProgramBusyState False, True
+                            Message "Warning - file locked: %1", srcFile
+                            PDMsgBox "Unfortunately, the file '%1' is currently locked by another program on this PC." & vbCrLf & vbCrLf & "Please close this file in any other running programs, then try again.", vbExclamation Or vbOKOnly, "File locked", srcFile
+                        End If
+                        
+                    '/end user answered "yes" to rename
+                    End If
+                
+                '/target file (with correct extension) already exists in that folder!
+                Else
+                    PDDebug.LogAction "WARNING: file with correct extension already exists!"
+                End If
+            
+            '/end file format is OK for this extension
+            End If
+            
+        End If  '/end image was temp file
+        End If  '/end image didn't originate on disk
+    End If  '/end in batch process, or file didn't load correctly anyway
     
     'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then

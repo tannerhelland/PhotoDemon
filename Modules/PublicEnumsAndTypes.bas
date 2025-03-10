@@ -599,6 +599,11 @@ Public Enum PD_IMAGE_FORMAT
     PDIF_JXL = 124      'JPEG XL was added in 10.0 nightly builds
     PDIF_PDF = 125      'PDF was added in 10.0 nightly builds
     
+    'AFTER ADDING A NEW FORMAT, ALWAYS UPDATE THE MAX ID VALUE.
+    ' PhotoDemon uses this value to iterate known file formats against known extensions,
+    ' and identify mismatched values.
+    PDIF_MAX_ID = 125
+    
 End Enum
 
 #If False Then
@@ -611,7 +616,7 @@ End Enum
     Const PDIF_PDI = 100, PDIF_RAWBUFFER = 101, PDIF_TMPFILE = 102
     Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112, PDIF_ORA = 114, PDIF_HEIF = 115, PDIF_MBM = 116, PDIF_PSP = 117
     Const PDIF_CBZ = 118, PDIF_AVIF = 119, PDIF_JLS = 120, PDIF_QOI = 121, PDIF_XCF = 122, PDIF_HGT = 123, PDIF_JXL = 124
-    Const PDIF_PDF = 125
+    Const PDIF_PDF = 125, PDIF_MAX_ID = 125
 #End If
 
 'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx

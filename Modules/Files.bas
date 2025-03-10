@@ -379,6 +379,10 @@ Public Function FileMakeNameValid(ByRef srcFilename As String, Optional ByVal re
     If InitializeFSO Then FileMakeNameValid = m_FSO.MakeValidWindowsFilename(srcFilename, replacementChar)
 End Function
 
+Public Function FileMove(ByVal oldFile As String, ByVal newFile As String, Optional ByVal delNewFileFirstIfExists As Boolean = False) As Boolean
+    If InitializeFSO Then FileMove = m_FSO.FileMove(oldFile, newFile, delNewFileFirstIfExists)
+End Function
+
 Public Function FileReplace(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = vbNullString) As PD_FILE_PATCH_RESULT
     If InitializeFSO Then FileReplace = m_FSO.FileReplace(oldFile, newFile, customBackupFile)
 End Function
