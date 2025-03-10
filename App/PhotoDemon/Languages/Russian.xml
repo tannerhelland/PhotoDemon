@@ -2317,22 +2317,22 @@ Please close this file in any other running programs, then try again.</original>
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>Этот файл имеет расширение "%1", но на самом деле его истинное расширение "%2".</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>Может ли PhotoDemon переименовать этот файл на истинное расширением?</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>(Если выбрать "Да", файл будет переименован в "%1")</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>Неверное расширение файла</translation>
 </phrase>
 
 <phrase>
@@ -6439,7 +6439,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>использовать скользящую среднюю</translation>
 </phrase>
 
 <phrase>
