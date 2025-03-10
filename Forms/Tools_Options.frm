@@ -1833,8 +1833,8 @@ Private Sub Form_Load()
     btsMouseHighRes.AddItem "on", 1
     btsMouseHighRes.AssignTooltip "When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior."
     
-    lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format$(OS.AppMemoryUsage(), "#,#") & " K"
-    lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format$(OS.AppMemoryUsage(True), "#,#") & " K"
+    lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format$(OS.AppMemoryUsageInMB(), "#,#") & " M"
+    lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format$(OS.AppMemoryUsageInMB(True), "#,#") & " M"
     
     cmdTmpPath.AssignTooltip "Click to select a new temporary folder."
     cmdReset.AssignTooltip "This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem."

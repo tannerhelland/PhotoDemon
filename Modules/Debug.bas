@@ -187,8 +187,8 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         
             'The caller wants a RAM update.  Generate one now.
             Dim curMemUsage As Double, maxMemUsage As Double, deltaMem As Double
-            curMemUsage = OS.AppMemoryUsage(False)
-            maxMemUsage = OS.AppMemoryUsage(True)
+            curMemUsage = OS.AppMemoryUsageInMB(False)
+            maxMemUsage = OS.AppMemoryUsageInMB(True)
             deltaMem = curMemUsage - m_lastMemCheck
             
             'While here, also grab GDI and user object counts

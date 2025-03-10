@@ -354,7 +354,9 @@ Private m_InsideWine As Boolean, m_LookedForWineAlready As Boolean
 
 'Function for returning this application's current memory usage.  Note that this function will return warped
 ' values inside the IDE (because the reported total is for *all* of VB6, including the IDE itself).
-Public Function AppMemoryUsage(Optional returnPeakValue As Boolean = False) As Long
+'
+'Return value is in MB, per the name.
+Public Function AppMemoryUsageInMB(Optional returnPeakValue As Boolean = False) As Long
     
     'Open a handle to this process
     Dim procHandle As Long
@@ -368,9 +370,9 @@ Public Function AppMemoryUsage(Optional returnPeakValue As Boolean = False) As L
         If (GetProcessMemoryInfo(procHandle, procMemInfo, procMemInfo.cb) <> 0) Then
             
             If returnPeakValue Then
-                AppMemoryUsage = CDbl(procMemInfo.PeakWorkingSetSize) / 1024#
+                AppMemoryUsageInMB = Int(CDbl(procMemInfo.PeakWorkingSetSize) / 1048576#)
             Else
-                AppMemoryUsage = CDbl(procMemInfo.WorkingSetSize) / 1024#
+                AppMemoryUsageInMB = Int(CDbl(procMemInfo.WorkingSetSize) / 1048576#)
             End If
             
         End If
@@ -379,7 +381,7 @@ Public Function AppMemoryUsage(Optional returnPeakValue As Boolean = False) As L
         CloseHandle procHandle
         
     Else
-        InternalError "OS.AppMemoryUsage() failed to open a handle to this process."
+        InternalError "OS.AppMemoryUsageInMB() failed to open a handle to this process."
     End If
     
 End Function
