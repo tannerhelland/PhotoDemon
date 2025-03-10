@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright 2012-2025 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 24/March/22
-'Last update: start work on layer masks as a persistent layer data element
+'Last updated: 10/March/25
+'Last update: expose "suspend to disk" behavior to callers
 '
 'Once upon a time, the pdLayer class was a simple pixel array wrapper.  Once PhotoDemon grew into
 ' a full layer-based photo editor, however, it became necessary to separate Layer-specific functions
@@ -780,6 +780,12 @@ End Sub
 
 Friend Function GetTimeOfLastChange() As Currency
     GetTimeOfLastChange = m_TimeAtLastDestructiveChange
+End Function
+
+'Returns TRUE if the underlying layer pixel bits have been suspended to either a compressed memory stream
+' or disk.
+Friend Function IsSuspended(Optional ByVal checkSuspendedToDisk As Boolean = False) As Boolean
+    If (Not m_LayerDIB Is Nothing) Then IsSuspended = m_LayerDIB.IsSuspended(checkSuspendedToDisk)
 End Function
 
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action

@@ -133,7 +133,23 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'Now we get into the meat-and-potatoes portion of this sub.  Main segments are labeled by large, asterisk-separated bars.
     ' These segments generally describe a group of tasks with related purpose, and many of these tasks branch out into other modules.
     
-        
+    '*************************************************************************************************************************************
+    ' If memory usage is a concern, try to suspend some images to disk before proceeding
+    '*************************************************************************************************************************************
+    
+    'A central memory manager handles this operation for us - we just need to notify it to act.
+    ' Currently, PD wants to ensure it has about ~100 MB free for a newly loaded image.  That provides
+    ' ~20 megapixels worth of space (80 MB) plus a little overhead for the decoding process.
+    '
+    'If that much memory, plus whatever PD currently has allocated, exceeds 80% of *available* memory,
+    ' PD will try to suspend other open images to disk in an attempt to maximize available space.
+    If OS.IsMemoryUsageWorrisome(100) And (PDImages.GetNumOpenImages > 1) Then
+        Message "Memory usage looks high; suspending some data to disk before continuing..."
+        PDImages.StrategicMemoryReduction
+        Message "Loading image..."
+        UIImages.FreeSharedCompressBuffer
+    End If
+    
     '*************************************************************************************************************************************
     ' If the image being loaded is a primary image (e.g. one opened normally), prepare a blank pdImage object to receive it
     '*************************************************************************************************************************************
@@ -1033,6 +1049,9 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
             ' exists before forwarding it to the loader.
             If Files.FileExists(tmpFilename) Then
                 
+                Message "Importing %1...", Files.FileGetName(tmpFilename)
+                
+                'Proceed with the load, and track successes/failures separately
                 If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, True, False, vbNullString, numCanceledImports) Then
                     numSuccesses = numSuccesses + 1
                 Else
@@ -1064,6 +1083,9 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         'Synchronize everything to all open images
         SyncInterfaceToCurrentImage
         Processor.MarkProgramBusyState False, True, (PDImages.GetNumOpenImages() > 1)
+        
+        'Free the shared compression buffer (which may have been used to "suspend" previous images as we went)
+        UIImages.FreeSharedCompressBuffer
         
         'Even if returning TRUE, we still want to notify the user of any failed files
         If (numFailures > 0) And (numCanceledImports = 0) Then

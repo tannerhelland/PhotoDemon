@@ -201,6 +201,12 @@ Friend Sub SetOriginalFormat(ByVal origFIF As PD_IMAGE_FORMAT)
     m_OriginalFIF = origFIF
 End Sub
 
+'Returns TRUE if the DIB has been suspended to either a compressed memory stream or a temp file
+Friend Function IsSuspended(Optional ByVal checkSuspendedToDisk As Boolean = False) As Boolean
+    IsSuspended = m_IsSuspended
+    If (IsSuspended And checkSuspendedToDisk) Then IsSuspended = (LenB(m_SuspendFilename) <> 0)
+End Function
+
 'Given a pixel coordinate, return an RGBA quad for that coordinate.
 ' Returns: TRUE if the pixel lies inside DIB boundaries; FALSE otherwise.  Make sure to check this before using the RGBQUAD.
 Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQuad) As Boolean
@@ -1054,7 +1060,23 @@ End Sub
 Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4, Optional ByVal autoKeepIfLarge As Boolean = True, Optional ByVal suspendToDisk As Boolean = False)
     
     'If this DIB doesn't exist (or if it's already suspended), quit now
-    If m_IsSuspended Then Exit Sub
+    If m_IsSuspended Then
+        
+        'If the caller wants us suspended to disk but we are *not*, go ahead and dump our compressed data to disk.
+        If (suspendToDisk And (LenB(m_SuspendFilename) = 0)) Then
+            If DIB_DEBUG_VERBOSE Then PDDebug.LogAction "DIB is already suspended, but not to disk; writing out to file now..."
+            m_SuspendFilename = OS.UniqueTempFilename()
+            If Files.FileCreateFromByteArray(m_SuspensionBuffer, m_SuspendFilename, True, True, m_SizeSuspended) Then
+                Erase m_SuspensionBuffer
+            Else
+                m_SuspendFilename = vbNullString
+            End If
+        End If
+        
+        Exit Sub
+        
+    End If
+    
     If (m_dibHandle = 0) Or (m_dibBits = 0) Then Exit Sub
     
     'Very large DIBs (like the main canvas backbuffer) are expensive to compress/decompress on-the-fly,
@@ -1110,8 +1132,6 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
                 m_SuspendFilename = vbNullString
                 suspendToDisk = False
             End If
-            
-            'UIImages.GetSharedCompressBuffer(dstBufferSize, m_SizeUnsuspended, m_SuspendFormat)
             
         'Something went wrong with disk access; attempt a memory suspend instead
         Else

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.46</langversion>
+<langversion>1.0.47</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -2313,6 +2313,11 @@ Dosyayı açık olduğu diğer programda kapatıp, tekrar deneyin.</translation>
 </phrase>
 
 <phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
 <translation></translation>
 </phrase>
@@ -2366,6 +2371,11 @@ Bu görseli bir daha açmadan lütfen başka bir programda soysal bir formatta (
 </phrase>
 
 <phrase>
+<original>Importing %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation>%2 görselden %1. başarıyla yüklendi</translation>
 </phrase>
@@ -2396,7 +2406,7 @@ Görsellerin varolduğuna ve desteklenen bir formatta (JPEG, PNG) olduğundan em
 <translation>Görsel çoğaltması tamamlandı.</translation>
 </phrase>
 
-<!-- Loading.bas contains 38 phrases. 17 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Loading.bas contains 41 phrases. 18 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -14567,10 +14577,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2766</phrasecount>
+<phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5886 phrases. -->
-<!-- 3120 are duplicates, so only 2766 unique phrases have been written to file. -->
-<!-- These 2766 phrases contain approximately 12012 total words. -->
+<!-- As of this build, PhotoDemon contains 5889 phrases. -->
+<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

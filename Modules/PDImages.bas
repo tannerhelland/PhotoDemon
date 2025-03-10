@@ -3,9 +3,8 @@ Attribute VB_Name = "PDImages"
 'Image Canvas Handler (formerly Image Window Handler)
 'Copyright 2002-2025 by Tanner Helland
 'Created: 11/29/02
-'Last updated: 03/December/18
-'Last update: separate from the old canvas handler, and fully integrate the old bare "m_PDImages()" array
-'             behind safe wrapper functions.
+'Last updated: 10/March/25
+'Last update: new "StrategicMemoryReduction" function to reduce memory when multiple images are loaded
 '
 'In "ye good ol' days", PhotoDemon exposed the collection of currently loaded user images as a bare array.
 ' This was a terrible idea (for too many reasons to count).
@@ -286,6 +285,77 @@ End Sub
 'Set a new active image ID.  Note that this does NOT control any UI-related functions; that is left to the caller.
 Public Sub SetActiveImageID(ByVal newID As Long)
     m_CurrentImageID = newID
+End Sub
+
+'If memory usage is getting worrisome (as defined by the caller), call this function to strategically off-load
+' other loaded images to disk.  This can free up a *lot* of memory if multiple images are loaded, but like any
+' other disk-access-operation, it's gonna require some disk space and CPU time to do so.
+'
+'(After calling this function, you don't need to do anything else - PD automatically un-suspends data as
+' it accesses it.)
+Public Sub StrategicMemoryReduction()
+    
+    'I don't like to dump un-compressed data to disk (it's wasteful!) but compression requires a temporary
+    ' buffer to hold compression results, because we don't know how much space it'll take.
+    '
+    'As such, it's helpful to start with the smallest image and then work our way up from there.
+    ' This (should) provide the maximum likelihood of success.
+    Dim numImagesToSuspend As Long
+    numImagesToSuspend = PDImages.GetNumOpenImages() - 1
+    
+    'If only one image is open, there's not much else we can do (gasp).
+    If (numImagesToSuspend > 0) Then
+        
+        'Some images may already be suspended.  See how many we *actually* need to suspend.
+        Dim i As Long
+        For i = 0 To PDImages.GetImageCollectionSize()
+            If PDImages.IsImageActive(i) Then
+                If PDImages.GetImageByID(i).IsSuspended() Then
+                    numImagesToSuspend = numImagesToSuspend - 1
+                End If
+            End If
+        Next i
+        
+        'Now we know how many images we *actually* need to suspend.  Proceed, and dump as many as we can
+        ' out to disk.
+        Dim numImagesSuspended As Long
+        Do While (numImagesSuspended < numImagesToSuspend)
+            
+            'Find the smallest remaining unsuspended image.
+            Dim idTarget As Long, smallestYet As Long
+            idTarget = -1
+            smallestYet = LONG_MAX
+            
+            For i = 0 To PDImages.GetImageCollectionSize()
+                If PDImages.IsImageActive(i) Then
+                    If (Not PDImages.GetImageByID(i).IsSuspended()) Then
+                        If (PDImages.GetImageByID(i).EstimateRAMUsage() < smallestYet) Then
+                            smallestYet = PDImages.GetImageByID(i).EstimateRAMUsage()
+                            idTarget = i
+                        End If
+                    End If
+                End If
+            Next i
+            
+            'Offload that image to disk
+            If (idTarget >= 0) Then
+            
+                'Failsafe only
+                If (Not PDImages.GetImageByID(idTarget) Is Nothing) Then
+                    PDDebug.LogAction "Strategically suspending image #" & idTarget & " to disk to free up memory..."
+                    PDImages.GetImageByID(idTarget).SuspendImage True
+                    numImagesSuspended = numImagesSuspended + 1
+                End If
+            
+            'Failsafe only; should never trigger
+            Else
+                Exit Do
+            End If
+            
+        Loop
+        
+    End If
+    
 End Sub
 
 'Given an ID in the pdImages collection, suspend all layers (and other high-memory objects) inside that image.

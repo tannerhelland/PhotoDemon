@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2025 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 16/May/22
-'Last update: ensure changes to the active layer ID reset our internal "last-change" event time
+'Last updated: 10/March/25
+'Last update: expose "suspend to disk" behavior to callers
 '
 'The pdImage class is used to store information on each image loaded by the user.
 ' One instance of this class exists for each loaded image.
@@ -784,6 +784,30 @@ Friend Sub ReverseLayerOrder()
     
 End Sub
 
+'Returns TRUE if this image is currently suspended (to either memory or disk; see params for details)
+Friend Function IsSuspended(Optional ByVal checkSuspendedToDisk As Boolean = False) As Boolean
+    
+    IsSuspended = True
+    
+    'Because PD automatically un-suspends layers when they are accessed, it's nontrivial to assume an entire
+    ' image is either "suspended" or "not suspended".
+    '
+    'As such, just scan layers and if *any* are unsuspended, treat the whole image as unsuspended.
+    
+    'Start by suspending all layers
+    Dim i As Long
+    For i = 0 To UBound(imgLayers)
+        If (Not imgLayers(i) Is Nothing) Then
+            If (Not imgLayers(i).IsSuspended(checkSuspendedToDisk)) Then
+                IsSuspended = False
+                Exit For
+            End If
+        End If
+    Next i
+    
+    
+End Function
+
 'Non-destructively suspend as many image resources as we can to either disk or memory.
 Friend Sub SuspendImage(Optional ByVal suspendToDisk As Boolean = False, Optional ByVal alsoSuspendSharedBuffer As Boolean = True)
     
@@ -793,7 +817,9 @@ Friend Sub SuspendImage(Optional ByVal suspendToDisk As Boolean = False, Optiona
     'Start by suspending all layers
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        If (Not imgLayers(i) Is Nothing) Then imgLayers(i).SuspendLayer True, suspendToDisk
+        If (Not imgLayers(i) Is Nothing) Then
+            If (Not imgLayers(i).IsSuspended(suspendToDisk)) Then imgLayers(i).SuspendLayer True, suspendToDisk
+        End If
     Next i
     
     'Suspend any other internal DIBs

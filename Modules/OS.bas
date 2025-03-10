@@ -3,8 +3,8 @@ Attribute VB_Name = "OS"
 'OS-specific specific features
 'Copyright 2013-2025 by Tanner Helland
 'Created: 21/November/13
-'Last updated: 18/October/21
-'Last update: new helper function for requesting app restart after forced system reboots
+'Last updated: 10/Mar5h/21
+'Last update: new helper function for "is memory usage getting worrisome?"
 '
 'Newer Windows versions expose some neat features (like progress bars overlaying the taskbar), and PhotoDemon
 ' tries to make use of them when relevant.  Similarly, some OS-level features are not easily mimicked from within VB
@@ -724,6 +724,57 @@ Public Function IsAeroAvailable(ByVal srcHWnd As Long) As Boolean
     
 End Function
 
+'If you're about to do a big memory allocation, consult this function first.  It will compare PD's current memory status
+' to expected max limits, and if you know (roughly) what size allocation you're going to make, you can pass that for
+' a more accurate guess.
+'
+'If this function returns TRUE, you should probably try to reduce memory beforehand if possible, either by
+' suspending suspendable objects, or simply send out an app wide "cry for help" via [FUNCTION TODO] to let
+' PD try and recover some memory for you.
+Public Function IsMemoryUsageWorrisome(Optional ByVal expectedNextAllocationInMB As Long = 0) As Boolean
+    
+    'Before doing anything, figure out how much memory we're already using (in MB).
+    Dim curMemUsageInMB As Long
+    curMemUsageInMB = OS.AppMemoryUsageInMB(False)
+    
+    'If that number is negative (meaning above the 2 GB limit), return TRUE regardless
+    If (curMemUsageInMB < 0) Then
+        IsMemoryUsageWorrisome = True
+        Exit Function
+    End If
+    
+    'Add the user's expected allocation, if any, and repeat
+    curMemUsageInMB = curMemUsageInMB + expectedNextAllocationInMB
+    If (curMemUsageInMB < 0) Then
+        IsMemoryUsageWorrisome = True
+        Exit Function
+    End If
+    
+    'A couple scenarios are problematic here:
+    ' 1) when approaching the 2 GB memory "x86 limit".  PD does enable PAE, but it's not well-tested and there
+    '    are possibly many places where memory offsets aren't calculated correctly.  (That's on me, sorry!)
+    '
+    ' 2) in a constrained memory environment, when approaching the limit of whatever available memory PD *does*
+    '    have available.
+    
+    'In either scenario, we want to try and reduce memory *before* things crash.
+    ' (Note that this function doesn't handle actual memory reduction - that's up to the caller(s), which they
+    '  can initiate based on this function's return.)
+    
+    'First, see if we're close to (80% of) the 2 GB x86 limit.
+    Const WORRISOME_CUTOFF As Double = 0.8
+    If (curMemUsageInMB >= (WORRISOME_CUTOFF * 2048)) Then
+        IsMemoryUsageWorrisome = True
+    
+    'Next, see if we're at-or-above a problematic amount of memory explicitly available to PD
+    Else
+        Dim pdMemAvailable As Long
+        pdMemAvailable = OS.RAM_AvailableInMB()
+        If (pdMemAvailable <> 0) Then IsMemoryUsageWorrisome = (curMemUsageInMB >= pdMemAvailable * WORRISOME_CUTOFF)
+    End If
+    
+End Function
+
 'Is this program instance compiled, or running from the IDE?
 Public Function IsProgramCompiled() As Boolean
     IsProgramCompiled = (App.LogMode = 1)
@@ -997,6 +1048,14 @@ Public Function RAM_Available() As String
     
     End If
     
+End Function
+
+Public Function RAM_AvailableInMB() As Long
+    Dim memStatus As OS_MemoryStatusEx
+    memStatus.dwLength = LenB(memStatus)
+    If (GlobalMemoryStatusEx(memStatus) <> 0) Then
+        RAM_AvailableInMB = Int(CDbl(memStatus.ullTotalVirtual * 10000@) / 1048576# + 0.5)
+    End If
 End Function
 
 Public Function RAM_CurrentLoad() As String

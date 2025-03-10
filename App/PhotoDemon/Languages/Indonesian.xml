@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1735</langversion>
+<langversion>8.9.1736</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2311,6 +2311,11 @@ Harap tutup file ini di program yang sedang berjalan lainnya, lalu coba lagi.</t
 </phrase>
 
 <phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
 <translation></translation>
 </phrase>
@@ -2364,6 +2369,11 @@ Silakan gunakan program lain untuk menyimpan gambar ini dalam format generik (se
 </phrase>
 
 <phrase>
+<original>Importing %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation>%1 dari %2 gambar berhasil dimuat</translation>
 </phrase>
@@ -2394,7 +2404,7 @@ Harap verifikasi bahwa gambar ini ada, dan mereka menggunakan format gambar yang
 <translation>Duplikasi gambar lengkap.</translation>
 </phrase>
 
-<!-- Loading.bas contains 38 phrases. 17 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Loading.bas contains 41 phrases. 18 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -14611,10 +14621,10 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2766</phrasecount>
+<phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5886 phrases. -->
-<!-- 3120 are duplicates, so only 2766 unique phrases have been written to file. -->
-<!-- These 2766 phrases contain approximately 12012 total words. -->
+<!-- As of this build, PhotoDemon contains 5889 phrases. -->
+<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

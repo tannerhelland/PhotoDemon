@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.42</langversion>
+<langversion>9.0.43</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -2310,6 +2310,11 @@ Zamknij ten plik w innym uruchomionym programie, a następnie spróbuj ponownie.
 </phrase>
 
 <phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
 <translation></translation>
 </phrase>
@@ -2361,6 +2366,11 @@ Użyj innego programu, aby zapisać obraz w formacie JPEG lub PNG przed załadow
 </phrase>
 
 <phrase>
+<original>Importing %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation>%1 z %2 obrazów pomyślnie załadowano</translation>
 </phrase>
@@ -2391,7 +2401,7 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 <translation>Powielanie obrazu zakończono.</translation>
 </phrase>
 
-<!-- Loading.bas contains 38 phrases. 17 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Loading.bas contains 41 phrases. 18 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -14609,10 +14619,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2766</phrasecount>
+<phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5886 phrases. -->
-<!-- 3120 are duplicates, so only 2766 unique phrases have been written to file. -->
-<!-- These 2766 phrases contain approximately 12012 total words. -->
+<!-- As of this build, PhotoDemon contains 5889 phrases. -->
+<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

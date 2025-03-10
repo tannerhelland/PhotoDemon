@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1743</langversion>
+<langversion>8.9.1744</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2306,6 +2306,11 @@ Please close this file in any other running programs, then try again.</original>
 </phrase>
 
 <phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
 <translation></translation>
 </phrase>
@@ -2359,6 +2364,11 @@ Please користите друга програма да ја зачувате
 </phrase>
 
 <phrase>
+<original>Importing %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation>%1 %2 слики успешно вчитан</translation>
 </phrase>
@@ -2389,7 +2399,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>дуплирање сликата заврши.</translation>
 </phrase>
 
-<!-- Loading.bas contains 38 phrases. 17 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- Loading.bas contains 41 phrases. 18 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -14597,10 +14607,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2766</phrasecount>
+<phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5886 phrases. -->
-<!-- 3120 are duplicates, so only 2766 unique phrases have been written to file. -->
-<!-- These 2766 phrases contain approximately 12012 total words. -->
+<!-- As of this build, PhotoDemon contains 5889 phrases. -->
+<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>
