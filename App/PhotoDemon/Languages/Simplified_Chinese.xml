@@ -6,10 +6,10 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，2024.12）</langname>
-<langversion>2024.12.22</langversion>
+<langversion>2024.12.21</langversion>
 <langstatus>完成</langstatus>
 
-<author>Charltsing（QQ 564955427） revised on December 12, 2024, ChenLin(QQ:289778005), Lsbdx at 52pojie.cn, shishi</author>
+<author>Charltsing（QQ 564955427） revised on March 9, 2025</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -5548,7 +5548,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>查看此会话的调试日志</translation>
 </phrase>
 
 <phrase>
@@ -5643,17 +5643,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>角度90</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>角度45</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>角度30</translation>
 </phrase>
 
 <phrase>
@@ -6422,7 +6422,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>使用移动平均线</translation>
 </phrase>
 
 <phrase>
@@ -12519,22 +12519,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>目标</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>高亮裁切区域</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>删除裁剪的像素</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>应用</translation>
 </phrase>
 
 <phrase>
@@ -12544,7 +12544,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>允许放大</translation>
 </phrase>
 
 <phrase>
@@ -12559,24 +12559,24 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>交换宽高</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>允许在图像边界外进行裁剪（这将放大图像）。</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>与像素网格对齐</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>此设置强制将绘制笔划与像素网格中心点对齐。这提高了精度（特别是在小画笔尺寸下），但画笔笔划可能看起来不那么自然。</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13655,7 +13655,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>zoom with mouse wheel</original>
-<translation></translation>
+<translation>使用鼠标滚轮缩放</translation>
 </phrase>
 
 <phrase>
@@ -13705,7 +13705,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>角度捕捉距离（单位:度）</translation>
 </phrase>
 
 <phrase>
@@ -13865,7 +13865,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>使用嵌入式ICC配置文件（如果可用）</translation>
 </phrase>
 
 <phrase>
@@ -13910,12 +13910,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>文件策略</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>使用特定格式的颜色管理数据（如果可用）</translation>
 </phrase>
 
 <phrase>
@@ -14279,12 +14279,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>嵌入式ICC配置文件提高了色彩保真度。即使关闭此设置，PhotoDemon仍可能将ICC配置文件用于某些任务（如处理CMYK数据）。</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>一些图像格式支持ICC配置文件和它们自己的颜色管理解决方案。PhotoDemon总是更喜欢ICC配置文件，但当没有嵌入时，可以尝试其他颜色管理方法。</translation>
 </phrase>
 
 <phrase>
