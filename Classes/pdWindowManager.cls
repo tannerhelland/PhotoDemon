@@ -619,9 +619,6 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
         ' virtual desktop dimensions, and not just the primary monitor's (as VB's Screen object does).
         If (frmReference.WindowState <> vbMaximized) Then
         
-            'Position the window on-screen
-            EnsureWindowRectIsOnScreen tmpRect
-        
             Dim winWidth As Long, winHeight As Long
             With tmpRect
                 winWidth = .x2 - .x1
@@ -664,9 +661,14 @@ Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
                     
                 'If this is FormMain, restore it immediately without modification
                 Else
+                    
+                    '(Okay, one modification - ensure the window is on-screen!)
+                    EnsureWindowRectIsOnScreen tmpRect
+        
                     With tmpRect
                         MoveWindow frmReference.hWnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 1
                     End With
+                    
                 End If
                 
             End If
