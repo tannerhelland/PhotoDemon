@@ -2,10 +2,9 @@ VERSION 5.00
 Begin VB.Form dialog_ExportPSP 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   6585
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12630
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -18,13 +17,11 @@ Begin VB.Form dialog_ExportPSP
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "File_Save_PSP.frx":0000
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   439
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   842
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdSlider sldCompression 
       Height          =   855
       Left            =   5880
@@ -206,7 +203,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     UpdatePreview
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "PSP")
     
     'Display the dialog

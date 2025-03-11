@@ -2,10 +2,9 @@ VERSION 5.00
 Begin VB.Form dialog_ExportJXL 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   13110
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -18,13 +17,11 @@ Begin VB.Form dialog_ExportJXL
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "File_Save_JXL.frx":0000
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   874
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsCategory 
       Height          =   615
       Left            =   6000
@@ -369,7 +366,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     UpdatePreview True
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG XL")
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
     

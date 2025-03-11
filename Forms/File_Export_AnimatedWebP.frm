@@ -18,6 +18,7 @@ Begin VB.Form dialog_ExportAnimatedWebP
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "File_Export_AnimatedWebP.frx":0000
    LinkTopic       =   "Form1"
    ScaleHeight     =   482
    ScaleMode       =   3  'Pixel

@@ -2,10 +2,9 @@ VERSION 5.00
 Begin VB.Form dialog_ExportBMP 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   13095
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -18,13 +17,11 @@ Begin VB.Form dialog_ExportBMP
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "File_Save_BMP.frx":0000
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   873
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdCheckBox chkColorCount 
       Height          =   375
       Left            =   6000
@@ -263,7 +260,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     UpdatePreview
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "BMP")
     
     'Display the dialog
@@ -565,6 +562,7 @@ Private Function GetExportParamString() As String
 End Function
 
 Private Sub pdFxPreview_ViewportChanged()
+    UpdateAllVisibility
     UpdatePreviewSource
     UpdatePreview
 End Sub

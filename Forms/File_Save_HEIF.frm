@@ -2,10 +2,9 @@ VERSION 5.00
 Begin VB.Form dialog_ExportHEIF 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    ClientHeight    =   6540
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   13110
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -18,13 +17,11 @@ Begin VB.Form dialog_ExportHEIF
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
+   Icon            =   "File_Save_HEIF.frx":0000
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   874
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsCategory 
       Height          =   615
       Left            =   6000
@@ -67,7 +64,7 @@ Begin VB.Form dialog_ExportHEIF
          Height          =   1095
          Left            =   120
          TabIndex        =   5
-         Top             =   120
+         Top             =   600
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   1931
@@ -77,7 +74,7 @@ Begin VB.Form dialog_ExportHEIF
          Height          =   405
          Left            =   120
          TabIndex        =   3
-         Top             =   1320
+         Top             =   1800
          Width           =   6975
          _ExtentX        =   7223
          _ExtentY        =   873
@@ -90,7 +87,7 @@ Begin VB.Form dialog_ExportHEIF
          Height          =   255
          Index           =   3
          Left            =   2880
-         Top             =   1800
+         Top             =   2280
          Width           =   2580
          _ExtentX        =   4551
          _ExtentY        =   450
@@ -105,7 +102,7 @@ Begin VB.Form dialog_ExportHEIF
          Height          =   255
          Index           =   2
          Left            =   480
-         Top             =   1800
+         Top             =   2280
          Width           =   2340
          _ExtentX        =   4128
          _ExtentY        =   450
@@ -119,7 +116,7 @@ Begin VB.Form dialog_ExportHEIF
          Height          =   375
          Left            =   120
          TabIndex        =   6
-         Top             =   3840
+         Top             =   120
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   661
@@ -130,7 +127,7 @@ Begin VB.Form dialog_ExportHEIF
          Height          =   1095
          Left            =   120
          TabIndex        =   7
-         Top             =   2160
+         Top             =   2640
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   1931
@@ -345,7 +342,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     UpdatePreview True
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "HEIC")
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
     
@@ -419,6 +416,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         'Live previews are disabled; just mirror the original image to the screen
         Else
             workingDIB.CreateFromExistingDIB m_PreviewImageBackup
+            If (Not workingDIB.GetAlphaPremultiplication) Then workingDIB.SetAlphaPremultiplication True
             FinalizeNonstandardPreview pdFxPreview, True
         End If
     
