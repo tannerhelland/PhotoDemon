@@ -112,14 +112,13 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
         'Shell appears successful.  The output string will have two easy-to-check flags if
         ' the conversion was successful.  Don't return success unless we find both.
         Dim targetStringSrc As String, targetStringDst As String
-        targetStringSrc = "Image decoded: " & srcFile
+        targetStringSrc = "Image decoded: "
         
         If (outputPDIF = PDIF_PNG) Then
             targetStringDst = "Wrote PNG: "
         Else
             targetStringDst = "Wrote JPEG: "
         End If
-        targetStringDst = targetStringDst & dstFile
         
         ConvertAVIFtoStandardImage = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
         ConvertAVIFtoStandardImage = ConvertAVIFtoStandardImage And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
@@ -259,8 +258,8 @@ Public Function ConvertStandardImageToAVIF(ByRef srcFile As String, ByRef dstFil
         'Shell appears successful.  The output string will have two easy-to-check flags if
         ' the conversion was successful.  Don't return success unless we find both.
         Dim targetStringSrc As String, targetStringDst As String
-        targetStringSrc = "Successfully loaded: " & srcFile
-        targetStringDst = "Wrote AVIF: " & tmpFilename
+        targetStringSrc = "Successfully loaded: "
+        targetStringDst = "Wrote AVIF: "
         
         ConvertStandardImageToAVIF = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
         ConvertStandardImageToAVIF = ConvertStandardImageToAVIF And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
