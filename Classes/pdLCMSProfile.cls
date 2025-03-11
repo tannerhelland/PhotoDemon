@@ -39,7 +39,7 @@ Friend Function CreateFromFile(ByRef srcFile As String) As Boolean
         m_ProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(cStream.Peek_PointerOnly(0, Files.FileLenW(srcFile)), Files.FileLenW(srcFile))
         cStream.StopStream
     End If
-    CreateFromPointer = (m_ProfileHandle <> 0)
+    CreateFromFile = (m_ProfileHandle <> 0)
 End Function
 
 Friend Function CreateFromPointer(ByVal ptrToICCProfile As Long, ByVal iccProfileSizeInBytes As Long) As Boolean

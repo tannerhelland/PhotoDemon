@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_AVIF"
 'libavif Interface
 'Copyright 2021-2025 by Tanner Helland
 'Created: 13/July/21
-'Last updated: 21/February/24
-'Last update: new engine that can offer ongoing automatic updates of libavif to users
+'Last updated: 11/March/25
+'Last update: update to the latest libavif (1.2.0)
 '
 'Module for handling all libavif interfacing (via avifdec/enc.exe).  This module is pointless without
 ' those exes, which need to be placed in the App/PhotoDemon/Plugins subdirectory.  (PD will automatically
@@ -15,7 +15,7 @@ Attribute VB_Name = "Plugin_AVIF"
 '
 ' https://github.com/AOMediaCodec/libavif
 '
-'PhotoDemon has been designed against v1.0.4 (08 Feb '24).  It may not work with other versions.
+'PhotoDemon has been designed against v1.2.0 (Feb 2025).  It may not work with other versions.
 ' Additional documentation regarding the use of libavif is available as part of the official library,
 ' downloadable from https://github.com/AOMediaCodec/libavif.  You can also run the exe files manually
 ' with the -h extension for details on how they work.
@@ -42,7 +42,7 @@ Private m_inputVersion As String, m_outputVersion As String
 'Convert an AVIF file to some other image format.  Currently, PD converts AVIF files to uncompressed PNGs,
 ' then imports those PNGs directly.  Theoretically, you could use other intermediary formats, such as JPEG,
 ' if that's better for your usage scenario...
-Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String) As Boolean
+Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef filenameICC As String = vbNullString) As Boolean
     
     Const funcName As String = "ConvertAVIFtoStandardImage"
     
@@ -83,12 +83,17 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append "avifdec.exe "
     
     'Use all available cores for decoding
-    shellCmd.Append "-j "
-    shellCmd.Append Trim$(Str$(OS.LogicalCoreCount())) & " "
+    shellCmd.Append "-j all "
+    
+    'Use 8-bit PNG output (16-bit is also available; in the future, this may be a worthwhile switch for incoming HDR images)
+    shellCmd.Append "-d 16 "
     
     'In April 2022 a new version of libavif finally dropped, meaning I can *finally* request uncompressed PNGs
     ' (see https://github.com/AOMediaCodec/libavif/issues/706 for my feature request on this point)
     If (GetVersion(True) <> "0.9.0") Then shellCmd.Append "--png-compress 0 "
+    
+    'Explicitly mark the end of options
+    shellCmd.Append " -- "
     
     'Append space-safe source image
     shellCmd.Append """"
@@ -544,9 +549,9 @@ Private Function DownloadLatestLibAVIF() As Boolean
     ' - avif-LICENSE.txt (copyright and license info)
     Const EXPECTED_NUM_FILES As Long = 3
     
-    'Current libavif build is 1.0.4, downloaded from https://github.com/AOMediaCodec/libavif/releases/tag/v1.0.4
-    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 25052480
-    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.1.1/libavif-1.1.1.pdz"
+    'Current libavif build is 1.2.0, downloaded from https://github.com/AOMediaCodec/libavif/releases/
+    Const EXPECTED_TOTAL_EXTRACT_SIZE As Long = 24539456
+    Const UPDATE_URL As String = "https://github.com/tannerhelland/PhotoDemon-Updates-v2/releases/download/libavif-plugins-1.2.0/libavif-1.2.0.pdz"
     DownloadLatestLibAVIF = Updates.DownloadPluginUpdate(CCP_libavif, UPDATE_URL, EXPECTED_NUM_FILES, EXPECTED_TOTAL_EXTRACT_SIZE)
     
 End Function
