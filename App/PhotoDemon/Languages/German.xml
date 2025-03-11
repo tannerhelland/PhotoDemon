@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 208.3</langversion>
+<langversion>2024.12 Alpha - Build 262</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2312,27 +2312,27 @@ Bitte schließen Sie diese Datei in jeglichen anderen laufenden Programmen, dann
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
+<translation>Speichernutzung sieht hoch aus; Aussetzung einiger Daten auf der Festplatte vor dem Fortfahren</translation>
 </phrase>
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>Diese Datei hat die Extension "%1", aber sie ist eigentlich im Format "%2".</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>Kann PhotoDemon die Datei mit einer korrekten Extension umbenennen?</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>(Wenn Sie „Ja“ wählen, wird die Datei in "%1" umbenannt)</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>Fehlerhafte Dateiextension</translation>
 </phrase>
 
 <phrase>
@@ -2370,7 +2370,7 @@ Bitte verwenden Sie ein anderes Programm, um dieses Bild vor dem Laden in einem 
 
 <phrase>
 <original>Importing %1</original>
-<translation></translation>
+<translation>Importieren von %1</translation>
 </phrase>
 
 <phrase>
@@ -2555,7 +2555,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Exporting palette</original>
-<translation>Palette wird exportiert</translation>
+<translation>Exportieren der Palette</translation>
 </phrase>
 
 <phrase>
@@ -5846,7 +5846,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>Importing metadata</original>
-<translation>Metadaten werden importiert</translation>
+<translation>Importieren von Metadaten</translation>
 </phrase>
 
 <phrase>
@@ -9873,7 +9873,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>when importing vector images</original>
-<translation>Beim Import von Vektorbildern</translation>
+<translation>Beim Importieren von Vektorbildern</translation>
 </phrase>
 
 <phrase>
@@ -11890,7 +11890,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>after importing source images</original>
-<translation>Nach dem Importieren von Quellbildern</translation>
+<translation>Nach dem Import von Quellbildern</translation>
 </phrase>
 
 <phrase>
@@ -13729,7 +13729,7 @@ Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon
 
 <phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
-<translation>Tone-Mapping-Optionen beim Import von HDR- oder RAW-Bildern anzeigen</translation>
+<translation>Tone-Mapping-Optionen beim Importieren von HDR- oder RAW-Bildern anzeigen</translation>
 </phrase>
 
 <phrase>
