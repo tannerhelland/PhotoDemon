@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form dialog_ExportAnimatedJXL 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Animation options"
    ClientHeight    =   7230
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12060
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -20,12 +19,9 @@ Begin VB.Form dialog_ExportAnimatedJXL
    EndProperty
    HasDC           =   0   'False
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   482
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
       Left            =   6240
@@ -297,7 +293,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'mtdManager.SetParentImage m_SrcImage, PDIF_JXL
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
     UpdateAgainstCurrentTheme
     
     'With theming handled, reflow the interface one final time before displaying the window
@@ -666,21 +662,34 @@ Private Sub RenderAnimationFrame()
         Dim cParams As pdSerialize
         Set cParams = New pdSerialize
         cParams.AddParam "jxl-lossy-quality", sldQuality.Value, True, True
-        cParams.AddParam "jxl-effort", 1&, True, True       'Always use minimal (fastest) effort for animations
+        cParams.AddParam "jxl-effort", 1&, True, True       'Always use minimal (fastest) effort for animation previews
+        
+        'See if the previous preview string is different (different JPEG-XL settings) or if the
+        ' preview dimensions have changes (user resized window)
+        Dim changeInSettings As Boolean, changeInSize As Boolean
+        changeInSettings = (m_jxlFrames(idxFrame).settingsForPreviews <> cParams.GetParamString())
+        
+        If (Not m_jxlFrames(idxFrame).jxlPreviewDIB Is Nothing) Then
+            changeInSize = (m_jxlFrames(idxFrame).jxlPreviewDIB.GetDIBWidth <> m_tmpAnimationFrame.GetDIBWidth) Or (m_jxlFrames(idxFrame).jxlPreviewDIB.GetDIBHeight <> m_tmpAnimationFrame.GetDIBHeight)
+        Else
+            changeInSize = True
+        End If
         
         'If lossy compression is being used, generate a preview of the compression.  (Note that JPEG XL treats
         ' a compression value of 90 as "visually lossless", which is why we don't bother with lossy compression
         ' until quality drops *below* 90.)
         If (sldQuality.Value < 90) Then
             
+            changeInSize = changeInSize Or (LenB(m_jxlFrames(idxFrame).pathToPNG) = 0)
+            
             'Generate a temporary PNG for this frame, as necessary
-            If (LenB(m_jxlFrames(idxFrame).pathToPNG) = 0) Then
+            If changeInSize Then
                 m_jxlFrames(idxFrame).pathToPNG = OS.UniqueTempFilename(customExtension:="png")
                 Saving.QuickSaveDIBAsPNG m_jxlFrames(idxFrame).pathToPNG, m_tmpAnimationFrame, dontCompress:=True
             End If
             
             'Apply the compression as necessary (this may take awhile)
-            If (m_jxlFrames(idxFrame).settingsForPreviews <> cParams.GetParamString()) Then
+            If (changeInSize Or changeInSettings) Then
             
                 Plugin_jxl.PreviewSingleFrameAsJXL m_jxlFrames(idxFrame).pathToPNG, m_tmpAnimationFrame, cParams.GetParamString()
                 
@@ -695,8 +704,7 @@ Private Sub RenderAnimationFrame()
             
         Else
             
-            'See if the previous preview string is different
-            If (m_jxlFrames(idxFrame).settingsForPreviews <> cParams.GetParamString()) Then
+            If (changeInSize Or changeInSettings) Then
                 
                 'If the preview string has changed, copy over the current frame as-is
                 With m_jxlFrames(idxFrame)
@@ -734,6 +742,11 @@ Private Sub m_Timer_EndOfAnimation()
     sldFrame.Value = m_Timer.GetCurrentFrame()
     m_DoNotUpdate = False
     
+End Sub
+
+Private Sub picPreview_WindowResizeDetected()
+    ReflowInterface
+    UpdateAnimationSettings
 End Sub
 
 Private Sub sldFrame_Change()

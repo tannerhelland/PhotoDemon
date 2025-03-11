@@ -2,11 +2,10 @@ VERSION 5.00
 Begin VB.Form dialog_ExportAnimatedPNG 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Animation options"
    ClientHeight    =   7230
-   ClientLeft      =   45
-   ClientTop       =   390
+   ClientLeft      =   120
+   ClientTop       =   465
    ClientWidth     =   12060
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -20,12 +19,9 @@ Begin VB.Form dialog_ExportAnimatedPNG
    EndProperty
    HasDC           =   0   'False
    LinkTopic       =   "Form1"
-   MaxButton       =   0   'False
-   MinButton       =   0   'False
    ScaleHeight     =   482
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   804
-   ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
       Left            =   6240
@@ -256,7 +252,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'mtdManager.SetParentImage m_SrcImage, PDIF_PNG
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    ApplyThemeAndTranslations Me, True, True, picPreview.hWnd
     UpdateAgainstCurrentTheme
     
     'With theming handled, reflow the interface one final time before displaying the window
@@ -599,6 +595,11 @@ Private Sub m_Timer_EndOfAnimation()
     sldFrame.Value = m_Timer.GetCurrentFrame()
     m_DoNotUpdate = False
     
+End Sub
+
+Private Sub picPreview_WindowResizeDetected()
+    ReflowInterface
+    UpdateAnimationSettings
 End Sub
 
 Private Sub sldFrame_Change()
