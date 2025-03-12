@@ -1229,6 +1229,10 @@ Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, By
     ' portable copy if the user interacts with the AVIF format in some way (import/export).
     Dim potentialAVIF As Boolean
     potentialAVIF = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "avci", "avcs", "avif", "avifs", "heic")
+    
+    'In 2025.3, I also added a quick check for AVIF file headers so we can reliably detect AVIF files with
+    ' bad extensions (which would be missed by the check above).
+    If (Not potentialAVIF) Then potentialAVIF = Plugin_AVIF.IsFilePotentiallyAVIF(srcFile)
     If potentialAVIF Then
         
         'If this system is 64-bit capable but libavif doesn't exist, ask if we can download a copy

@@ -420,6 +420,38 @@ Public Function IsAVIFImportAvailable() As Boolean
     IsAVIFImportAvailable = m_avifImportAvailable
 End Function
 
+'Quick file-header check to see if a file is likely AVIF
+Public Function IsFilePotentiallyAVIF(ByRef srcFile As String) As Boolean
+    
+    IsFilePotentiallyAVIF = False
+    
+    'AVIF files have a few potential IDs in the first 8 bytes; check those to see if it's worth offering
+    ' a full load to libavif (initializing that library requires a full download of libavif).
+    If Files.FileExists(srcFile) Then
+        
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile, optimizeAccess:=OptimizeSequentialAccess) Then
+            
+            'Normally we would just read the first 8-bytes as a string, but some AVIF files have whitespace
+            ' padding at the start, so we need to grab extra and then look for known AVIF headers.
+            Dim strID As String
+            strID = cStream.ReadString_ASCII(16)
+            cStream.StopStream
+            
+            '(By design, this list includes some HEIC/HEIF headers because they can contain embedded AVIF data.)
+            IsFilePotentiallyAVIF = InStr(1, strID, "ftypavif", vbBinaryCompare)
+            IsFilePotentiallyAVIF = IsFilePotentiallyAVIF Or InStr(1, strID, "ftypavis", vbBinaryCompare)
+            IsFilePotentiallyAVIF = IsFilePotentiallyAVIF Or InStr(1, strID, "ftypmif1", vbBinaryCompare)
+            IsFilePotentiallyAVIF = IsFilePotentiallyAVIF Or InStr(1, strID, "ftypmsf1", vbBinaryCompare)
+            IsFilePotentiallyAVIF = IsFilePotentiallyAVIF Or InStr(1, strID, "ftypheic", vbBinaryCompare)
+            
+        End If
+        
+    End If
+    
+End Function
+
 Public Function QuickLoadPotentialAVIFToDIB(ByRef srcFile As String, ByRef dstDIB As pdDIB, Optional ByRef tmpPDImage As pdImage = Nothing) As Boolean
     
     If Plugin_AVIF.IsAVIFImportAvailable() Then
