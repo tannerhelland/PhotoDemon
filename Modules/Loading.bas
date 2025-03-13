@@ -1052,7 +1052,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
                 Message "Importing %1...", Files.FileGetName(tmpFilename)
                 
                 'Proceed with the load, and track successes/failures separately
-                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, True, False, vbNullString, numCanceledImports) Then
+                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, (srcList.GetNumOfStrings > 0), False, vbNullString, numCanceledImports) Then
                     numSuccesses = numSuccesses + 1
                 Else
                     If (LenB(tmpFilename) <> 0) Then
