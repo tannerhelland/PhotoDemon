@@ -1022,7 +1022,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean, O
                         ClipboardPaste_TextSource = Loading.QuickLoadImageToDIB(clipText, pasteToThisDIBInstead, False, False)
                     Else
                         If srcIsMeantAsLayer Then
-                            ClipboardPaste_TextSource = Layers.LoadImageAsNewLayer(False, clipText, , False, False)
+                            ClipboardPaste_TextSource = Layers.LoadImageAsNewLayer(False, clipText, vbNullString, False, False)
                         Else
                             ClipboardPaste_TextSource = LoadFileAsNewImage(clipText)
                         End If
@@ -1060,14 +1060,16 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         Dim tmpFilename As String
         tmpFilename = Files.FileGetName(tmpDownloadFile, True)
         
-        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image.
+        ' (Note that we also suspend load errors, because if the URL was bad, the generic "clipboard doesn't have
+        ' useable data" message covers all our bases here.)
         If (Not pasteToThisDIBInstead Is Nothing) Then
             ClipboardPaste_WellFormedURL = Loading.QuickLoadImageToDIB(tmpDownloadFile, pasteToThisDIBInstead, False, False)
         Else
             If (PDImages.IsImageActive() And srcIsMeantAsLayer) Then
                 ClipboardPaste_WellFormedURL = Layers.LoadImageAsNewLayer(False, tmpDownloadFile, tmpFilename, False, False)
             Else
-                ClipboardPaste_WellFormedURL = LoadFileAsNewImage(tmpDownloadFile, tmpFilename, False, True)
+                ClipboardPaste_WellFormedURL = LoadFileAsNewImage(tmpDownloadFile, tmpFilename, False, vbYes)
             End If
         End If
         
@@ -1582,13 +1584,17 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                 'Report success if at least one file loads correctly
                 DragDrop_ZippedFileList = False
                 
+                'Load as layers...
                 If PDImages.IsImageActive() And loadAsLayers Then
+                
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
                         If Files.FileExists(listOfFiles.GetString(i)) Then
                             DragDrop_ZippedFileList = DragDrop_ZippedFileList Or Layers.LoadImageAsNewLayer(False, listOfFiles.GetString(i), Files.FileGetName(listOfFiles.GetString(i), True), True, , srcX, srcY)
                             Files.FileDelete listOfFiles.GetString(i)
                         End If
                     Next i
+                
+                'Load as unique images...
                 Else
                     
                     'Now we have to do something kinda ugly.  We don't want to load the bare filenames, because they are

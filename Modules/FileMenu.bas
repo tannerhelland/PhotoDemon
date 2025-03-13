@@ -699,7 +699,7 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String) As B
         
         'Unlock the program's UI and activate the finished image
         Processor.MarkProgramBusyState False, True
-        CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage"
+        CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "CreateNewImage"
         
         'Report success!
         CreateNewImage = True

@@ -1941,8 +1941,11 @@ Private Sub PrepareForBatchConversion()
         srcFilename = srcListFiles.GetString(curBatchFile)
         If Files.FileExists(srcFilename) Then
             
+            Dim importDialogResults As VbMsgBoxResult
+            importDialogResults = vbYes
+            
             'Load the target image
-            If Loading.LoadFileAsNewImage(srcFilename, vbNullString, False, True, False, overrideParams.GetParamString()) Then
+            If Loading.LoadFileAsNewImage(srcFilename, vbNullString, False, importDialogResults, False, overrideParams.GetParamString()) Then
                 
                 'Manually activate the just-loaded image
                 Dim tmpStack As pdStack

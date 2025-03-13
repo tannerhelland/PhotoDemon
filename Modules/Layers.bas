@@ -1060,6 +1060,7 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
 
 End Function
 
+'Take various layers in an image, and split them out into their own standalone images
 Public Function SplitLayerToImage(Optional ByRef processParameters As String) As Boolean
     
     SplitLayerToImage = False
@@ -1142,8 +1143,11 @@ Public Function SplitLayerToImage(Optional ByRef processParameters As String) As
             sTitle = srcImage.GetLayerByID(listOfLayers(i).id).GetLayerName()
             If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
             
-            'We can now use the standard image load routine to import the temporary file
-            Loading.LoadFileAsNewImage tmpLayerFile, sTitle, False, , False
+            'We can now use the standard image load routine to import the temporary file.
+            ' (Note that we explicitly suspend warnings as we load, because we may be loading a *lot* of images.)
+            Dim importDialogResults As VbMsgBoxResult
+            importDialogResults = vbNo
+            Loading.LoadFileAsNewImage tmpLayerFile, sTitle, False, importDialogResults, False
             
             'Be polite and remove the temporary file
             Files.FileDeleteIfExists tmpLayerFile

@@ -42,8 +42,9 @@ Option Explicit
 '    load engine to skip the "add to recent files" step.
 ' 4) [optional] suspendWarnings
 '    At times, the caller may not want to have UI warnings raised for malformed or invalid files.  Batch processing and
-'    multi-image load are two examples.  When suspendWarnings = TRUE, any user-facing messages related to bad files will be
-'    suppressed.  (Note that the warnings can still be retrieved from debug logs, however.)
+'    multi-image load are two examples.  When suspendWarnings = vbYES, any user-facing messages related to bad files are
+'    suppressed.  (Note that the warnings can still be retrieved from debug logs, however.)  This value is passed ByRef
+'    so that is suspendWarnings is vbNO, the caller can handle vbCancel results (if desired) from raised message boxes.
 ' 5) [optional] handleUIDisabling
 '    By default, this function takes control of PhotoDemon's UI and disables anything interactable while the load process occurs.
 '    Some specialized load functions (like batch processing) already assume specialized control, and will not want the load
@@ -52,7 +53,10 @@ Option Explicit
 '    During a batch process, normal image import processes (like displaying optional prompts) may be suspended.  This param
 '    string can contain custom parameters that can be blindly forwarded to subsequent import operations.  (Basically, it's a
 '    catch-all for future improvements and modifications.)
-Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal suggestedFilename As String = vbNullString, Optional ByVal addToRecentFiles As Boolean = True, Optional ByVal suspendWarnings As Boolean = False, Optional ByVal handleUIDisabling As Boolean = True, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef numCanceledImports As Long = 0) As Boolean
+' 7) [optional] numCanceledImports
+'    Each time the user cancels an image via import dialog (like a PDF or SVG size dialog), this is incremented by one.
+'    (If you want it reset between calls, reset it manually; this function only increments it.)
+Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal suggestedFilename As String = vbNullString, Optional ByVal addToRecentFiles As Boolean = True, Optional ByRef suspendWarnings As VbMsgBoxResult = vbNo, Optional ByVal handleUIDisabling As Boolean = True, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef numCanceledImports As Long = 0) As Boolean
     
     '*** AND NOW, AN IMPORTANT MESSAGE ABOUT DOEVENTS ***
     
@@ -79,6 +83,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     VBHacks.GetHighResTime startTime
     PDDebug.LogAction "Image load requested for """ & Files.FileGetName(srcFile) & """.  Baseline memory reading:"
     PDDebug.LogAction vbNullString, PDM_Mem_Report
+    
+    'Note the caller's desire to suspend pop-up warnings for things like missing or broken files.  (Batch processes
+    ' request this, for example.)  When this is set to vbNO, we'll pester the user with message boxes on critical errors.
+    Dim arePopupsAllowed As Boolean
+    arePopupsAllowed = (suspendWarnings = vbNo)
     
     'Before doing anything else, purge the input queue to ensure no stray key or mouse events are "left over"
     ' from things like a common dialog interaction.  (Refer to the DoEvents warning, above, about the precautions
@@ -112,7 +121,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'We now have a few tedious checks to perform: like making sure the file actually exists!
     If (Not Files.FileExists(srcFile)) Then
         If handleUIDisabling Then Processor.MarkProgramBusyState False, True
-        If (Not suspendWarnings) Then
+        If arePopupsAllowed Then
             Message "Warning - file not found: %1", srcFile
             PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbExclamation Or vbOKOnly, "File not found", srcFile
         End If
@@ -122,7 +131,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     If (Not Files.FileTestAccess_Read(srcFile)) Then
         If handleUIDisabling Then Processor.MarkProgramBusyState False, True
-        If (Not suspendWarnings) Then
+        If arePopupsAllowed Then
             Message "Warning - file locked: %1", srcFile
             PDMsgBox "Unfortunately, the file '%1' is currently locked by another program on this PC." & vbCrLf & vbCrLf & "Please close this file in any other running programs, then try again.", vbExclamation Or vbOKOnly, "File locked", srcFile
         End If
@@ -565,7 +574,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'NEW IN 2025: look for mismatches between file extension and file type in the source file.
     ' If this happens, warn the user and offer to rename the underlying file with a correct extension.
     ' (Like anything else that raises a modal dialog, this check is disabled during batch processes.)
-    If LoadFileAsNewImage And (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) Then
+    If LoadFileAsNewImage And (Macros.GetMacroStatus <> MacroBATCH) And arePopupsAllowed Then
         
         'Ignore images that didn't originate from disk
         If (LenB(suggestedFilename) = 0) Then
@@ -608,7 +617,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                     msgBadExtension.AppendLine g_Language.TranslateMessage("(If you choose ""Yes"", the file will be renamed to ""%1"")", renamedFilename)
                     
                     Dim renameResult As VbMsgBoxResult
-                    renameResult = PDMsgBox(msgBadExtension.ToString(), vbExclamation Or vbYesNo Or vbApplicationModal, "Bad file extension")
+                    renameResult = PDMsgBox(msgBadExtension.ToString(), vbExclamation Or vbYesNoCancel Or vbApplicationModal, "Bad file extension")
+                    userCanceledImportDialog = (renameResult = vbCancel)
                     
                     If (renameResult = vbYes) Then
                         
@@ -664,13 +674,16 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         End If  '/end image didn't originate on disk
     End If  '/end in batch process, or file didn't load correctly anyway
     
+    'If any of the import dialogs were outright canceled, relay this to the caller via the ByRef suspendWarnings param
+    If userCanceledImportDialog Then suspendWarnings = vbCancel
+    
     'Activate the new image (if loading was successful) and exit
     If LoadFileAsNewImage Then
         If handleUIDisabling Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "LoadFileAsNewImage", newImageJustLoaded:=True
         Message "Image loaded successfully."
     Else
         If userCanceledImportDialog Then numCanceledImports = numCanceledImports + 1
-        If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) And (Not userCanceledImportDialog) Then
+        If (Macros.GetMacroStatus <> MacroBATCH) And arePopupsAllowed And (freeImage_Return <> PD_FAILURE_USER_CANCELED) And (Not userCanceledImportDialog) Then
             Message "Failed to load %1", srcFile
             PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation Or vbOKOnly, "Image import failed", srcFile
         End If
@@ -1022,12 +1035,15 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
     End Select
 End Function
 
-'Want to load a whole bunch of image sources at once?  Use this function to do so.  While helpful, note that it comes with some caveats:
+'Want to load a whole bunch of image sources at once?  Use this function to do so.
+' While helpful, note that it comes with some caveats:
 ' 1) The only supported sources are absolute filenames.
 ' 2) You lose the ability to assign custom titles to incoming images.  Titles will be auto-assigned based on their filenames.
-' 3) You won't receive detailed success/failure information on each file.  Instead, this function will return TRUE if it was able to load
-'    at least one image successfully.  If you want per-file success/fail results, call LoadFileAsNewImage manually from your own loop.
-Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional ByVal updateRecentFileList As Boolean = True, Optional ByRef numCanceledImports As Long) As Boolean
+' 3) You won't receive detailed success/failure information on each file.  Instead, this function will return TRUE if it loaded
+'    at least one image successfully.
+'
+'If you want per-file success/fail results, call LoadFileAsNewImage manually from your own loop.
+Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional ByVal updateRecentFileList As Boolean = True, Optional ByRef numCanceledImports As Long = 0) As Boolean
 
     If (Not srcList Is Nothing) Then
         
@@ -1051,8 +1067,11 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
                 
                 Message "Importing %1...", Files.FileGetName(tmpFilename)
                 
+                Dim loadResult As VbMsgBoxResult
+                loadResult = vbNo
+                
                 'Proceed with the load, and track successes/failures separately
-                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, (srcList.GetNumOfStrings > 0), False, vbNullString, numCanceledImports) Then
+                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, loadResult, False, vbNullString, numCanceledImports) Then
                     numSuccesses = numSuccesses + 1
                 Else
                     If (LenB(tmpFilename) <> 0) Then
@@ -1060,6 +1079,8 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
                         brokenFiles = brokenFiles & Files.FileGetName(tmpFilename) & vbCrLf
                     End If
                 End If
+                
+                If (loadResult = vbCancel) Then Exit Do
                 
             End If
             
@@ -1077,7 +1098,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         'Manually activate the last-loaded image
         Dim imgStack As pdStack
         If PDImages.GetListOfActiveImageIDs(imgStack) Then
-            CanvasManager.ActivatePDImage imgStack.GetInt(imgStack.GetNumOfInts - 1), "LoadFileAsNewImage", , , True
+            CanvasManager.ActivatePDImage imgStack.GetInt(imgStack.GetNumOfInts - 1), "LoadMultipleImageFiles", , , True
         End If
         
         'Synchronize everything to all open images
