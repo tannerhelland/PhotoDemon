@@ -411,7 +411,7 @@ Private Sub Form_Load()
     m_ListBoxFont.SetTextAlignment vbLeftJustify
     
     'Populate the left-hand list box with all relevant plugins
-    lstOverview.ListItemHeight = OVERVIEW_ITEM_HEIGHT
+    lstOverview.ListItemHeight = Interface.FixDPI(OVERVIEW_ITEM_HEIGHT)
     lstOverview.SetAutomaticRedraws False
     
     lstPlugins.Clear
