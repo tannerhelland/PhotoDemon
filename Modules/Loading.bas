@@ -778,9 +778,11 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             loadSuccessful = Plugin_CharLS.LoadJLS(imagePath, tmpPDImage, targetDIB)
         
         Case "JXL"
-            If Plugin_jxl.IsJXLImportAvailable() Then
-                loadSuccessful = Plugin_jxl.LoadJXL(imagePath, tmpPDImage, targetDIB)
-                If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+            If Plugin_jxl.IsFileJXL_NoExternalLibrary(imagePath) Then
+                If Plugin_jxl.IsJXLImportAvailable() Then
+                    loadSuccessful = Plugin_jxl.LoadJXL(imagePath, tmpPDImage, targetDIB)
+                    If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
+                End If
             End If
         
         Case "MBM", "MBW", "MCL", "AIF", "ABW", "ACL"

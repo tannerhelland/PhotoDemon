@@ -1409,9 +1409,13 @@ Private Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
     'Ensure libjxl is available and functioning correctly (e.g. we are on Vista or later)
     If (Not Plugin_jxl.IsJXLImportAvailable()) Then
         
-        'If the target file is a likely JPEG-XL candidate (by file extension), ask the user if they want to
-        ' download libjxl.
-        If Strings.StringsEqual(Files.FileGetExtension(srcFile), "jxl", True) Then
+        'If the target file is a likely JPEG-XL candidate (by file extension),
+        ' ask the user if they want to download libjxl.
+        Dim fileMightBeJXL As Boolean
+        fileMightBeJXL = Strings.StringsEqual(Files.FileGetExtension(srcFile), "jxl", True)
+        If (Not fileMightBeJXL) Then fileMightBeJXL = Plugin_jxl.IsFileJXL_NoExternalLibrary(srcFile)
+        
+        If fileMightBeJXL Then
             
             'Prompt for download (if allowed) and attempt to continue
             If (Not Plugin_jxl.PromptForLibraryDownload_JXL(True)) Then Exit Function

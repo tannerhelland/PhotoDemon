@@ -337,15 +337,51 @@ ConvertFailed:
     
 End Function
 
+'Check if a file is JXL without relying on libjxl (only an initial magic number is validated; nothing else)
+Public Function IsFileJXL_NoExternalLibrary(ByRef srcFile As String) As Boolean
+    
+    IsFileJXL_NoExternalLibrary = False
+    If Files.FileExists(srcFile) Then
+        
+        'Pull the first 12 bytes only
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
+            Dim bFirst12() As Byte
+            If cStream.ReadBytes(bFirst12, 12, True) Then
+                
+                'Two different signatures are valid, based on the container used.
+                Const JXL_MAGIC_NUMBER_1 As Integer = &HAFF
+                IsFileJXL_NoExternalLibrary = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(JXL_MAGIC_NUMBER_1), 2)
+                If (Not IsFileJXL_NoExternalLibrary) Then
+                    
+                    Const JXL_MAGIC_NUMBER_2 As Long = &HC000000
+                    Const JXL_MAGIC_NUMBER_3 As Long = &H204C584A
+                    Const JXL_MAGIC_NUMBER_4 As Long = &HA870A0D
+                    IsFileJXL_NoExternalLibrary = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(JXL_MAGIC_NUMBER_2), 4)
+                    If IsFileJXL_NoExternalLibrary Then IsFileJXL_NoExternalLibrary = VBHacks.MemCmp(VarPtr(bFirst12(4)), VarPtr(JXL_MAGIC_NUMBER_3), 4)
+                    If IsFileJXL_NoExternalLibrary Then IsFileJXL_NoExternalLibrary = VBHacks.MemCmp(VarPtr(bFirst12(8)), VarPtr(JXL_MAGIC_NUMBER_4), 4)
+                    
+                End If
+                
+            End If
+        End If
+        
+        Set cStream = Nothing
+        
+    End If
+    
+End Function
+
 'Import/Export functions follow
 Public Function IsFileJXL(ByRef srcFile As String) As Boolean
     
     IsFileJXL = False
     
-    'For now, validate format extension
-    If (Files.FileGetExtension(srcFile) <> "jxl") Then Exit Function
+    'Do an initial check that doesn't rely on libjxl
+    If (Not IsFileJXL_NoExternalLibrary(srcFile)) Then Exit Function
     
-    'Failsafe check
+    'A better check relies on libjxl, but if it's not available, rely on whatever we discovered in our "quick and dirty" check
     If (Not Plugin_jxl.IsJXLImportAvailable()) Then Exit Function
     
     'Second failsafe check for the separate JXL info executable
