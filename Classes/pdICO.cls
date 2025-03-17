@@ -602,7 +602,7 @@ Private Function CreateFrameForExport(ByRef srcIcoData As PD_Icon, ByRef srcLaye
         
         'Perform the resample
         If (Not referenceDIB.GetAlphaPremultiplication()) Then referenceDIB.SetAlphaPremultiplication True
-        Resampling.ResampleImageI tmpHolderDIB, referenceDIB, newWidth, newHeight, rf_Mitchell, False
+        Resampling.ResampleImageI tmpHolderDIB, referenceDIB, newWidth, newHeight, rf_Lanczos, False
         
         'Blt the final result into place
         GDI.BitBltWrapper tmpDIB.GetDIBDC, dstX, dstY, newWidth, newHeight, tmpHolderDIB.GetDIBDC, 0, 0, vbSrcCopy
