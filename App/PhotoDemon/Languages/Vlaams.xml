@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1745</langversion>
+<langversion>8.9.1746</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -7276,21 +7276,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>andere opties</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>anti-aliasing</translation>
 </phrase>
@@ -7303,6 +7288,21 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <phrase>
 <original>document size</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>andere opties</translation>
 </phrase>
 
 <phrase>
@@ -12534,6 +12534,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12549,6 +12554,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation></translation>
 </phrase>
@@ -12556,11 +12566,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <phrase>
 <original>position (x, y)</original>
 <translation>positie (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>allow enlarging</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -12583,7 +12588,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14621,10 +14626,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2769</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5890 phrases. -->
+<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
+<!-- These 2769 phrases contain approximately 12025 total words. -->
 
 </pdData>

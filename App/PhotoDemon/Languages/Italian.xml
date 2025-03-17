@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1655</langversion>
+<langversion>8.9.1656</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -7275,21 +7275,6 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation>inverti ordine delle pagine</translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation>pagine da importare</translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>altre opzioni</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>antialiasing</translation>
 </phrase>
@@ -7302,6 +7287,21 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <phrase>
 <original>document size</original>
 <translation>dimensione documento</translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation>inverti ordine delle pagine</translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation>pagine da importare</translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>altre opzioni</translation>
 </phrase>
 
 <phrase>
@@ -12533,6 +12533,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12548,6 +12553,11 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation></translation>
 </phrase>
@@ -12555,11 +12565,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <phrase>
 <original>position (x, y)</original>
 <translation>posizione (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>allow enlarging</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -12582,7 +12587,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14620,10 +14625,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2769</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5890 phrases. -->
+<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
+<!-- These 2769 phrases contain approximately 12025 total words. -->
 
 </pdData>

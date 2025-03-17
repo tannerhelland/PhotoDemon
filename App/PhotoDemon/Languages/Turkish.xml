@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.48</langversion>
+<langversion>1.0.49</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -7248,21 +7248,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>diğer seçenekler</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>kenar yumuşatma</translation>
 </phrase>
@@ -7275,6 +7260,21 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>document size</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>diğer seçenekler</translation>
 </phrase>
 
 <phrase>
@@ -12500,6 +12500,11 @@ Would you like to save your batch list before exiting?</original>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12515,17 +12520,17 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>allow enlarging</original>
 <translation></translation>
 </phrase>
 
@@ -12549,7 +12554,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14577,10 +14582,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2769</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5890 phrases. -->
+<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
+<!-- These 2769 phrases contain approximately 12025 total words. -->
 
 </pdData>

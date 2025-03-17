@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.640</langversion>
+<langversion>6.7.641</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -7275,21 +7275,6 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation>ordre inversé des pages</translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation>pages à importer</translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>autres options</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>anticrénelage</translation>
 </phrase>
@@ -7302,6 +7287,21 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <phrase>
 <original>document size</original>
 <translation>taille du document</translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation>ordre inversé des pages</translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation>pages à importer</translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>autres options</translation>
 </phrase>
 
 <phrase>
@@ -12539,6 +12539,11 @@ Vous pouvez alors si besoin
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12554,6 +12559,11 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation></translation>
 </phrase>
@@ -12561,11 +12571,6 @@ Vous pouvez alors si besoin
 <phrase>
 <original>position (x, y)</original>
 <translation>position (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>allow enlarging</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -12588,7 +12593,7 @@ Vous pouvez alors si besoin
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14631,10 +14636,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2769</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5890 phrases. -->
+<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
+<!-- These 2769 phrases contain approximately 12025 total words. -->
 
 </pdData>

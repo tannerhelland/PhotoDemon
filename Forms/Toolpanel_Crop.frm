@@ -6,7 +6,7 @@ Begin VB.Form toolpanel_Crop
    ClientHeight    =   4605
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   12270
+   ClientWidth     =   12180
    ControlBox      =   0   'False
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
@@ -27,13 +27,13 @@ Begin VB.Form toolpanel_Crop
    NegotiateMenus  =   0   'False
    ScaleHeight     =   307
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   818
+   ScaleWidth      =   812
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdButtonToolbox cmdAspectSwap 
       Height          =   345
       Left            =   7320
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   420
       Width           =   315
       _ExtentX        =   556
@@ -51,31 +51,42 @@ Begin VB.Form toolpanel_Crop
       _ExtentY        =   661
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   975
+      Height          =   1455
       Index           =   1
-      Left            =   3720
+      Left            =   4200
       Top             =   960
       Visible         =   0   'False
       Width           =   3975
       _ExtentX        =   7011
-      _ExtentY        =   3625
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   375
-         Index           =   0
+      _ExtentY        =   2566
+      Begin PhotoDemon.pdDropDown ddAspectRatio 
+         Height          =   645
+         Index           =   1
          Left            =   120
-         Top             =   120
-         Width           =   3735
-         _ExtentX        =   6588
-         _ExtentY        =   661
-         Alignment       =   2
-         Caption         =   ""
+         TabIndex        =   24
+         Top             =   90
+         Width           =   2535
+         _ExtentX        =   4471
+         _ExtentY        =   1138
+         Caption         =   "presets"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButtonStrip btsOrientation 
+         Height          =   495
+         Index           =   1
+         Left            =   2760
+         TabIndex        =   23
+         Top             =   390
+         Width           =   1095
+         _ExtentX        =   1931
+         _ExtentY        =   873
       End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
          Left            =   3480
          TabIndex        =   3
-         Top             =   540
+         Top             =   960
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -85,7 +96,7 @@ Begin VB.Form toolpanel_Crop
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   3255
       Index           =   2
-      Left            =   7920
+      Left            =   8400
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
@@ -93,7 +104,7 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdButtonStrip btsTarget 
          Height          =   855
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   90
          Width           =   3495
          _ExtentX        =   6165
@@ -104,7 +115,7 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdSlider sldHighlight 
          Height          =   375
          Left            =   1140
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   2370
          Width           =   2490
          _ExtentX        =   4392
@@ -117,7 +128,7 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdColorSelector clrHighlight 
          Height          =   375
          Left            =   480
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   2370
          Width           =   615
          _ExtentX        =   1085
@@ -128,7 +139,7 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdCheckBox chkHighlight 
          Height          =   375
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   1920
          Width           =   3495
          _ExtentX        =   6165
@@ -149,7 +160,7 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdCheckBox chkDelete 
          Height          =   375
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   1500
          Width           =   3495
          _ExtentX        =   6165
@@ -159,7 +170,7 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdCheckBox chkAllowGrowing 
          Height          =   375
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   1080
          Width           =   3495
          _ExtentX        =   6165
@@ -330,38 +341,60 @@ Begin VB.Form toolpanel_Crop
       _ExtentX        =   1058
       _ExtentY        =   661
    End
-   Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   540
-      Index           =   0
-      Left            =   0
-      Top             =   960
-      Visible         =   0   'False
-      Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   953
-      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
-         Height          =   390
-         Index           =   0
-         Left            =   3000
-         TabIndex        =   15
-         Top             =   65
-         Width           =   390
-         _ExtentX        =   1111
-         _ExtentY        =   1111
-         StickyToggle    =   -1  'True
-      End
-   End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   375
       Index           =   0
       Left            =   2760
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   0
       Width           =   3105
       _ExtentX        =   5477
       _ExtentY        =   661
       Caption         =   "size (w, h)"
       Value           =   0   'False
+   End
+   Begin PhotoDemon.pdContainer cntrPopOut 
+      Height          =   1455
+      Index           =   0
+      Left            =   0
+      Top             =   960
+      Visible         =   0   'False
+      Width           =   3975
+      _ExtentX        =   7011
+      _ExtentY        =   2566
+      Begin PhotoDemon.pdDropDown ddAspectRatio 
+         Height          =   645
+         Index           =   0
+         Left            =   120
+         TabIndex        =   25
+         Top             =   90
+         Width           =   2535
+         _ExtentX        =   4471
+         _ExtentY        =   1138
+         Caption         =   "presets"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdButtonStrip btsOrientation 
+         Height          =   495
+         Index           =   0
+         Left            =   2760
+         TabIndex        =   26
+         Top             =   390
+         Width           =   1095
+         _ExtentX        =   1931
+         _ExtentY        =   873
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
+         Height          =   390
+         Index           =   0
+         Left            =   3480
+         TabIndex        =   27
+         Top             =   960
+         Width           =   390
+         _ExtentX        =   1111
+         _ExtentY        =   1111
+         StickyToggle    =   -1  'True
+      End
    End
 End
 Attribute VB_Name = "toolpanel_Crop"
@@ -385,6 +418,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Prevent synchronization loops
+Private m_DontUpdate As Boolean
+
 'Flyout manager
 Private WithEvents m_Flyout As pdFlyout
 Attribute m_Flyout.VB_VarHelpID = -1
@@ -392,6 +428,29 @@ Attribute m_Flyout.VB_VarHelpID = -1
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents m_lastUsedSettings As pdLastUsedSettings
 Attribute m_lastUsedSettings.VB_VarHelpID = -1
+
+Private Sub btsOrientation_Click(Index As Integer, ByVal buttonIndex As Long)
+    
+    If m_DontUpdate Then Exit Sub
+    
+    'Keep both preset lists in sync
+    m_DontUpdate = True
+    If (Index = 0) Then
+        btsOrientation(1).ListIndex = buttonIndex
+    Else
+        btsOrientation(0).ListIndex = buttonIndex
+    End If
+    m_DontUpdate = False
+    
+End Sub
+
+Private Sub btsOrientation_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub btsOrientation_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.ddAspectRatio(Index).hWnd Else newTargetHwnd = cmdLock(Index).hWnd
+End Sub
 
 Private Sub btsTarget_Click(ByVal buttonIndex As Long)
     Tools_Crop.SetCropAllLayers (btsTarget.ListIndex = 0)
@@ -531,9 +590,9 @@ End Sub
 Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     Select Case Index
         Case 0
-            If shiftTabWasPressed Then newTargetHwnd = Me.chkAllowGrowing.hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.btsOrientation(0).hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
         Case 1
-            If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(2).hWnd Else newTargetHwnd = Me.ttlPanel(2).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.btsOrientation(1).hWnd Else newTargetHwnd = Me.ttlPanel(2).hWnd
         Case 2
             If shiftTabWasPressed Then newTargetHwnd = Me.sldHighlight.hWndSpinner Else newTargetHwnd = Me.tudCrop(0).hWnd
     End Select
@@ -591,10 +650,22 @@ Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPresse
         Case 0
             If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(2).hWnd Else newTargetHwnd = Me.tudCrop(3).hWnd
         Case 1
-            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(3).hWnd Else newTargetHwnd = Me.chkAllowGrowing.hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(3).hWnd Else newTargetHwnd = Me.ddAspectRatio(0).hWnd
         Case 2
-            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(5).hWnd Else newTargetHwnd = cmdFlyoutLock(1).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(5).hWnd Else newTargetHwnd = Me.ddAspectRatio(1).hWnd
     End Select
+End Sub
+
+Private Sub ddAspectRatio_GotFocusAPI(Index As Integer)
+    UpdateFlyout Index, True
+End Sub
+
+Private Sub ddAspectRatio_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Index = 0) Then
+        If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(1).hWnd Else newTargetHwnd = btsOrientation(0).hWnd
+    ElseIf (Index = 1) Then
+        If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(2).hWnd Else newTargetHwnd = btsOrientation(1).hWnd
+    End If
 End Sub
 
 Private Sub Form_Activate()
@@ -613,6 +684,14 @@ Private Sub Form_Load()
     btsTarget.AddItem "image", 0
     btsTarget.AddItem "layer", 1
     btsTarget.ListIndex = 0
+    
+    btsOrientation(0).AddItem vbNullString, 0
+    btsOrientation(0).AddItem vbNullString, 1
+    btsOrientation(0).ListIndex = 0
+    
+    btsOrientation(1).AddItem vbNullString, 0
+    btsOrientation(1).AddItem vbNullString, 1
+    btsOrientation(1).ListIndex = 0
     
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
@@ -914,11 +993,6 @@ End Sub
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'TEMPORARY ONLY:
-    Dim doNotTranslate As String
-    doNotTranslate = "(presets coming soon)"
-    lblOptions(0).Caption = doNotTranslate
-    
     'Lock/unlock buttons are standardized across *all* toolpanels
     Dim buttonSize As Long
     buttonSize = Interface.FixDPI(16)
@@ -937,6 +1011,19 @@ Public Sub UpdateAgainstCurrentTheme()
     buttonSize = Interface.FixDPI(14)
     cmdAspectSwap.AssignImage "edit_repeat", , buttonSize, buttonSize
     cmdAspectSwap.AssignTooltip "Swap width and height"
+    
+    'Orientation toggle uses images only
+    Dim imgOrientationColor As Long
+    If (Not g_Themer Is Nothing) Then imgOrientationColor = g_Themer.GetGenericUIColor(UI_GrayDark)
+    buttonSize = Interface.FixDPI(18)
+    
+    Dim tmpDIB As pdDIB
+    IconsAndCursors.LoadResourceToDIB "generic_image", tmpDIB, buttonSize, buttonSize, 0&, imgOrientationColor, False, GP_IM_HighQualityBicubic
+    btsOrientation(0).AssignImageToItem 0, vbNullString, tmpDIB
+    btsOrientation(1).AssignImageToItem 0, vbNullString, tmpDIB
+    IconsAndCursors.LoadResourceToDIB "generic_imageportrait", tmpDIB, buttonSize, buttonSize, 0&, imgOrientationColor, False, GP_IM_HighQualityBicubic
+    btsOrientation(0).AssignImageToItem 1, vbNullString, tmpDIB
+    btsOrientation(1).AssignImageToItem 1, vbNullString, tmpDIB
     
     'Next, apply localized tooltips to any other UI items that require it
     chkAllowGrowing.AssignTooltip "Allow cropping outside image boundaries (which will enlarge the image)."
@@ -960,6 +1047,13 @@ Private Sub UpdateEnabledControls()
         Tools_Crop.SetCropDeletePixels True
         Me.chkDelete.Enabled = False
     End If
+End Sub
+
+'Update the size and aspect ratio preset lists
+Private Sub UpdatePresetLists()
+
+    
+
 End Sub
 
 'Update the actively displayed flyout (if any).  Note that the flyout manager will automatically

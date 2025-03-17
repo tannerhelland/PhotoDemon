@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.44</langversion>
+<langversion>9.0.45</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -7270,21 +7270,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation>Odwróć kolejność stron</translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation>Strony do importu</translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>Inne opcje</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>Wygładzanie</translation>
 </phrase>
@@ -7297,6 +7282,21 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>document size</original>
 <translation>Rozmiar dokumentu</translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation>Odwróć kolejność stron</translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation>Strony do importu</translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>Inne opcje</translation>
 </phrase>
 
 <phrase>
@@ -12534,6 +12534,11 @@ Dziękujemy!</translation>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12549,6 +12554,11 @@ Dziękujemy!</translation>
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation></translation>
 </phrase>
@@ -12556,11 +12566,6 @@ Dziękujemy!</translation>
 <phrase>
 <original>position (x, y)</original>
 <translation>Pozycja (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>allow enlarging</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -12583,7 +12588,7 @@ Dziękujemy!</translation>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14619,10 +14624,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2769</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5890 phrases. -->
+<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
+<!-- These 2769 phrases contain approximately 12025 total words. -->
 
 </pdData>

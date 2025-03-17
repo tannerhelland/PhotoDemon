@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.21</langversion>
+<langversion>9.0.22</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -7276,21 +7276,6 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation>orden de página inverso</translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation>páginas a importar</translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>Otras opciones</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>Antialias</translation>
 </phrase>
@@ -7303,6 +7288,21 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <phrase>
 <original>document size</original>
 <translation>tamaño de documento</translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation>orden de página inverso</translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation>páginas a importar</translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>Otras opciones</translation>
 </phrase>
 
 <phrase>
@@ -12534,6 +12534,11 @@ Would you like to save your batch list before exiting?</original>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12549,6 +12554,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation></translation>
 </phrase>
@@ -12556,11 +12566,6 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>position (x, y)</original>
 <translation>Posición (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>allow enlarging</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -12583,7 +12588,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14621,10 +14626,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2769</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5890 phrases. -->
+<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
+<!-- These 2769 phrases contain approximately 12025 total words. -->
 
 </pdData>

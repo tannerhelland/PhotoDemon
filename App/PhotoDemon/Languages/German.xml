@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 262.1</langversion>
+<langversion>2024.12 Alpha - Build 262.2</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -7276,21 +7276,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation>Umgekehrte Seitenreihenfolge</translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation>Zu importierende Seiten</translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>Andere Optionen</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>Antialiasing</translation>
 </phrase>
@@ -7303,6 +7288,21 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <phrase>
 <original>document size</original>
 <translation>Dokumentgröße</translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation>Umgekehrte Seitenreihenfolge</translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation>Zu importierende Seiten</translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>Andere Optionen</translation>
 </phrase>
 
 <phrase>
@@ -12532,6 +12532,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation>Ziel</translation>
 </phrase>
@@ -12547,6 +12552,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation>Vergrößerung erlauben</translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation>Anwenden</translation>
 </phrase>
@@ -12554,11 +12564,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>position (x, y)</original>
 <translation>Position (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>allow enlarging</original>
-<translation>Vergrößerung erlauben</translation>
 </phrase>
 
 <phrase>
@@ -12581,7 +12586,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Cropping außerhalb Bildgrenzen erlauben (wodurch das Bild vergrößert wird).</translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14619,10 +14624,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2769</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5890 phrases. -->
+<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
+<!-- These 2769 phrases contain approximately 12025 total words. -->
 
 </pdData>
