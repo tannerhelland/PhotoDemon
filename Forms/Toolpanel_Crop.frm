@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Crop
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   4035
+   ClientHeight    =   4605
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   12270
@@ -25,7 +25,7 @@ Begin VB.Form toolpanel_Crop
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   269
+   ScaleHeight     =   307
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
    ShowInTaskbar   =   0   'False
@@ -33,7 +33,7 @@ Begin VB.Form toolpanel_Crop
    Begin PhotoDemon.pdButtonToolbox cmdAspectSwap 
       Height          =   345
       Left            =   7320
-      TabIndex        =   18
+      TabIndex        =   17
       Top             =   420
       Width           =   315
       _ExtentX        =   556
@@ -53,7 +53,7 @@ Begin VB.Form toolpanel_Crop
    Begin PhotoDemon.pdContainer cntrPopOut 
       Height          =   975
       Index           =   1
-      Left            =   4200
+      Left            =   3720
       Top             =   960
       Visible         =   0   'False
       Width           =   3975
@@ -83,17 +83,17 @@ Begin VB.Form toolpanel_Crop
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   2895
+      Height          =   3255
       Index           =   2
-      Left            =   8400
+      Left            =   7920
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
-      _ExtentY        =   5106
+      _ExtentY        =   5741
       Begin PhotoDemon.pdButtonStrip btsTarget 
          Height          =   855
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   90
          Width           =   3495
          _ExtentX        =   6165
@@ -104,8 +104,8 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdSlider sldHighlight 
          Height          =   375
          Left            =   1140
-         TabIndex        =   21
-         Top             =   1920
+         TabIndex        =   20
+         Top             =   2370
          Width           =   2490
          _ExtentX        =   4392
          _ExtentY        =   661
@@ -117,8 +117,8 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdColorSelector clrHighlight 
          Height          =   375
          Left            =   480
-         TabIndex        =   20
-         Top             =   1920
+         TabIndex        =   19
+         Top             =   2370
          Width           =   615
          _ExtentX        =   1085
          _ExtentY        =   661
@@ -128,8 +128,8 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdCheckBox chkHighlight 
          Height          =   375
          Left            =   120
-         TabIndex        =   19
-         Top             =   1500
+         TabIndex        =   18
+         Top             =   1920
          Width           =   3495
          _ExtentX        =   6165
          _ExtentY        =   661
@@ -140,7 +140,7 @@ Begin VB.Form toolpanel_Crop
          Index           =   2
          Left            =   3240
          TabIndex        =   4
-         Top             =   2400
+         Top             =   2850
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -149,12 +149,22 @@ Begin VB.Form toolpanel_Crop
       Begin PhotoDemon.pdCheckBox chkDelete 
          Height          =   375
          Left            =   120
-         TabIndex        =   22
-         Top             =   1080
+         TabIndex        =   21
+         Top             =   1500
          Width           =   3495
          _ExtentX        =   6165
          _ExtentY        =   661
          Caption         =   "delete cropped pixels"
+      End
+      Begin PhotoDemon.pdCheckBox chkAllowGrowing 
+         Height          =   375
+         Left            =   120
+         TabIndex        =   23
+         Top             =   1080
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   661
+         Caption         =   "allow enlarging"
       End
    End
    Begin PhotoDemon.pdSpinner tudCrop 
@@ -329,16 +339,6 @@ Begin VB.Form toolpanel_Crop
       Width           =   3495
       _ExtentX        =   6165
       _ExtentY        =   953
-      Begin PhotoDemon.pdCheckBox chkAllowGrowing 
-         Height          =   375
-         Left            =   30
-         TabIndex        =   17
-         Top             =   65
-         Width           =   2895
-         _ExtentX        =   5106
-         _ExtentY        =   661
-         Caption         =   "allow enlarging"
-      End
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   0
@@ -410,8 +410,8 @@ Private Sub btsTarget_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ne
             newTargetHwnd = Me.ttlPanel(2).Enabled
         End If
     Else
-        If Me.chkDelete.Enabled Then
-            newTargetHwnd = Me.chkDelete.hWnd
+        If Me.chkAllowGrowing.Enabled Then
+            newTargetHwnd = Me.chkAllowGrowing.hWnd
         Else
             newTargetHwnd = Me.chkHighlight.hWnd
         End If
@@ -426,11 +426,15 @@ Private Sub chkAllowGrowing_Click()
 End Sub
 
 Private Sub chkAllowGrowing_GotFocusAPI()
-    UpdateFlyout 0, True
+    UpdateFlyout 2, True
 End Sub
 
 Private Sub chkAllowGrowing_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(1).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.btsTarget.hWnd
+    Else
+        newTargetHwnd = Me.chkDelete.hWnd
+    End If
 End Sub
 
 Private Sub chkDelete_Click()
@@ -443,7 +447,7 @@ End Sub
 
 Private Sub chkDelete_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.btsTarget.hWnd
+        newTargetHwnd = Me.chkAllowGrowing.hWnd
     Else
         newTargetHwnd = chkHighlight.hWnd
     End If
@@ -946,9 +950,12 @@ End Sub
 
 Private Sub UpdateEnabledControls()
     If (Me.btsTarget.ListIndex = 0) Then
+        Me.chkAllowGrowing.Enabled = True
         Me.chkDelete.Enabled = True
         Tools_Crop.SetCropDeletePixels Me.chkDelete.Value
     Else
+        Me.chkAllowGrowing.Value = True
+        Me.chkAllowGrowing.Enabled = False
         Me.chkDelete.Value = True
         Tools_Crop.SetCropDeletePixels True
         Me.chkDelete.Enabled = False
