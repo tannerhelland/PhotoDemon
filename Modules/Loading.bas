@@ -683,9 +683,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         Message "Image loaded successfully."
     Else
         If userCanceledImportDialog Then numCanceledImports = numCanceledImports + 1
-        If (Macros.GetMacroStatus <> MacroBATCH) And arePopupsAllowed And (freeImage_Return <> PD_FAILURE_USER_CANCELED) And (Not userCanceledImportDialog) Then
-            Message "Failed to load %1", srcFile
-            PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation Or vbOKOnly, "Image import failed", srcFile
+        If (Macros.GetMacroStatus <> MacroBATCH) And arePopupsAllowed And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
+            If userCanceledImportDialog Then
+                Message "Action canceled."
+            Else
+                Message "Failed to load %1", srcFile
+                PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation Or vbOKOnly, "Image import failed", srcFile
+            End If
         End If
     End If
     
