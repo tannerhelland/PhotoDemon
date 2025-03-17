@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.318</langversion>
+<langversion>7.0.319</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -7234,21 +7234,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>平滑化</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation></translation>
 </phrase>
@@ -7261,6 +7246,21 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>other options</original>
 <translation>其他選項</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>平滑化</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7294,7 +7294,7 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>first page only</original>
+<original>current page only</original>
 <translation></translation>
 </phrase>
 
@@ -7353,7 +7353,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation></translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -14567,8 +14567,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5889 phrases. -->
-<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
 <!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

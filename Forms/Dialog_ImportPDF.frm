@@ -25,25 +25,26 @@ Begin VB.Form dialog_ImportPDF
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   900
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdSlider sldPreview 
+      Height          =   855
+      Left            =   240
+      TabIndex        =   10
+      Top             =   120
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   1508
+      Caption         =   "preview"
+   End
    Begin PhotoDemon.pdButtonStrip btsPanel 
       Height          =   1095
       Left            =   4800
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1320
       Width           =   8535
       _ExtentX        =   15055
       _ExtentY        =   1931
       Caption         =   "import settings"
       FontSize        =   12
-   End
-   Begin PhotoDemon.pdDropDown cboPreview 
-      Height          =   375
-      Left            =   240
-      TabIndex        =   1
-      Top             =   600
-      Width           =   4335
-      _ExtentX        =   7646
-      _ExtentY        =   661
    End
    Begin PhotoDemon.pdPictureBox picPreview 
       Height          =   5535
@@ -95,17 +96,6 @@ Begin VB.Form dialog_ImportPDF
       _ExtentY        =   661
       Caption         =   ""
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Index           =   0
-      Left            =   120
-      Top             =   120
-      Width           =   4455
-      _ExtentX        =   9763
-      _ExtentY        =   661
-      Caption         =   "preview"
-      FontSize        =   12
-   End
    Begin PhotoDemon.pdContainer pnlOptions 
       Height          =   4095
       Index           =   2
@@ -117,7 +107,7 @@ Begin VB.Form dialog_ImportPDF
       Begin PhotoDemon.pdColorSelector clsBackground 
          Height          =   615
          Left            =   360
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   3360
          Width           =   8055
          _ExtentX        =   14208
@@ -126,7 +116,7 @@ Begin VB.Form dialog_ImportPDF
       Begin PhotoDemon.pdButtonStrip btsTransparency 
          Height          =   975
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   2280
          Width           =   8295
          _ExtentX        =   14631
@@ -136,7 +126,7 @@ Begin VB.Form dialog_ImportPDF
       Begin PhotoDemon.pdButtonStrip btsAntialiasing 
          Height          =   975
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   1200
          Width           =   8295
          _ExtentX        =   14631
@@ -146,7 +136,7 @@ Begin VB.Form dialog_ImportPDF
       Begin PhotoDemon.pdButtonStrip btsAnnotations 
          Height          =   975
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   120
          Width           =   8295
          _ExtentX        =   14631
@@ -165,7 +155,7 @@ Begin VB.Form dialog_ImportPDF
       Begin PhotoDemon.pdResize rszUI 
          Height          =   2895
          Left            =   120
-         TabIndex        =   2
+         TabIndex        =   1
          Top             =   600
          Width           =   9255
          _ExtentX        =   16325
@@ -197,7 +187,7 @@ Begin VB.Form dialog_ImportPDF
          Height          =   375
          Index           =   0
          Left            =   360
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   2160
          Width           =   8055
          _ExtentX        =   14208
@@ -208,7 +198,7 @@ Begin VB.Form dialog_ImportPDF
       Begin PhotoDemon.pdTextBox txtPageRange 
          Height          =   375
          Left            =   240
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   1200
          Width           =   8175
          _ExtentX        =   14420
@@ -217,7 +207,7 @@ Begin VB.Form dialog_ImportPDF
       Begin PhotoDemon.pdButtonStrip btsPages 
          Height          =   975
          Left            =   120
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   120
          Width           =   8295
          _ExtentX        =   14631
@@ -305,7 +295,8 @@ Public Function GetDialogParamString() As String
     If (btsPages.ListIndex = 0) Then
         cParams.AddParam "import-pages", "all", True, True
     ElseIf (btsPages.ListIndex = 1) Then
-        cParams.AddParam "import-pages", "first", True, True
+        cParams.AddParam "import-pages", "custom", True, True
+        cParams.AddParam "page-list", Trim$(Str$(sldPreview.Value)), True
     Else
     
         cParams.AddParam "import-pages", "custom", True, True
@@ -371,10 +362,6 @@ End Sub
 
 Private Sub btsTransparency_Click(ByVal buttonIndex As Long)
     UpdateTransparencyUI
-    UpdatePreview
-End Sub
-
-Private Sub cboPreview_Click()
     UpdatePreview
 End Sub
 
@@ -476,7 +463,7 @@ Private Sub cmdBar_ReadCustomPresetData()
     rszUI.AspectRatioLock = True
     
     'Do *not* remember the user's last page setting
-    cboPreview.ListIndex = 0
+    sldPreview.Value = 1
     
     'Do *not* remember the user's last custom page range
     If (Not m_PDF Is Nothing) Then
@@ -491,7 +478,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     
-    cboPreview.ListIndex = 0
+    sldPreview.Value = 1
     rszUI.SetInitialDimensions m_baseImageWidthInPx, m_baseImageHeightInPx, DEFAULT_DPI
     rszUI.AspectRatioLock = True
     chkPageOptions(0).Value = False
@@ -544,15 +531,17 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     Set m_PDF = srcPDF
     
     'Populate the preview dropdown with all available pages
-    cmdBar.RequestPresetNoLoad cboPreview
+    cmdBar.RequestPresetNoLoad sldPreview
     If (Not m_PDF Is Nothing) Then
         If (m_PDF.GetPageCount > 0) Then
-            Dim i As Long
-            For i = 0 To m_PDF.GetPageCount - 1
-                cboPreview.AddItem g_Language.TranslateMessage("Page %1", i + 1), i
-            Next i
+            sldPreview.Min = 1
+            sldPreview.Max = m_PDF.GetPageCount
+            sldPreview.Value = 1
+        Else
+            sldPreview.Min = 0
+            sldPreview.Value = 0
+            sldPreview.Max = 0
         End If
-        cboPreview.ListIndex = 0
     End If
     
     'This dialog has too many import options, so it's split into separate panels
@@ -567,7 +556,7 @@ Public Sub ShowDialog(ByRef srcPDF As pdPDF)
     textAllPages = g_Language.TranslateMessage("all pages")
     If (Not m_PDF Is Nothing) Then textAllPages = textAllPages & " " & g_Language.TranslateMessage("(%1 total)", m_PDF.GetPageCount())
     btsPages.AddItem textAllPages, 0
-    btsPages.AddItem "first page only", 1
+    btsPages.AddItem "current page only", 1
     btsPages.AddItem "custom range", 2
     btsPages.ListIndex = 0
     UpdatePagesUI
@@ -692,10 +681,10 @@ Private Sub picPreview_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, By
             'TODO: bounding box will need to be accounted for here... eventually
             
             'Select the currently active page
-            If (cboPreview.ListIndex < 0) Or (cboPreview.ListIndex >= m_PDF.GetPageCount) Then
+            If (sldPreview.Value < 1) Or (sldPreview.Value > m_PDF.GetPageCount) Then
                 m_PDF.LoadPage 0
             Else
-                m_PDF.LoadPage cboPreview.ListIndex
+                m_PDF.LoadPage sldPreview.Value - 1
             End If
             
             'Prep a temporary DIB the size of the preview picture box, *but with aspect ratio preserved*
@@ -770,4 +759,8 @@ End Sub
 
 Private Sub UpdatePreview()
     picPreview.RequestRedraw True
+End Sub
+
+Private Sub sldPreview_Change()
+    UpdatePreview
 End Sub

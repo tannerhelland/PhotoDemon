@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).14</langversion>
+<langversion>2028.8 Alfa (Build 25).15</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -7276,21 +7276,6 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>izlīdzināšanas novēršana</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation>anotācijas</translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation>dokumenta izmērs</translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation>lappušu apgrieztā secība</translation>
 </phrase>
@@ -7303,6 +7288,21 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 <phrase>
 <original>other options</original>
 <translation>citas iespējas</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>izlīdzināšanas novēršana</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation>anotācijas</translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation>dokumenta izmērs</translation>
 </phrase>
 
 <phrase>
@@ -7336,8 +7336,8 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 </phrase>
 
 <phrase>
-<original>first page only</original>
-<translation>tikai pirmā lapa</translation>
+<original>current page only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7395,7 +7395,7 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -14623,8 +14623,8 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5889 phrases. -->
-<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
 <!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

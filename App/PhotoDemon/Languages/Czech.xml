@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.8</langversion>
+<langversion>1.0.9</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -7658,22 +7658,6 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>vyhlazování</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation>anotace</translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation>velikost dokumentu
-</translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation>obrácené pořadí stránek</translation>
 </phrase>
@@ -7687,6 +7671,22 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 <phrase>
 <original>other options</original>
 <translation>další volby</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>vyhlazování</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation>anotace</translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation>velikost dokumentu
+</translation>
 </phrase>
 
 <phrase>
@@ -7725,9 +7725,8 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 </phrase>
 
 <phrase>
-<original>first page only</original>
-<translation>pouze první stránka
-</translation>
+<original>current page only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7791,7 +7790,7 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -15267,8 +15266,8 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5889 phrases. -->
-<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
 <!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

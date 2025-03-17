@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 262</langversion>
+<langversion>2024.12 Alpha - Build 262.1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -7276,21 +7276,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>Antialiasing</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation>Annotationen</translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation>Dokumentgröße</translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation>Umgekehrte Seitenreihenfolge</translation>
 </phrase>
@@ -7303,6 +7288,21 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <phrase>
 <original>other options</original>
 <translation>Andere Optionen</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>Antialiasing</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation>Annotationen</translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation>Dokumentgröße</translation>
 </phrase>
 
 <phrase>
@@ -7336,8 +7336,8 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 </phrase>
 
 <phrase>
-<original>first page only</original>
-<translation>Nur erste Seite</translation>
+<original>current page only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7395,7 +7395,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -14621,8 +14621,8 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5889 phrases. -->
-<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
 <!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

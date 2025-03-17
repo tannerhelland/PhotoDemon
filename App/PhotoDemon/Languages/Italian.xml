@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1654</langversion>
+<langversion>8.9.1655</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -7275,21 +7275,6 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>antialiasing</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation>annotazioni</translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation>dimensione documento</translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation>inverti ordine delle pagine</translation>
 </phrase>
@@ -7302,6 +7287,21 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <phrase>
 <original>other options</original>
 <translation>altre opzioni</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>antialiasing</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation>annotazioni</translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation>dimensione documento</translation>
 </phrase>
 
 <phrase>
@@ -7335,8 +7335,8 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 </phrase>
 
 <phrase>
-<original>first page only</original>
-<translation>solo prima pagina</translation>
+<original>current page only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7394,7 +7394,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -14622,8 +14622,8 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5889 phrases. -->
-<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
 <!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

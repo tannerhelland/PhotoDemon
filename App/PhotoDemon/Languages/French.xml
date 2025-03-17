@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.639</langversion>
+<langversion>6.7.640</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -7275,21 +7275,6 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>anticrénelage</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation>annotations</translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation>taille du document</translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation>ordre inversé des pages</translation>
 </phrase>
@@ -7302,6 +7287,21 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <phrase>
 <original>other options</original>
 <translation>autres options</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>anticrénelage</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation>annotations</translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation>taille du document</translation>
 </phrase>
 
 <phrase>
@@ -7335,8 +7335,8 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 </phrase>
 
 <phrase>
-<original>first page only</original>
-<translation>première page uniquement</translation>
+<original>current page only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7394,7 +7394,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -14633,8 +14633,8 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5889 phrases. -->
-<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
 <!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>

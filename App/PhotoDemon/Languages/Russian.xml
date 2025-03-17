@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12 Alpha - Build 97.7</langversion>
+<langversion>2024.12 Alpha - Build 97.8</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -7277,21 +7277,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>Сглаживание</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation>Аннотация</translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation>Размер документа</translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation>Обратный порядок страниц</translation>
 </phrase>
@@ -7304,6 +7289,21 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>other options</original>
 <translation>Другие варианты</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>Сглаживание</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation>Аннотация</translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation>Размер документа</translation>
 </phrase>
 
 <phrase>
@@ -7337,8 +7337,8 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>first page only</original>
-<translation>Только первая страница</translation>
+<original>current page only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7396,7 +7396,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -14624,8 +14624,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5889 phrases. -->
-<!-- 3121 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
 <!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>
