@@ -59,7 +59,7 @@ Begin VB.Form toolpanel_Crop
       Width           =   3975
       _ExtentX        =   7011
       _ExtentY        =   2566
-      Begin PhotoDemon.pdDropDown ddAspectRatio 
+      Begin PhotoDemon.pdDropDown ddPreset 
          Height          =   645
          Index           =   1
          Left            =   120
@@ -362,7 +362,7 @@ Begin VB.Form toolpanel_Crop
       Width           =   3975
       _ExtentX        =   7011
       _ExtentY        =   2566
-      Begin PhotoDemon.pdDropDown ddAspectRatio 
+      Begin PhotoDemon.pdDropDown ddPreset 
          Height          =   645
          Index           =   0
          Left            =   120
@@ -421,6 +421,15 @@ Option Explicit
 'Prevent synchronization loops
 Private m_DontUpdate As Boolean
 
+'Two lists of presets: aspect ratio, and physical sizes
+Private Type PD_CropPreset
+    hSizePx As Single
+    vSizePx As Single
+End Type
+
+Private m_PresetSize() As PD_CropPreset, m_PresetAspect() As PD_CropPreset
+Private m_numPresetSize As Long, m_numPresetAspect As Long
+
 'Flyout manager
 Private WithEvents m_Flyout As pdFlyout
 Attribute m_Flyout.VB_VarHelpID = -1
@@ -435,12 +444,20 @@ Private Sub btsOrientation_Click(Index As Integer, ByVal buttonIndex As Long)
     
     'Keep both preset lists in sync
     m_DontUpdate = True
+    
+    Dim idxListBackup As Long
+    idxListBackup = ddPreset(Index).ListIndex
+    
     If (Index = 0) Then
         btsOrientation(1).ListIndex = buttonIndex
     Else
         btsOrientation(0).ListIndex = buttonIndex
     End If
     m_DontUpdate = False
+    
+    'Rebuild the displays of the drop-downs to match
+    UpdatePresetLists
+    ddPreset(Index).ListIndex = idxListBackup
     
 End Sub
 
@@ -449,7 +466,7 @@ Private Sub btsOrientation_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub btsOrientation_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = Me.ddAspectRatio(Index).hWnd Else newTargetHwnd = cmdLock(Index).hWnd
+    If shiftTabWasPressed Then newTargetHwnd = Me.ddPreset(Index).hWnd Else newTargetHwnd = cmdLock(Index).hWnd
 End Sub
 
 Private Sub btsTarget_Click(ByVal buttonIndex As Long)
@@ -599,11 +616,15 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
 End Sub
 
 Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
-    
+    SynchronizeLockStates Index
+End Sub
+
+Private Sub SynchronizeLockStates(ByVal srcIndex As Long)
+
     Dim lockedValue As Variant, lockedValue2 As Variant
-    If (Index = 0) Then
+    If (srcIndex = 0) Then
         lockedValue = tudCrop(2).Value
-    ElseIf (Index = 1) Then
+    ElseIf (srcIndex = 1) Then
         lockedValue = tudCrop(3).Value
     Else
         If (tudCrop(4).Value <> 0#) And (tudCrop(5).Value <> 0#) Then
@@ -616,23 +637,23 @@ Private Sub cmdLock_Click(Index As Integer, ByVal Shift As ShiftConstants)
     End If
 
     'When setting a new lock, unlock any other locks.
-    If cmdLock(Index).Value Then
-        If (Index = 0) Then
+    If cmdLock(srcIndex).Value Then
+        If (srcIndex = 0) Then
             cmdLock(1).Value = False
             cmdLock(2).Value = False
-        ElseIf (Index = 1) Then
+        ElseIf (srcIndex = 1) Then
             cmdLock(0).Value = False
             cmdLock(2).Value = False
-        ElseIf (Index = 2) Then
+        ElseIf (srcIndex = 2) Then
             cmdLock(0).Value = False
             cmdLock(1).Value = False
         End If
     End If
     
-    If cmdLock(Index).Value Then
-        Tools_Crop.LockProperty Index, lockedValue, lockedValue2
+    If cmdLock(srcIndex).Value Then
+        Tools_Crop.LockProperty srcIndex, lockedValue, lockedValue2
     Else
-        Tools_Crop.UnlockProperty Index
+        Tools_Crop.UnlockProperty srcIndex
     End If
     
 End Sub
@@ -650,17 +671,52 @@ Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPresse
         Case 0
             If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(2).hWnd Else newTargetHwnd = Me.tudCrop(3).hWnd
         Case 1
-            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(3).hWnd Else newTargetHwnd = Me.ddAspectRatio(0).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(3).hWnd Else newTargetHwnd = Me.ddPreset(0).hWnd
         Case 2
-            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(5).hWnd Else newTargetHwnd = Me.ddAspectRatio(1).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(5).hWnd Else newTargetHwnd = Me.ddPreset(1).hWnd
     End Select
 End Sub
 
-Private Sub ddAspectRatio_GotFocusAPI(Index As Integer)
+Private Sub ddPreset_Click(Index As Integer)
+    
+    If (ddPreset(Index).ListIndex > 0) Then
+        
+        'Unlock all measurements
+        Me.cmdLock(0).Value = False
+        Me.cmdLock(1).Value = False
+        Me.cmdLock(2).Value = False
+        
+        'Size
+        If (Index = 0) Then
+            If (m_numPresetSize >= ddPreset(Index).ListIndex) Then
+                Me.tudCrop(2).Value = m_PresetSize(ddPreset(Index).ListIndex).hSizePx
+                Me.tudCrop(3).Value = m_PresetSize(ddPreset(Index).ListIndex).vSizePx
+            End If
+        
+        'Aspect ratio
+        Else
+            If (m_numPresetAspect >= ddPreset(Index).ListIndex) Then
+                Me.tudCrop(4).Value = m_PresetAspect(ddPreset(Index).ListIndex).hSizePx
+                Me.tudCrop(5).Value = m_PresetAspect(ddPreset(Index).ListIndex).vSizePx
+                Me.cmdLock(2).Value = True  'After setting aspect ratio, lock it
+            End If
+        End If
+        
+        'pdButtonToolbox controls do not auto-synchronize on assignment via code (by design),
+        ' so manually sync lock states with the crop module now
+        SynchronizeLockStates 0
+        SynchronizeLockStates 1
+        SynchronizeLockStates 2
+        
+    End If
+    
+End Sub
+
+Private Sub ddPreset_GotFocusAPI(Index As Integer)
     UpdateFlyout Index, True
 End Sub
 
-Private Sub ddAspectRatio_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+Private Sub ddPreset_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If (Index = 0) Then
         If shiftTabWasPressed Then newTargetHwnd = Me.cmdLock(1).hWnd Else newTargetHwnd = btsOrientation(0).hWnd
     ElseIf (Index = 1) Then
@@ -1025,6 +1081,9 @@ Public Sub UpdateAgainstCurrentTheme()
     btsOrientation(0).AssignImageToItem 1, vbNullString, tmpDIB
     btsOrientation(1).AssignImageToItem 1, vbNullString, tmpDIB
     
+    'Build the first copy of preset lists for both size and aspect ratio
+    UpdatePresetLists
+    
     'Next, apply localized tooltips to any other UI items that require it
     chkAllowGrowing.AssignTooltip "Allow cropping outside image boundaries (which will enlarge the image)."
     
@@ -1051,9 +1110,111 @@ End Sub
 
 'Update the size and aspect ratio preset lists
 Private Sub UpdatePresetLists()
-
     
+    'Reset preset and aspect ratio collections
+    Const INIT_PRESET_SIZE As Long = 8
+    If (m_numPresetSize = 0) Then ReDim m_PresetSize(0 To INIT_PRESET_SIZE - 1) As PD_CropPreset
+    If (m_numPresetAspect = 0) Then ReDim m_PresetAspect(0 To INIT_PRESET_SIZE - 1) As PD_CropPreset
+    m_numPresetSize = 0
+    m_numPresetAspect = 0
+    
+    'Clear existing preset lists
+    ddPreset(0).Clear
+    ddPreset(1).Clear
+    
+    'Presets for size...
+    AddPreset 0, 0, 0
+    AddPreset 0, 1920, 1080, "HD"
+    AddPreset 0, 3840, 2160, "4K UHD", mu_Pixels, showDividerAfter:=True
+    AddPreset 0, 8.3, 11.7, g_Language.TranslateMessage("A4"), mu_Inches, 300
+    AddPreset 0, 8.5, 11, g_Language.TranslateMessage("US Letter"), mu_Inches, 300
+    
+    'Preset for aspect ratio...
+    AddPreset 1, 0, 0
+    AddPreset 1, 1, 1
+    AddPreset 1, 3, 2
+    AddPreset 1, 5, 3
+    AddPreset 1, 6, 4
+    AddPreset 1, 7, 5
+    AddPreset 1, 10, 8
+    AddPreset 1, 16, 9
+    AddPreset 1, 16, 10
+    AddPreset 1, 21, 9
+    
+End Sub
 
+Private Sub AddPreset(ByVal idxDropdown As Long, ByVal szHorizontal As Single, ByVal szVertical As Single, Optional ByVal szName As String = vbNullString, Optional ByVal unitOfMeasurement As PD_MeasurementUnit = mu_Pixels, Optional ByVal szResolution As Single = 96!, Optional ByVal showDividerAfter As Boolean = False)
+    
+    'Construct a string for this entry
+    Dim finalSize As String, firstSize As Single, secondSize As Single
+    
+    'A 0-size indicates "free" or "custom" scaling
+    If (szHorizontal > 0!) Then
+        
+        'Prefix depending on which orientation index is selected (landscape or portrait), and ensure
+        ' initial measurements are in pixels (for size measurements, at least)
+        If (idxDropdown = 0) Then
+        
+            If (btsOrientation(0).ListIndex = 0) Then
+                firstSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szHorizontal, szResolution)
+                secondSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szVertical, szResolution)
+            Else
+                firstSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szVertical, szResolution)
+                secondSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szHorizontal, szResolution)
+            End If
+            
+        Else
+        
+            If (btsOrientation(1).ListIndex = 0) Then
+                firstSize = szHorizontal
+                secondSize = szVertical
+            Else
+                firstSize = szVertical
+                secondSize = szHorizontal
+            End If
+            
+        End If
+        
+        'Convert that to a consistently formatted string for the given unit
+        finalSize = Units.GetValueFormattedForUnit_FromPixel(unitOfMeasurement, firstSize, szResolution, firstSize, False) & " x " & Units.GetValueFormattedForUnit_FromPixel(unitOfMeasurement, secondSize, szResolution, secondSize, (idxDropdown = 0))
+        
+    Else
+        finalSize = vbNullString
+    End If
+    
+    'Store this preset (in pixel measurements only) at module-level, so we can access it on dropdown clicks
+    If (idxDropdown = 0) Then
+        If (m_numPresetSize > UBound(m_PresetSize)) Then ReDim Preserve m_PresetSize(0 To m_numPresetSize * 2 - 1) As PD_CropPreset
+        m_PresetSize(m_numPresetSize).hSizePx = firstSize
+        m_PresetSize(m_numPresetSize).vSizePx = secondSize
+        m_numPresetSize = m_numPresetSize + 1
+    Else
+        If (m_numPresetAspect > UBound(m_PresetAspect)) Then ReDim Preserve m_PresetAspect(0 To m_numPresetAspect * 2 - 1) As PD_CropPreset
+        m_PresetAspect(m_numPresetAspect).hSizePx = firstSize
+        m_PresetAspect(m_numPresetAspect).vSizePx = secondSize
+        m_numPresetAspect = m_numPresetAspect + 1
+    End If
+            
+    If (LenB(finalSize) > 0) Then
+        
+        'Append PPI/PPCM, but only if the size was presented in real-world units
+        If (unitOfMeasurement <> mu_Pixels) Then
+            finalSize = finalSize & " @ "
+            If Units.LocaleUsesMetric() Then
+                finalSize = finalSize & Trim$(Str$(Int(Units.GetInchesFromCM(szResolution)))) & " " & g_Language.TranslateMessage("PPCM")
+            Else
+                finalSize = finalSize & Trim$(Str$(szResolution)) & " " & g_Language.TranslateMessage("PPI")
+            End If
+        End If
+        
+        'Append the given name, if any
+        If (LenB(szName) <> 0) Then finalSize = finalSize & "  (" & szName & ")"
+        Me.ddPreset(idxDropdown).AddItem finalSize, -1, showDividerAfter
+        
+    Else
+        Me.ddPreset(idxDropdown).AddItem vbNullString, 0, True
+    End If
+    
 End Sub
 
 'Update the actively displayed flyout (if any).  Note that the flyout manager will automatically
