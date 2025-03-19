@@ -189,6 +189,47 @@ Public Function GetNumOfAvailableUnits() As Long
     GetNumOfAvailableUnits = MU_MAX
 End Function
 
+'Given a measurement, convert it to a display-friendly string with rounding and formatting consistently applied.
+' (Note: the optional parameter "useRounding" only applies to PIXELS, because the incoming value is a float.)
+Public Function GetValueFormattedForUnit(ByVal curUnit As PD_MeasurementUnit, ByVal srcValue As Double, Optional ByVal appendUnitAsText As Boolean = False, Optional ByVal useRounding As Boolean = True) As String
+    
+    Select Case curUnit
+    
+        Case mu_Percent
+            GetValueFormattedForUnit = Format$(srcValue, "0.0#")
+        
+        Case mu_Pixels
+            If useRounding Then srcValue = srcValue + 0.5
+            GetValueFormattedForUnit = CStr(Int(srcValue))
+        
+        Case mu_Inches
+            GetValueFormattedForUnit = Format$(srcValue, "0.0##")
+        
+        Case mu_Centimeters
+            GetValueFormattedForUnit = Format$(srcValue, "0.0#")
+            
+        Case mu_Millimeters
+            GetValueFormattedForUnit = Format$(srcValue, "0.0#")
+            
+        Case mu_Points
+            GetValueFormattedForUnit = Format$(srcValue, "0.0#")
+        
+        Case mu_Picas
+            GetValueFormattedForUnit = Format$(srcValue, "0.0#")
+        
+    End Select
+    
+    If appendUnitAsText Then
+        If (curUnit = mu_Percent) Then
+            Const PERCENT_SIGN As String = "%"
+            GetValueFormattedForUnit = GetValueFormattedForUnit & PERCENT_SIGN
+        Else
+            GetValueFormattedForUnit = GetValueFormattedForUnit & " " & Units.GetNameOfUnit(curUnit, True)
+        End If
+    End If
+        
+End Function
+
 'Given a measurement in pixels, convert it to some other unit of measurement.  Note that at least two parameters are required:
 ' the unit of measurement to use, and a source measurement (in pixels, obviously).  Depending on the conversion, one of two
 ' optional parameters may also be necessary: a pixel resolution, expressed as PPI (needed for absolute measurements like inches
@@ -196,44 +237,8 @@ End Function
 '
 '(Note: the optional parameter "useRounding" only applies when converting some other unit to PIXELS.
 Public Function GetValueFormattedForUnit_FromPixel(ByVal curUnit As PD_MeasurementUnit, ByVal srcPixelValue As Double, Optional ByVal srcPixelResolution As Double = 0#, Optional ByVal initPixelValue As Double = 0#, Optional ByVal appendUnitAsText As Boolean = False, Optional ByVal useRounding As Boolean = True) As String
-    
     If (curUnit <> mu_Pixels) Then srcPixelValue = Units.ConvertPixelToOtherUnit(curUnit, srcPixelValue, srcPixelResolution, initPixelValue)
-    
-    Select Case curUnit
-    
-        Case mu_Percent
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
-        
-        Case mu_Pixels
-            If useRounding Then srcPixelValue = srcPixelValue + 0.5
-            GetValueFormattedForUnit_FromPixel = CStr(Int(srcPixelValue))
-        
-        Case mu_Inches
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0##")
-        
-        Case mu_Centimeters
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
-            
-        Case mu_Millimeters
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
-            
-        Case mu_Points
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
-        
-        Case mu_Picas
-            GetValueFormattedForUnit_FromPixel = Format$(srcPixelValue, "0.0#")
-        
-    End Select
-    
-    If appendUnitAsText Then
-        If (curUnit = mu_Percent) Then
-            Const PERCENT_SIGN As String = "%"
-            GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit_FromPixel & PERCENT_SIGN
-        Else
-            GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit_FromPixel & " " & Units.GetNameOfUnit(curUnit, True)
-        End If
-    End If
-        
+    GetValueFormattedForUnit_FromPixel = GetValueFormattedForUnit(curUnit, srcPixelValue, appendUnitAsText, useRounding)
 End Function
 
 'Returns TRUE if the current user's locale settings prefer METRIC (not imperial)

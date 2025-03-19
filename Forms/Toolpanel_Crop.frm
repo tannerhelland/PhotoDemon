@@ -354,14 +354,32 @@ Begin VB.Form toolpanel_Crop
       Value           =   0   'False
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   1455
+      Height          =   1695
       Index           =   0
       Left            =   0
       Top             =   960
       Visible         =   0   'False
       Width           =   3975
       _ExtentX        =   7011
-      _ExtentY        =   2566
+      _ExtentY        =   2990
+      Begin PhotoDemon.pdSlider sldDPI 
+         Height          =   615
+         Left            =   120
+         TabIndex        =   28
+         Top             =   900
+         Width           =   3255
+         _ExtentX        =   5741
+         _ExtentY        =   1085
+         Caption         =   "resolution (PPI)"
+         FontSizeCaption =   10
+         Min             =   1
+         Max             =   1200
+         ScaleStyle      =   1
+         Value           =   300
+         GradientColorRight=   1703935
+         NotchPosition   =   2
+         NotchValueCustom=   300
+      End
       Begin PhotoDemon.pdDropDown ddPreset 
          Height          =   645
          Index           =   0
@@ -389,7 +407,7 @@ Begin VB.Form toolpanel_Crop
          Index           =   0
          Left            =   3480
          TabIndex        =   27
-         Top             =   960
+         Top             =   1080
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -423,8 +441,9 @@ Private m_DontUpdate As Boolean
 
 'Two lists of presets: aspect ratio, and physical sizes
 Private Type PD_CropPreset
-    hSizePx As Single
-    vSizePx As Single
+    hSizeOrig As Single
+    vSizeOrig As Single
+    muSize As PD_MeasurementUnit
 End Type
 
 Private m_PresetSize() As PD_CropPreset, m_PresetAspect() As PD_CropPreset
@@ -442,7 +461,7 @@ Private Sub btsOrientation_Click(Index As Integer, ByVal buttonIndex As Long)
     
     If m_DontUpdate Then Exit Sub
     
-    'Keep both preset lists in sync
+    'Keep both preset lists in sync (portrait vs landscape)
     m_DontUpdate = True
     
     Dim idxListBackup As Long
@@ -455,9 +474,8 @@ Private Sub btsOrientation_Click(Index As Integer, ByVal buttonIndex As Long)
     End If
     m_DontUpdate = False
     
-    'Rebuild the displays of the drop-downs to match
-    UpdatePresetLists
-    ddPreset(Index).ListIndex = idxListBackup
+    'Change the applied size to match the current orientation
+    ApplyNewPreset Index
     
 End Sub
 
@@ -678,28 +696,78 @@ Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPresse
 End Sub
 
 Private Sub ddPreset_Click(Index As Integer)
+    ApplyNewPreset Index
+End Sub
+
+'When a preset box is clicked (either aspect ratio or size), apply that preset immediately.
+Private Sub ApplyNewPreset(ByVal idxTrigger As Long)
     
-    If (ddPreset(Index).ListIndex > 0) Then
+    'Ignore the top entry of either dropdown (it's just a blank entry for "freeform" behavior)
+    Dim idxListbox As Long
+    idxListbox = ddPreset(idxTrigger).ListIndex
+    If (idxListbox > 0) Then
         
         'Unlock all measurements
         Me.cmdLock(0).Value = False
         Me.cmdLock(1).Value = False
         Me.cmdLock(2).Value = False
         
+        'Landscape or portrait orientation can be toggled in the UI; we silently use whichever is selected
+        Dim firstValue As Long, secondValue As Long
+        
         'Size
-        If (Index = 0) Then
-            If (m_numPresetSize >= ddPreset(Index).ListIndex) Then
-                Me.tudCrop(2).Value = m_PresetSize(ddPreset(Index).ListIndex).hSizePx
-                Me.tudCrop(3).Value = m_PresetSize(ddPreset(Index).ListIndex).vSizePx
+        If (idxTrigger = 0) Then
+        
+            'Failsafe only for presets being initialized correctly
+            If (m_numPresetSize >= idxListbox) Then
+                
+                'Convert the current size from its source unit to pixels, using the user-entered DPI value
+                Dim pxSizeH As Long, pxSizeV As Long
+                pxSizeH = Units.ConvertOtherUnitToPixels(m_PresetSize(idxListbox).muSize, m_PresetSize(idxListbox).hSizeOrig, Me.sldDPI.Value)
+                pxSizeV = Units.ConvertOtherUnitToPixels(m_PresetSize(idxListbox).muSize, m_PresetSize(idxListbox).vSizeOrig, Me.sldDPI.Value)
+                
+                'Switch between landscape and portrait (based on the relevant toggle in the UI)
+                If (btsOrientation(idxTrigger).ListIndex = 0) Then
+                    firstValue = PDMath.Max2Int(pxSizeH, pxSizeV)
+                    secondValue = PDMath.Min2Int(pxSizeH, pxSizeV)
+                Else
+                    secondValue = PDMath.Max2Int(pxSizeH, pxSizeV)
+                    firstValue = PDMath.Min2Int(pxSizeH, pxSizeV)
+                End If
+                
+                'Assign the value; the _Change event of the controls will relay the change to the crop engine
+                Me.tudCrop(2).Value = firstValue
+                Me.tudCrop(3).Value = secondValue
+                
             End If
         
         'Aspect ratio
         Else
-            If (m_numPresetAspect >= ddPreset(Index).ListIndex) Then
-                Me.tudCrop(4).Value = m_PresetAspect(ddPreset(Index).ListIndex).hSizePx
-                Me.tudCrop(5).Value = m_PresetAspect(ddPreset(Index).ListIndex).vSizePx
-                Me.cmdLock(2).Value = True  'After setting aspect ratio, lock it
+            
+            'Failsafe only for presets being initialized correctly
+            If (m_numPresetAspect >= idxListbox) Then
+                
+                'Aspect ratio doesn't require unit handling
+                If (btsOrientation(idxTrigger).ListIndex = 0) Then
+                    firstValue = PDMath.Max2Int(m_PresetAspect(idxListbox).hSizeOrig, m_PresetAspect(idxListbox).vSizeOrig)
+                    secondValue = PDMath.Min2Int(m_PresetAspect(idxListbox).hSizeOrig, m_PresetAspect(idxListbox).vSizeOrig)
+                Else
+                    secondValue = PDMath.Max2Int(m_PresetAspect(idxListbox).hSizeOrig, m_PresetAspect(idxListbox).vSizeOrig)
+                    firstValue = PDMath.Min2Int(m_PresetAspect(idxListbox).hSizeOrig, m_PresetAspect(idxListbox).vSizeOrig)
+                End If
+                
+                'We don't want the aspect ratio relayed until *both* text boxes are set
+                Tools.SetToolBusyState True
+                Me.tudCrop(4).Value = firstValue
+                Me.tudCrop(5).Value = secondValue
+                Tools.SetToolBusyState False
+                Tools_Crop.RelayCropChangesFromUI pdd_AspectBoth, Me.tudCrop(4).Value, Me.tudCrop(5).Value
+                
+                'Ensure the viewport was redrawn after the second relay event
+                Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+                
             End If
+            
         End If
         
         'pdButtonToolbox controls do not auto-synchronize on assignment via code (by design),
@@ -864,6 +932,11 @@ End Sub
 
 Private Sub tudCrop_Change(Index As Integer)
     
+    'When the user changes size and/or aspect ratio, auto-match the corresponding dropdown
+    ' (same needs to be done for *both* size and aspect ratio).  This happens even if changes
+    ' are suspended to prevent recursion (the matching function has its own protections against this).
+    MatchPresetsToCurrentValues
+    
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tools.GetToolBusyState
     If (Not Tools.CanvasToolsAllowed) Then Exit Sub
@@ -928,6 +1001,79 @@ Private Sub tudCrop_Change(Index As Integer)
     
     'Redraw the viewport
     Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+'When the user changes size and/or aspect ratio, we want to iterate all presets and match up the current
+' size/apsect ratio settings to a given preset (if one matches).  This is also important for clearing
+' a previous preset if the user changes sizes manually to a different value.
+Private Sub MatchPresetsToCurrentValues()
+    
+    'Failsafe only
+    If (m_numPresetSize < 2) Then Exit Sub
+    
+    'Start with size matching
+    Dim firstSize As Long, secondSize As Long
+    firstSize = tudCrop(2).Value
+    secondSize = tudCrop(3).Value
+    
+    Dim curResolution As Long
+    curResolution = Me.sldDPI.Value
+    
+    'Skip the first entry in the list, because it's blank (it represents "no preset match").
+    Dim i As Long, idxTarget As Long
+    idxTarget = 0
+    
+    For i = 1 To m_numPresetSize - 1
+        
+        Dim pxWidth As Long, pxHeight As Long
+        
+        'As relevant, convert the source size from real-world units to pixels
+        If (m_PresetSize(i).muSize = mu_Pixels) Then
+            pxWidth = m_PresetSize(i).hSizeOrig
+            pxHeight = m_PresetSize(i).vSizeOrig
+        Else
+            pxWidth = Units.ConvertOtherUnitToPixels(m_PresetSize(i).muSize, m_PresetSize(i).hSizeOrig, curResolution)
+            pxHeight = Units.ConvertOtherUnitToPixels(m_PresetSize(i).muSize, m_PresetSize(i).vSizeOrig, curResolution)
+        End If
+        
+        'Compare in both landscape *and* portrait orientation
+        If (firstSize = pxWidth) And (secondSize = pxHeight) Then
+            idxTarget = i
+            Exit For
+        ElseIf (firstSize = pxHeight) And (secondSize = pxWidth) Then
+            idxTarget = i
+            Exit For
+        End If
+        
+    Next i
+    
+    If (ddPreset(0).ListIndex <> idxTarget) Then ddPreset(0).ListIndex = idxTarget
+    
+    'With size handled, repeat the above steps for aspect ratio.
+    ' (Aspect ratio is simpler because we don't need to account for unit conversion.)
+    firstSize = tudCrop(4).Value
+    secondSize = tudCrop(5).Value
+    
+    idxTarget = 0
+    For i = 1 To m_numPresetAspect - 1
+        
+        'As relevant, convert the source size from real-world units to pixels
+        pxWidth = m_PresetAspect(i).hSizeOrig
+        pxHeight = m_PresetAspect(i).vSizeOrig
+        
+        'Compare in both landscape *and* portrait orientation
+        If (firstSize = pxWidth) And (secondSize = pxHeight) Then
+            idxTarget = i
+            Exit For
+        ElseIf (firstSize = pxHeight) And (secondSize = pxWidth) Then
+            idxTarget = i
+            Exit For
+        End If
+        
+    Next i
+    
+    If (ddPreset(1).ListIndex <> idxTarget) Then ddPreset(1).ListIndex = idxTarget
     
 End Sub
 
@@ -1001,7 +1147,9 @@ Private Sub SyncMinMaxAgainstImage()
     '...and maximums (applies to position *and* size)
     If chkAllowGrowing.Value Or (Not PDImages.IsImageActive()) Then
         tudCrop(0).Max = MAX_SPIN_VALUE
-        tudCrop(1).Max = tudCrop(0).Max
+        tudCrop(1).Max = MAX_SPIN_VALUE
+        tudCrop(2).Max = MAX_SPIN_VALUE
+        tudCrop(3).Max = MAX_SPIN_VALUE
     Else
         
         'Redundant failsafe for image existence
@@ -1086,6 +1234,12 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Next, apply localized tooltips to any other UI items that require it
     chkAllowGrowing.AssignTooltip "Allow cropping outside image boundaries (which will enlarge the image)."
+    sldDPI.AssignTooltip "Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels."
+    
+    Dim ttOrientation As String
+    If (Not g_Language Is Nothing) Then ttOrientation = g_Language.TranslateMessage("You can use this measurement in landscape or portrait orientation.")
+    btsOrientation(0).AssignTooltip ttOrientation
+    btsOrientation(1).AssignTooltip ttOrientation
     
     'Flyout lock controls use the same behavior across all instances
     UserControls.ThemeFlyoutControls cmdFlyoutLock
@@ -1125,87 +1279,60 @@ Private Sub UpdatePresetLists()
     'Presets for size...
     AddPreset 0, 0, 0
     AddPreset 0, 1920, 1080, "HD"
-    AddPreset 0, 3840, 2160, "4K UHD", mu_Pixels, showDividerAfter:=True
-    AddPreset 0, 8.3, 11.7, g_Language.TranslateMessage("A4"), mu_Inches, 300
-    AddPreset 0, 8.5, 11, g_Language.TranslateMessage("US Letter"), mu_Inches, 300
+    AddPreset 0, 3840, 2160, "4K UHD", mu_Pixels, True
+    AddPreset 0, 8.3, 11.7, g_Language.TranslateMessage("A4"), mu_Inches
+    AddPreset 0, 8.5, 11, g_Language.TranslateMessage("US Letter"), mu_Inches
     
     'Preset for aspect ratio...
     AddPreset 1, 0, 0
     AddPreset 1, 1, 1
-    AddPreset 1, 3, 2
-    AddPreset 1, 5, 3
-    AddPreset 1, 6, 4
-    AddPreset 1, 7, 5
-    AddPreset 1, 10, 8
+    AddPreset 1, 2, 3
+    AddPreset 1, 3, 5
+    AddPreset 1, 4, 6
+    AddPreset 1, 5, 7
+    AddPreset 1, 8, 10
     AddPreset 1, 16, 9
     AddPreset 1, 16, 10
     AddPreset 1, 21, 9
     
 End Sub
 
-Private Sub AddPreset(ByVal idxDropdown As Long, ByVal szHorizontal As Single, ByVal szVertical As Single, Optional ByVal szName As String = vbNullString, Optional ByVal unitOfMeasurement As PD_MeasurementUnit = mu_Pixels, Optional ByVal szResolution As Single = 96!, Optional ByVal showDividerAfter As Boolean = False)
+Private Sub AddPreset(ByVal idxDropdown As Long, ByVal szHorizontal As Single, ByVal szVertical As Single, Optional ByVal szName As String = vbNullString, Optional ByVal unitOfMeasurement As PD_MeasurementUnit = mu_Pixels, Optional ByVal showDividerAfter As Boolean = False)
     
-    'Construct a string for this entry
-    Dim finalSize As String, firstSize As Single, secondSize As Single
+    'This function must construct a UI string for this entry
+    Dim finalSize As String
     
-    'A 0-size indicates "free" or "custom" scaling
+    'A 0-size indicates "free" or "custom" scaling, so ignore any further processing
     If (szHorizontal > 0!) Then
         
-        'Prefix depending on which orientation index is selected (landscape or portrait), and ensure
-        ' initial measurements are in pixels (for size measurements, at least)
+        'Store this preset (in pixel measurements only) at module-level, so we can access it on dropdown clicks
         If (idxDropdown = 0) Then
-        
-            If (btsOrientation(0).ListIndex = 0) Then
-                firstSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szHorizontal, szResolution)
-                secondSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szVertical, szResolution)
-            Else
-                firstSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szVertical, szResolution)
-                secondSize = Units.ConvertOtherUnitToPixels(unitOfMeasurement, szHorizontal, szResolution)
-            End If
-            
+            If (m_numPresetSize > UBound(m_PresetSize)) Then ReDim Preserve m_PresetSize(0 To m_numPresetSize * 2 - 1) As PD_CropPreset
+            m_PresetSize(m_numPresetSize).hSizeOrig = szHorizontal
+            m_PresetSize(m_numPresetSize).vSizeOrig = szVertical
+            m_PresetSize(m_numPresetSize).muSize = unitOfMeasurement
+            m_numPresetSize = m_numPresetSize + 1
         Else
-        
-            If (btsOrientation(1).ListIndex = 0) Then
-                firstSize = szHorizontal
-                secondSize = szVertical
-            Else
-                firstSize = szVertical
-                secondSize = szHorizontal
-            End If
-            
+            If (m_numPresetAspect > UBound(m_PresetAspect)) Then ReDim Preserve m_PresetAspect(0 To m_numPresetAspect * 2 - 1) As PD_CropPreset
+            m_PresetAspect(m_numPresetAspect).hSizeOrig = szHorizontal
+            m_PresetAspect(m_numPresetAspect).vSizeOrig = szVertical
+            m_PresetAspect(m_numPresetAspect).muSize = mu_Pixels
+            m_numPresetAspect = m_numPresetAspect + 1
         End If
         
         'Convert that to a consistently formatted string for the given unit
-        finalSize = Units.GetValueFormattedForUnit_FromPixel(unitOfMeasurement, firstSize, szResolution, firstSize, False) & " x " & Units.GetValueFormattedForUnit_FromPixel(unitOfMeasurement, secondSize, szResolution, secondSize, (idxDropdown = 0))
+        finalSize = Units.GetValueFormattedForUnit(unitOfMeasurement, szHorizontal, False) & " x " & Units.GetValueFormattedForUnit(unitOfMeasurement, szVertical, (idxDropdown = 0))
         
     Else
+        If (idxDropdown = 0) Then
+            m_numPresetSize = m_numPresetSize + 1
+        Else
+            m_numPresetAspect = m_numPresetAspect + 1
+        End If
         finalSize = vbNullString
-    End If
-    
-    'Store this preset (in pixel measurements only) at module-level, so we can access it on dropdown clicks
-    If (idxDropdown = 0) Then
-        If (m_numPresetSize > UBound(m_PresetSize)) Then ReDim Preserve m_PresetSize(0 To m_numPresetSize * 2 - 1) As PD_CropPreset
-        m_PresetSize(m_numPresetSize).hSizePx = firstSize
-        m_PresetSize(m_numPresetSize).vSizePx = secondSize
-        m_numPresetSize = m_numPresetSize + 1
-    Else
-        If (m_numPresetAspect > UBound(m_PresetAspect)) Then ReDim Preserve m_PresetAspect(0 To m_numPresetAspect * 2 - 1) As PD_CropPreset
-        m_PresetAspect(m_numPresetAspect).hSizePx = firstSize
-        m_PresetAspect(m_numPresetAspect).vSizePx = secondSize
-        m_numPresetAspect = m_numPresetAspect + 1
     End If
             
     If (LenB(finalSize) > 0) Then
-        
-        'Append PPI/PPCM, but only if the size was presented in real-world units
-        If (unitOfMeasurement <> mu_Pixels) Then
-            finalSize = finalSize & " @ "
-            If Units.LocaleUsesMetric() Then
-                finalSize = finalSize & Trim$(Str$(Int(Units.GetInchesFromCM(szResolution)))) & " " & g_Language.TranslateMessage("PPCM")
-            Else
-                finalSize = finalSize & Trim$(Str$(szResolution)) & " " & g_Language.TranslateMessage("PPI")
-            End If
-        End If
         
         'Append the given name, if any
         If (LenB(szName) <> 0) Then finalSize = finalSize & "  (" & szName & ")"
