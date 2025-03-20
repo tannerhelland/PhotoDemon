@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_zstd"
 'Zstd Compression Library Interface
 'Copyright 2016-2025 by Tanner Helland
 'Created: 01/December/16
-'Last updated: 22/January/22
-'Last update: update to latest 1.5.2 binary, fix up some comments to match
+'Last updated: 20/March/25
+'Last update: update to latest 1.5.7 binary
 '
 'Per its documentation (available at https://github.com/facebook/zstd), zstd is...
 '
@@ -100,7 +100,9 @@ Private Enum Zstd_ProcAddress
     ZSTD_maxCLevel
     ZSTD_compressBound
     ZSTD_isError
+    ZSTD_getErrorCode
     ZSTD_getErrorName
+    ZSTD_getErrorString
     ZSTD_CCtx_setParameter
     [last_address]
 End Enum
@@ -135,8 +137,10 @@ Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(ZSTD_decompressDCtx) = GetProcAddress(m_ZstdHandle, "ZSTD_decompressDCtx")
         m_ProcAddresses(ZSTD_freeCCtx) = GetProcAddress(m_ZstdHandle, "ZSTD_freeCCtx")
         m_ProcAddresses(ZSTD_freeDCtx) = GetProcAddress(m_ZstdHandle, "ZSTD_freeDCtx")
-        m_ProcAddresses(ZSTD_getErrorName) = GetProcAddress(m_ZstdHandle, "ZSTD_getErrorName")
         m_ProcAddresses(ZSTD_isError) = GetProcAddress(m_ZstdHandle, "ZSTD_isError")
+        m_ProcAddresses(ZSTD_getErrorCode) = GetProcAddress(m_ZstdHandle, "ZSTD_getErrorCode")
+        m_ProcAddresses(ZSTD_getErrorName) = GetProcAddress(m_ZstdHandle, "ZSTD_getErrorName")
+        m_ProcAddresses(ZSTD_getErrorString) = GetProcAddress(m_ZstdHandle, "ZSTD_getErrorString")
         m_ProcAddresses(ZSTD_maxCLevel) = GetProcAddress(m_ZstdHandle, "ZSTD_maxCLevel")
         m_ProcAddresses(ZSTD_versionNumber) = GetProcAddress(m_ZstdHandle, "ZSTD_versionNumber")
         m_ProcAddresses(ZSTD_CCtx_setParameter) = GetProcAddress(m_ZstdHandle, "ZSTD_CCtx_setParameter")
@@ -151,16 +155,21 @@ Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
         If (m_ZstdCompressLevelMax > ZSTD_MAX_CLEVEL) Then m_ZstdCompressLevelMax = ZSTD_MAX_CLEVEL
         m_CompressionContext = CallCDeclW(ZSTD_createCCtx, vbLong)
         
-        'I've experimented with manually patching libzstd for PD to enable multi-threaded compression,
-        ' but a lot more work is necessary throughout PD to assume asynchronous compression behavior.
-        ' For now, just do a quick check at load-time to determine if a multithread aware libzstd is even
-        ' available to this instance.
-        If (m_CompressionContext <> 0) Then
-            Dim mtCompressionAvailable As Long
-            mtCompressionAvailable = CallCDeclW(ZSTD_CCtx_setParameter, vbLong, m_CompressionContext, 400&, 1&)
-            m_ZstdMTAvailable = (CallCDeclW(ZSTD_isError, vbLong, mtCompressionAvailable) = 0)
-            If (Not m_ZstdMTAvailable) Then PDDebug.LogAction "(note: libzstd is configured for single-threaded (blocking) mode)"
-        End If
+'        'I've experimented with manually patching libzstd for PD to enable multi-threaded compression,
+'        ' but a lot more work is necessary throughout PD to assume asynchronous compression behavior.
+'        ' For now, just do a quick check at load-time to determine if a multithread aware libzstd is even
+'        ' available to this instance.
+'        If (m_CompressionContext <> 0) Then
+'            Dim mtCompressionAvailable As Long
+'            mtCompressionAvailable = CallCDeclW(ZSTD_CCtx_setParameter, vbLong, m_CompressionContext, 400&, 1&)
+'
+'            Dim errResult As Long
+'            errResult = CallCDeclW(ZSTD_getErrorCode, vbLong, mtCompressionAvailable)
+'
+'            PDDebug.LogAction "Result of multithread request: " & Strings.StringFromCharPtr(CallCDeclW(ZSTD_getErrorString, vbLong, errResult), False)
+'            m_ZstdMTAvailable = (CallCDeclW(ZSTD_isError, vbLong, mtCompressionAvailable) = 0)
+'            If (Not m_ZstdMTAvailable) Then PDDebug.LogAction "(note: libzstd is configured for single-threaded (blocking) mode)"
+'        End If
         
         m_DecompressionContext = CallCDeclW(ZSTD_createDCtx, vbLong)
         
