@@ -71,7 +71,7 @@ Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_PDFIUM_VERSION As String = "136.0.7073"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
-Private Const EXPECTED_RESVG_VERSION As String = "0.44.0"
+Private Const EXPECTED_RESVG_VERSION As String = "0.45.0"
 Private Const EXPECTED_WEBP_VERSION As String = "1.5.0"
 Private Const EXPECTED_ZSTD_VERSION As String = "10507"
 
@@ -632,7 +632,7 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As PD_PluginCore) As String
         Case CCP_pspiHost
             GetPluginHomepage = "https://github.com/spetric/Photoshop-Plugin-Host"
         Case CCP_resvg
-            GetPluginHomepage = "https://github.com/RazrFalcon/resvg"
+            GetPluginHomepage = "https://github.com/linebender/resvg"
         Case CCP_zstd
             GetPluginHomepage = "https://facebook.github.io/zstd/"
     End Select
@@ -668,7 +668,7 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As PD_PluginCore) As Str
         Case CCP_pspiHost
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_resvg
-            GetPluginLicenseName = g_Language.TranslateMessage("Mozilla Public License 2.0")
+            GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_zstd
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
     End Select
@@ -704,7 +704,7 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As PD_PluginCore) As Stri
         Case CCP_pspiHost
             GetPluginLicenseURL = "https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE"
         Case CCP_resvg
-            GetPluginLicenseURL = "https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt"
+            GetPluginLicenseURL = "https://github.com/linebender/resvg/blob/main/LICENSE-MIT"
         Case CCP_zstd
             GetPluginLicenseURL = "https://github.com/facebook/zstd/blob/dev/LICENSE"
     End Select

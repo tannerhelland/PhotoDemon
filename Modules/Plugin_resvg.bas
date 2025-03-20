@@ -169,7 +169,7 @@ Public Function GetVersion() As String
     'resvg does not provide an externally accessible version string by default.
     ' I do not expect users to custom-build it, so we return a hard-coded version
     ' against the copy supplied with a default PD install.
-    GetVersion = "0.44.0"
+    GetVersion = "0.45.0"
     
 End Function
 
