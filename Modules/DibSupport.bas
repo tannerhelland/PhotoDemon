@@ -3182,8 +3182,15 @@ NextDitheredPixel:             Next j
                     
                     End If
                 
-                '/end a > 0
+                '/a = 0
+                ' Ensure transparent pixels are also black in color, as this pixel data is likely being output
+                ' as a mask + palette combo, and masking produces unreliable results on non-zero data.
+                Else
+                    imageData(xStride, y) = 0
+                    imageData(xStride + 1, y) = 0
+                    imageData(xStride + 2, y) = 0
                 End If
+                
             '/end a < 255
             End If
                     
