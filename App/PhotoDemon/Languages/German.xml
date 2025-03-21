@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 262.2</langversion>
+<langversion>2024.12 Alpha Build 277</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1521,7 +1521,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
-<translation>Automatische Korrektur von Farben und Beleuchtung</translation>
+<translation>Auto-Korrektur von Farben und Beleuchtung</translation>
 </phrase>
 
 <phrase>
@@ -7276,21 +7276,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation>Antialiasing</translation>
-</phrase>
-
-<phrase>
-<original>annotations</original>
-<translation>Annotationen</translation>
-</phrase>
-
-<phrase>
-<original>document size</original>
-<translation>Dokumentgröße</translation>
-</phrase>
-
-<phrase>
 <original>reverse page order</original>
 <translation>Umgekehrte Seitenreihenfolge</translation>
 </phrase>
@@ -7303,6 +7288,21 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <phrase>
 <original>other options</original>
 <translation>Andere Optionen</translation>
+</phrase>
+
+<phrase>
+<original>antialiasing</original>
+<translation>Antialiasing</translation>
+</phrase>
+
+<phrase>
+<original>annotations</original>
+<translation>Annotationen</translation>
+</phrase>
+
+<phrase>
+<original>document size</original>
+<translation>Dokumentgröße</translation>
 </phrase>
 
 <phrase>
@@ -7337,7 +7337,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>current page only</original>
-<translation></translation>
+<translation>Nur aktuelle Seite</translation>
 </phrase>
 
 <phrase>
@@ -9065,14 +9065,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Lighting image on fire</original>
-<translation>Bild mit Feuer beleuchten</translation>
+<translation>Beleuchtung Bild in Flammen</translation>
 </phrase>
 
 <!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Exploding imaginary volcano</original>
-<translation>Imaginärer Vulkan explodiert</translation>
+<translation>Explodierender imaginärer Vulkan</translation>
 </phrase>
 
 <!-- Effects_Nature_Lava.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12532,11 +12532,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>presets</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>target</original>
 <translation>Ziel</translation>
 </phrase>
@@ -12552,11 +12547,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>allow enlarging</original>
-<translation>Vergrößerung erlauben</translation>
-</phrase>
-
-<phrase>
 <original>apply</original>
 <translation>Anwenden</translation>
 </phrase>
@@ -12564,6 +12554,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>position (x, y)</original>
 <translation>Position (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>allow enlarging</original>
+<translation>Vergrößerung erlauben</translation>
 </phrase>
 
 <phrase>
@@ -12586,7 +12581,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Cropping außerhalb Bildgrenzen erlauben (wodurch das Bild vergrößert wird).</translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14624,10 +14619,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2769</phrasecount>
+<phrasecount>2768</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5890 phrases. -->
-<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
-<!-- These 2769 phrases contain approximately 12025 total words. -->
+<!-- As of this build, PhotoDemon contains 5887 phrases. -->
+<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
+<!-- These 2768 phrases contain approximately 12024 total words. -->
 
 </pdData>
