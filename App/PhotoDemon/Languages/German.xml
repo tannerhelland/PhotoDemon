@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha Build 277</langversion>
+<langversion>2024.12 Alpha Build 277.1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2341,6 +2341,11 @@ Bitte schließen Sie diese Datei in jeglichen anderen laufenden Programmen, dann
 </phrase>
 
 <phrase>
+<original>Action canceled.</original>
+<translation>Aktion abgebrochen.</translation>
+</phrase>
+
+<phrase>
 <original>Failed to load %1</original>
 <translation>%1 konnte nicht geladen werden</translation>
 </phrase>
@@ -2404,7 +2409,7 @@ Bitte verifizieren Sie, dass diese Bilder vorhanden sind und sie ein unterstütz
 <translation>Bildduplikation abgeschlossen.</translation>
 </phrase>
 
-<!-- Loading.bas contains 41 phrases. 18 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Loading.bas contains 42 phrases. 18 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2795,12 +2800,7 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 <translation>LGPL License</translation>
 </phrase>
 
-<phrase>
-<original>Mozilla Public License 2.0</original>
-<translation>Mozilla Public License 2.0</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 30 phrases. 24 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3132,11 +3132,6 @@ Deskription: %2
 </phrase>
 
 <phrase>
-<original>Action canceled.</original>
-<translation>Aktion abgebrochen.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
@@ -3150,7 +3145,7 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 <translation>Bug-Bericht-Instruktionen</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3582,7 +3577,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 <translation>Pica</translation>
 </phrase>
 
-<!-- Units.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Units.bas contains 40 phrases. 27 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
@@ -7276,21 +7271,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 </phrase>
 
 <phrase>
-<original>reverse page order</original>
-<translation>Umgekehrte Seitenreihenfolge</translation>
-</phrase>
-
-<phrase>
-<original>pages to import</original>
-<translation>Zu importierende Seiten</translation>
-</phrase>
-
-<phrase>
-<original>other options</original>
-<translation>Andere Optionen</translation>
-</phrase>
-
-<phrase>
 <original>antialiasing</original>
 <translation>Antialiasing</translation>
 </phrase>
@@ -7303,6 +7283,21 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 <phrase>
 <original>document size</original>
 <translation>Dokumentgröße</translation>
+</phrase>
+
+<phrase>
+<original>reverse page order</original>
+<translation>Umgekehrte Seitenreihenfolge</translation>
+</phrase>
+
+<phrase>
+<original>pages to import</original>
+<translation>Zu importierende Seiten</translation>
+</phrase>
+
+<phrase>
+<original>other options</original>
+<translation>Andere Optionen</translation>
 </phrase>
 
 <phrase>
@@ -12532,6 +12527,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation>Ziel</translation>
 </phrase>
@@ -12547,6 +12547,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>allow enlarging</original>
+<translation>Vergrößerung erlauben</translation>
+</phrase>
+
+<phrase>
 <original>apply</original>
 <translation>Anwenden</translation>
 </phrase>
@@ -12557,13 +12562,13 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>allow enlarging</original>
-<translation>Vergrößerung erlauben</translation>
+<original>size (w, h)</original>
+<translation>Größe (B, H)</translation>
 </phrase>
 
 <phrase>
-<original>size (w, h)</original>
-<translation>Größe (B, H)</translation>
+<original>resolution (PPI)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12581,7 +12586,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Cropping außerhalb Bildgrenzen erlauben (wodurch das Bild vergrößert wird).</translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<phrase>
+<original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You can use this measurement in landscape or portrait orientation.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Crop.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14619,10 +14634,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2768</phrasecount>
+<phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5887 phrases. -->
-<!-- 3119 are duplicates, so only 2768 unique phrases have been written to file. -->
-<!-- These 2768 phrases contain approximately 12024 total words. -->
+<!-- As of this build, PhotoDemon contains 5909 phrases. -->
+<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- These 2771 phrases contain approximately 12051 total words. -->
 
 </pdData>

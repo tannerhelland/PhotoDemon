@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.10</langversion>
+<langversion>1.0.11</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -2371,6 +2371,12 @@ Zavřete tento soubor ve všech ostatních spuštěných programech a zkuste to 
 </phrase>
 
 <phrase>
+<original>Action canceled.</original>
+<translation>Akce zrušena.
+</translation>
+</phrase>
+
+<phrase>
 <original>Failed to load %1</original>
 <translation>Nepodařilo se načíst %1
 </translation>
@@ -2441,7 +2447,7 @@ Ověřte prosím, že tyto obrázky existují a že používají podporovaný fo
 </translation>
 </phrase>
 
-<!-- Loading.bas contains 41 phrases. 18 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Loading.bas contains 42 phrases. 18 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2869,12 +2875,7 @@ Chcete-li povolit podporu skeneru, zkopírujte prosím soubor EZTW32.dll (k disp
 </translation>
 </phrase>
 
-<phrase>
-<original>Mozilla Public License 2.0</original>
-<translation>Mozilla Public License 2.0</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 30 phrases. 24 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3225,12 +3226,6 @@ Popis: %2</translation>
 </phrase>
 
 <phrase>
-<original>Action canceled.</original>
-<translation>Akce zrušena.
-</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
@@ -3244,7 +3239,7 @@ Po dokončení klikněte na tlačítko Odeslat nové vydání.  Děkuju!</transl
 <translation>Instrukce pro hlášení chyby</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3703,7 +3698,7 @@ Zadejte číselnou hodnotu.</translation>
 <translation>pik</translation>
 </phrase>
 
-<!-- Units.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Units.bas contains 40 phrases. 27 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
@@ -13200,6 +13195,11 @@ aplikace - Windows 95, 98, ME
 </phrase>
 
 <phrase>
+<original>resolution (PPI)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
 <translation>Uzamkněte tuto hodnotu.  (Najednou lze uzamknout pouze jednu hodnotu. Pokud uzamknete novou hodnotu, odemknou se dříve zamknuté hodnoty.)</translation>
 </phrase>
@@ -13214,7 +13214,17 @@ aplikace - Windows 95, 98, ME
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 18 phrases. 7 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You can use this measurement in landscape or portrait orientation.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Crop.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -15269,10 +15279,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2769</phrasecount>
+<phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5890 phrases. -->
-<!-- 3121 are duplicates, so only 2769 unique phrases have been written to file. -->
-<!-- These 2769 phrases contain approximately 12025 total words. -->
+<!-- As of this build, PhotoDemon contains 5909 phrases. -->
+<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- These 2771 phrases contain approximately 12051 total words. -->
 
 </pdData>
