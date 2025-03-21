@@ -424,8 +424,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Crop Tool Panel
 'Copyright 2024-2025 by Tanner Helland
 'Created: 11/November/24
-'Last updated: 25/February/25
-'Last update: add toggle for image vs layer targets
+'Last updated: 21/March/25
+'Last update: presets are now pulled from a central template manager
 '
 'This form includes all user-editable settings for the on-canvas Crop tool.
 '
@@ -440,13 +440,7 @@ Option Explicit
 Private m_DontUpdate As Boolean
 
 'Two lists of presets: aspect ratio, and physical sizes
-Private Type PD_CropPreset
-    hSizeOrig As Single
-    vSizeOrig As Single
-    muSize As PD_MeasurementUnit
-End Type
-
-Private m_PresetSize() As PD_CropPreset, m_PresetAspect() As PD_CropPreset
+Private m_PresetSize() As PD_SizeTemplate, m_PresetAspect() As PD_SizeTemplate
 Private m_numPresetSize As Long, m_numPresetAspect As Long
 
 'Flyout manager
@@ -723,8 +717,8 @@ Private Sub ApplyNewPreset(ByVal idxTrigger As Long)
                 
                 'Convert the current size from its source unit to pixels, using the user-entered DPI value
                 Dim pxSizeH As Long, pxSizeV As Long
-                pxSizeH = Units.ConvertOtherUnitToPixels(m_PresetSize(idxListbox).muSize, m_PresetSize(idxListbox).hSizeOrig, Me.sldDPI.Value)
-                pxSizeV = Units.ConvertOtherUnitToPixels(m_PresetSize(idxListbox).muSize, m_PresetSize(idxListbox).vSizeOrig, Me.sldDPI.Value)
+                pxSizeH = Units.ConvertOtherUnitToPixels(m_PresetSize(idxListbox).thisSizeUnit, m_PresetSize(idxListbox).hSizeOrig, Me.sldDPI.Value)
+                pxSizeV = Units.ConvertOtherUnitToPixels(m_PresetSize(idxListbox).thisSizeUnit, m_PresetSize(idxListbox).vSizeOrig, Me.sldDPI.Value)
                 
                 'Switch between landscape and portrait (based on the relevant toggle in the UI)
                 If (btsOrientation(idxTrigger).ListIndex = 0) Then
@@ -1029,12 +1023,12 @@ Private Sub MatchPresetsToCurrentValues()
         Dim pxWidth As Long, pxHeight As Long
         
         'As relevant, convert the source size from real-world units to pixels
-        If (m_PresetSize(i).muSize = mu_Pixels) Then
+        If (m_PresetSize(i).thisSizeUnit = mu_Pixels) Then
             pxWidth = m_PresetSize(i).hSizeOrig
             pxHeight = m_PresetSize(i).vSizeOrig
         Else
-            pxWidth = Units.ConvertOtherUnitToPixels(m_PresetSize(i).muSize, m_PresetSize(i).hSizeOrig, curResolution)
-            pxHeight = Units.ConvertOtherUnitToPixels(m_PresetSize(i).muSize, m_PresetSize(i).vSizeOrig, curResolution)
+            pxWidth = Units.ConvertOtherUnitToPixels(m_PresetSize(i).thisSizeUnit, m_PresetSize(i).hSizeOrig, curResolution)
+            pxHeight = Units.ConvertOtherUnitToPixels(m_PresetSize(i).thisSizeUnit, m_PresetSize(i).vSizeOrig, curResolution)
         End If
         
         'Compare in both landscape *and* portrait orientation
@@ -1267,8 +1261,8 @@ Private Sub UpdatePresetLists()
     
     'Reset preset and aspect ratio collections
     Const INIT_PRESET_SIZE As Long = 8
-    If (m_numPresetSize = 0) Then ReDim m_PresetSize(0 To INIT_PRESET_SIZE - 1) As PD_CropPreset
-    If (m_numPresetAspect = 0) Then ReDim m_PresetAspect(0 To INIT_PRESET_SIZE - 1) As PD_CropPreset
+    If (m_numPresetSize = 0) Then ReDim m_PresetSize(0 To INIT_PRESET_SIZE - 1) As PD_SizeTemplate
+    If (m_numPresetAspect = 0) Then ReDim m_PresetAspect(0 To INIT_PRESET_SIZE - 1) As PD_SizeTemplate
     m_numPresetSize = 0
     m_numPresetAspect = 0
     
@@ -1276,28 +1270,32 @@ Private Sub UpdatePresetLists()
     ddPreset(0).Clear
     ddPreset(1).Clear
     
-    'Presets for size...
+    'Add blank presets for size and aspect ratio.  (These are used for "free-form" or "custom" values.)
     AddPreset 0, 0, 0
-    AddPreset 0, 1920, 1080, "HD"
-    AddPreset 0, 3840, 2160, "4K UHD", mu_Pixels, True
-    AddPreset 0, 8.3, 11.7, g_Language.TranslateMessage("A4"), mu_Inches
-    AddPreset 0, 8.5, 11, g_Language.TranslateMessage("US Letter"), mu_Inches
-    
-    'Preset for aspect ratio...
     AddPreset 1, 0, 0
-    AddPreset 1, 1, 1
-    AddPreset 1, 2, 3
-    AddPreset 1, 3, 5
-    AddPreset 1, 4, 6
-    AddPreset 1, 5, 7
-    AddPreset 1, 8, 10
-    AddPreset 1, 16, 9
-    AddPreset 1, 16, 10
-    AddPreset 1, 21, 9
+    
+    'Grab copies of the central size and aspect ratio collections
+    Dim tmpPresets() As PD_SizeTemplate, tmpAspects() As PD_SizeTemplate
+    If Units.GetCopyOfSizeAndAspectTemplates(tmpPresets, tmpAspects) Then
+        
+        'Add all presets to our collections.  Note that separators are added when switching between units
+        ' (e.g. "1920x1080" followed by "8.5x11 US Letter" will auto-insert a separator)
+        Dim i As Long, separatorNow As Boolean
+        For i = 0 To UBound(tmpPresets)
+            separatorNow = False
+            If (i < UBound(tmpPresets)) Then separatorNow = (tmpPresets(i).thisSizeUnit <> tmpPresets(i + 1).thisSizeUnit)
+            AddPreset 0, tmpPresets(i).hSizeOrig, tmpPresets(i).vSizeOrig, tmpPresets(i).localizedName, tmpPresets(i).thisSizeUnit, separatorNow
+        Next i
+        
+        For i = 0 To UBound(tmpAspects)
+            AddPreset 1, tmpAspects(i).hSizeOrig, tmpAspects(i).vSizeOrig
+        Next i
+        
+    End If
     
 End Sub
 
-Private Sub AddPreset(ByVal idxDropdown As Long, ByVal szHorizontal As Single, ByVal szVertical As Single, Optional ByVal szName As String = vbNullString, Optional ByVal unitOfMeasurement As PD_MeasurementUnit = mu_Pixels, Optional ByVal showDividerAfter As Boolean = False)
+Private Sub AddPreset(ByVal idxDropdown As Long, ByVal szHorizontal As Single, ByVal szVertical As Single, Optional ByVal szName As String = vbNullString, Optional ByVal UnitOfMeasurement As PD_MeasurementUnit = mu_Pixels, Optional ByVal showDividerAfter As Boolean = False)
     
     'This function must construct a UI string for this entry
     Dim finalSize As String
@@ -1307,21 +1305,21 @@ Private Sub AddPreset(ByVal idxDropdown As Long, ByVal szHorizontal As Single, B
         
         'Store this preset (in pixel measurements only) at module-level, so we can access it on dropdown clicks
         If (idxDropdown = 0) Then
-            If (m_numPresetSize > UBound(m_PresetSize)) Then ReDim Preserve m_PresetSize(0 To m_numPresetSize * 2 - 1) As PD_CropPreset
+            If (m_numPresetSize > UBound(m_PresetSize)) Then ReDim Preserve m_PresetSize(0 To m_numPresetSize * 2 - 1) As PD_SizeTemplate
             m_PresetSize(m_numPresetSize).hSizeOrig = szHorizontal
             m_PresetSize(m_numPresetSize).vSizeOrig = szVertical
-            m_PresetSize(m_numPresetSize).muSize = unitOfMeasurement
+            m_PresetSize(m_numPresetSize).thisSizeUnit = UnitOfMeasurement
             m_numPresetSize = m_numPresetSize + 1
         Else
-            If (m_numPresetAspect > UBound(m_PresetAspect)) Then ReDim Preserve m_PresetAspect(0 To m_numPresetAspect * 2 - 1) As PD_CropPreset
+            If (m_numPresetAspect > UBound(m_PresetAspect)) Then ReDim Preserve m_PresetAspect(0 To m_numPresetAspect * 2 - 1) As PD_SizeTemplate
             m_PresetAspect(m_numPresetAspect).hSizeOrig = szHorizontal
             m_PresetAspect(m_numPresetAspect).vSizeOrig = szVertical
-            m_PresetAspect(m_numPresetAspect).muSize = mu_Pixels
+            m_PresetAspect(m_numPresetAspect).thisSizeUnit = mu_Pixels
             m_numPresetAspect = m_numPresetAspect + 1
         End If
         
         'Convert that to a consistently formatted string for the given unit
-        finalSize = Units.GetValueFormattedForUnit(unitOfMeasurement, szHorizontal, False) & " x " & Units.GetValueFormattedForUnit(unitOfMeasurement, szVertical, (idxDropdown = 0))
+        finalSize = Units.GetValueFormattedForUnit(UnitOfMeasurement, szHorizontal, False) & " x " & Units.GetValueFormattedForUnit(UnitOfMeasurement, szVertical, (idxDropdown = 0))
         
     Else
         If (idxDropdown = 0) Then
