@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha Build 277.1</langversion>
+<langversion>2024.12 Alpha - Build 300</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1225,7 +1225,7 @@
 
 <phrase>
 <original>Portrait glow</original>
-<translation>Portrait-Glühen</translation>
+<translation>Porträt-Glühen</translation>
 </phrase>
 
 <phrase>
@@ -10606,7 +10606,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>Adobe Swatch Exchange (ASE) -Dateien können multiple Paletten in einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche bereits in der Datei befindliche Paletten werden nicht modifiziert.</translation>
+<translation>Adobe Swatch Exchange (ASE) -Dateien können multiple Paletten in einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche bereits in der Datei enthaltenen Paletten werden nicht modifiziert.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -12528,7 +12528,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>presets</original>
-<translation></translation>
+<translation>Presets</translation>
 </phrase>
 
 <phrase>
@@ -12568,7 +12568,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>resolution (PPI)</original>
-<translation></translation>
+<translation>Auflösung (PPI)</translation>
 </phrase>
 
 <phrase>
@@ -12588,12 +12588,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation></translation>
+<translation>Auflösung wird verwendet, um reale Messungen in Pixel zu konvertieren. Sie wird bei Messungen, die bereits in Pixeln vorliegen, ignoriert.</translation>
 </phrase>
 
 <phrase>
 <original>You can use this measurement in landscape or portrait orientation.</original>
-<translation></translation>
+<translation>Sie können diese Messung in Landscape- (Querformat) oder Porträt- (Hochformat) Ausrichtung verwenden.</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
