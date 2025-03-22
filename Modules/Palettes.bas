@@ -240,7 +240,7 @@ End Sub
 ' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
 ' from any source, even ones that have already contain 256+ entries.)  No changes are made to palettes that
 ' already contain black and white.
-Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Optional ByRef srcDIB As pdDIB = Nothing) As Boolean
+Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal mustHaveBlack As Boolean = True, Optional ByVal mustHaveWhite As Boolean = True) As Boolean
     
     Dim minLuminance As Long, minLuminanceIndex As Long
     Dim maxLuminance As Long, maxLuminanceIndex As Long
@@ -326,7 +326,7 @@ Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Opti
     
         End If
         
-        If preserveBlack Then
+        If (preserveBlack And mustHaveBlack) Then
             With srcPalette(minLuminanceIndex)
                 .Red = 0
                 .Green = 0
@@ -334,7 +334,7 @@ Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQuad, Opti
             End With
         End If
         
-        If preserveWhite Then
+        If (preserveWhite And mustHaveWhite) Then
             With srcPalette(maxLuminanceIndex)
                 .Red = 255
                 .Green = 255

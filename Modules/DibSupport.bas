@@ -1986,7 +1986,22 @@ Public Function GetDIBAs8bpp_RGBMask_Forcibly(ByRef srcDIB As pdDIB, ByRef dstPa
         
         'Start by retrieving an optimized RGBA palette for the image in question
         If Palettes.GetOptimizedPalette(srcDIB, dstPalette, maxSizeOfPalette) Then
-        
+            
+            'Because the result of this will be masked, we need to ensure black is available in the palette.
+            Palettes.EnsureBlackAndWhiteInPalette dstPalette, Nothing, True, False
+            
+            'Find the black index in the palette
+            Dim x As Long, y As Long
+            Dim idxBlack As Long
+            idxBlack = -1
+            
+            For x = 0 To UBound(dstPalette)
+                If (dstPalette(x).Red = 0) And (dstPalette(x).Green = 0) And (dstPalette(x).Blue = 0) Then
+                    idxBlack = x
+                    Exit For
+                End If
+            Next x
+            
             'A palette was successfully generated.  We now want to match each pixel in the original image
             ' to the palette we've generated, and return the result.
             ReDim dstPixels(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Byte
@@ -1997,7 +2012,7 @@ Public Function GetDIBAs8bpp_RGBMask_Forcibly(ByRef srcDIB As pdDIB, ByRef dstPa
             Dim pxSize As Long
             pxSize = srcDIB.GetDIBColorDepth \ 8
             
-            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, xOffset As Long
+            Dim initX As Long, initY As Long, finalX As Long, finalY As Long, xOffset As Long
             initX = 0
             initY = 0
             finalX = srcDIB.GetDIBWidth - 1
@@ -2031,26 +2046,33 @@ Public Function GetDIBAs8bpp_RGBMask_Forcibly(ByRef srcDIB As pdDIB, ByRef dstPa
                 'Store alpha in the mask channel (regardless of value)
                 dstMask(x, y) = a
                 
-                'If this pixel matches the last pixel we tested, reuse our previous match results
-                If (RGB(r, g, b) <> lastColor) Then
-                    
-                    tmpQuad.Red = r
-                    tmpQuad.Green = g
-                    tmpQuad.Blue = b
-                    
-                    'Ask the tree for its best match
-                    newIndex = kdTree.GetNearestPaletteIndex(tmpQuad)
-                    
-                    lastColor = RGB(r, g, b)
-                    lastIndex = newIndex
-                    
+                'Manually assign transparent pixels to black
+                If (a < 128) And (idxBlack >= 0) Then
+                    dstPixels(x, y) = idxBlack
                 Else
-                    newIndex = lastIndex
+                    
+                    'If this pixel matches the last pixel we tested, reuse our previous match results
+                    If (RGB(r, g, b) <> lastColor) Then
+                        
+                        tmpQuad.Red = r
+                        tmpQuad.Green = g
+                        tmpQuad.Blue = b
+                        
+                        'Ask the tree for its best match
+                        newIndex = kdTree.GetNearestPaletteIndex(tmpQuad)
+                        
+                        lastColor = RGB(r, g, b)
+                        lastIndex = newIndex
+                        
+                    Else
+                        newIndex = lastIndex
+                    End If
+                    
+                    'Mark the matched index in the destination array
+                    dstPixels(x, y) = newIndex
+                    
                 End If
-                
-                'Mark the matched index in the destination array
-                dstPixels(x, y) = newIndex
-                
+                    
             Next x
             Next y
             
