@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.52</langversion>
+<langversion>9.0.53</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, with help from DeepL.com</author>
@@ -2297,11 +2297,6 @@ Por favor, cierre este archivo en cualquier otro programa que se esté ejecutand
 </phrase>
 
 <phrase>
-<original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
 <translation></translation>
 </phrase>
@@ -2395,7 +2390,7 @@ Por favor, compruebe que estas imágenes existen, y que utilizan un formato de i
 <translation>Completa la duplicación de imagen.</translation>
 </phrase>
 
-<!-- Loading.bas contains 42 phrases. 18 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Loading.bas contains 40 phrases. 17 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -3821,6 +3816,13 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 </phrase>
 
 <!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -14638,8 +14640,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5909 phrases. -->
+<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
 <!-- These 2771 phrases contain approximately 12034 total words. -->
 
 </pdData>

@@ -15,9 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2025 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 10/March/25
-'Last update: new option to suspend DIBs to disk; this can free a lot of memory when under pressure,
-'             and should allow me to better handle tight memory situations in the future.
+'Last updated: 24/March/25
+'Last update: if we fail to create a blank surface at the target size, this class will now send out a
+'             "cry for help"; this will trigger other surfaces in the app to suspend themselves to disk
 '
 'This class manages pixel data for almost everything inside PhotoDemon.  From image layers to UI
 ' elements, all are managed as pdDIB objects (a name that exists for historical reasons, but which
@@ -28,6 +28,13 @@ Attribute VB_Exposed = False
 ' context for use with functions like BitBlt.  Note, however, that this class may silently release
 ' that DC under a wide variety of circumstances, so you *cannot* cache GDI-type properties
 ' externally.  Instead, always call .Get-prefixed properties when you need GDI-compatible handles.
+'
+'This class also supports the concept of "suspending" the underlying surface to either a compressed
+' memory stream or all the way down to the hard drive.  The caller doesn't need to track suspend state -
+' just know that if the surface is suspended and you attempt to access it, there may be a brief pause
+' as PD decompresses (or loads from disk) surface contents.  As long as you only access the underlying
+' pixel data via safe wrapper functions (and do not cache return values between calls), you never have
+' to worry about suspended data "not being there" - this class will silently manage all of that for you.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit https://photodemon.org/license/
@@ -817,6 +824,28 @@ Friend Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
                 m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
             End If
             
+            'If we failed to create the DIB, it may be a memory issue.  Send out a cry for help
+            ' and see if we can cut memory usage somewhere else in the app.
+            If (m_dibHandle = 0) Then
+                
+                PDDebug.LogAction "WARNING: failed to create requested DIB (" & m_dibWidth & "x" & m_dibHeight & ")"
+                Message "Memory usage looks high; suspending some data to disk before continuing..."
+                PDImages.StrategicMemoryReduction
+                UIImages.FreeSharedCompressBuffer
+                Set m_FileMM = New pdFileMM
+                Message vbNullString
+                
+                'Try creating the DIB again
+                If m_FileMM.StartNewFile(m_BackingFile, m_dibHeader.ImageSize, OptimizeNone) Then
+                    m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, m_FileMM.GetMMHandle(), 0)
+                
+                'Alternatively, you can let the system manage your backing setup for you
+                Else
+                    m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
+                End If
+                
+            End If
+            
             'If successful, select the newly created dib into our DC
             If (m_dibHandle <> 0) Then
                 
@@ -1112,25 +1141,68 @@ Friend Sub SuspendDIB(Optional ByVal cmpFormat As PD_CompressionFormat = cf_Lz4,
         Set cStream = New pdStream
         If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, m_SuspendFilename, worstCaseSize, optimizeAccess:=OptimizeSequentialAccess) Then
             
+            'We'll try to compress the data when writing it to disk, but if we *can't*, we'll do an uncompressed
+            ' dump instead.  (Compression requires a temporary buffer of sub-optimal size, while an uncompressed
+            ' dump can be done scanline-by-scanline, using less RAM but more disk space.)
             dstBufferPtr = cStream.Peek_PointerOnly(0, worstCaseSize)
-            dstBufferSize = worstCaseSize
-            If Compression.CompressPtrToPtr(dstBufferPtr, dstBufferSize, m_dibBits, m_SizeUnsuspended, m_SuspendFormat) Then
+            If (dstBufferPtr = 0) Then
                 
-                'Shrink the file size to match the actual compressed bytes, then release to disk
-                m_SizeSuspended = dstBufferSize
-                cStream.SetSizeExternally m_SizeSuspended
-                cStream.StopStream True
-                If DIB_DEBUG_VERBOSE Then PDDebug.LogAction "Suspended DIB to file " & m_SuspendFilename & ", " & m_SizeUnsuspended & " bytes saved"
+                'Shit, memory is too tight to allocate a compression buffer.
+                ' Instead, let's dump the image to file a single line at a time with *no* compression.
+                ' (This is the lowest-case memory usage scenario, and when done, we can release the full
+                '  backing surface to reclaim a *lot* of memory.)
                 
-                'If the suspension buffer was used previously, it may still be allocated; free it now
-                Erase m_SuspensionBuffer
-                
-            'If compression failed, attempt a memory suspend instead
-            Else
+                'Start by cleaning up the existing file we tried to create
                 cStream.StopStream True
                 Files.FileDeleteIfExists m_SuspendFilename
-                m_SuspendFilename = vbNullString
-                suspendToDisk = False
+                
+                'Switch the suspend format to "uncompressed"
+                m_SuspendFormat = cf_None
+                
+                'Start a file-backed (NON-memory-mapped) stream on the target file
+                If cStream.StartStream(PD_SM_FileBacked, PD_SA_ReadWrite, m_SuspendFilename, optimizeAccess:=OptimizeSequentialAccess) Then
+                    
+                    'Dump scanlines one-at-a-time.  (Vertical order is fine because PD uses upside-down DIBs.)
+                    Dim y As Long
+                    For y = 0 To Me.GetDIBHeight - 1
+                        cStream.WriteBytesFromPointer m_dibBits + (y * Me.GetDIBStride), Me.GetDIBStride
+                    Next y
+                    
+                    'End the stream (trimming to size is automatic in non-memory-mapped files)
+                    cStream.StopStream True
+                    PDDebug.LogAction "Suspended DIB WITHOUT compression to file " & m_SuspendFilename & ", " & m_SizeUnsuspended & " bytes saved"
+                    
+                    'If the suspension buffer was used previously, it may still be allocated; free it now
+                    Erase m_SuspensionBuffer
+                    
+                '/If we can't even access the target file, we're truly screwed.  CRASH INCOMING
+                Else
+                    PDDebug.LogAction "Failed to open handle to suspend file - this session is going dooooown!"
+                End If
+                
+            '/Allocation okay - compress away!
+            Else
+                
+                dstBufferSize = worstCaseSize
+                If Compression.CompressPtrToPtr(dstBufferPtr, dstBufferSize, m_dibBits, m_SizeUnsuspended, m_SuspendFormat) Then
+                    
+                    'Shrink the file size to match the actual compressed bytes, then release to disk
+                    m_SizeSuspended = dstBufferSize
+                    cStream.SetSizeExternally m_SizeSuspended
+                    cStream.StopStream True
+                    If DIB_DEBUG_VERBOSE Then PDDebug.LogAction "Suspended DIB to file " & m_SuspendFilename & ", " & m_SizeUnsuspended & " bytes saved"
+                    
+                    'If the suspension buffer was used previously, it may still be allocated; free it now
+                    Erase m_SuspensionBuffer
+                    
+                'If compression failed, attempt a memory suspend instead
+                Else
+                    cStream.StopStream True
+                    Files.FileDeleteIfExists m_SuspendFilename
+                    m_SuspendFilename = vbNullString
+                    suspendToDisk = False
+                End If
+                
             End If
             
         'Something went wrong with disk access; attempt a memory suspend instead

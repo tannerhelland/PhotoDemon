@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.48</langversion>
+<langversion>9.0.49</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -2296,11 +2296,6 @@ Zamknij ten plik w innym uruchomionym programie, a następnie spróbuj ponownie.
 </phrase>
 
 <phrase>
-<original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
 <translation></translation>
 </phrase>
@@ -2392,7 +2387,7 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 <translation>Powielanie obrazu zakończono.</translation>
 </phrase>
 
-<!-- Loading.bas contains 42 phrases. 18 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Loading.bas contains 40 phrases. 17 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -3818,6 +3813,13 @@ Musisz ręcznie pobrać ten plik za pomocą przeglądarki internetowej.</transla
 </phrase>
 
 <!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -14636,8 +14638,8 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5909 phrases. -->
+<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
 <!-- These 2771 phrases contain approximately 12034 total words. -->
 
 </pdData>

@@ -3,8 +3,9 @@ Attribute VB_Name = "VBHacks"
 'Misc VB6 Hacks
 'Copyright 2016-2025 by Tanner Helland
 'Created: 06/January/16
-'Last updated: 13/September/22
-'Last update: new func for wrapping a signed short array around arbitrary pointers (for HGT import)
+'Last updated: 24/March/25
+'Last update: add "LargeAllocationIncoming()" function for compressing and/or suspending to disk
+'             various structs at run-time to free up memory prior to big allocations (like pixel surfaces)
 '
 'PhotoDemon relies on a lot of "not officially sanctioned" VB6 behavior to enable various optimizations
 ' and C-style code techniques. If a function's primary purpose is a VB6-specific workaround, I prefer to
@@ -357,6 +358,27 @@ Public Function MemCmp(ByVal ptr1 As Long, ByVal ptr2 As Long, ByVal bytesToComp
     bytesEqual = RtlCompareMemory(ptr1, ptr2, bytesToCompare)
     MemCmp = (bytesEqual = bytesToCompare)
 End Function
+
+'Before making a large memory allocation (e.g. creating a huge pixel surface), call this function to
+' strategically reduce memory as necessary.
+'
+'If you have an estimated allocation size, pass it; a passed allocation size of 0 will *force* a bunch
+' of aggressive memory reductions, so please pass zero unless absolutely necessary.
+Public Sub LargeAllocationIncoming(Optional ByVal estimatedAllocationSize As Long = 0)
+    
+    Dim letsShrink As Boolean: letsShrink = False
+    If (estimatedAllocationSize = 0) Then
+        letsShrink = True
+    Else
+        letsShrink = OS.IsMemoryUsageWorrisome(estimatedAllocationSize) And (PDImages.GetNumOpenImages > 1)
+    End If
+    
+    If letsShrink Then
+        PDImages.StrategicMemoryReduction
+        UIImages.FreeSharedCompressBuffer
+    End If
+    
+End Sub
 
 'This function mimicks DoEvents, but instead of processing all messages for all windows on all threads (slow! error-prone!),
 ' it only processes messages for the supplied hWnd.

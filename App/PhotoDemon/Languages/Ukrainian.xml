@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.16</langversion>
+<langversion>1.0.17</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -2297,11 +2297,6 @@ Please close this file in any other running programs, then try again.</original>
 </phrase>
 
 <phrase>
-<original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
 <translation></translation>
 </phrase>
@@ -2395,7 +2390,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Копіювання зображення завершено.</translation>
 </phrase>
 
-<!-- Loading.bas contains 42 phrases. 18 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Loading.bas contains 40 phrases. 17 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -3821,6 +3816,13 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -14638,8 +14640,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5909 phrases. -->
+<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
 <!-- These 2771 phrases contain approximately 12034 total words. -->
 
 </pdData>

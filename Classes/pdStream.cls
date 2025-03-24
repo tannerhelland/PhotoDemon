@@ -1329,7 +1329,10 @@ End Function
 '                previously returned pointers.  You must use the return of this function immediately,
 '                as its correctness is not guaranteed after any other functions are called.
 Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1, Optional ByVal peekLength As Long = 0) As Long
-
+    
+    'Return 0 in case of failure
+    Peek_PointerOnly = 0
+    
     If (peekPosition < 0) Then peekPosition = Me.GetPosition()
     
     If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
@@ -1345,9 +1348,11 @@ Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1, Optio
             If m_FileMM.EnsureMapAvailable(peekPosition, peekLength, srcPtr) Then
                 Peek_PointerOnly = srcPtr + peekPosition
             Else
+                Peek_PointerOnly = 0
                 InternalStreamError "Peek_PointerOnly failed; const pdFileMM for details."
             End If
         Else
+            Peek_PointerOnly = 0
             InternalStreamError "Peek_PointerOnly failed - you need to supply a length value!"
         End If
     End If

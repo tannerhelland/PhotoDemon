@@ -152,12 +152,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '
     'If that much memory, plus whatever PD currently has allocated, exceeds 80% of *available* memory,
     ' PD will try to suspend other open images to disk in an attempt to maximize available space.
-    If OS.IsMemoryUsageWorrisome(100) And (PDImages.GetNumOpenImages > 1) Then
-        Message "Memory usage looks high; suspending some data to disk before continuing..."
-        PDImages.StrategicMemoryReduction
-        Message "Loading image..."
-        UIImages.FreeSharedCompressBuffer
-    End If
+    LargeAllocationIncoming 100
     
     '*************************************************************************************************************************************
     ' If the image being loaded is a primary image (e.g. one opened normally), prepare a blank pdImage object to receive it

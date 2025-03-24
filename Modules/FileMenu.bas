@@ -639,6 +639,9 @@ Public Function CreateNewImage(Optional ByRef newImageParameters As String) As B
     
     End Select
     
+    'Free up memory as necessary before attempting to create the target image
+    LargeAllocationIncoming newWidth * newHeight * 4
+    
     'Create a matching DIB
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
