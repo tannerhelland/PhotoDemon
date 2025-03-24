@@ -234,7 +234,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' from a PDF), so the loader does not return binary pass/fail state.
         '
         'If the function fails due to user cancellation, we should suppress subsequent error message boxes.
-        loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters, userCanceledImportDialog)
+        loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters, userCanceledImportDialog, suspendWarnings)
         
         '*************************************************************************************************************************************
         ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction

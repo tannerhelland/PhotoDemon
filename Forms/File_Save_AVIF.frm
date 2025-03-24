@@ -304,7 +304,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
                 'Immediately shell it again, but this time, ask it to convert the AVIF it just made
                 ' back into a PNG
                 Files.FileDeleteIfExists tmpFilenameIntermediary
-                If Plugin_AVIF.ConvertAVIFtoStandardImage(tmpFilenameAVIF, tmpFilenameIntermediary) Then
+                If Plugin_AVIF.ConvertAVIFtoStandardImage(tmpFilenameAVIF, tmpFilenameIntermediary, False) Then
                     
                     'We are done with the AVIF; kill it
                     Files.FileDeleteIfExists tmpFilenameAVIF

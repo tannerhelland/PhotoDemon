@@ -42,7 +42,7 @@ Private m_inputVersion As String, m_outputVersion As String
 'Convert an AVIF file to some other image format.  Currently, PD converts AVIF files to uncompressed PNGs,
 ' then imports those PNGs directly.  Theoretically, you could use other intermediary formats, such as JPEG,
 ' if that's better for your usage scenario...
-Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef filenameICC As String = vbNullString) As Boolean
+Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByVal allowErrorPopups As Boolean = False) As Boolean
     
     Const funcName As String = "ConvertAVIFtoStandardImage"
     
@@ -86,11 +86,15 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
     shellCmd.Append "-j all "
     
     'Use 8-bit PNG output (16-bit is also available; in the future, this may be a worthwhile switch for incoming HDR images)
-    shellCmd.Append "-d 16 "
+    shellCmd.Append "-d 8 "
     
     'In April 2022 a new version of libavif finally dropped, meaning I can *finally* request uncompressed PNGs
     ' (see https://github.com/AOMediaCodec/libavif/issues/706 for my feature request on this point)
     If (GetVersion(True) <> "0.9.0") Then shellCmd.Append "--png-compress 0 "
+    
+    'To improve compatibility with more AVIF decoders, in 2025 I explicitly request non-strict mode
+    ' (without this, many AVIF files "in the wild" won't work).
+    shellCmd.Append "--no-strict "
     
     'Explicitly mark the end of options
     shellCmd.Append " -- "
@@ -137,8 +141,11 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
         Else
             InternalError funcName, "load failed; output follows:"
             PDDebug.LogAction outputString
-            PDDebug.LogAction "For reference, here's stderr: "
-            PDDebug.LogAction cShell.GetStdErrDataAsString()
+            
+            Dim avifStdErr As String
+            avifStdErr = cShell.GetStdErrDataAsString()
+            PDDebug.LogAction "For reference, here's stderr: " & avifStdErr
+            If (Macros.GetMacroStatus <> MacroBATCH) And allowErrorPopups Then PluginManager.GenericLibraryError CCP_libavif, cShell.GetStdErrDataAsString()
         End If
         
     Else
@@ -458,7 +465,7 @@ Public Function QuickLoadPotentialAVIFToDIB(ByRef srcFile As String, ByRef dstDI
         
         'The separate AVIF apps convert AVIF to intermediary formats; we use PNG currently
         Dim tmpFile As String
-        QuickLoadPotentialAVIFToDIB = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile)
+        QuickLoadPotentialAVIFToDIB = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile, False)
         
         If QuickLoadPotentialAVIFToDIB Then
             Dim cPNG As pdPNG

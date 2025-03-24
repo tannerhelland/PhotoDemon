@@ -893,7 +893,7 @@ End Function
 
 'Test an incoming image file against every supported decoder engine.  This ensures the greatest likelihood of loading
 ' a problematic file.
-Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef userCanceledImportDialog As Boolean = False) As Boolean
+Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef freeImage_Return As PD_OPERATION_OUTCOME, ByRef decoderUsed As PD_ImageDecoder, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal overrideParameters As String = vbNullString, Optional ByRef userCanceledImportDialog As Boolean = False, Optional ByRef suspendWarnings As VbMsgBoxResult = vbNo) As Boolean
     
     CascadeLoadGenericImage = False
     
@@ -959,7 +959,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
     
     'AVIF support was added in v9.0.
     If (Not CascadeLoadGenericImage) Then
-        CascadeLoadGenericImage = LoadAVIF(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
+        CascadeLoadGenericImage = LoadAVIF(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages, (suspendWarnings <> vbYes))
         If CascadeLoadGenericImage Then
             decoderUsed = id_libavif
             dstImage.SetOriginalFileFormat PDIF_AVIF
@@ -1218,7 +1218,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
     
 End Function
 
-Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal allowErrorPopups As Boolean = False) As Boolean
     
     LoadAVIF = False
     On Error GoTo LibAVIFDidntWork
@@ -1253,7 +1253,7 @@ Private Function LoadAVIF(ByRef srcFile As String, ByRef dstImage As pdImage, By
             'It's an ugly workaround, but necessary; convert the AVIF to a temporary image file
             ' in a format we can directly process (currently PNG).
             Dim tmpFile As String
-            LoadAVIF = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile)
+            LoadAVIF = Plugin_AVIF.ConvertAVIFtoStandardImage(srcFile, tmpFile, allowErrorPopups)
             
             'If that worked, load the intermediary image (PNG format) using the relevant decoder
             If LoadAVIF Then LoadAVIF = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages)
