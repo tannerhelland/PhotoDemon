@@ -1445,7 +1445,7 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         'Cast the returned bytes directly into a string; this preserves Unicode characters.
                         strFilename = Space$((UBound(retBytes) + 1) \ 2)
                         CopyMemoryStrict StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
-                        'Debug.Print "First: " & strFilename
+                        
                         'Now we need to construct a full destination path + filename.  This can vary by several criteria.
                         Dim fullDestinationPath As String
                         

@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2025 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 16/July/24
-'Last update: prototype libheif support
+'Last updated: 24/March/25
+'Last update: replace some library-specific messages with generic error messages, to reduce localization burden
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' Current builds require a number of third-party libraries for full feature availability.  (Some of these
@@ -198,6 +198,24 @@ Public Sub ReportPluginLoadSuccess()
     
     PDDebug.LogAction CStr(successfulPluginCount) & "/" & CStr(CORE_PLUGIN_COUNT) & " plugins initialized successfully."
     
+End Sub
+
+'If a program operation requires a third-party libary and that library is missing, call this function.
+' It'll raise a generic error that tells the user to stop screwing with their PD install.
+'
+'(By design, the message box this function raises is disabled during batch processes.)
+Public Sub GenericLibraryMissingError(ByVal pluginID As PD_PluginCore)
+    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "A necessary third-party library (%1) is missing or disabled." & vbCrLf & vbCrLf & "To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.", vbCritical Or vbOKOnly, "Error", PluginManager.GetPluginName(pluginID)
+    Message "Error: %1", PluginManager.GetPluginName(pluginID)
+End Sub
+
+'...Similarly, if an external library throws some kind of error message and it might help the user to see
+' that message, send the plugin ID and error message here, and we'll display the message for you.
+'
+'(As with other library error messages, *all* popups are disabled during batch processes.)
+Public Sub GenericLibraryError(ByVal pluginID As PD_PluginCore, ByRef pluginMsg As String)
+    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "A third-party library (%1) reported the following error: " & vbCrLf & vbCrLf & "%2", vbExclamation Or vbOKOnly, "Error", PluginManager.GetPluginName(pluginID), pluginMsg
+    Message "Error: %1", pluginMsg
 End Sub
 
 'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include

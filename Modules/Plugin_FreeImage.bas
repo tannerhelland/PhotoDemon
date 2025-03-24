@@ -335,7 +335,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
 FreeImageV5_Error:
     
     FI_DebugMsg "VB-specific error occurred inside FI_LoadImage_V5.  Err #: " & Err.Number & ", " & Err.Description, suppressDebugData
-    If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
+    If showMessages Then Message "Image import failed"
     FI_Unload fi_hDIB, fi_multi_hDIB
     FI_LoadImage_V5 = PD_FAILURE_GENERIC
     
@@ -682,7 +682,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
 FiObject_Error:
     
     FI_DebugMsg "VB-specific error occurred inside FI_GetFIObjectIntoDIB.  Err #: " & Err.Number & ", " & Err.Description, suppressDebugData
-    If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
+    If showMessages Then Message "Image import failed"
     FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
     FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
     

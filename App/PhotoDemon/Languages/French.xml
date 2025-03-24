@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.642</langversion>
+<langversion>6.7.644</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -1823,21 +1823,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>L'enregistrement de %1 a échoué. Veuillez signaler cette erreur via Aide -> Envoyer le rapport de bogue.</translation>
 </phrase>
 
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>Le plug-in d'interface FreeImage (Freeimage.dll) est indiqué comme manquant ou désactivé après l'installation du logiciel.
-
-Pour activer le suport de ce format d'image, veuillez copier le fichier FreeImage.dll (téléchargeable à ce lien  http://freeimage.sourceforge.net/download.html), puis le coller dans le dossier plug-in et relancer ensuite le logiciel.</translation>
-</phrase>
-
-<phrase>
-<original>Save cannot be completed without FreeImage library.</original>
-<translation>L'enregistrement impossible sans la bibliothèque FreeImage.</translation>
-</phrase>
-
-<!-- ImageExporter.bas contains 25 phrases. 21 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2736,16 +2722,11 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 <!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
-<original>Import via FreeImage failed (Err # %1)</original>
-<translation>L'Import via FreeImage a échoué (Erreur # %1)</translation>
-</phrase>
-
-<phrase>
 <original>Applying tone-mapping</original>
 <translation>Application de la carte de tonalité</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -2771,6 +2752,25 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>A necessary third-party library (%1) is missing or disabled.
+
+To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Error: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>A third-party library (%1) reported the following error: 
+
+%2</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>BSD license</original>
@@ -2802,7 +2802,7 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 <translation>LGPL license</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 30 phrases. 24 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 36 phrases. 27 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14648,8 +14648,8 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5909 phrases. -->
-<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
-<!-- These 2771 phrases contain approximately 12051 total words. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- These 2771 phrases contain approximately 12034 total words. -->
 
 </pdData>

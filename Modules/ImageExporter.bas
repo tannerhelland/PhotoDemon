@@ -805,6 +805,7 @@ Public Function ExportHEIF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     
     Else
         PDDebug.LogAction "libheif missing or broken; HEIF export abandoned"
+        GenericLibraryMissingError CCP_libheif
         ExportHEIF = False
     End If
     
@@ -901,7 +902,7 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportJP2 = False
         End If
     Else
-        RaiseFreeImageWarning
+        GenericLibraryMissingError CCP_FreeImage
         ExportJP2 = False
     End If
     
@@ -1316,7 +1317,7 @@ Public Function ExportJXR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportJXR = False
         End If
     Else
-        RaiseFreeImageWarning
+        GenericLibraryMissingError CCP_FreeImage
         ExportJXR = False
     End If
     
@@ -1456,7 +1457,7 @@ Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         End If
         
     Else
-        RaiseFreeImageWarning
+        GenericLibraryMissingError CCP_FreeImage
         ExportHDR = False
     End If
     
@@ -2236,7 +2237,7 @@ Public Function ExportTGA(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             ExportTGA = False
         End If
     Else
-        RaiseFreeImageWarning
+        GenericLibraryMissingError CCP_FreeImage
         ExportTGA = False
     End If
     
@@ -2759,73 +2760,9 @@ Public Function ExportWebP(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
         Exit Function
     
-    End If
-    
-    'If we're still here, libwebp is missing or broken.  We can still attempt to save via FreeImage (if available)
-    ' but many WebP features will no longer work (and the following code is not actively maintained, so "you get what you get")
-    PDDebug.LogAction "libwebp missing or broken"
-    
-    If ImageFormats.IsFreeImageEnabled Then
-    
-        'Parse incoming WebP parameters
-        Dim cParams As pdSerialize
-        Set cParams = New pdSerialize
-        cParams.SetParamString formatParams
-        
-        'The only output parameter WebP supports is compression level
-        Dim webPQuality As Long
-        webPQuality = cParams.GetLong("webp-quality", 100)
-        
-        'Generate a composited image copy, with alpha automatically un-premultiplied
-        Dim tmpImageCopy As pdDIB
-        Set tmpImageCopy = New pdDIB
-        srcPDImage.GetCompositedImage tmpImageCopy, False
-        
-        'Retrieve the recommended output color depth of the image.
-        ' (TODO: parse incoming params and honor requests for forced color-depths!)
-        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_WEBP, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
-        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
-        
-        'WebP only supports 24-bpp and 32-bpp outputs, so check for transparency now
-        If (currentAlphaStatus = PDAS_NoAlpha) Then
-            desiredAlphaStatus = PDAS_NoAlpha
-            outputColorDepth = 24
-        Else
-            desiredAlphaStatus = PDAS_ComplicatedAlpha
-            outputColorDepth = 32
-        End If
-        
-        'To save us some time, auto-convert any non-transparent images to 24-bpp now
-        If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
-        
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
-        
-        If (fi_DIB <> 0) Then
-            
-            Dim fi_Flags As Long: fi_Flags = 0&
-            fi_Flags = fi_Flags Or webPQuality
-            
-            ExportWebP = FreeImage_Save(FIF_WEBP, fi_DIB, dstFile, fi_Flags)
-            If ExportWebP Then
-                ExportDebugMsg "Export to " & sFileType & " appears successful."
-            Else
-                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
-                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-            End If
-            
-        Else
-            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
-            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-            ExportWebP = False
-        End If
     Else
-        RaiseFreeImageWarning
-        ExportWebP = False
+        GenericLibraryMissingError CCP_libwebp
     End If
-    
-    Exit Function
     
 ExportWebPError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
@@ -2887,13 +2824,6 @@ ExportWebPError:
     ExportWebP_Animated = False
     
 End Function
-
-'Many export functions require FreeImage.  If it doesn't exist, a generic warning will be raised when the user tries to
-' export to a FreeImage-based format.  (Note that the warning is suppressed during batch processing, by design.)
-Private Sub RaiseFreeImageWarning()
-    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbCritical Or vbOKOnly, "Error"
-    Message "Save cannot be completed without FreeImage library."
-End Sub
 
 'Basic case-insensitive string comparison function
 Private Function ParamsEqual(ByRef param1 As String, ByRef param2 As String) As Boolean

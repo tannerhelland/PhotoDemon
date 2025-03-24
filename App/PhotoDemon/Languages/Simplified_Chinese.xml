@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，2024.12）</langname>
-<langversion>2024.12.25</langversion>
+<langversion>2024.12.27</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 9, 2025</author>
@@ -1823,21 +1823,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>%1 保存失败。请使用帮助菜单->提交错误报告。</translation>
 </phrase>
 
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>对FreeImage接口插件（FreeImage。DLL）被丢失或在程序初始化时错误。
-
-为了使这种图像格式的支持，请复制FreeImage.dll文件（http://freeimage.sourceforge.net/download.html）到插件目录并重新加载程序。</translation>
-</phrase>
-
-<phrase>
-<original>Save cannot be completed without FreeImage library.</original>
-<translation>由于缺失FreeImage库，没有保存成功</translation>
-</phrase>
-
-<!-- ImageExporter.bas contains 25 phrases. 21 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2731,16 +2717,11 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
-<original>Import via FreeImage failed (Err # %1)</original>
-<translation>通过FreeImage导入失败（ERR＃%1）</translation>
-</phrase>
-
-<phrase>
 <original>Applying tone-mapping</original>
 <translation>应用色调映射</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -2765,6 +2746,25 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<phrase>
+<original>A necessary third-party library (%1) is missing or disabled.
+
+To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Error: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>A third-party library (%1) reported the following error: 
+
+%2</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>BSD license</original>
@@ -2796,7 +2796,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>LGPL 许可证</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 30 phrases. 24 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 36 phrases. 27 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14632,9 +14632,9 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5909 phrases. -->
-<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
-<!-- These 2771 phrases contain approximately 12051 total words. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- These 2771 phrases contain approximately 12034 total words. -->
 
 <special-translations>
 
