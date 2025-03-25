@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 300.3</langversion>
+<langversion>2024.12 Alpha - Build 315</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1487,7 +1487,7 @@ Verlustfreie Kopien werden in demselben Ordner gespeichert wie dieses erstmalige
 <original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
 
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>Beim Versuch dieses Bild zu speichern, ist ein nicht spezifizierter Fehler aufgetreten. Bitte versuchen Sie, das Bild in ein alternatives Format zu speichern.
+<translation>Beim Versuch, dieses Bild zu speichern, ist ein nicht spezifizierter Fehler aufgetreten. Bitte versuchen Sie, das Bild in einem alternativen Format zu speichern.
 
 Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developern via photodemon.org/contact</translation>
 </phrase>
@@ -1687,7 +1687,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>Bild hat überall eine Farbe. Auto-Zuschnitt nicht erforderlich.</translation>
+<translation>Bild hat überall eine Farbe. Auto-Zuschnitt nicht notwendig.</translation>
 </phrase>
 
 <phrase>
@@ -2750,19 +2750,23 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation></translation>
+<translation>Eine notwendige Drittanbieter-Bibliothek (%1) fehlt oder ist deaktiviert.
+
+Um dieses Feature zu aktivieren, laden Sie bitte eine neue Kopie von PhotoDemon herunter oder stellen Sie die fehlende Bibliothek wieder her.</translation>
 </phrase>
 
 <phrase>
 <original>Error: %1</original>
-<translation></translation>
+<translation>Fehler: %1</translation>
 </phrase>
 
 <phrase>
 <original>A third-party library (%1) reported the following error: 
 
 %2</original>
-<translation></translation>
+<translation>Eine Drittanbieter-Bibliothek (%1) hat den folgenden Fehler gemeldet:
+
+%2</translation>
 </phrase>
 
 <phrase>
@@ -2858,7 +2862,7 @@ Error number %1
 Description: %2
 
 %3</original>
-<translation>PhotoDemon verzeichnete einen Fehler. Details zu dem Problem ummfassen:
+<translation>PhotoDemon verzeichnet einen Fehler. Details zu dem Problem ummfassen:
 
 Fehlernummer %1
 Deskription: %2
@@ -3195,11 +3199,11 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation>Beim Versuch dieses Bild zu speichern, ist ein Fehler aufgetreten. Das FreeImage-Plug-in hat die folgenden Fehlerdetails gemeldet:
+<translation>Beim Versuch, dieses Bild zu speichern, ist ein Fehler aufgetreten. Das FreeImage-Plug-in hat die folgenden Fehlerdetails gemeldet:
 
 %1
 
-In der Zwischenzeit versuchen Sie bitte, das Bild in ein alternatives Format zu speichern. Sie können auch die PhotoDemon-Developer via dem Menü "Hilfe > Bug-Bericht einreichen" darüber informieren.</translation>
+In der Zwischenzeit versuchen Sie bitte, das Bild in einem alternativen Format zu speichern. Sie können auch die PhotoDemon-Developer via dem Menü "Hilfe > Bug-Bericht einreichen" darüber informieren.</translation>
 </phrase>
 
 <phrase>
@@ -3797,7 +3801,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Image URL found.  Attempting to download</original>
-<translation>Bild-URL gefunden. Versuch herunterzuladen</translation>
+<translation>Bild-URL gefunden. Versuch des Downloads</translation>
 </phrase>
 
 <phrase>
@@ -7902,7 +7906,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>expand to fit stroke (if necessary)</original>
-<translation>Erweitern, um Strich anzupassen (falls erforderlich)</translation>
+<translation>Erweitern, um Strich anzupassen (wenn notwendig)</translation>
 </phrase>
 
 <!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12219,7 +12223,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer auto-inkrementierten Zahl, wie erforderlich).</translation>
+<translation>Verwenden Sie dies, um schnell eine verlustfreie Kopie des aktuellen Bildes zu speichern. Die verlustfreie Kopie wird im PDI-Format gespeichert, im aktuellen Ordner des Bildes unter Verwendung des aktuellen Dateinamens (plus einer auto-inkrementierten Zahl, nach Bedarf).</translation>
 </phrase>
 
 <phrase>
@@ -13528,7 +13532,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Leider konnte die en-US Sprachdatei von PhotoDemon auf diesem PC nicht lokalisiert werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, aber möglicherweise nicht in Development- oder Beta-Builds.
 
-Um eine neue Übersetzung zu starten, laden Sie bitte eine neue Version von PhotoDemon von photodemon.org herunter.</translation>
+Um eine neue Übersetzung zu starten, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org herunter.</translation>
 </phrase>
 
 <phrase>
@@ -13537,7 +13541,7 @@ Um eine neue Übersetzung zu starten, laden Sie bitte eine neue Version von Phot
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Leider konnte diese Sprachdatei nicht geladen werden. Es ist möglich, dass das Exemplar auf diesem PC veraltet ist.
 
-Um fortzusetzen, laden Sie bitte eine neue Version von PhotoDemon von photodemon.org herunter.</translation>
+Um fortzusetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.org herunter.</translation>
 </phrase>
 
 <phrase>
