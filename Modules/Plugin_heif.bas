@@ -479,9 +479,9 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
             If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "libheif helper library returned: " & Strings.StringFromCharPtr(initError.pCharMessage, False) & " for heif_init"
             
             If InitializeEngine Then
-                PDDebug.LogAction "libheif initialized successfully."
+                If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "libheif initialized successfully."
             Else
-                PDDebug.LogAction "libheif initialization failed."
+                PDDebug.LogAction "WARNING: libheif initialization failed."
             End If
             
         Else
