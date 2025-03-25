@@ -281,6 +281,35 @@ Public Function InitializeEngine(Optional ByVal actuallyLoadDLL As Boolean = Tru
     
 End Function
 
+'Test if an arbitrary file is a valid PDF.  This should catch nearly all valid PDF files, regardless of extension.
+Public Function IsFileLikelyPDF(ByRef srcFile As String) As Boolean
+    
+    IsFileLikelyPDF = False
+    
+    'If the required 3rd-party library isn't available, bail (because we can't handle the file anyway)
+    If (Not Plugin_PDF.IsPDFiumAvailable()) Then Exit Function
+    
+    If Files.FileExists(srcFile) Then
+        
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile, 1024, optimizeAccess:=OptimizeSequentialAccess) Then
+            
+            'Pull the first 1024 bytes into a local string
+            Dim testHeader As String
+            testHeader = cStream.ReadString_ASCII(1024)
+            
+            'Look for the magic number "%PDF" somewhere in those bytes
+            IsFileLikelyPDF = Strings.StrStrI(StrPtr(testHeader), StrPtr("%PDF"))
+            
+            cStream.StopStream True
+            
+        End If
+        
+    End If
+    
+End Function
+
 Public Function IsPDFiumAvailable() As Boolean
     IsPDFiumAvailable = m_LibAvailable
 End Function
