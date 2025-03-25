@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.49</langversion>
+<langversion>9.0.50</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -2362,6 +2362,11 @@ Użyj innego programu, aby zapisać obraz w formacie JPEG lub PNG przed załadow
 </phrase>
 
 <phrase>
+<original>A third-party library (%1) reported the following error</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, PhotoDemon was unable to load the following image(s):
 
 %1
@@ -2387,7 +2392,7 @@ Please sprawdź, czy te obrazy istnieją i czy używają obsługiwanego formatu 
 <translation>Powielanie obrazu zakończono.</translation>
 </phrase>
 
-<!-- Loading.bas contains 40 phrases. 17 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2756,13 +2761,6 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 </phrase>
 
 <phrase>
-<original>A third-party library (%1) reported the following error: 
-
-%2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>BSD license</original>
 <translation>Licencja BSD</translation>
 </phrase>
@@ -2792,7 +2790,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation></translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 36 phrases. 27 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 37 phrases. 29 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14638,8 +14636,8 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5909 phrases. -->
-<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
 <!-- These 2771 phrases contain approximately 12034 total words. -->
 
 </pdData>

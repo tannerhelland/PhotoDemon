@@ -95,6 +95,13 @@ Private m_ZstdEnabled As Boolean
 ' (generally "App.Path/App/PhotoDemon/Plugins"), because we pass it directly to LoadLibrary.
 Private m_PluginPath As String
 
+'External libraries use a variety of error-reporting mechanisms.  Before sustained interaction with a library,
+' call the StartPluginErrorTracking() function to reset these string stacks.  Forward subsequent error messages
+' from those external libraries via the NotifyPluginError function, and at the end of the library interactions,
+' you can bulk-retrieve stacks of all passed messages.  This is especially helpful when loading 1+ images,
+' as a bunch of messages may be generated.
+Private m_ErrSrc As pdStringStack, m_ErrMsg As pdStringStack, m_ErrRelevantFile As pdStringStack
+
 Public Function GetPluginPath() As String
     If (LenB(m_PluginPath) <> 0) Then
         GetPluginPath = m_PluginPath
@@ -214,7 +221,11 @@ End Sub
 '
 '(As with other library error messages, *all* popups are disabled during batch processes.)
 Public Sub GenericLibraryError(ByVal pluginID As PD_PluginCore, ByRef pluginMsg As String)
-    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "A third-party library (%1) reported the following error: " & vbCrLf & vbCrLf & "%2", vbExclamation Or vbOKOnly, "Error", PluginManager.GetPluginName(pluginID), pluginMsg
+    Dim fullErrMsg As pdString: Set fullErrMsg = New pdString
+    fullErrMsg.AppendLine g_Language.TranslateMessage("A third-party library (%1) reported the following error:", PluginManager.GetPluginName(pluginID))
+    fullErrMsg.AppendLineBreak
+    fullErrMsg.Append pluginMsg
+    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox fullErrMsg.ToString(), vbExclamation Or vbOKOnly, "Error"
     Message "Error: %1", pluginMsg
 End Sub
 
@@ -972,6 +983,46 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As PD_PluginCore) As Boo
     End If
     
 End Function
+
+'External libraries use a variety of error-reporting mechanisms.  Before sustained interaction with a library,
+' call this function to reset a series of string stacks used for library error tracking.
+Public Sub StartPluginErrorTracking()
+    Set m_ErrSrc = New pdStringStack
+    Set m_ErrMsg = New pdStringStack
+    Set m_ErrRelevantFile = New pdStringStack
+End Sub
+
+'After calling StartPluginErrorTracking(), forward any subsequent error messages from external libraries here.
+' At the end of the library interactions, you can bulk-retrieve stacks of all passed messages via GetPluginErrorStacks().
+Public Sub NotifyPluginError(ByVal srcLibrary As PD_PluginCore, ByRef errMsg As String, Optional ByRef errSrcFilename As String = vbNullString)
+    If (m_ErrSrc Is Nothing) Or (m_ErrMsg Is Nothing) Or (m_ErrRelevantFile Is Nothing) Then StartPluginErrorTracking
+    m_ErrSrc.AddString PluginManager.GetPluginName(srcLibrary)
+    m_ErrMsg.AddString errMsg
+    m_ErrRelevantFile.AddString errSrcFilename
+End Sub
+
+'Returns TRUE if 1+ error messages were sent since the last call to StartPluginErrorTracking()
+Public Function AreThereAnyPluginErrors() As Boolean
+    AreThereAnyPluginErrors = 0
+    If (Not m_ErrSrc Is Nothing) Then AreThereAnyPluginErrors = (m_ErrSrc.GetNumOfStrings > 0)
+End Function
+
+'After interacting with a third-party library, call this function to retrieve any/all passed error strings.
+' (The destination libraries *will* be reset.)  Optionally, you can check AreThereAnyPluginErrors(), above,
+' to see if this function needs to be called at all.
+'
+'After this function returns, the local copies of these errors *will* be erased, by design, unless you specifically
+' request otherwise.
+Public Sub GetErrorPluginStacks(ByRef dstErrLibraries As pdStringStack, ByRef dstErrMsgs As pdStringStack, Optional ByRef dstErrFilenames As pdStringStack, Optional ByVal eraseStringsAfter As Boolean = True)
+    If (m_ErrSrc Is Nothing) Or (m_ErrMsg Is Nothing) Or (m_ErrRelevantFile Is Nothing) Then StartPluginErrorTracking
+    Set dstErrLibraries = New pdStringStack
+    dstErrLibraries.CloneStack m_ErrSrc
+    Set dstErrMsgs = New pdStringStack
+    dstErrMsgs.CloneStack m_ErrMsg
+    Set dstErrFilenames = New pdStringStack
+    dstErrFilenames.CloneStack m_ErrRelevantFile
+    If eraseStringsAfter Then StartPluginErrorTracking
+End Sub
 
 'Convenience wrapper for mass plugin termination.  This function *will* release each plugin's handle,
 ' making them unavailable for further use.  As such, do not call this until PD is shutting down

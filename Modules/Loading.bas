@@ -22,6 +22,11 @@ Attribute VB_Name = "Loading"
 
 Option Explicit
 
+'If an image load was initiated as part of a multi-image import (like the user dragging a million photos
+' from an Explorer window), this will be set to TRUE.  While TRUE, as many import dialogs as possible
+' need to be suspended until the *end* of the import process.
+Private m_MultiImageLoadActive As Boolean
+
 'This function is used for loading a user-facing image (vs loading an internal PD image).  Loading a user-facing image involves
 ' a large amount of extra work (like metadata parsing) which we simply don't care about when loading internal resources.
 '
@@ -683,7 +688,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 Message "Action canceled."
             Else
                 Message "Failed to load %1", srcFile
-                PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation Or vbOKOnly, "Image import failed", srcFile
+                If (Not m_MultiImageLoadActive) Then
+                    Dim tmpFileList As pdStringStack: Set tmpFileList = New pdStringStack
+                    tmpFileList.AddString Files.FileGetName(srcFile)
+                    ShowFailedLoadMsgBox tmpFileList
+                End If
             End If
         End If
     End If
@@ -1048,9 +1057,12 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
 
     If (Not srcList Is Nothing) Then
         
+        m_MultiImageLoadActive = True
+        
         'A lot can go wrong when loading image files.  This function will track failures and notify the user post-load.
         Dim numFailures As Long, numSuccesses As Long
-        Dim brokenFiles As String
+        Dim brokenFiles As pdStringStack
+        Set brokenFiles = New pdStringStack
         
         'The user may receive import dialogs for some formats.  This value will track the number of canceled import dialogs.
         ' If this value matches the number of failed imports, nothing actually went wrong during the import - the user just
@@ -1072,12 +1084,12 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
                 loadResult = vbNo
                 
                 'Proceed with the load, and track successes/failures separately
-                If LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, loadResult, False, vbNullString, numCanceledImports) Then
+                If Loading.LoadFileAsNewImage(tmpFilename, vbNullString, updateRecentFileList, loadResult, False, vbNullString, numCanceledImports) Then
                     numSuccesses = numSuccesses + 1
                 Else
                     If (LenB(tmpFilename) <> 0) Then
                         numFailures = numFailures + 1
-                        brokenFiles = brokenFiles & Files.FileGetName(tmpFilename) & vbCrLf
+                        brokenFiles.AddString Files.FileGetName(tmpFilename, False)
                     End If
                 End If
                 
@@ -1109,9 +1121,11 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         'Free the shared compression buffer (which may have been used to "suspend" previous images as we went)
         UIImages.FreeSharedCompressBuffer
         
+        m_MultiImageLoadActive = False
+        
         'Even if returning TRUE, we still want to notify the user of any failed files
         If (numFailures > 0) And (numCanceledImports = 0) Then
-            PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & "Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!", vbExclamation Or vbOKOnly, "Some images were not loaded", brokenFiles
+            ShowFailedLoadMsgBox brokenFiles
         End If
         
     Else
@@ -1119,6 +1133,52 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
     End If
 
 End Function
+
+'Display a message box with explanation for one or more failed-to-load files
+Private Sub ShowFailedLoadMsgBox(ByRef srcFilesBroken As pdStringStack)
+    
+    'Failsafe only
+    If (srcFilesBroken Is Nothing) Then Exit Sub
+    If (srcFilesBroken.GetNumOfStrings <= 0) Then Exit Sub
+    
+    'Assemble the list of broken files into a list of filenames and/or plugin error messages,
+    ' to help the user understand what may have gone wrong.
+    Dim listOfFiles As pdString
+    Set listOfFiles = New pdString
+    
+    'Retrieve any third-party library errors from the plugin manager
+    Dim tplNames As pdStringStack, tplMsgs As pdStringStack, tplFilenames As pdStringStack
+    PluginManager.GetErrorPluginStacks tplNames, tplMsgs, tplFilenames
+    
+    Dim i As Long, idxMatch As Long
+    For i = 0 To srcFilesBroken.GetNumOfStrings() - 1
+        
+        'Tahoma on XP doesn't have the same unicode range guarantees as Vista+
+        If OS.IsWin7OrLater Then
+            listOfFiles.Append ChrW$(&H2022)
+        Else
+            listOfFiles.Append "-"
+        End If
+        
+        listOfFiles.Append Space$(2)
+        listOfFiles.AppendLine srcFilesBroken.GetString(i)
+            
+        'If a load process supplied a reason for the error, append it now
+        idxMatch = tplFilenames.ContainsString(srcFilesBroken.GetString(i), True)
+        If (idxMatch >= 0) Then
+            listOfFiles.Append Space$(4) & "("
+            'Do not change this error text; it is mirrored in PluginManager.GenericLibraryError()
+            listOfFiles.Append g_Language.TranslateMessage("A third-party library (%1) reported the following error:", tplNames.GetString(idxMatch))
+            listOfFiles.Append " "
+            listOfFiles.Append Strings.ForceSingleLine(Trim$(tplMsgs.GetString(idxMatch)))
+            listOfFiles.AppendLine ")"
+        End If
+        
+    Next i
+    
+    PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & "Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!", vbExclamation Or vbOKOnly, "Some images were not loaded", listOfFiles.ToString()
+    
+End Sub
 
 'Load an image via drag/drop on an individual control.
 ' Optionally, a target x/y can be passed (this is really only useful for dropping on an existing canvas;

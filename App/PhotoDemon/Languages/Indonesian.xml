@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1742</langversion>
+<langversion>8.9.1743</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2365,6 +2365,11 @@ Silakan gunakan program lain untuk menyimpan gambar ini dalam format generik (se
 </phrase>
 
 <phrase>
+<original>A third-party library (%1) reported the following error</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, PhotoDemon was unable to load the following image(s):
 
 %1
@@ -2390,7 +2395,7 @@ Harap verifikasi bahwa gambar ini ada, dan mereka menggunakan format gambar yang
 <translation>Duplikasi gambar lengkap.</translation>
 </phrase>
 
-<!-- Loading.bas contains 40 phrases. 17 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2759,13 +2764,6 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 </phrase>
 
 <phrase>
-<original>A third-party library (%1) reported the following error: 
-
-%2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>BSD license</original>
 <translation>Lisensi BSD</translation>
 </phrase>
@@ -2795,7 +2793,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation></translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 36 phrases. 27 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 37 phrases. 29 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14640,8 +14638,8 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <phrasecount>2771</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5909 phrases. -->
-<!-- 3138 are duplicates, so only 2771 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
 <!-- These 2771 phrases contain approximately 12034 total words. -->
 
 </pdData>

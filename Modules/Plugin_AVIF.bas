@@ -138,14 +138,23 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
         'Record full details of failures
         If ConvertAVIFtoStandardImage Then
             PDDebug.LogAction "libavif reports success; transferring image to internal parser..."
+        
+        'Conversion failed
         Else
+            
             InternalError funcName, "load failed; output follows:"
             PDDebug.LogAction outputString
             
             Dim avifStdErr As String
             avifStdErr = cShell.GetStdErrDataAsString()
             PDDebug.LogAction "For reference, here's stderr: " & avifStdErr
-            If (Macros.GetMacroStatus <> MacroBATCH) And allowErrorPopups Then PluginManager.GenericLibraryError CCP_libavif, cShell.GetStdErrDataAsString()
+            
+            'Store any problems in the central plugin error tracker
+            PluginManager.NotifyPluginError CCP_libavif, avifStdErr, Files.FileGetName(srcFile, False)
+            
+            'You can also report errors directly to the user here:
+            'If (Macros.GetMacroStatus <> MacroBATCH) And allowErrorPopups Then PluginManager.GenericLibraryError CCP_libavif, cShell.GetStdErrDataAsString()
+            
         End If
         
     Else
