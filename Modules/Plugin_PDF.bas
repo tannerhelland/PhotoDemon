@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_PDF"
 'Adobe PDF Interface (via pdfium)
 'Copyright 2024-2025 by Tanner Helland
 'Created: 23/February/24
-'Last updated: 01/April/24
-'Last update: don't attempt to unload the library if it wasn't loaded in the first place
+'Last updated: 25/March/25
+'Last update: delay-load the library to improve performance
 '
 'PhotoDemon uses the pdfium library (https://pdfium.googlesource.com/pdfium/) for all PDF features.
 ' pdfium is provided under BSD-3 and Apache 2.0 licenses (https://pdfium.googlesource.com/pdfium/+/main/LICENSE).
@@ -170,6 +170,10 @@ Private m_LibFullPath As String, m_LibVersion As String
 
 Public Sub CopyPDFiumProcAddresses(ByRef dstList() As PDFium_ProcAddress)
     
+    'Ensure library is available before proceeding
+    If (m_LibHandle = 0) Then Plugin_PDF.InitializeEngine True
+    If (Not Plugin_PDF.IsPDFiumAvailable()) Then Exit Sub
+    
     ReDim dstList(0 To [last_address] - 1) As PDFium_ProcAddress
     
     Dim i As PDFium_ProcAddress
@@ -183,6 +187,7 @@ Public Sub ForciblySetAvailability(ByVal newState As Boolean)
     m_LibAvailable = newState
 End Sub
 
+'Version is retrieved from file properties, *not* an actual PDF call (so we don't need to initialize first)
 Public Function GetVersion() As String
     
     'Version string is cached on first access
@@ -205,7 +210,7 @@ Public Function GetVersion() As String
         
 End Function
 
-Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
+Public Function InitializeEngine(Optional ByVal actuallyLoadDLL As Boolean = True) As Boolean
     
     'I don't currently know how to build pdfium in an XP-compatible way.
     ' As a result, its support is limited to Win Vista and above.
@@ -215,7 +220,13 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         Exit Function
     End If
         
-    m_LibFullPath = pathToDLLFolder & "pdfium.dll"
+    m_LibFullPath = PluginManager.GetPluginPath() & "pdfium.dll"
+    
+    If (Not actuallyLoadDLL) Then
+        InitializeEngine = Files.FileExists(m_LibFullPath)
+        Exit Function
+    End If
+    
     m_LibHandle = VBHacks.LoadLib(m_LibFullPath)
     m_LibAvailable = (m_LibHandle <> 0)
     InitializeEngine = m_LibAvailable

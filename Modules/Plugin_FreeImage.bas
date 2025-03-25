@@ -59,7 +59,8 @@ Private m_ExportPreviewDIB As pdDIB
 'FreeImage supports a callback for errors.  We store any returned strings in a normal pdStringStack, for convenience.
 Private m_Errors As pdStringStack
 
-'Initialize FreeImage.  Do not call this until you have verified FreeImage's existence (typically via the PluginManager module)
+'Initialize FreeImage.  The optional "actuallyLoadDLL" parameter allows you to just check if the DLL exists
+' (pass FALSE) or fully initialize the library (pass TRUE).
 Public Function InitializeFreeImage(Optional ByVal actuallyLoadDLL As Boolean = True) As Boolean
     
     'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)

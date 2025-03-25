@@ -1588,6 +1588,10 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     LoadPDF = False
     If (Not OS.IsVistaOrLater) Then Exit Function
     
+    'For now, validate extension.
+    ' (In the future, magic number could be checked?)
+    If Strings.StringsNotEqual(Files.FileGetExtension(srcFile), "pdf", True) Then Exit Function
+    
     'If the user requests "preview only" mode, set the "noUI" mode to match
     If previewOnly Then noUI = True
     

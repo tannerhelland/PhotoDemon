@@ -796,9 +796,11 @@ Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolea
         'LittleCMS maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_LittleCMS
             initializationSuccessful = LittleCMS.InitializeLCMS()
-            
+        
+        'pdfium is loaded on-demand.  This initial check only checks to see if the file exists;
+        ' once a PDF function is actually called, we'll load the full library.
         Case CCP_pdfium
-            initializationSuccessful = Plugin_PDF.InitializeEngine(PluginManager.GetPluginPath)
+            initializationSuccessful = Plugin_PDF.InitializeEngine(False)
             
         Case CCP_pspiHost
             initializationSuccessful = Plugin_8bf.InitializeEngine(PluginManager.GetPluginPath)
