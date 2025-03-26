@@ -315,7 +315,7 @@ Private Sub cmdBar_ResetClick()
     ucResize.UnitOfMeasurement = mu_Pixels
     ucResize.SetInitialDimensions PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, PDImages.GetActiveImage.GetDPI
     ucResize.AspectRatioLock = False
-        
+    
     'Set the middle position as the anchor
     m_CurrentAnchor = 4
 
@@ -341,15 +341,17 @@ End Sub
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeCanvas(ByVal functionParams As String)
     
-    Dim iWidth As Long, iHeight As Long, anchorPosition As Long, curUnit As PD_MeasurementUnit, iDPI As Double
+    'TODO: retrieve new measurements as float ( to enable cm/in measurements)
+    Dim dstWidthF As Double, dstHeightF As Double
+    Dim anchorPosition As Long, curUnit As PD_MeasurementUnit, iDPI As Double
     
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     cParams.SetParamString functionParams
     
     With cParams
-        iWidth = .GetDouble("width", PDImages.GetActiveImage.Width)
-        iHeight = .GetDouble("height", PDImages.GetActiveImage.Height)
+        dstWidthF = .GetDouble("width", PDImages.GetActiveImage.Width)
+        dstHeightF = .GetDouble("height", PDImages.GetActiveImage.Height)
         anchorPosition = .GetLong("anchor", 0&)
         curUnit = .GetLong("unit", mu_Pixels)
         iDPI = .GetDouble("dpi", PDImages.GetActiveImage.GetDPI)
@@ -362,8 +364,9 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = ConvertOtherUnitToPixels(curUnit, iWidth, iDPI, srcWidth)
-    iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, srcHeight)
+    Dim pxWidth As Long, pxHeight As Long
+    pxWidth = Units.ConvertOtherUnitToPixels(curUnit, dstWidthF, iDPI, srcWidth)
+    pxHeight = Units.ConvertOtherUnitToPixels(curUnit, dstHeightF, iDPI, srcHeight)
     
     'If the image contains an active selection, disable it before transforming the canvas
     If PDImages.GetActiveImage.IsSelectionActive Then
@@ -383,43 +386,43 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
         
         'Top-center
         Case 1
-            dstX = (iWidth - srcWidth) \ 2
+            dstX = (pxWidth - srcWidth) \ 2
             dstY = 0
         
         'Top-right
         Case 2
-            dstX = (iWidth - srcWidth)
+            dstX = (pxWidth - srcWidth)
             dstY = 0
         
         'Middle-left
         Case 3
             dstX = 0
-            dstY = (iHeight - srcHeight) \ 2
+            dstY = (pxHeight - srcHeight) \ 2
         
         'Middle-center
         Case 4
-            dstX = (iWidth - srcWidth) \ 2
-            dstY = (iHeight - srcHeight) \ 2
+            dstX = (pxWidth - srcWidth) \ 2
+            dstY = (pxHeight - srcHeight) \ 2
         
         'Middle-right
         Case 5
-            dstX = (iWidth - srcWidth)
-            dstY = (iHeight - srcHeight) \ 2
+            dstX = (pxWidth - srcWidth)
+            dstY = (pxHeight - srcHeight) \ 2
         
         'Bottom-left
         Case 6
             dstX = 0
-            dstY = (iHeight - srcHeight)
+            dstY = (pxHeight - srcHeight)
         
         'Bottom-center
         Case 7
-            dstX = (iWidth - srcWidth) \ 2
-            dstY = (iHeight - srcHeight)
+            dstX = (pxWidth - srcWidth) \ 2
+            dstY = (pxHeight - srcHeight)
         
         'Bottom right
         Case 8
-            dstX = (iWidth - srcWidth)
-            dstY = (iHeight - srcHeight)
+            dstX = (pxWidth - srcWidth)
+            dstY = (pxHeight - srcHeight)
     
     End Select
     
@@ -429,16 +432,14 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
     Dim i As Long
     For i = 0 To PDImages.GetActiveImage.GetNumOfLayers - 1
-    
         With PDImages.GetActiveImage.GetLayerByIndex(i)
             .SetLayerOffsetX .GetLayerOffsetX + dstX
             .SetLayerOffsetY .GetLayerOffsetY + dstY
         End With
-    
     Next i
     
     'Finally, update the parent image's size and DPI values
-    PDImages.GetActiveImage.UpdateSize False, iWidth, iHeight
+    PDImages.GetActiveImage.UpdateSize False, pxWidth, pxHeight
     PDImages.GetActiveImage.SetDPI iDPI, iDPI
     Interface.DisplaySize PDImages.GetActiveImage()
     Tools.NotifyImageSizeChanged
