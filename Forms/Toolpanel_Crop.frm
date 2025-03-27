@@ -1072,7 +1072,7 @@ Private Sub MatchPresetsToCurrentValues()
     
     'Skip the first entry in the list, because it's blank (it represents "no preset match").
     Dim i As Long, idxTarget As Long
-    idxTarget = ddPreset(0).ListIndex
+    idxTarget = 0
     
     For i = 1 To m_numPresetSize - 1
         
@@ -1105,7 +1105,7 @@ Private Sub MatchPresetsToCurrentValues()
     firstSize = tudCrop(4).Value
     secondSize = tudCrop(5).Value
     
-    idxTarget = ddPreset(1).ListIndex
+    idxTarget = 0
     For i = 1 To m_numPresetAspect - 1
         
         'As relevant, convert the source size from real-world units to pixels
