@@ -1115,8 +1115,10 @@ Public Function GetCropGuides() As Long
 End Function
 
 Public Sub SetCropGuide(ByVal newValue As Long)
-    m_CropGuides = newValue
-    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If (m_CropGuides <> newValue) Then
+        m_CropGuides = newValue
+        If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
 End Sub
 
 Public Function GetCropHighlight() As Boolean
@@ -1124,8 +1126,10 @@ Public Function GetCropHighlight() As Boolean
 End Function
 
 Public Sub SetCropHighlight(ByVal newValue As Boolean)
-    m_HighlightCrop = newValue
-    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If (m_HighlightCrop <> newValue) Then
+        m_HighlightCrop = newValue
+        If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
 End Sub
 
 Public Function GetCropHighlightColor() As Long
@@ -1133,8 +1137,10 @@ Public Function GetCropHighlightColor() As Long
 End Function
 
 Public Sub SetCropHighlightColor(ByVal newColor As Long)
-    m_HighlightColor = newColor
-    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If (m_HighlightColor <> newColor) Then
+        m_HighlightColor = newColor
+        If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
 End Sub
 
 Public Function GetCropHighlightOpacity() As Single
@@ -1142,8 +1148,10 @@ Public Function GetCropHighlightOpacity() As Single
 End Function
 
 Public Sub SetCropHighlightOpacity(ByVal newOpacity As Single)
-    m_HighlightOpacity = newOpacity
-    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    If (m_HighlightOpacity <> newOpacity) Then
+        m_HighlightOpacity = newOpacity
+        If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    End If
 End Sub
 
 'Called whenever the crop tool is selected
@@ -1738,7 +1746,7 @@ End Sub
 
 'Returns TRUE if the current crop rect is valid; if FALSE, do *not* attempt to crop
 Private Function ValidateCropRectF() As Boolean
-        
+    
     ValidateCropRectF = True
     
     'Validate left/right/width/height

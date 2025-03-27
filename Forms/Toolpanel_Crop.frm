@@ -721,7 +721,13 @@ Private Sub ddGuides_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, new
 End Sub
 
 Private Sub ddPreset_Click(Index As Integer)
+    
+    'When matching current crop size and aspect ratio to an existing preset, we *don't* want to redraw the screen
+    ' (because subtle differences in aspect ratio may trigger an awkward redraw with a slightly different crop rect).
+    ' (Also, the m_DontUpdate value is set by the MatchPresetsToCurrentValues() function.)
+    If m_DontUpdate Then Exit Sub
     ApplyNewPreset Index
+    
 End Sub
 
 'When a preset box is clicked (either aspect ratio or size), apply that preset immediately.
@@ -1053,6 +1059,9 @@ Private Sub MatchPresetsToCurrentValues()
     'Failsafe only
     If (m_numPresetSize < 2) Then Exit Sub
     
+    If m_DontUpdate Then Exit Sub
+    m_DontUpdate = True
+    
     'Start with size matching
     Dim firstSize As Long, secondSize As Long
     firstSize = tudCrop(2).Value
@@ -1063,7 +1072,7 @@ Private Sub MatchPresetsToCurrentValues()
     
     'Skip the first entry in the list, because it's blank (it represents "no preset match").
     Dim i As Long, idxTarget As Long
-    idxTarget = 0
+    idxTarget = ddPreset(0).ListIndex
     
     For i = 1 To m_numPresetSize - 1
         
@@ -1096,7 +1105,7 @@ Private Sub MatchPresetsToCurrentValues()
     firstSize = tudCrop(4).Value
     secondSize = tudCrop(5).Value
     
-    idxTarget = 0
+    idxTarget = ddPreset(1).ListIndex
     For i = 1 To m_numPresetAspect - 1
         
         'As relevant, convert the source size from real-world units to pixels
@@ -1115,6 +1124,7 @@ Private Sub MatchPresetsToCurrentValues()
     Next i
     
     If (ddPreset(1).ListIndex <> idxTarget) Then ddPreset(1).ListIndex = idxTarget
+    m_DontUpdate = False
     
 End Sub
 
