@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>繁體中文</langname>
-<langversion>7.0.326</langversion>
+<langversion>7.0.327</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Chiahong Hong</author>
@@ -12548,7 +12548,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>golden sections</original>
+<original>golden ratio</original>
 <translation></translation>
 </phrase>
 

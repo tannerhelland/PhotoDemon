@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.647</langversion>
+<langversion>6.7.648</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -12599,7 +12599,7 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
-<original>golden sections</original>
+<original>golden ratio</original>
 <translation></translation>
 </phrase>
 

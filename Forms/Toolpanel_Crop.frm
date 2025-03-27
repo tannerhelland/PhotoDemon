@@ -708,6 +708,10 @@ Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPresse
     End Select
 End Sub
 
+Private Sub ddGuides_Click()
+    Tools_Crop.SetCropGuide ddGuides.ListIndex
+End Sub
+
 Private Sub ddGuides_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
         newTargetHwnd = Me.sldHighlight.hWndSpinner
@@ -843,7 +847,7 @@ Private Sub Form_Load()
     ddGuides.AddItem "center lines", 1
     ddGuides.AddItem "rule of thirds", 2
     ddGuides.AddItem "rule of fifths", 3
-    ddGuides.AddItem "golden sections", 4
+    ddGuides.AddItem "golden ratio", 4
     ddGuides.AddItem "diagonals", 5
     ddGuides.ListIndex = 0
     
@@ -858,6 +862,7 @@ Private Sub Form_Load()
     Tools_Crop.SetCropHighlight chkHighlight.Value
     Tools_Crop.SetCropHighlightColor clrHighlight.Color
     Tools_Crop.SetCropHighlightOpacity sldHighlight.Value
+    Tools_Crop.SetCropGuide ddGuides.ListIndex
     
     Tools.SetToolBusyState False
     
@@ -885,11 +890,11 @@ End Sub
 'Non-measurement settings are stored between sessions
 Private Sub m_LastUsedSettings_AddCustomPresetData()
     
-    'LOCALIZATION!
     With m_lastUsedSettings
         .AddPresetData "crop-tool-allow-enlarge", Trim$(Str$(Me.chkAllowGrowing.Value))
         .AddPresetData "crop-tool-delete-pixels", Trim$(Str$(Me.chkDelete.Value))
         .AddPresetData "crop-tool-highlight", Trim$(Str$(Me.chkHighlight.Value))
+        .AddPresetData "crop-tool-guides", Trim$(Str$(Me.ddGuides.ListIndex))
         .AddPresetData "crop-tool-target-image", Trim$(Str$((Me.btsTarget.ListIndex = 0)))
     End With
 
@@ -907,6 +912,8 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
         Tools_Crop.SetCropHighlight chkHighlight.Value
         Tools_Crop.SetCropHighlightColor Me.clrHighlight.Color
         Tools_Crop.SetCropHighlightOpacity Me.sldHighlight.Value
+        Me.ddGuides.ListIndex = CLng(.RetrievePresetData("crop-tool-guides", "0"))
+        Tools_Crop.SetCropGuide Me.ddGuides.ListIndex
         If Strings.StringsEqual(.RetrievePresetData("crop-tool-target-image", STR_TRUE), STR_TRUE, True) Then
             Me.btsTarget.ListIndex = 0
         Else

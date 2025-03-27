@@ -75,6 +75,22 @@ Private m_DeleteCroppedPixels As Boolean
 'Users can crop either the full image (default) or only the active layer.
 Private m_CropAllLayers As Boolean
 
+'Users can ask for a guide overlay in various ratios
+Private Enum PD_CropGuide
+    cg_None = 0
+    cg_Centers = 1
+    cg_RuleOfThirds = 2
+    cg_RuleOfFifths = 3
+    cg_GoldenRatio = 4
+    cg_Diagonals = 5
+End Enum
+
+#If False Then
+    Private Const cg_None = 0, cg_Centers = 1, cg_RuleOfThirds = 2, cg_RuleOfFifths = 3, cg_GoldenRatio = 4, cg_Diagonals = 5
+#End If
+
+Private m_CropGuides As PD_CropGuide
+
 'Apply a crop operation from a param string constructed by the GetCropParamString() function.
 ' (This function is a thin wrapper to Crop_ApplyCrop(); it just extracts relevant params from the
 '  param string and forwards the results.)
@@ -466,7 +482,133 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
         
     End If
     
-    'Now it's time to render the crop outline and any on-canvas interactive UI bits
+    'Now it's time to render the crop outline, crop guides, and any on-canvas interactive UI bits
+    Dim basePenToUse As pd2DPen, topPenToUse As pd2DPen
+    
+    'Start with guides (so that the crop rect itself can "overlay" the guides, if any)
+    Dim ptGuides() As PointFloat, numPtsRender As Long, renderPointsNow As Boolean
+    
+    Set basePenToUse = basePenInactive
+    Set topPenToUse = topPenInactive
+    
+    Select Case m_CropGuides
+        
+        Case cg_None
+            renderPointsNow = False
+            
+        Case cg_Centers
+            renderPointsNow = True
+            numPtsRender = 2
+            ReDim ptGuides(0 To numPtsRender * 2 - 1) As PointFloat
+            ptGuides(0).x = cropRectCanvas.Left + cropRectCanvas.Width \ 2
+            ptGuides(0).y = cropRectCanvas.Top
+            ptGuides(1).x = ptGuides(0).x
+            ptGuides(1).y = cropRectCanvas.Top + cropRectCanvas.Height
+            ptGuides(2).x = cropRectCanvas.Left
+            ptGuides(2).y = cropRectCanvas.Top + cropRectCanvas.Height \ 2
+            ptGuides(3).x = cropRectCanvas.Left + cropRectCanvas.Width
+            ptGuides(3).y = ptGuides(2).y
+            
+        Case cg_RuleOfThirds
+            renderPointsNow = True
+            numPtsRender = 4
+            ReDim ptGuides(0 To numPtsRender * 2 - 1) As PointFloat
+            For i = 0 To numPtsRender - 1 Step 2
+                ptGuides(i).x = cropRectCanvas.Left + (cropRectCanvas.Width * (i \ 2 + 1) \ 3)
+                ptGuides(i).y = cropRectCanvas.Top
+                ptGuides(i + 1).x = ptGuides(i).x
+                ptGuides(i + 1).y = cropRectCanvas.Top + cropRectCanvas.Height
+            Next i
+            For i = 0 To numPtsRender - 1 Step 2
+                ptGuides(numPtsRender + i).x = cropRectCanvas.Left
+                ptGuides(numPtsRender + i).y = cropRectCanvas.Top + (cropRectCanvas.Height * (i \ 2 + 1) \ 3)
+                ptGuides(numPtsRender + i + 1).x = cropRectCanvas.Left + cropRectCanvas.Width
+                ptGuides(numPtsRender + i + 1).y = ptGuides(numPtsRender + i).y
+            Next i
+            
+        Case cg_RuleOfFifths
+            renderPointsNow = True
+            numPtsRender = 8
+            ReDim ptGuides(0 To numPtsRender * 2 - 1) As PointFloat
+            For i = 0 To numPtsRender - 1 Step 2
+                ptGuides(i).x = cropRectCanvas.Left + (cropRectCanvas.Width * (i \ 2 + 1) \ 5)
+                ptGuides(i).y = cropRectCanvas.Top
+                ptGuides(i + 1).x = ptGuides(i).x
+                ptGuides(i + 1).y = cropRectCanvas.Top + cropRectCanvas.Height
+            Next i
+            For i = 0 To numPtsRender - 1 Step 2
+                ptGuides(numPtsRender + i).x = cropRectCanvas.Left
+                ptGuides(numPtsRender + i).y = cropRectCanvas.Top + (cropRectCanvas.Height * (i \ 2 + 1) \ 5)
+                ptGuides(numPtsRender + i + 1).x = cropRectCanvas.Left + cropRectCanvas.Width
+                ptGuides(numPtsRender + i + 1).y = ptGuides(numPtsRender + i).y
+            Next i
+            
+        Case cg_GoldenRatio
+            renderPointsNow = True
+            Const GOLDEN_RATIO As Double = 0.61803398874989
+            numPtsRender = 4
+            ReDim ptGuides(0 To numPtsRender * 2 - 1) As PointFloat
+            ptGuides(0).x = cropRectCanvas.Left + (cropRectCanvas.Width * GOLDEN_RATIO)
+            ptGuides(0).y = cropRectCanvas.Top
+            ptGuides(1).x = ptGuides(0).x
+            ptGuides(1).y = cropRectCanvas.Top + cropRectCanvas.Height
+            
+            ptGuides(2).x = cropRectCanvas.Left + cropRectCanvas.Width - (cropRectCanvas.Width * GOLDEN_RATIO)
+            ptGuides(2).y = cropRectCanvas.Top
+            ptGuides(3).x = ptGuides(2).x
+            ptGuides(3).y = cropRectCanvas.Top + cropRectCanvas.Height
+            
+            ptGuides(4).x = cropRectCanvas.Left
+            ptGuides(4).y = cropRectCanvas.Top + (cropRectCanvas.Height * GOLDEN_RATIO)
+            ptGuides(5).x = cropRectCanvas.Left + cropRectCanvas.Width
+            ptGuides(5).y = ptGuides(4).y
+            
+            ptGuides(6).x = cropRectCanvas.Left
+            ptGuides(6).y = cropRectCanvas.Top + cropRectCanvas.Height - (cropRectCanvas.Height * GOLDEN_RATIO)
+            ptGuides(7).x = cropRectCanvas.Left + cropRectCanvas.Width
+            ptGuides(7).y = ptGuides(6).y
+            
+        Case cg_Diagonals
+            renderPointsNow = True
+            numPtsRender = 4
+            ReDim ptGuides(0 To numPtsRender * 2 - 1) As PointFloat
+            
+            Dim minDimension As Single
+            minDimension = PDMath.Min2Float_Single(cropRectCanvas.Width, cropRectCanvas.Height)
+            
+            ptGuides(0).x = cropRectCanvas.Left
+            ptGuides(0).y = cropRectCanvas.Top
+            ptGuides(1).x = ptGuides(0).x + minDimension
+            ptGuides(1).y = ptGuides(0).y + minDimension
+            
+            ptGuides(2).x = cropRectCanvas.Left + cropRectCanvas.Width
+            ptGuides(2).y = cropRectCanvas.Top
+            ptGuides(3).x = ptGuides(2).x - minDimension
+            ptGuides(3).y = cropRectCanvas.Top + minDimension
+            
+            ptGuides(4).x = cropRectCanvas.Left
+            ptGuides(4).y = cropRectCanvas.Top + cropRectCanvas.Height
+            ptGuides(5).x = cropRectCanvas.Left + minDimension
+            ptGuides(5).y = cropRectCanvas.Top + cropRectCanvas.Height - minDimension
+            
+            ptGuides(6).x = cropRectCanvas.Left + cropRectCanvas.Width
+            ptGuides(6).y = cropRectCanvas.Top + cropRectCanvas.Height
+            ptGuides(7).x = cropRectCanvas.Left + cropRectCanvas.Width - minDimension
+            ptGuides(7).y = ptGuides(6).y - minDimension
+        
+    End Select
+    
+    If renderPointsNow Then
+        For i = 0 To numPtsRender * 2 - 1 Step 2
+            PD2D.DrawLineF_FromPtF cSurface, basePenInactive, ptGuides(i), ptGuides(i + 1)
+        Next i
+        For i = 0 To numPtsRender * 2 - 1 Step 2
+            PD2D.DrawLineF_FromPtF cSurface, topPenInactive, ptGuides(i), ptGuides(i + 1)
+        Next i
+    End If
+    
+    Set basePenToUse = Nothing
+    Set topPenToUse = Nothing
     
     'Determine if the user is interacting with a corner node or edge node (or by correlation, neither)
     Dim userIsCornerDragging As Boolean, userIsEdgeDragging As Boolean
@@ -527,7 +669,6 @@ Public Sub DrawCanvasUI(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage)
         listOfRectPts(4) = listOfRectPts(0)
         
         'Render each edge in turn, highlighting as relevant
-        Dim basePenToUse As pd2DPen, topPenToUse As pd2DPen
         For i = 0 To 3
             
             If (idxTarget = i) Then
@@ -967,6 +1108,15 @@ End Function
 
 Public Sub SetCropDeletePixels(ByVal newValue As Boolean)
     m_DeleteCroppedPixels = newValue
+End Sub
+
+Public Function GetCropGuides() As Long
+    GetCropGuides = m_CropGuides
+End Function
+
+Public Sub SetCropGuide(ByVal newValue As Long)
+    m_CropGuides = newValue
+    If PDImages.IsImageActive And IsValidCropActive() Then Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
 End Sub
 
 Public Function GetCropHighlight() As Boolean
