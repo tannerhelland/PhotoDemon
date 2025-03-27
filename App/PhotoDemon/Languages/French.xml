@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.646</langversion>
+<langversion>6.7.647</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -12539,6 +12539,11 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
+<original>guides</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12579,6 +12584,31 @@ Vous pouvez alors si besoin
 </phrase>
 
 <phrase>
+<original>center lines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rule of thirds</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rule of fifths</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>golden sections</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diagonals</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
 <translation>Bloquer cette valeur. (une seule valeur peut être bloquée à la fois. Si vous bloquez une nouvelle valeur, la précédente sera débloquée)</translation>
 </phrase>
@@ -12603,7 +12633,7 @@ Vous pouvez alors si besoin
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14646,10 +14676,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2771</phrasecount>
+<phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
-<!-- These 2771 phrases contain approximately 12034 total words. -->
+<!-- As of this build, PhotoDemon contains 5917 phrases. -->
+<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- These 2777 phrases contain approximately 12046 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1751</langversion>
+<langversion>8.9.1752</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -12524,6 +12524,11 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>guides</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>target</original>
 <translation></translation>
 </phrase>
@@ -12564,6 +12569,31 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>center lines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rule of thirds</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rule of fifths</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>golden sections</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diagonals</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
 <translation></translation>
 </phrase>
@@ -12588,7 +12618,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -14622,10 +14652,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2771</phrasecount>
+<phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3139 are duplicates, so only 2771 unique phrases have been written to file. -->
-<!-- These 2771 phrases contain approximately 12034 total words. -->
+<!-- As of this build, PhotoDemon contains 5917 phrases. -->
+<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- These 2777 phrases contain approximately 12046 total words. -->
 
 </pdData>

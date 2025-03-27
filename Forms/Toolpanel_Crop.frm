@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Crop
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   4605
+   ClientHeight    =   5640
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   12180
@@ -25,7 +25,7 @@ Begin VB.Form toolpanel_Crop
    MinButton       =   0   'False
    Moveable        =   0   'False
    NegotiateMenus  =   0   'False
-   ScaleHeight     =   307
+   ScaleHeight     =   376
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   812
    ShowInTaskbar   =   0   'False
@@ -94,13 +94,24 @@ Begin VB.Form toolpanel_Crop
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
-      Height          =   3255
+      Height          =   3975
       Index           =   2
       Left            =   8400
       Top             =   960
       Width           =   3705
       _ExtentX        =   6535
       _ExtentY        =   5741
+      Begin PhotoDemon.pdDropDown ddGuides 
+         Height          =   735
+         Left            =   120
+         TabIndex        =   29
+         Top             =   2760
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   1296
+         Caption         =   "guides"
+         FontSizeCaption =   10
+      End
       Begin PhotoDemon.pdButtonStrip btsTarget 
          Height          =   855
          Left            =   120
@@ -116,7 +127,7 @@ Begin VB.Form toolpanel_Crop
          Height          =   375
          Left            =   1140
          TabIndex        =   19
-         Top             =   2370
+         Top             =   2325
          Width           =   2490
          _ExtentX        =   4392
          _ExtentY        =   661
@@ -129,7 +140,7 @@ Begin VB.Form toolpanel_Crop
          Height          =   375
          Left            =   480
          TabIndex        =   18
-         Top             =   2370
+         Top             =   2325
          Width           =   615
          _ExtentX        =   1085
          _ExtentY        =   661
@@ -151,7 +162,7 @@ Begin VB.Form toolpanel_Crop
          Index           =   2
          Left            =   3240
          TabIndex        =   4
-         Top             =   2850
+         Top             =   3540
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -407,7 +418,7 @@ Begin VB.Form toolpanel_Crop
          Index           =   0
          Left            =   3480
          TabIndex        =   27
-         Top             =   1080
+         Top             =   1200
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -478,7 +489,11 @@ Private Sub btsOrientation_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub btsOrientation_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = Me.ddPreset(Index).hWnd Else newTargetHwnd = cmdLock(Index).hWnd
+    If (Index = 0) Then
+        If shiftTabWasPressed Then newTargetHwnd = Me.ddPreset(Index).hWnd Else newTargetHwnd = Me.sldDPI.hWndSlider
+    Else
+        If shiftTabWasPressed Then newTargetHwnd = Me.ddPreset(Index).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+    End If
 End Sub
 
 Private Sub btsTarget_Click(ByVal buttonIndex As Long)
@@ -495,11 +510,13 @@ Private Sub btsTarget_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, ne
         If Me.cmdCommit(1).Enabled Then
             newTargetHwnd = Me.cmdCommit(1).hWnd
         Else
-            newTargetHwnd = Me.ttlPanel(2).Enabled
+            newTargetHwnd = Me.ttlPanel(2).hWnd
         End If
     Else
         If Me.chkAllowGrowing.Enabled Then
             newTargetHwnd = Me.chkAllowGrowing.hWnd
+        ElseIf Me.chkDelete.Enabled Then
+            newTargetHwnd = Me.chkDelete.hWnd
         Else
             newTargetHwnd = Me.chkHighlight.hWnd
         End If
@@ -553,6 +570,8 @@ Private Sub chkHighlight_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean,
     If shiftTabWasPressed Then
         If Me.chkDelete.Enabled Then
             newTargetHwnd = Me.chkDelete.hWnd
+        ElseIf Me.chkAllowGrowing.Enabled Then
+            newTargetHwnd = Me.chkAllowGrowing.hWnd
         Else
             newTargetHwnd = Me.btsTarget.hWnd
         End If
@@ -619,11 +638,11 @@ End Sub
 Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     Select Case Index
         Case 0
-            If shiftTabWasPressed Then newTargetHwnd = Me.btsOrientation(0).hWnd Else newTargetHwnd = Me.ttlPanel(1).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.sldDPI.hWndSpinner Else newTargetHwnd = Me.ttlPanel(1).hWnd
         Case 1
             If shiftTabWasPressed Then newTargetHwnd = Me.btsOrientation(1).hWnd Else newTargetHwnd = Me.ttlPanel(2).hWnd
         Case 2
-            If shiftTabWasPressed Then newTargetHwnd = Me.sldHighlight.hWndSpinner Else newTargetHwnd = Me.tudCrop(0).hWnd
+            If shiftTabWasPressed Then newTargetHwnd = Me.ddGuides.hWnd Else newTargetHwnd = Me.tudCrop(0).hWnd
     End Select
 End Sub
 
@@ -687,6 +706,14 @@ Private Sub cmdLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPresse
         Case 2
             If shiftTabWasPressed Then newTargetHwnd = Me.tudCrop(5).hWnd Else newTargetHwnd = Me.ddPreset(1).hWnd
     End Select
+End Sub
+
+Private Sub ddGuides_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then
+        newTargetHwnd = Me.sldHighlight.hWndSpinner
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(2).hWnd
+    End If
 End Sub
 
 Private Sub ddPreset_Click(Index As Integer)
@@ -811,6 +838,15 @@ Private Sub Form_Load()
     btsOrientation(1).AddItem vbNullString, 1
     btsOrientation(1).ListIndex = 0
     
+    ddGuides.Clear
+    ddGuides.AddItem "none", 0
+    ddGuides.AddItem "center lines", 1
+    ddGuides.AddItem "rule of thirds", 2
+    ddGuides.AddItem "rule of fifths", 3
+    ddGuides.AddItem "golden sections", 4
+    ddGuides.AddItem "diagonals", 5
+    ddGuides.ListIndex = 0
+    
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
     m_lastUsedSettings.SetParentForm Me
@@ -882,6 +918,10 @@ Private Sub m_LastUsedSettings_ReadCustomPresetData()
     
 End Sub
 
+Private Sub sldDPI_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If shiftTabWasPressed Then newTargetHwnd = Me.btsOrientation(0).hWnd Else newTargetHwnd = Me.cmdFlyoutLock(0).hWnd
+End Sub
+
 Private Sub sldHighlight_Change()
     Tools_Crop.SetCropHighlightOpacity sldHighlight.Value
 End Sub
@@ -891,7 +931,7 @@ Private Sub sldHighlight_GotFocusAPI()
 End Sub
 
 Private Sub sldHighlight_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If shiftTabWasPressed Then newTargetHwnd = Me.clrHighlight.hWnd Else newTargetHwnd = Me.btsTarget.hWnd
+    If shiftTabWasPressed Then newTargetHwnd = Me.clrHighlight.hWnd Else newTargetHwnd = Me.ddGuides.hWnd
 End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
