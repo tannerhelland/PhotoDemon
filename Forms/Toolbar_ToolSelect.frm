@@ -559,6 +559,10 @@ End Type
 
 Private m_ToolActions() As PD_ToolboxAction, m_numToolActions As Long
 
+'hWnd of the currently active tool panel.  We must track this and pass it to the window manager
+' when loading a new tool panel.
+Private m_CurrentToolPanelHwnd As Long
+
 Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
@@ -1219,7 +1223,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     'Next, we want to display the current tool options panel, while hiding all inactive ones.
     ' (This must be handled carefully, or we risk accidentally enabling unloaded panels,
     '  which we don't want as toolpanels are quite resource-heavy.)
-    g_WindowManager.DeactivateToolPanel
+    g_WindowManager.DeactivateToolPanel m_CurrentToolPanelHwnd
     
     'To prevent flicker, we handle this in two passes.
     
@@ -1231,12 +1235,13 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             'If this is the active panel, display it
             If (i = m_ActiveToolPanel) Then
                 g_WindowManager.ActivateToolPanel m_Panels(i).PanelHWnd, toolbar_Options.hWnd
+                m_CurrentToolPanelHwnd = m_Panels(i).PanelHWnd
                 Exit For
             End If
             
         Next i
         
-        'Next, hide all other panels
+        'Next, forcibly hide all other panels
         For i = 0 To m_NumOfPanels - 1
             
             If (i <> m_ActiveToolPanel) Then
@@ -1589,7 +1594,7 @@ Public Sub FreeAllToolpanels()
     ' embed it at the bottom of the main window.  Make certain those window bits are reset before
     ' we attempt to unload the panel using built-in VB keywords (because VB will crash if it
     ' encounters unexpected window bits, especially WS_CHILD).
-    If (Not g_WindowManager Is Nothing) Then g_WindowManager.DeactivateToolPanel
+    If (Not g_WindowManager Is Nothing) And (m_CurrentToolPanelHwnd <> 0) Then g_WindowManager.DeactivateToolPanel m_CurrentToolPanelHwnd
     
     'Make sure our internal toolbox collection actually exists before attempting to iterate it
     If (m_NumOfPanels = 0) Then Exit Sub
