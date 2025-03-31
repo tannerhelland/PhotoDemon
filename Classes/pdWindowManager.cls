@@ -393,8 +393,9 @@ Friend Function GetAutoRefreshMode() As Boolean
     GetAutoRefreshMode = m_AutoRefreshMode
 End Function
 
-'Activate a new tool options panel
-Friend Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal parentWindowHWnd As Long, Optional ByVal hwndToDeactivate As Long = 0&, Optional ByVal pxLeft As Long = 0&, Optional ByVal pxTop As Long = 1&)
+'Activate a new child options panel for some arbitrary parent window.  The child window will be sized to
+' auto-fit the parent, unless you also pass dimensions and/or position.
+Friend Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal parentWindowHWnd As Long, Optional ByVal hwndToDeactivate As Long = 0&, Optional ByVal pxLeft As Long = 0&, Optional ByVal pxTop As Long = 1&, Optional ByVal pxWidth As Long = 0&, Optional ByVal pxHeight As Long = 0&)
     
     'Initialize the backup window setting dictionary, as necessary.  We use this to store
     ' a list of which tool panels have been activated this session.  This allows us to swap
@@ -429,7 +430,9 @@ Friend Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal parentWindo
         GetClientRect parentWindowHWnd, parentPanelRect
         
         'Next, move the child form into position
-        SetWindowPos formHWndToActivate, HWND_TOP, pxLeft, pxTop, parentPanelRect.x2 - parentPanelRect.x1, parentPanelRect.y2 - parentPanelRect.y1, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
+        If (pxWidth = 0&) Then pxWidth = (parentPanelRect.x2 - parentPanelRect.x1) - pxLeft
+        If (pxHeight = 0&) Then pxHeight = (parentPanelRect.y2 - parentPanelRect.y1) - pxTop
+        SetWindowPos formHWndToActivate, HWND_TOP, pxLeft, pxTop, pxWidth, pxHeight, SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER
         
         'Finally, set visibility according to the parent window
         Me.SetVisibilityByHWnd formHWndToActivate, Me.GetVisibilityByHWnd(parentWindowHWnd), False

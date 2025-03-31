@@ -1015,7 +1015,7 @@ Private Sub NewToolSelected()
     'With all tool settings initialized, set focus to the canvas.  (Because the previous
     ' tool panel was unloaded, focus can be unpredictable if left up to the system.)
     If (Not g_WindowManager Is Nothing) Then FormMain.MainCanvas(0).SetFocusToCanvasView
-        
+    
 End Sub
 
 'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
@@ -1184,8 +1184,8 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
         
     End If
     
-    'Next, some tools display information about the current layer.  Synchronize that information before proceeding, so that the
-    ' option panel's information is correct as soon as the window appears.
+    'Next, some tools display information about the current layer.  Synchronize that information before proceeding,
+    ' so that the option panel's information is correct as soon as the window appears.
     Tools.SyncToolOptionsUIToCurrentLayer
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
@@ -1591,10 +1591,11 @@ Public Sub FreeAllToolpanels()
     UserControls.HideOpenFlyouts 0&
     
     'The active toolpanel (if one exists) has had its window bits manually modified so that we can
-    ' embed it at the bottom of the main window.  Make certain those window bits are reset before
+    ' embed it atop the parent tool options window.  Make certain those window bits are reset before
     ' we attempt to unload the panel using built-in VB keywords (because VB will crash if it
     ' encounters unexpected window bits, especially WS_CHILD).
     If (Not g_WindowManager Is Nothing) And (m_CurrentToolPanelHwnd <> 0) Then g_WindowManager.DeactivateToolPanel m_CurrentToolPanelHwnd
+    m_CurrentToolPanelHwnd = 0
     
     'Make sure our internal toolbox collection actually exists before attempting to iterate it
     If (m_NumOfPanels = 0) Then Exit Sub

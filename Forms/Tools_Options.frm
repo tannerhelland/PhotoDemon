@@ -104,14 +104,18 @@ End Type
 Private m_numOptionPanels As Long, m_Panels() As OptionPanelTracker
 
 'Current and previously active panels are mirrored here
-Private m_ActivePanel As PD_OptionPanel, m_PreviousPanel As PD_OptionPanel
+Private m_ActivePanel As PD_OptionPanel
+Private m_ActivePanelHWnd As Long
 
 'When the preferences category is changed, only display the controls in that category
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
-    
-    'TODO: hide currently active form (if any), load new form
-    m_PreviousPanel = m_ActivePanel
-    m_ActivePanel = buttonIndex
+    UpdateActivePanel buttonIndex
+End Sub
+
+Private Sub UpdateActivePanel(ByVal idxPanel As Long)
+ 
+    'Hide currently active panel (if any), load new panel
+    m_ActivePanel = idxPanel
     
     'If our panel tracker doesn't exist, create it now
     If (m_numOptionPanels = 0) Then
@@ -120,78 +124,152 @@ Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
     End If
     
     'Next, we need to display the correct preferences panel.
-    m_ActivePanel = buttonIndex
-    If (m_ActivePanel <> OP_None) Then m_Panels(m_ActivePanel).PanelWasLoaded = True
-    Select Case buttonIndex
+    If (Not m_Panels(m_ActivePanel).PanelWasLoaded) Then
+    
+        Select Case m_ActivePanel
+            
+            'Move/size tool
+            Case OP_Interface
+                Load options_Interface
+                options_Interface.LoadUserPreferences
+                options_Interface.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Interface.hWnd
+                
+            Case OP_Loading
+                Load options_Loading
+                options_Loading.LoadUserPreferences
+                options_Loading.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Loading.hWnd
+                
+            Case OP_Saving
+                Load options_Saving
+                options_Saving.LoadUserPreferences
+                options_Saving.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Saving.hWnd
+                
+            Case OP_Performance
+                Load options_Performance
+                options_Performance.LoadUserPreferences
+                options_Performance.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Performance.hWnd
+                
+            Case OP_ColorManagement
+                Load options_ColorManagement
+                options_ColorManagement.LoadUserPreferences
+                options_ColorManagement.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_ColorManagement.hWnd
+                
+            Case OP_Updates
+                Load options_Updates
+                options_Updates.LoadUserPreferences
+                options_Updates.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Updates.hWnd
+                
+            Case OP_Advanced
+                Load options_Advanced
+                options_Advanced.LoadUserPreferences
+                options_Advanced.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Advanced.hWnd
+                
+            Case Else
+                m_ActivePanel = OP_None
+                
+        End Select
         
-        'Move/size tool
-        Case OP_Interface
-            Load options_Interface
-            options_Interface.UpdateAgainstCurrentTheme
-            m_Panels(m_ActivePanel).PanelHWnd = options_Interface.hWnd
+        If (m_ActivePanel <> OP_None) Then m_Panels(m_ActivePanel).PanelWasLoaded = True
+        
+    End If
+        
+    'Next, we want to display the current options panel, while hiding all inactive ones.
+    ' (This must be handled carefully, or we risk accidentally enabling unloaded panels,
+    '  which we don't want as option panels are quite resource-heavy.)
+    If (m_ActivePanelHWnd <> 0&) Then g_WindowManager.DeactivateToolPanel m_ActivePanelHWnd
+    m_ActivePanelHWnd = 0&
+    
+    'To prevent flicker, we handle this in two passes.
+    
+    'First, activate the new window.
+    If (m_numOptionPanels <> 0) Then
+        
+        Dim i As Long
+        For i = 0 To m_numOptionPanels - 1
             
-        Case OP_Loading
-            Load options_Loading
-            options_Loading.UpdateAgainstCurrentTheme
-            m_Panels(m_ActivePanel).PanelHWnd = options_Loading.hWnd
+            If (i = m_ActivePanel) Then
+                
+                'Position the panel slightly to the right of the vertical options list, and at the same
+                ' top position as said list.
+                Dim newLeft As Long, newTop As Long, newWidth As Long, newHeight As Long
+                newLeft = Me.btsvCategory.GetLeft + Me.btsvCategory.GetWidth + Interface.FixDPI(12)
+                newTop = Me.btsvCategory.GetTop
+                newWidth = g_WindowManager.GetClientWidth(Me.hWnd) - newLeft
+                newHeight = (cmdBarMini.GetTop - newTop) - 1
+                
+                'Use the window manager's child panel manager to handle this for us.
+                ' (It automatically tracks window bits and restores them when panels are deactivated.)
+                g_WindowManager.ActivateToolPanel m_Panels(i).PanelHWnd, Me.hWnd, 0, newLeft, newTop, newWidth, newHeight
+                m_ActivePanelHWnd = m_Panels(i).PanelHWnd
+                Exit For
+                
+            End If
             
-        Case OP_Saving
-            Load options_Saving
-            options_Saving.UpdateAgainstCurrentTheme
-            m_Panels(m_ActivePanel).PanelHWnd = options_Saving.hWnd
-            
-        Case OP_Performance
-            Load options_Performance
-            options_Performance.UpdateAgainstCurrentTheme
-            m_Panels(m_ActivePanel).PanelHWnd = options_Performance.hWnd
-            
-        Case OP_ColorManagement
-            Load options_ColorManagement
-            options_ColorManagement.UpdateAgainstCurrentTheme
-            m_Panels(m_ActivePanel).PanelHWnd = options_ColorManagement.hWnd
-            
-        Case OP_Updates
-            Load options_Updates
-            options_Updates.UpdateAgainstCurrentTheme
-            m_Panels(m_ActivePanel).PanelHWnd = options_Updates.hWnd
-            
-        Case OP_Advanced
-            Load options_Advanced
-            options_Advanced.UpdateAgainstCurrentTheme
-            m_Panels(m_ActivePanel).PanelHWnd = options_Advanced.hWnd
-            
-        Case Else
-            m_ActivePanel = OP_None
-            
-    End Select
+        Next i
+        
+        'Then, forcibly hide all other panels
+        For i = 0 To m_numOptionPanels - 1
+            If (i <> m_ActivePanel) Then
+                If (m_Panels(i).PanelHWnd <> 0) Then
+                    g_WindowManager.SetVisibilityByHWnd m_Panels(i).PanelHWnd, False
+                    'm_Panels(i).PanelHWnd = 0
+                End If
+            End If
+        Next i
+        
+    End If
     
 End Sub
 
 Private Sub cmdBarMini_OKClick()
     
-    'Start by auto-validating any controls that accept user input
+    'Start by auto-validating any controls that accept user input.
+    ' (It's up to child forms to implement this independently.)
     Dim validateCheck As Boolean
     validateCheck = True
     
-    Dim eControl As Object
-    For Each eControl In FormOptions.Controls
-        
-        'Obviously, we can only validate our own custom objects that have built-in auto-validate functions.
-        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then
+    Dim i As Long
+    For i = 0 To MAX_NUM_OPTION_PANELS - 1
+        If m_Panels(i).PanelWasLoaded Then
             
-            'Finally, ask the control to validate itself
-            If (Not eControl.IsValid) Then
-                validateCheck = False
+            Select Case i
+                Case OP_Interface
+                    validateCheck = validateCheck And options_Interface.ValidateAllInput()
+                Case OP_Loading
+                    validateCheck = validateCheck And options_Loading.ValidateAllInput()
+                Case OP_Saving
+                    validateCheck = validateCheck And options_Saving.ValidateAllInput()
+                Case OP_Performance
+                    validateCheck = validateCheck And options_Performance.ValidateAllInput()
+                Case OP_ColorManagement
+                    validateCheck = validateCheck And options_ColorManagement.ValidateAllInput()
+                Case OP_Updates
+                    validateCheck = validateCheck And options_Updates.ValidateAllInput()
+                Case OP_Advanced
+                    validateCheck = validateCheck And options_Advanced.ValidateAllInput()
+            End Select
+            
+            If (Not validateCheck) Then
+                Me.btsvCategory.ListIndex = i
                 Exit For
             End If
             
         End If
-    Next eControl
+    Next i
     
     If (Not validateCheck) Then
         cmdBarMini.DoNotUnloadForm
         Exit Sub
     End If
+    
+    'If we're still here, all panels (loaded this session) passed user input validation.
     
     Message "Saving preferences..."
     Me.Visible = False
@@ -207,29 +285,29 @@ Private Sub cmdBarMini_OKClick()
     
     'Write preferences out to file in category order.  (The preference XML file is order-agnostic, but I try to
     ' maintain the order used in the Preferences dialog itself to make changes easier.)
-    
-    '***************************************************************************
-    
-    'Interface preferences
-    SetProgBarVal 1
-    
-    'Loading preferences
-    SetProgBarVal 2
-    
-    'Saving preferences
-    SetProgBarVal 3
-    
-    'Performance preferences.  (Note that many of these are specially cached, for obvious perf reasons.)
-    SetProgBarVal 4
-    
-    'Color-management preferences
-    SetProgBarVal 5
-    
-    'Update preferences
-    SetProgBarVal 6
-    
-    'Advanced preferences
-    SetProgBarVal 7
+    For i = 0 To MAX_NUM_OPTION_PANELS - 1
+        SetProgBarVal i + 1
+        If m_Panels(i).PanelWasLoaded Then
+            
+            Select Case i
+                Case OP_Interface
+                    options_Interface.SaveUserPreferences
+                Case OP_Loading
+                    options_Loading.SaveUserPreferences
+                Case OP_Saving
+                    options_Saving.SaveUserPreferences
+                Case OP_Performance
+                    options_Performance.SaveUserPreferences
+                Case OP_ColorManagement
+                    options_ColorManagement.SaveUserPreferences
+                Case OP_Updates
+                    options_Updates.SaveUserPreferences
+                Case OP_Advanced
+                    options_Advanced.SaveUserPreferences
+            End Select
+            
+        End If
+    Next i
     
     'Forcibly write a copy of the preference data out to file
     UserPrefs.ForceWriteToFile
@@ -289,10 +367,20 @@ Private Sub LoadAllPreferences()
     
 End Sub
 
+Private Sub Form_Activate()
+    
+    'Because the window manager synchronizes visibility state between parent and child window
+    ' (as it should), loading a child form while the parent form is still invisible means the
+    ' child window doesn't appear.
+    
+    'So we need to manually show it at first appearance (or if the parent window gets hidden then re-shown).
+    If (m_ActivePanelHWnd <> 0) And (Not g_WindowManager Is Nothing) Then g_WindowManager.SetVisibilityByHWnd m_ActivePanelHWnd, True
+    
+End Sub
+
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the preferences file
 Private Sub Form_Load()
-        
-    m_PreviousPanel = OP_None
+    
     m_ActivePanel = OP_None
     
     Dim i As Long
@@ -336,6 +424,7 @@ Private Sub Form_Load()
     'If (activePanel > picContainer.UBound) Then activePanel = picContainer.UBound
     'picContainer(activePanel).Visible = True
     btsvCategory.ListIndex = activePanel
+    UpdateActivePanel activePanel
     
     'Apply translations and visual themes
     Interface.ApplyThemeAndTranslations Me
@@ -343,5 +432,63 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
+    
+    Interface.ReleaseFormTheming Me
+    
+    'The active panel (if one exists) has had its window bits manually modified so that we can
+    ' embed it inside the parent options window.  Make certain those window bits are reset before
+    ' we attempt to unload the panel using built-in VB keywords (because VB will crash if it
+    ' encounters unexpected window bits, especially WS_CHILD).
+    If (Not g_WindowManager Is Nothing) And (m_ActivePanelHWnd <> 0) Then g_WindowManager.DeactivateToolPanel m_ActivePanelHWnd
+    m_ActivePanelHWnd = 0
+    
+    'Make sure our internal panel collection actually exists before attempting to iterate it
+    If (m_numOptionPanels = 0) Then Exit Sub
+    
+    'Free any panels that were loaded this session
+    Dim i As PD_OptionPanel
+    For i = 0 To MAX_NUM_OPTION_PANELS - 1
+        
+        'If we loaded this panel during this session, unload it manually now
+        If m_Panels(i).PanelWasLoaded Then
+            
+            Select Case i
+                    
+                'Move/size tool
+                Case OP_Interface
+                    Unload options_Interface
+                    Set options_Interface = Nothing
+                    
+                Case OP_Loading
+                    Unload options_Loading
+                    Set options_Loading = Nothing
+                    
+                Case OP_Saving
+                    Unload options_Saving
+                    Set options_Saving = Nothing
+                    
+                Case OP_Performance
+                    Unload options_Performance
+                    Set options_Performance = Nothing
+                    
+                Case OP_ColorManagement
+                    Unload options_ColorManagement
+                    Set options_ColorManagement = Nothing
+                    
+                Case OP_Updates
+                    Unload options_Updates
+                    Set options_Updates = Nothing
+                    
+                Case OP_Advanced
+                    Unload options_Advanced
+                    Set options_Advanced = Nothing
+                    
+            End Select
+            
+            m_Panels(i).PanelWasLoaded = False
+            
+        End If
+        
+    Next i
+    
 End Sub

@@ -228,9 +228,31 @@ Public Sub SaveUserPreferences()
     
 End Sub
 
+'Upon calling, validate all input.  Return FALSE if validation on 1+ controls fails.
+Public Function ValidateAllInput() As Boolean
+    
+    ValidateAllInput = True
+    
+    Dim eControl As Object
+    For Each eControl In Me.Controls
+        
+        'Most UI elements on this dialog are idiot-proof, but spin controls (including those embedded
+        ' in slider controls) are an exception.
+        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then
+            
+            'Finally, ask the control to validate itself
+            If (Not eControl.IsValid) Then
+                ValidateAllInput = False
+                Exit For
+            End If
+            
+        End If
+    Next eControl
+    
+End Function
+
 'This function is called at least once, immediately following Form_Load(),
 ' but it can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
     Interface.ApplyThemeAndTranslations Me
 End Sub
-

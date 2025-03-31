@@ -405,6 +405,8 @@ Private Sub picGrid_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal
             chkSize = 8
         Case 2
             chkSize = 16
+        Case Else
+            chkSize = 8
     End Select
     
     Dim tmpGrid As pdDIB
@@ -490,6 +492,29 @@ Public Sub SaveUserPreferences()
     Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
     
 End Sub
+
+'Upon calling, validate all input.  Return FALSE if validation on 1+ controls fails.
+Public Function ValidateAllInput() As Boolean
+    
+    ValidateAllInput = True
+    
+    Dim eControl As Object
+    For Each eControl In Me.Controls
+        
+        'Most UI elements on this dialog are idiot-proof, but spin controls (including those embedded
+        ' in slider controls) are an exception.
+        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then
+            
+            'Finally, ask the control to validate itself
+            If (Not eControl.IsValid) Then
+                ValidateAllInput = False
+                Exit For
+            End If
+            
+        End If
+    Next eControl
+    
+End Function
 
 Private Sub UpdateAlphaGridVisibility()
     Dim colorBoxVisibility As Boolean
