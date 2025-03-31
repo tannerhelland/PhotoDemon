@@ -52,16 +52,17 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Program Preferences Handler
+'Tools > Options Handler
 'Copyright 2002-2025 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 16/January/25
-'Last update: new user preference for snap distance (degrees) for angle snapping
+'Last updated: 29/March/25
+'Last update: total overhaul of this dialog; individual panels are now split into standalone forms,
+'             and each is loaded at run-time if/when the user interacts with it
 '
-'Dialog for interfacing with the user's desired program preferences.  Handles reading/writing from/to the persistent
-' XML file that actually stores all preferences.
+'Dialog for interfacing with the user's desired program options.
 '
-'Note that this form interacts heavily with the pdPreferences class.
+'This form interacts heavily with the UserPrefs module.  (That module is also responsible for all
+' low-level reading/writing of preferences; this is just the UI for interacting with it.)
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -70,15 +71,100 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'In 2025, I removed all options panels from *this* form and separated them out into standalone forms.
+' This greatly improves load-times for this dialog, cleans up the code a *lot* (because specialized
+' preference loading/saving behavior and/or UI considerations are now split across many forms).
+'
+'Because of this new organization, panels need to be dynamically loaded and positioned at run-time.
+Private Enum PD_OptionPanel
+    OP_None = -1
+    OP_Interface = 0
+    OP_Loading = 1
+    OP_Saving = 2
+    OP_Performance = 3
+    OP_ColorManagement = 4
+    OP_Updates = 5
+    OP_Advanced = 6
+End Enum
+
+#If False Then
+    Private Const OP_None = -1, OP_Interface = 0, OP_Loading = 1, OP_Saving = 2, OP_Performance = 3, OP_ColorManagement = 4, OP_Updates = 5, OP_Advanced = 6
+#End If
+
+Private Const MAX_NUM_OPTION_PANELS As Long = OP_Advanced + 1
+
+'Because options panels are not loaded unless the user interacts with them, it's likely that only *some*
+' panels will be touched in a given session.  To improve performance, we only save options from a given
+' panel *if* that panel was touched this session.
+Private Type OptionPanelTracker
+    PanelHWnd As Long
+    PanelWasLoaded As Boolean
+End Type
+
+Private m_numOptionPanels As Long, m_Panels() As OptionPanelTracker
+
+'Current and previously active panels are mirrored here
+Private m_ActivePanel As PD_OptionPanel, m_PreviousPanel As PD_OptionPanel
+
 'When the preferences category is changed, only display the controls in that category
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
     
     'TODO: hide currently active form (if any), load new form
+    m_PreviousPanel = m_ActivePanel
+    m_ActivePanel = buttonIndex
     
-    'Dim catID As Long
-    'For catID = 0 To btsvCategory.ListCount - 1
-    '    picContainer(catID).Visible = (catID = buttonIndex)
-    'Next catID
+    'If our panel tracker doesn't exist, create it now
+    If (m_numOptionPanels = 0) Then
+        m_numOptionPanels = MAX_NUM_OPTION_PANELS
+        ReDim m_Panels(0 To m_numOptionPanels - 1) As OptionPanelTracker
+    End If
+    
+    'Next, we need to display the correct preferences panel.
+    m_ActivePanel = buttonIndex
+    If (m_ActivePanel <> OP_None) Then m_Panels(m_ActivePanel).PanelWasLoaded = True
+    Select Case buttonIndex
+        
+        'Move/size tool
+        Case OP_Interface
+            Load options_Interface
+            options_Interface.UpdateAgainstCurrentTheme
+            m_Panels(m_ActivePanel).PanelHWnd = options_Interface.hWnd
+            
+        Case OP_Loading
+            Load options_Loading
+            options_Loading.UpdateAgainstCurrentTheme
+            m_Panels(m_ActivePanel).PanelHWnd = options_Loading.hWnd
+            
+        Case OP_Saving
+            Load options_Saving
+            options_Saving.UpdateAgainstCurrentTheme
+            m_Panels(m_ActivePanel).PanelHWnd = options_Saving.hWnd
+            
+        Case OP_Performance
+            Load options_Performance
+            options_Performance.UpdateAgainstCurrentTheme
+            m_Panels(m_ActivePanel).PanelHWnd = options_Performance.hWnd
+            
+        Case OP_ColorManagement
+            Load options_ColorManagement
+            options_ColorManagement.UpdateAgainstCurrentTheme
+            m_Panels(m_ActivePanel).PanelHWnd = options_ColorManagement.hWnd
+            
+        Case OP_Updates
+            Load options_Updates
+            options_Updates.UpdateAgainstCurrentTheme
+            m_Panels(m_ActivePanel).PanelHWnd = options_Updates.hWnd
+            
+        Case OP_Advanced
+            Load options_Advanced
+            options_Advanced.UpdateAgainstCurrentTheme
+            m_Panels(m_ActivePanel).PanelHWnd = options_Advanced.hWnd
+            
+        Case Else
+            m_ActivePanel = OP_None
+            
+    End Select
+    
 End Sub
 
 Private Sub cmdBarMini_OKClick()
@@ -205,6 +291,9 @@ End Sub
 
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the preferences file
 Private Sub Form_Load()
+        
+    m_PreviousPanel = OP_None
+    m_ActivePanel = OP_None
     
     Dim i As Long
     

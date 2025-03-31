@@ -154,3 +154,10 @@ Public Sub SaveUserPreferences()
     UserPrefs.SetPref_Boolean "Updates", "Update Notifications", chkUpdates(0).Value
     
 End Sub
+
+'This function is called at least once, immediately following Form_Load(),
+' but it can be called again if the active language or theme changes.
+Public Sub UpdateAgainstCurrentTheme()
+    Interface.ApplyThemeAndTranslations Me
+End Sub
+

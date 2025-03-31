@@ -381,4 +381,9 @@ Public Sub SaveUserPreferences()
     
 End Sub
 
+'This function is called at least once, immediately following Form_Load(),
+' but it can be called again if the active language or theme changes.
+Public Sub UpdateAgainstCurrentTheme()
+    Interface.ApplyThemeAndTranslations Me
+End Sub
 

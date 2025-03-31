@@ -1050,12 +1050,8 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     
     'If our panel tracker doesn't exist, create it now
     If (m_NumOfPanels = 0) Then
-        
-        'Unfortunately, we don't currently have an easy way to generate this value automatically,
-        ' so it must be hard-coded.
         m_NumOfPanels = NUM_OF_TOOL_PANELS
         ReDim m_Panels(0 To m_NumOfPanels - 1) As ToolPanelTracker
-        
     End If
     
     'Next, we need to display the correct tool options panel.  There is no set pattern to this;
