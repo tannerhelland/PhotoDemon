@@ -333,40 +333,6 @@ Private Sub cmdBarMini_OKClick()
         
 End Sub
 
-'RESET will regenerate the preferences file from scratch.  This can be an effective way to
-' "reset" a copy of the program.
-Private Sub cmdReset_Click()
-
-    'Before resetting, warn the user
-    Dim confirmReset As VbMsgBoxResult
-    confirmReset = PDMsgBox("All settings will be restored to their default values.  This action cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbExclamation Or vbYesNo, "Reset PhotoDemon")
-
-    'If the user gives final permission, rewrite the preferences file from scratch and repopulate this form
-    If (confirmReset = vbYes) Then
-    
-        UserPrefs.ResetPreferences
-        LoadAllPreferences
-        
-        'Restore the currently active language to the preferences file; this prevents the language from resetting to English
-        ' (a behavior that isn't made clear by this action).
-        g_Language.WriteLanguagePreferencesToFile
-        
-    End If
-
-End Sub
-
-'Load all relevant values from the user's preferences file, and populate corresponding UI elements
-' with those settings
-Private Sub LoadAllPreferences()
-    
-    'Preferences can be loaded in any order (without consequence), but due to the size of PD's
-    ' settings list, I try to keep them ordered by category.
-    
-    
-    'TODO
-    
-End Sub
-
 Private Sub Form_Activate()
     
     'Because the window manager synchronizes visibility state between parent and child window
@@ -410,23 +376,19 @@ Private Sub Form_Load()
         
     End With
     
-    'Hide all category panels (the proper one will be activated after prefs are loaded)
-    'For i = 0 To picContainer.Count - 1
-    '    picContainer(i).Visible = False
-    'Next i
-    
-    'With all controls initialized, we can now assign them their corresponding values from the preferences file
-    If PDMain.IsProgramRunning() Then LoadAllPreferences
-    
     'Finally, activate the last preferences panel that the user looked at
     Dim activePanel As Long
     activePanel = UserPrefs.GetPref_Long("Core", "Last Preferences Page", 0)
-    'If (activePanel > picContainer.UBound) Then activePanel = picContainer.UBound
-    'picContainer(activePanel).Visible = True
+    
+    'Failsafe only against bad inputs or future changes
+    If (activePanel >= Me.btsvCategory.ListCount) Or (activePanel < 0) Then activePanel = 0
+    
+    'Set the left-side button strip index to match, and just in case, manually ensure that panel is active
     btsvCategory.ListIndex = activePanel
     UpdateActivePanel activePanel
     
-    'Apply translations and visual themes
+    'Apply translations and visual themes to *this* form (UpdateActivePanel(), above, already handled
+    ' that for the child panel form).
     Interface.ApplyThemeAndTranslations Me
     
 End Sub
@@ -490,5 +452,56 @@ Private Sub Form_Unload(Cancel As Integer)
         End If
         
     Next i
+    
+End Sub
+
+'Called by the _Advanced options panel if the user wants the nuclear "start over" option.
+' (This rebuilds a new user preferences file from scratch.  Note that this doesn't reset *everything*
+'  related to PD - individual forms still have their individual preset files, for example - but it
+'  resets all core app behavior.)
+Public Sub ResetAllPreferences()
+
+    'Before resetting, warn the user
+    Dim confirmReset As VbMsgBoxResult
+    confirmReset = PDMsgBox("All settings will be restored to their default values.  This action cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbExclamation Or vbYesNo, "Reset PhotoDemon")
+    
+    'If the user gives final permission, rewrite the preferences file from scratch and repopulate this form
+    If (confirmReset = vbYes) Then
+        
+        'This resets the preferences file *permanently*.
+        UserPrefs.ResetPreferences
+        
+        'We now need to manually reload the contents of any loaded panels.
+        Dim i As Long
+        For i = 0 To MAX_NUM_OPTION_PANELS - 1
+            
+            If m_Panels(i).PanelWasLoaded Then
+                
+                Select Case i
+                    Case OP_Interface
+                        options_Interface.LoadUserPreferences
+                    Case OP_Loading
+                        options_Loading.LoadUserPreferences
+                    Case OP_Saving
+                        options_Saving.LoadUserPreferences
+                    Case OP_Performance
+                        options_Performance.LoadUserPreferences
+                    Case OP_ColorManagement
+                        options_ColorManagement.LoadUserPreferences
+                    Case OP_Updates
+                        options_Updates.LoadUserPreferences
+                    Case OP_Advanced
+                        options_Advanced.LoadUserPreferences
+                End Select
+                
+            End If
+            
+        Next i
+        
+        'Restore the currently active language to the preferences file -  this prevents the language
+        ' from resetting to English (a behavior that occurs as an accidental byproduct of resetting everything).
+        g_Language.WriteLanguagePreferencesToFile
+        
+    End If
     
 End Sub

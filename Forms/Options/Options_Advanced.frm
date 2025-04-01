@@ -177,6 +177,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+'Resetting preferences involves some circular bullshit, so the magic happens back in FormOptions
+' (which is dynamically made the parent of this window at run-time).
+Private Sub cmdReset_Click()
+    FormOptions.ResetAllPreferences
+End Sub
+
 'When the "..." button is clicked, prompt the user with a "browse for folder" dialog
 Private Sub cmdTmpPath_Click()
     Dim tString As String
