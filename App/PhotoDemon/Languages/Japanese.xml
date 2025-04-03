@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語 (Japanese)</langname>
-<langversion>2024.7.25</langversion>
+<langversion>2024.7.26</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Kenji Hoshimoto (Hosiken)</author>
@@ -13716,336 +13716,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation>タイトル バーのテキスト</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>記憶する最近使ったファイルの最大数</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>最近使ったファイル</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>メイン ウィンドウ</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation>グリッド サイズ</translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation>グリッドの色</translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation>最近使ったファイル メニューのテキスト</translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation>キャンバスの背景色</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>スナップ距離 (ピクセル)</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>画像が外部ソース (Windows エクスプローラーなど) から届いた場合</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>HDR および RAW 画像の読み込み時にトーン マッピングのオプションを表示</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>画像ファイルに含まれる回転の情報に従う</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>ハイダイナミック レンジ (HDR) 画像</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>バイナリー型のタグを Base64 として強制的に抽出 (遅い)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>元の JPEG 画質設定を推定</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>未知のタグを抽出</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>重複タグを自動的に非表示</translation>
-</phrase>
-
-<phrase>
-<original>app instances</original>
-<translation>アプリのインスタンス</translation>
-</phrase>
-
-<phrase>
-<original>session restore</original>
-<translation>セッションの復元</translation>
-</phrase>
-
-<phrase>
-<original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>システムの更新や再起動によって中断されたセッションを自動的に復元</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn about unsaved changes</original>
-<translation>画像を閉じるとき、未保存の変更を警告</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the default file format to</original>
-<translation>"名前を付けて保存" のときの既定のファイル フォーマット</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>"保存" するとき</translation>
-</phrase>
-
-<phrase>
-<original>safe saving</original>
-<translation>安全な保存</translation>
-</phrase>
-
-<phrase>
-<original>unsaved changes</original>
-<translation>未保存の変更</translation>
-</phrase>
-
-<phrase>
-<original>default format</original>
-<translation>既定のフォーマット</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>最後に使った編集ソフトとして PhotoDemon を挙げる</translation>
-</phrase>
-
-<phrase>
-<original>default folder</original>
-<translation>既定のフォルダー</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the initial folder to</original>
-<translation>"名前を付けて保存" での初期フォルダー</translation>
-</phrase>
-
-<phrase>
-<original>when "Save as" is used</original>
-<translation>"名前を付けて保存" を使用したとき</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>元に戻す/やり直しのデータを以下のレベルで圧縮</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>インターフェース要素を装飾するとき</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>画像とレイヤーのサムネイル画像を生成するとき</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>画像キャンバスをレンダリングするとき</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>インターフェース</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>圧縮なし (最速)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>最大圧縮 (最も遅い)</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>元に戻す/やり直す</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>サムネイル</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>ビューポート</translation>
-</phrase>
-
-<phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>ブラック ポイント補正を使う</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>ディスプレイのレンダリング インテント</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>利用可能なディスプレイ</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>ディスプレイのカラー マネージメントをオフにする</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>各ディスプレイで現在のシステム プロファイルを使用</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>このディスプレイのカラー プロファイル</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>ポリシーを表示</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>各ディスプレイにカスタム プロファイルを使用</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>高解像度マウス入力</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>すべてのプログラム設定をリセット</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>メモリー使用量がここに表示されます</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>メモリー診断</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>一時ファイルの場所</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>やり直す</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>アプリケーション設定のフォルダー</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>デバッグ ログを生成</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(免責事項は実行時に入力されます)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>アップデートを自動的にチェック</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>これらのトラックからの更新を許可</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>更新オプション</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>更新の準備ができたら通知</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>環境設定の保存</translation>
 </phrase>
@@ -14053,25 +13723,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>Preferences updated.</original>
 <translation>環境設定が更新されました。</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>カラー プロファイルを選択してください</translation>
-</phrase>
-
-<phrase>
-<original>All settings will be restored to their default values.  This action cannot be undone.
-
-Are you sure you want to continue?</original>
-<translation>すべての設定が既定値に戻されます。  この操作は元に戻せません。
-
-本当に続けますか?</translation>
-</phrase>
-
-<phrase>
-<original>Reset PhotoDemon</original>
-<translation>PhotoDemon をリセット</translation>
 </phrase>
 
 <phrase>
@@ -14105,359 +13756,20 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>compact (filename only)</original>
-<translation>コンパクト (ファイル名のみ)</translation>
-</phrase>
-
-<phrase>
-<original>verbose (filename and path)</original>
-<translation>詳細 (ファイル名とパス)</translation>
-</phrase>
-
-<phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>PhotoDemon メイン ウィンドウのタイトル バーには、現在ロードされている画像に関する情報が表示されます。  この環境設定を使用して、表示される情報量を制御します。</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>“最近使ったファイル” メニューの幅は Windows によって制限されています。  このメニューがあふれるのを防ぐために、PhotoDemon では画像の完全な場所ではなく画像名のみを表示できます。</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>中間調</translation>
-</phrase>
-
-<phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>透明なピクセルを識別しやすくするために、特別なグリッドがその "背面" に表示されます。  この設定により、グリッドの外観が変更されます。</translation>
-</phrase>
-
-<phrase>
-<original>small</original>
-<translation>小さい</translation>
-</phrase>
-
-<phrase>
-<original>large</original>
-<translation>大きい</translation>
-</phrase>
-
-<phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR および RAW 画像には、PC 画面が物理的に表示できるよりも多くの色が含まれています。  このような画像を表示する前に、元の画像データにトーン マッピング操作を適用する必要があります。</translation>
-</phrase>
-
-<phrase>
-<original>load into this instance</original>
-<translation>このインスタンスにロード</translation>
-</phrase>
-
-<phrase>
-<original>load into a new PhotoDemon instance</original>
-<translation>新しい PhotoDemon インスタンスにロード</translation>
-</phrase>
-
-<phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>古いカメラや写真編集ソフトウェアではメタデータが正しく埋め込まれていない可能性があり、単一ファイル内に複数のメタデータのコピーが作成されることがあります。   PhotoDemon は、重複したエントリを自動的に解決できます。</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>JPEG 形式では、画像ファイル内に JPEG 品質設定を保存する方法がありません。  PhotoDemon は、他のメタデータ (量子化テーブルなど) から品質設定を推測することで、この問題を回避できます。</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>一部のカメラ メーカーは、画像ファイル内に独自のメタデータ タグを保存しています。  これらのタグは一般に人間にとって役に立ちませんが、PhotoDemon はとにかくそれらの抽出を試みることができます。</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>デフォルトでは、大きなバイナリー タグ (画像のサムネイルなど) は処理されません。  代わりに、PhotoDemon は埋め込まれたデータのサイズを単純に報告します。このデータが必要な場合、PhotoDemon はさらに分析するためにデータを手動で Base64 に変換できます。</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>ほとんどのデジタル写真には回転命令 (EXIF 方向メタデータ) が含まれており、PhotoDemon はこれを使用して写真を自動的に回転します。  一部の古いスマートフォンやカメラではこれらの指示が正しく記述されていない可能性があるため、写真が横向きまたは逆さまにインポートされる場合は、自動回転機能を無効にしてみてください。</translation>
-</phrase>
-
-<phrase>
-<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>PhotoDemon の実行中に PC が再起動すると、PhotoDemon は以前のセッションを自動的に復元します。</translation>
-</phrase>
-
-<phrase>
-<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>既定では、PhotoDemon は、未保存の変更で画像を閉じようとすると警告を表示します。</translation>
-</phrase>
-
-<phrase>
-<original>the current image's folder</original>
-<translation>現在の画像のフォルダー</translation>
-</phrase>
-
-<phrase>
-<original>the last-used folder</original>
-<translation>最後に使用したフォルダー</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>ほとんどのフォト エディターは、デフォルトで現在の画像のフォルダーに設定されています。  1 つのフォルダーから画像を読み込み、新しいフォルダーに保存するワークフローの場合は、時間を節約するために最後に使用したフォルダーを使用します。</translation>
-</phrase>
-
-<phrase>
-<original>the current image's format</original>
-<translation>現在の画像の形式</translation>
-</phrase>
-
-<phrase>
-<original>the last-used format</original>
-<translation>最後に使用した形式</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>ほとんどのフォト エディターは、デフォルトで現在の画像の形式を使用します。  画像を 1 つの形式 (RAW など) で読み込み、新しい形式 (JPEG など) で保存するワークフローの場合は、時間を節約するために最後に使用した形式を使用します。</translation>
-</phrase>
-
-<phrase>
-<original>overwrite the current file (standard behavior)</original>
-<translation>現在のファイルを上書き (標準的な動作)</translation>
-</phrase>
-
-<phrase>
-<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>新しいコピーを保存する。 例: “ファイル名 (2).jpg” (安全な動作)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>ほとんどのフォト エディターでは、”保存” コマンドを使用すると画像が元のバージョンに上書き保存され、そのコピーは永久に消去されます。  PhotoDemon は "より安全な" オプションを提供しており、保存するたびにファイルの新しいコピーが作成されます。</translation>
-</phrase>
-
-<phrase>
-<original>suggest the current filename (standard behavior)</original>
-<translation>現在のファイル名を提案する (標準的な動作)</translation>
-</phrase>
-
-<phrase>
-<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>新しいコピーを提案。 例: "ファイル名 (2).jpg" (安全な動作)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>ほとんどの写真編集ソフトでは、 "名前を付けて保存" コマンドは既定で現在のファイル名になります。PhotoDemon には "より安全な" オプションもあり、 "名前を付けて保存" のファイル名に自動的に通し番号を付与できます。</translation>
-</phrase>
-
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>EXIF 仕様では、イメージ ファイルをエクスポートするときに、プログラム自身がオリジナルのソフトウェアであることを正しく識別するように求められます。  プライバシーを高めるために、この動作を一時停止できます。</translation>
-</phrase>
-
-<phrase>
-<original>maximize quality</original>
-<translation>最大限の品質</translation>
-</phrase>
-
-<phrase>
-<original>balance performance and quality</original>
-<translation>パフォーマンスと品質のバランス</translation>
-</phrase>
-
-<phrase>
-<original>maximize performance</original>
-<translation>最大限のパフォーマンス</translation>
-</phrase>
-
-<phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>一部のインターフェイス要素には、カスタム装飾 (ドロップシャドウなど) が施されています。  古い PC では、これらの装飾を一時停止することで、パフォーマンスを少し上げることができます。</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon は、特に画像に複数のレイヤーが含まれている場合に、多くのサムネイル画像を生成します。  パフォーマンスを向上させるためにサムネイルの品質を下げることができます。</translation>
-</phrase>
-
-<phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>主画像キャンバスのレンダリングは、PhotoDemon のパフォーマンスの一般的なボトルネックです。  自動設定が推奨されますが、古い PC の場合、手動でパフォーマンスの最大化オプションを選択し、品質と引き換えにパフォーマンスを向上できます。</translation>
-</phrase>
-
-<phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>低圧縮設定ではより多くのディスク容量が必要になりますが、元に戻す/やり直しの操作は高速になります。  高圧縮設定では必要なディスク容量は少なくなりますが、元に戻す/やり直しの操作は遅くなります。  画像を閉じると元に戻すデータが消去されるため、この設定は画像がアクティブに編集されている間のディスク容量にのみ影響します。</translation>
-</phrase>
-
-<phrase>
-<original>Primary display</original>
-<translation>主ディスプレイ</translation>
-</phrase>
-
-<phrase>
-<original>Secondary display</original>
-<translation>副ディスプレイ</translation>
-</phrase>
-
-<phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>ディスプレイのカラー マネージメントをオフにすると、パフォーマンスが少し向上します。  お使いのディスプレイが現在カラーマネージメント用に設定されていない場合は、この設定を使用してください。</translation>
-</phrase>
-
-<phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>この設定は、ほとんどのユーザーにとって最良の選択です。  カラー マネジメントが何なのかわからない場合は、この設定を使用してください。  Windows コントロール パネルでディスプレイ プロファイルを正しく設定した場合も、この設定を使用します。</translation>
-</phrase>
-
-<phrase>
-<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>モニターごとにカスタム カラー プロファイルを設定するには、この設定を使用してください。</translation>
-</phrase>
-
-<phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>現在システムに接続されている各モニターのカラー プロファイルを指定してください。  括弧内のテキストは、指定されたモニターを駆動するディスプレイ アダプターであることに注意してください。</translation>
-</phrase>
-
-<phrase>
-<original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>このボタンをクリックすると、 "カラー プロファイルの参照" ダイアログが表示されます。</translation>
-</phrase>
-
-<phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>この設定が何を制御するのかわからない場合は、 "知覚的" に設定してください。  知覚的レンダリング インテントは、ほとんどのユーザーにとって最良の選択です。</translation>
-</phrase>
-
-<phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC は主に比色レンダリング インテントに関連しており、画像の暗い (シャドウ) 領域のディテールを保持するのに役立ちます。ほとんどのワークフローでは、BPC をオンにする必要があります。</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>each session</original>
-<translation>セッションごと</translation>
-</phrase>
-
-<phrase>
-<original>weekly</original>
-<translation>毎週</translation>
-</phrase>
-
-<phrase>
-<original>monthly</original>
-<translation>毎月</translation>
-</phrase>
-
-<phrase>
-<original>never (not recommended)</original>
-<translation>しない (非推奨)</translation>
-</phrase>
-
-<phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon はポータブル アプリケーションであるため、プログラムの実行中にのみ更新を確認できます。  デフォルトでは、PhotoDemon はプログラムが起動されるたびに更新をチェックしますが、必要に応じてこの頻度を減らすことができます。</translation>
-</phrase>
-
-<phrase>
-<original>stable releases</original>
-<translation>安定版リリース</translation>
-</phrase>
-
-<phrase>
-<original>stable and beta releases</original>
-<translation>安定版とベータ版のリリース</translation>
-</phrase>
-
-<phrase>
-<original>stable, beta, and developer releases</original>
-<translation>安定版、ベータ版、開発者リリース</translation>
-</phrase>
-
-<phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>PhotoDemon をサポートする最良の方法の 1 つは、新しいリリースのテストを支援することです。  デフォルトでは、PhotoDemon は安定版とベータ版の両方のリリースを提案しますが、本当に冒険好きな人は開発者版のリリースを試すこともできます。  (開発者リリースでは、プログラムの最新の機能強化にすぐにアクセスできますが、いくつかのバグが発生する可能性があります)</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon は、アップデートを適用する準備ができたときに通知できます。  これにより、更新されたバージョンをすぐに使用できます。</translation>
-</phrase>
-
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
-(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>制限されたシステム フォルダーに PhotoDemon を配置しました。  セキュリティ対策により、PhotoDemon はこのフォルダーを変更できないため、自動アップデートは現在無効になっています。  復元するには、PhotoDemonをデスクトップ、ドキュメント、またはダウンロードのような非管理フォルダーに移動する必要があります。
+Are you sure you want to continue?</original>
+<translation>すべての設定が既定値に戻されます。  この操作は元に戻せません。
 
-(PhotoDemon をそのままにしておく場合、時々 PhotoDemon.org を訪問して新しいバージョンをチェックすることを忘れないでください)</translation>
-</phrase>
-
-<phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
-
-If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>PhotoDemon の開発者はプライバシーを非常に重視しているため、更新プロセス中に統計情報またはその他の情報がアップロードされることはありません。  アップデートには、PhotoDemon.org からいくつかの小さな XML ファイルをダウンロードするだけです。  これらのファイルには、最新のソフトウェア、プラグイン、言語のバージョン番号が含まれています。  更新されたバージョンが見つかり、ユーザー設定で許可されている場合は、更新されたファイルがダウンロードされ、自動的にパッチが適用されます。
-
-それでもアップデートを無効にすることを選択する場合は、時々 PhotoDemon.org にアクセスして新しいバージョンをチェックすることを忘れないでください。</translation>
-</phrase>
-
-<phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>開発者ビルドでは、デバッグ データはプログラムの \Data\Debug フォルダーに自動的に記録されます。  安定版リリースでバグが発生した場合は、この設定を手動で有効にしてください。  これは開発者が問題を解決するのに役立ちます。</translation>
-</phrase>
-
-<phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>リモート デスクトップまたは VM (仮想マシン) を使用する場合、高解像度のマウス入力が正しく動作しない場合があります。  これは Windows の長年のバグです。  このような状況では、この設定を使用してマウスの正しい動作を復元できます。</translation>
-</phrase>
-
-<phrase>
-<original>current PhotoDemon memory usage</original>
-<translation>現在の PhotoDemon のメモリー使用量</translation>
-</phrase>
-
-<phrase>
-<original>max PhotoDemon memory usage this session</original>
-<translation>このセッションでの PhotoDemon の最大メモリー使用量</translation>
-</phrase>
-
-<phrase>
-<original>Click to select a new temporary folder.</original>
-<translation>クリックして新しい一時フォルダーを選択します。</translation>
-</phrase>
-
-<phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>このボタンは、全ての PhotoDemon 設定をリセットします。  プログラムが予期しない動作をしている場合、これにより問題が解決することがあります。</translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>警告: このフォルダーは無効です (アクセス禁止)。有効なフォルダーを指定してください。  新しいフォルダーが指定されていない場合、PhotoDemon はシステムの一時フォルダーを使用します。</translation>
+本当に続けますか?</translation>
 </phrase>
 
 <phrase>
-<original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>この新しい一時フォルダーの場所は、プログラムを再起動するまで有効になりません。</translation>
+<original>Reset PhotoDemon</original>
+<translation>PhotoDemon をリセット</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14665,12 +13977,714 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>title bar text</original>
+<translation>タイトル バーのテキスト</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>記憶する最近使ったファイルの最大数</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>最近使ったファイル</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>メイン ウィンドウ</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation>グリッド サイズ</translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation>グリッドの色</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>最近使ったファイル メニューのテキスト</translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation>キャンバスの背景色</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>スナップ距離 (ピクセル)</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation>コンパクト (ファイル名のみ)</translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation>詳細 (ファイル名とパス)</translation>
+</phrase>
+
+<phrase>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation>PhotoDemon メイン ウィンドウのタイトル バーには、現在ロードされている画像に関する情報が表示されます。  この環境設定を使用して、表示される情報量を制御します。</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>“最近使ったファイル” メニューの幅は Windows によって制限されています。  このメニューがあふれるのを防ぐために、PhotoDemon では画像の完全な場所ではなく画像名のみを表示できます。</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>中間調</translation>
+</phrase>
+
+<phrase>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation>透明なピクセルを識別しやすくするために、特別なグリッドがその "背面" に表示されます。  この設定により、グリッドの外観が変更されます。</translation>
+</phrase>
+
+<phrase>
+<original>small</original>
+<translation>小さい</translation>
+</phrase>
+
+<phrase>
+<original>large</original>
+<translation>大きい</translation>
+</phrase>
+
+<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>when images arrive from an external source (like Windows Explorer)</original>
+<translation>画像が外部ソース (Windows エクスプローラーなど) から届いた場合</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>HDR および RAW 画像の読み込み時にトーン マッピングのオプションを表示</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>画像ファイルに含まれる回転の情報に従う</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>ハイダイナミック レンジ (HDR) 画像</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>バイナリー型のタグを Base64 として強制的に抽出 (遅い)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>元の JPEG 画質設定を推定</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>未知のタグを抽出</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>重複タグを自動的に非表示</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation>アプリのインスタンス</translation>
+</phrase>
+
+<phrase>
+<original>session restore</original>
+<translation>セッションの復元</translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation>システムの更新や再起動によって中断されたセッションを自動的に復元</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>HDR および RAW 画像には、PC 画面が物理的に表示できるよりも多くの色が含まれています。  このような画像を表示する前に、元の画像データにトーン マッピング操作を適用する必要があります。</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation>このインスタンスにロード</translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation>新しい PhotoDemon インスタンスにロード</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>古いカメラや写真編集ソフトウェアではメタデータが正しく埋め込まれていない可能性があり、単一ファイル内に複数のメタデータのコピーが作成されることがあります。   PhotoDemon は、重複したエントリを自動的に解決できます。</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>JPEG 形式では、画像ファイル内に JPEG 品質設定を保存する方法がありません。  PhotoDemon は、他のメタデータ (量子化テーブルなど) から品質設定を推測することで、この問題を回避できます。</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>一部のカメラ メーカーは、画像ファイル内に独自のメタデータ タグを保存しています。  これらのタグは一般に人間にとって役に立ちませんが、PhotoDemon はとにかくそれらの抽出を試みることができます。</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>デフォルトでは、大きなバイナリー タグ (画像のサムネイルなど) は処理されません。  代わりに、PhotoDemon は埋め込まれたデータのサイズを単純に報告します。このデータが必要な場合、PhotoDemon はさらに分析するためにデータを手動で Base64 に変換できます。</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>ほとんどのデジタル写真には回転命令 (EXIF 方向メタデータ) が含まれており、PhotoDemon はこれを使用して写真を自動的に回転します。  一部の古いスマートフォンやカメラではこれらの指示が正しく記述されていない可能性があるため、写真が横向きまたは逆さまにインポートされる場合は、自動回転機能を無効にしてみてください。</translation>
+</phrase>
+
+<phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation>PhotoDemon の実行中に PC が再起動すると、PhotoDemon は以前のセッションを自動的に復元します。</translation>
+</phrase>
+
+<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation>画像を閉じるとき、未保存の変更を警告</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation>"名前を付けて保存" のときの既定のファイル フォーマット</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>"保存" するとき</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation>安全な保存</translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation>未保存の変更</translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation>既定のフォーマット</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>最後に使った編集ソフトとして PhotoDemon を挙げる</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation>既定のフォルダー</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation>"名前を付けて保存" での初期フォルダー</translation>
+</phrase>
+
+<phrase>
+<original>when "Save as" is used</original>
+<translation>"名前を付けて保存" を使用したとき</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation>既定では、PhotoDemon は、未保存の変更で画像を閉じようとすると警告を表示します。</translation>
+</phrase>
+
+<phrase>
+<original>the current image's folder</original>
+<translation>現在の画像のフォルダー</translation>
+</phrase>
+
+<phrase>
+<original>the last-used folder</original>
+<translation>最後に使用したフォルダー</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation>ほとんどのフォト エディターは、デフォルトで現在の画像のフォルダーに設定されています。  1 つのフォルダーから画像を読み込み、新しいフォルダーに保存するワークフローの場合は、時間を節約するために最後に使用したフォルダーを使用します。</translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation>現在の画像の形式</translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation>最後に使用した形式</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation>ほとんどのフォト エディターは、デフォルトで現在の画像の形式を使用します。  画像を 1 つの形式 (RAW など) で読み込み、新しい形式 (JPEG など) で保存するワークフローの場合は、時間を節約するために最後に使用した形式を使用します。</translation>
+</phrase>
+
+<phrase>
+<original>overwrite the current file (standard behavior)</original>
+<translation>現在のファイルを上書き (標準的な動作)</translation>
+</phrase>
+
+<phrase>
+<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>新しいコピーを保存する。 例: “ファイル名 (2).jpg” (安全な動作)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<translation>ほとんどのフォト エディターでは、”保存” コマンドを使用すると画像が元のバージョンに上書き保存され、そのコピーは永久に消去されます。  PhotoDemon は "より安全な" オプションを提供しており、保存するたびにファイルの新しいコピーが作成されます。</translation>
+</phrase>
+
+<phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation>現在のファイル名を提案する (標準的な動作)</translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>新しいコピーを提案。 例: "ファイル名 (2).jpg" (安全な動作)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation>ほとんどの写真編集ソフトでは、 "名前を付けて保存" コマンドは既定で現在のファイル名になります。PhotoDemon には "より安全な" オプションもあり、 "名前を付けて保存" のファイル名に自動的に通し番号を付与できます。</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>EXIF 仕様では、イメージ ファイルをエクスポートするときに、プログラム自身がオリジナルのソフトウェアであることを正しく識別するように求められます。  プライバシーを高めるために、この動作を一時停止できます。</translation>
+</phrase>
+
+<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>元に戻す/やり直しのデータを以下のレベルで圧縮</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>インターフェース要素を装飾するとき</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>画像とレイヤーのサムネイル画像を生成するとき</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>画像キャンバスをレンダリングするとき</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>インターフェース</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>圧縮なし (最速)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>最大圧縮 (最も遅い)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>元に戻す/やり直す</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>サムネイル</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>ビューポート</translation>
+</phrase>
+
+<phrase>
+<original>maximize quality</original>
+<translation>最大限の品質</translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation>パフォーマンスと品質のバランス</translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation>最大限のパフォーマンス</translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation>一部のインターフェイス要素には、カスタム装飾 (ドロップシャドウなど) が施されています。  古い PC では、これらの装飾を一時停止することで、パフォーマンスを少し上げることができます。</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation>PhotoDemon は、特に画像に複数のレイヤーが含まれている場合に、多くのサムネイル画像を生成します。  パフォーマンスを向上させるためにサムネイルの品質を下げることができます。</translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation>主画像キャンバスのレンダリングは、PhotoDemon のパフォーマンスの一般的なボトルネックです。  自動設定が推奨されますが、古い PC の場合、手動でパフォーマンスの最大化オプションを選択し、品質と引き換えにパフォーマンスを向上できます。</translation>
+</phrase>
+
+<phrase>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation>低圧縮設定ではより多くのディスク容量が必要になりますが、元に戻す/やり直しの操作は高速になります。  高圧縮設定では必要なディスク容量は少なくなりますが、元に戻す/やり直しの操作は遅くなります。  画像を閉じると元に戻すデータが消去されるため、この設定は画像がアクティブに編集されている間のディスク容量にのみ影響します。</translation>
+</phrase>
+
+<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>ブラック ポイント補正を使う</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>ディスプレイのレンダリング インテント</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>利用可能なディスプレイ</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>ディスプレイのカラー マネージメントをオフにする</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>各ディスプレイで現在のシステム プロファイルを使用</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>このディスプレイのカラー プロファイル</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>ポリシーを表示</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>各ディスプレイにカスタム プロファイルを使用</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>カラー プロファイルを選択してください</translation>
+</phrase>
+
+<phrase>
+<original>Primary display</original>
+<translation>主ディスプレイ</translation>
+</phrase>
+
+<phrase>
+<original>Secondary display</original>
+<translation>副ディスプレイ</translation>
+</phrase>
+
+<phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation>ディスプレイのカラー マネージメントをオフにすると、パフォーマンスが少し向上します。  お使いのディスプレイが現在カラーマネージメント用に設定されていない場合は、この設定を使用してください。</translation>
+</phrase>
+
+<phrase>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<translation>この設定は、ほとんどのユーザーにとって最良の選択です。  カラー マネジメントが何なのかわからない場合は、この設定を使用してください。  Windows コントロール パネルでディスプレイ プロファイルを正しく設定した場合も、この設定を使用します。</translation>
+</phrase>
+
+<phrase>
+<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
+<translation>モニターごとにカスタム カラー プロファイルを設定するには、この設定を使用してください。</translation>
+</phrase>
+
+<phrase>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<translation>現在システムに接続されている各モニターのカラー プロファイルを指定してください。  括弧内のテキストは、指定されたモニターを駆動するディスプレイ アダプターであることに注意してください。</translation>
+</phrase>
+
+<phrase>
+<original>Click this button to bring up a "browse for color profile" dialog.</original>
+<translation>このボタンをクリックすると、 "カラー プロファイルの参照" ダイアログが表示されます。</translation>
+</phrase>
+
+<phrase>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation>この設定が何を制御するのかわからない場合は、 "知覚的" に設定してください。  知覚的レンダリング インテントは、ほとんどのユーザーにとって最良の選択です。</translation>
+</phrase>
+
+<phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation>BPC は主に比色レンダリング インテントに関連しており、画像の暗い (シャドウ) 領域のディテールを保持するのに役立ちます。ほとんどのワークフローでは、BPC をオンにする必要があります。</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(免責事項は実行時に入力されます)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>アップデートを自動的にチェック</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>これらのトラックからの更新を許可</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>更新オプション</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>更新の準備ができたら通知</translation>
+</phrase>
+
+<phrase>
+<original>each session</original>
+<translation>セッションごと</translation>
+</phrase>
+
+<phrase>
+<original>weekly</original>
+<translation>毎週</translation>
+</phrase>
+
+<phrase>
+<original>monthly</original>
+<translation>毎月</translation>
+</phrase>
+
+<phrase>
+<original>never (not recommended)</original>
+<translation>しない (非推奨)</translation>
+</phrase>
+
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>PhotoDemon はポータブル アプリケーションであるため、プログラムの実行中にのみ更新を確認できます。  デフォルトでは、PhotoDemon はプログラムが起動されるたびに更新をチェックしますが、必要に応じてこの頻度を減らすことができます。</translation>
+</phrase>
+
+<phrase>
+<original>stable releases</original>
+<translation>安定版リリース</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>安定版とベータ版のリリース</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>安定版、ベータ版、開発者リリース</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>PhotoDemon をサポートする最良の方法の 1 つは、新しいリリースのテストを支援することです。  デフォルトでは、PhotoDemon は安定版とベータ版の両方のリリースを提案しますが、本当に冒険好きな人は開発者版のリリースを試すこともできます。  (開発者リリースでは、プログラムの最新の機能強化にすぐにアクセスできますが、いくつかのバグが発生する可能性があります)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>PhotoDemon は、アップデートを適用する準備ができたときに通知できます。  これにより、更新されたバージョンをすぐに使用できます。</translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation>制限されたシステム フォルダーに PhotoDemon を配置しました。  セキュリティ対策により、PhotoDemon はこのフォルダーを変更できないため、自動アップデートは現在無効になっています。  復元するには、PhotoDemonをデスクトップ、ドキュメント、またはダウンロードのような非管理フォルダーに移動する必要があります。
+
+(PhotoDemon をそのままにしておく場合、時々 PhotoDemon.org を訪問して新しいバージョンをチェックすることを忘れないでください)</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>PhotoDemon の開発者はプライバシーを非常に重視しているため、更新プロセス中に統計情報またはその他の情報がアップロードされることはありません。  アップデートには、PhotoDemon.org からいくつかの小さな XML ファイルをダウンロードするだけです。  これらのファイルには、最新のソフトウェア、プラグイン、言語のバージョン番号が含まれています。  更新されたバージョンが見つかり、ユーザー設定で許可されている場合は、更新されたファイルがダウンロードされ、自動的にパッチが適用されます。
+
+それでもアップデートを無効にすることを選択する場合は、時々 PhotoDemon.org にアクセスして新しいバージョンをチェックすることを忘れないでください。</translation>
+</phrase>
+
+<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>高解像度マウス入力</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>すべてのプログラム設定をリセット</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>メモリー使用量がここに表示されます</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>メモリー診断</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>一時ファイルの場所</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>やり直す</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>アプリケーション設定のフォルダー</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>デバッグ ログを生成</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation>警告: このフォルダーは無効です (アクセス禁止)。有効なフォルダーを指定してください。  新しいフォルダーが指定されていない場合、PhotoDemon はシステムの一時フォルダーを使用します。</translation>
+</phrase>
+
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation>この新しい一時フォルダーの場所は、プログラムを再起動するまで有効になりません。</translation>
+</phrase>
+
+<phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>開発者ビルドでは、デバッグ データはプログラムの \Data\Debug フォルダーに自動的に記録されます。  安定版リリースでバグが発生した場合は、この設定を手動で有効にしてください。  これは開発者が問題を解決するのに役立ちます。</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>リモート デスクトップまたは VM (仮想マシン) を使用する場合、高解像度のマウス入力が正しく動作しない場合があります。  これは Windows の長年のバグです。  このような状況では、この設定を使用してマウスの正しい動作を復元できます。</translation>
+</phrase>
+
+<phrase>
+<original>current PhotoDemon memory usage</original>
+<translation>現在の PhotoDemon のメモリー使用量</translation>
+</phrase>
+
+<phrase>
+<original>max PhotoDemon memory usage this session</original>
+<translation>このセッションでの PhotoDemon の最大メモリー使用量</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation>クリックして新しい一時フォルダーを選択します。</translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation>このボタンは、全ての PhotoDemon 設定をリセットします。  プログラムが予期しない動作をしている場合、これにより問題が解決することがあります。</translation>
+</phrase>
+
+<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5917 phrases. -->
-<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
 <!-- These 2777 phrases contain approximately 12046 total words. -->
 
 </pdData>

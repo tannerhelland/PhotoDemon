@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.648</langversion>
+<langversion>6.7.649</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -13720,336 +13720,6 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 </phrase>
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation>texte de la barre de titre</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>nombre maximum de fichiers récents à indiquer</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>fichiers récents</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>fenêtre principale</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation>taille du damier</translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation>couleurs du damier</translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation>texte du menu des fichiers récents</translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation>couleur d'arrière plan de la zone de travail</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>distance du magnétisme (en pixels)</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>quand des images viennent d'une source extérieure (tel que l'Explorateur de Windows).</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>affichage des options de mappage tonalité lors de l'importation HDR et RAW</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>obéir aux instructions d'auto-rotation à l'intérieur des fichiers d'image</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>gamme images haute dynamique (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>extraction forcée de balises de type binaire en tant que base64 (lent)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>estimer les paramètres de qualité JPEG d'origine</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>extraire les tags inconnus</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>masquer automatiquement les tags en double</translation>
-</phrase>
-
-<phrase>
-<original>app instances</original>
-<translation>instances de l'application</translation>
-</phrase>
-
-<phrase>
-<original>session restore</original>
-<translation>restaurer la session</translation>
-</phrase>
-
-<phrase>
-<original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>restaurer automatiquement les sessions interrompues par les mises a jour ou reboot du système</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn about unsaved changes</original>
-<translation>lors de la fermeture d'images, m'avertir au sujet de modifications non enregistrées</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the default file format to</original>
-<translation>pour la commande "Enregistrer sous", utiliser comme format de fichier par défaut</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>quand "Enregistrer" est utilisé</translation>
-</phrase>
-
-<phrase>
-<original>safe saving</original>
-<translation>sauvegarde sécurisée</translation>
-</phrase>
-
-<phrase>
-<original>unsaved changes</original>
-<translation>changements non sauvegardés</translation>
-</phrase>
-
-<phrase>
-<original>default format</original>
-<translation>format par défaut</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>lister PhotoDemon comme dernier logiciel d'édition utilisé</translation>
-</phrase>
-
-<phrase>
-<original>default folder</original>
-<translation>dossier par défaut</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the initial folder to</original>
-<translation>pour la commande "Enregistrer sous", utiliser comme dossier de destination</translation>
-</phrase>
-
-<phrase>
-<original>when "Save as" is used</original>
-<translation>quand "Enregistrer sous" est utilisé</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>comprimer les données annuler/refaire au niveau suivant</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>lors de la décoration des éléments d'interface</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>lors de la génération des miniatures d'images et de calques</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>lors du rendu de la zone de travail de l'image</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>interface</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>aucune compression (plus rapide)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>compression maximale (plus lent)</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>annuler/refaire</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>miniatures d'image</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>fenêtre</translation>
-</phrase>
-
-<phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>utiliser la compensation de point noir</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>afficher l'intention de rendu</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>affichages disponibles</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>désactiver la gestion des couleurs de l'affichage</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>utiliser les profils système actuels pour chaque affichage</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>profil de couleur pour cet affichage</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>afficher les stratégies</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>utiliser des profils personnalisés pour chaque affichage</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>entrée de souris haute résolution</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>réinitialiser tous les paramètres du programme</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>utilisation de la mémoire sera affichée ici</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostics de mémoire</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>emplacement des fichiers temporaires</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>recommencer</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>dossier des paramètres de l'application</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>générer des journaux de débogage</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer peuplé au moment de l'exécution)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>vérification automatique des mises à jour</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>permettre des mises à jour selon ces canaux</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>options de mise à jour</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>avertir lorsqu'une mise à jour est prête</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Préférences de sauvegarde</translation>
 </phrase>
@@ -14057,25 +13727,6 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 <phrase>
 <original>Preferences updated.</original>
 <translation>Préférences mises à jour.</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>Veuillez sélectionner un profil de couleur</translation>
-</phrase>
-
-<phrase>
-<original>All settings will be restored to their default values.  This action cannot be undone.
-
-Are you sure you want to continue?</original>
-<translation>Tous les paramètres seront restaurés à leurs valeurs par défaut. Cette action ne peut pas être annulée.
-
-Voulez-vous vraiment continuer?</translation>
-</phrase>
-
-<phrase>
-<original>Reset PhotoDemon</original>
-<translation>Réinitialiser PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14109,364 +13760,20 @@ Voulez-vous vraiment continuer?</translation>
 </phrase>
 
 <phrase>
-<original>compact (filename only)</original>
-<translation>réduit (nom de fichier uniquement)</translation>
-</phrase>
-
-<phrase>
-<original>verbose (filename and path)</original>
-<translation>précis (nom de fichier et emplacement)</translation>
-</phrase>
-
-<phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>La barre de titre de la fenêtre principale de PhotoDemon affiche des informations sur l'image actuellement chargée. Utilisez cette préférence pour contrôler la quantité d'informations affichées.</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>La largeur du menu "Fichiers récents" est limitée par Windows. Pour éviter que ce menu ne déborde, PhotoDemon peut afficher les noms d'image seulement au lieu du chemin complet des images.</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>tons moyens</translation>
-</phrase>
-
-<phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Pour aider la localisation des pixels transparents un damier apparait "derrière" ceux ci. Ces paramètres modifient l'apparence de ce damier.</translation>
-</phrase>
-
-<phrase>
-<original>small</original>
-<translation>petit</translation>
-</phrase>
-
-<phrase>
-<original>large</original>
-<translation>grand</translation>
-</phrase>
-
-<phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>Les images HDR et RAW contiennent plus de couleurs que les écrans de PC ne peuvent afficher physiquement. Avant d'afficher ces images, une opération de mappage de tons doit être appliquée aux données d'image originales.</translation>
-</phrase>
-
-<phrase>
-<original>load into this instance</original>
-<translation>charger dans cette instance</translation>
-</phrase>
-
-<phrase>
-<original>load into a new PhotoDemon instance</original>
-<translation>charger dans une nouvelle instance de PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement , impliquant plusieurs copies de métadonnées en un seul fichier. PhotoDemon peut résoudre les entrées en doublons pour vous</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Le format JPEG ne procure aucun moyen de stocker les paramètres de qualité dans le fichier image. Photodemon peut contourner ceci en abaissant les parametres de qualité d'autres métadonnées (telles que la quantisation).</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais PhotoDemon peut toujours tenter de les extraire</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces donnnées, PhotoDemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>La plupart des photos numériques comprennent des instructions de rotation (métadonnées d'orientation EXIF), que PhotoDemon va utiliser pour faire pivoter automatiquement les photos. Certains smartphones et caméras plus âgés ne peuvent pas écrire ces instructions correctement, donc si vos photos sont importées sur le côté ou à l'envers, vous pouvez essayer de désactiver la fonction de rotation automatique.</translation>
-</phrase>
-
-<phrase>
-<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>si votre PC reboote pendant l'utilisation de PhotoDemon, PhotoDemon peut restaurer automatiquement votre session précédente.</translation>
-</phrase>
-
-<phrase>
-<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Par défaut, PhotoDemon va vous avertir si vous tentez de fermer une image avec des changements non enregistrés.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's folder</original>
-<translation>le dossier de l'image en cours</translation>
-</phrase>
-
-<phrase>
-<original>the last-used folder</original>
-<translation>le dernier dossier utilisé</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>La plupart des éditeurs photo utilisent le dossier de l'image en cours,. Pour les flux de travail nécessitant de charger les images d'un dossier mais de les sauvegarder dans un dossier différent, indiquez "dernier dossier utilisé" pour gagner du temps</translation>
-</phrase>
-
-<phrase>
-<original>the current image's format</original>
-<translation>le même format que l'image en cours</translation>
-</phrase>
-
-<phrase>
-<original>the last-used format</original>
-<translation>le dernier format d'image utilisé</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>La plupart des éditeurs photo utilisent le format de l'image en cours. Pour les flux de travail nécessitant de charger l'image dans un format (par ex: RAW) mais de la sauvegarder dans un autre format (par ex: JPEG), indiquez "dernier format d'image utilisé" pour gagner du temps</translation>
-</phrase>
-
-<phrase>
-<original>overwrite the current file (standard behavior)</original>
-<translation>écraser le fichier courant (comportement standard)</translation>
-</phrase>
-
-<phrase>
-<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>enregistrer une nouvelle copie, par exemple "fichier(2).jpg" (comportement sécurisé)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer" sauvegarde  l'image en écrasant sa version originale, en effaçant cette copie pour toujours. PhotoDemon offre une option "plus sûre", où chaque sauvegarde effectuée produit une nouvelle copie du fichier.</translation>
-</phrase>
-
-<phrase>
-<original>suggest the current filename (standard behavior)</original>
-<translation>suggérer le nom de fichier courant (comportement par defaut)</translation>
-</phrase>
-
-<phrase>
-<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>suggérer une nouvelle copie tel "nom de fichier (2).jpg (comportement sûr)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. PhotoDemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
-</phrase>
-
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>La spécification EXIF demande aux programmes de correctement s'identifier en tant que logiciel d'origine lors de l'export des images. Pour augmenter la confidentialité, vous pouvez suspendre ce comportement.</translation>
-</phrase>
-
-<phrase>
-<original>maximize quality</original>
-<translation>maximiser la qualité</translation>
-</phrase>
-
-<phrase>
-<original>balance performance and quality</original>
-<translation>équilibrer le rendement et la qualité</translation>
-</phrase>
-
-<phrase>
-<original>maximize performance</original>
-<translation>maximiser les performances</translation>
-</phrase>
-
-<phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Certains éléments de l'interface reçoivent des décorations personnalisées (comme des ombres portées). Sur les ordinateurs plus anciens, ces décorations peuvent être suspendus pour une petite amélioration de performance.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon génère beaucoup de miniatures, spécialement quand les images contiennent plusieurs calques. La qualité de ces miniatures peut être abaissée pour améliorer les performances.</translation>
-</phrase>
-
-<phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Le rendu de l'image principale est un goulot d'étranglement fréquent pour les performances de PhotoDemon. Le réglage automatique est recommandé, mais pour les ordinateurs plus anciens, vous pouvez sélectionner manuellement l'option  "Maximiser les performances" quitte à sacrifier la qualité pour les performances brutes.</translation>
-</phrase>
-
-<phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Un bas taux de compression requiert plus d'espace disque, mais les opérations annuler/refaire seront plus rapides.
-la compression forte requiert moins d'espace disque, mais les opération annuler/refaire seront plus lentes. les données d'annulation sont effacées quand l'image est fermée, donc ce paramètre affecte l'espace disque seulement durant le temps où les images sont éditées</translation>
-</phrase>
-
-<phrase>
-<original>Primary display</original>
-<translation>Affichage principal</translation>
-</phrase>
-
-<phrase>
-<original>Secondary display</original>
-<translation>Affichage secondaire</translation>
-</phrase>
-
-<phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>La désactivation de la gestion des couleurs de l'affichage peut fournir une petite amélioration des performances. Si votre écran n'est pas configuré pour la gestion des couleurs, utilisez ce paramètre.</translation>
-</phrase>
-
-<phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Ce paramètre est le meilleur choix pour la plupart des utilisateurs. Si vous n'avez aucune idée de ce qu'est la gestion de couleur est, utilisez ce paramètre. Si vous avez correctement configuré un profil d'affichage via le panneau de configuration de Windows, utilisez également ce paramètre.</translation>
-</phrase>
-
-<phrase>
-<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Pour configurer des profils de couleurs personnalisés sur une base par moniteur, veuillez utiliser ce paramètre.</translation>
-</phrase>
-
-<phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Veuillez spécifier un profil de couleur pour chaque moniteur actuellement connecté au système. Entre parenthèses sont les paramètres relatifs à la carte graphique du moniteur nommé.</translation>
-</phrase>
-
-<phrase>
-<original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Cliquez sur ce bouton pour faire apparaître une boîte de dialogue "parcourir pour trouver le profil de couleur".</translation>
-</phrase>
-
-<phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Si vous ne savez pas ce que ce paramètre contrôle, réglez-le sur "Perceptuel". L'intention de rendu perceptuel est le meilleur choix pour la plupart des utilisateurs.</translation>
-</phrase>
-
-<phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide a préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à executer, BPC devrait être coché.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>each session</original>
-<translation>chaque session</translation>
-</phrase>
-
-<phrase>
-<original>weekly</original>
-<translation>hebdomadaire</translation>
-</phrase>
-
-<phrase>
-<original>monthly</original>
-<translation>mensuelle</translation>
-</phrase>
-
-<phrase>
-<original>never (not recommended)</original>
-<translation>jamais (non recommandé)</translation>
-</phrase>
-
-<phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>Parce que  PhotoDemon est une application portable, les mises à jour ne peuvent être vérifiées lorsque le programme est en cours d'exécution. Par défaut, PhotoDemon va vérifier les mises à jour chaque fois que le programme est lancé, mais vous pouvez réduire cette fréquence, si désiré.</translation>
-</phrase>
-
-<phrase>
-<original>stable releases</original>
-<translation>versions stables</translation>
-</phrase>
-
-<phrase>
-<original>stable and beta releases</original>
-<translation>versions stables et bêta</translation>
-</phrase>
-
-<phrase>
-<original>stable, beta, and developer releases</original>
-<translation>versions stables, bêta et développeur</translation>
-</phrase>
-
-<phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Une des meilleures façons de soutenir PhotoDemon est d'aider les tests de nouvelles versions. Par défaut, PhotoDemon proposera deux versions, stable et bêta, mais les vrais aventuriers peut également essayer les  versions de développeur. (les Versions Développeurs donnent un accès immédiat aux dernières améliorations de programme, mais vous pourriez rencontrer quelques bugs.)</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon peut vous avertir quand il est prêt à appliquer une mise à jour. Cela vous permet d'utiliser la version mise à jour immédiatement.</translation>
-</phrase>
-
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
-
-(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>Vous avez placé PhotoDemon dans un dossier système restreint. Les mesures de sécurité empêchant PhotoDemon de modifier ce dossier, les mises à jour automatiques sont désormais désactivées. Pour les restaurer, vous devez déplacer PhotoDemon vers un dossier non-administrateur, comme Bureau, Documents, ou Téléchargements.
-
- (Si vous laissez PhotoDemon où il est, n'oubliez pas de visiter de temps en temps photodemon.org pour vérifier les nouvelles versions.)</translation>
-</phrase>
-
-<phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
-
-If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Les développeurs de PhotoDemon sont respectueux de votre vie privée, aucune information - statistique ou autre - n'est téléchargée pendant le processus de mise à jour.
-
-Les mises à jour impliquent tout simplement de télécharger plusieurs petits fichiers XML à partir photodemon.org. Ces fichiers contiennent les derniers logiciel, plug-in, et versions de langues. 
-
-Si des versions mises à jour sont trouvées, et que les préférences de l'utilisateur le permettent, les fichiers mis à jour sont ensuite téléchargés et patchés automatiquement.
-
-Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter photodemon.org de temps en temps pour vérifier les nouvelles versions.</translation>
-</phrase>
-
-<phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>Dans les versions développeur, les données de déboggage sont stockées dans \Data\Debug . Si vous rencontrez des bugs dans une version stable, veuillez activer manuellement ce paramètre. Cela aidera les développeurs à résoudre ces problèmes</translation>
-</phrase>
-
-<phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Lorsque vous utilisez le Bureau à distance ou une VM (machine virtuelle), l'entrée de la souris à haute résolution peut ne pas fonctionner correctement. C'est un bug Windows de longue date. Dans ces situations, vous pouvez utiliser ce paramètre pour restaurer le comportement correct de la souris.</translation>
-</phrase>
-
-<phrase>
-<original>current PhotoDemon memory usage</original>
-<translation>utilisation actuelle de la mémoire par PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>max PhotoDemon memory usage this session</original>
-<translation>maximum d'utilisation de la mémoire par PhotoDemon pour cette session</translation>
-</phrase>
-
-<phrase>
-<original>Click to select a new temporary folder.</original>
-<translation>Cliquer pour sélectionner un dossier temporaire</translation>
-</phrase>
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
-<phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Ce bouton réinitialise tous les paramètres de Photodemon. Si le programme a un comportement inattendu, cela peut résoude le problème.</translation>
-</phrase>
+Are you sure you want to continue?</original>
+<translation>Tous les paramètres seront restaurés à leurs valeurs par défaut. Cette action ne peut pas être annulée.
 
-<phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>ATTENTION: ce dossier n'est pas valide (accès interdit). Veuillez fournir un dossier valide. Si un nouveau dossier n'est pas fourni, PhotoDemon utilisera le dossier temporaire du système.</translation>
+Voulez-vous vraiment continuer?</translation>
 </phrase>
 
 <phrase>
-<original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>Ce nouvel emplacement de dossier temporaire ne prendra effet qu'après le redémarrage du programme.</translation>
+<original>Reset PhotoDemon</original>
+<translation>Réinitialiser PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14674,12 +13981,719 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>title bar text</original>
+<translation>texte de la barre de titre</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>nombre maximum de fichiers récents à indiquer</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>fichiers récents</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>fenêtre principale</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation>taille du damier</translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation>couleurs du damier</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>texte du menu des fichiers récents</translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation>couleur d'arrière plan de la zone de travail</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>distance du magnétisme (en pixels)</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation>réduit (nom de fichier uniquement)</translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation>précis (nom de fichier et emplacement)</translation>
+</phrase>
+
+<phrase>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation>La barre de titre de la fenêtre principale de PhotoDemon affiche des informations sur l'image actuellement chargée. Utilisez cette préférence pour contrôler la quantité d'informations affichées.</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>La largeur du menu "Fichiers récents" est limitée par Windows. Pour éviter que ce menu ne déborde, PhotoDemon peut afficher les noms d'image seulement au lieu du chemin complet des images.</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>tons moyens</translation>
+</phrase>
+
+<phrase>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation>Pour aider la localisation des pixels transparents un damier apparait "derrière" ceux ci. Ces paramètres modifient l'apparence de ce damier.</translation>
+</phrase>
+
+<phrase>
+<original>small</original>
+<translation>petit</translation>
+</phrase>
+
+<phrase>
+<original>large</original>
+<translation>grand</translation>
+</phrase>
+
+<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>when images arrive from an external source (like Windows Explorer)</original>
+<translation>quand des images viennent d'une source extérieure (tel que l'Explorateur de Windows).</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>affichage des options de mappage tonalité lors de l'importation HDR et RAW</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>obéir aux instructions d'auto-rotation à l'intérieur des fichiers d'image</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>gamme images haute dynamique (HDR)</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>extraction forcée de balises de type binaire en tant que base64 (lent)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>estimer les paramètres de qualité JPEG d'origine</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>extraire les tags inconnus</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>masquer automatiquement les tags en double</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation>instances de l'application</translation>
+</phrase>
+
+<phrase>
+<original>session restore</original>
+<translation>restaurer la session</translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation>restaurer automatiquement les sessions interrompues par les mises a jour ou reboot du système</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>Les images HDR et RAW contiennent plus de couleurs que les écrans de PC ne peuvent afficher physiquement. Avant d'afficher ces images, une opération de mappage de tons doit être appliquée aux données d'image originales.</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation>charger dans cette instance</translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation>charger dans une nouvelle instance de PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement , impliquant plusieurs copies de métadonnées en un seul fichier. PhotoDemon peut résoudre les entrées en doublons pour vous</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>Le format JPEG ne procure aucun moyen de stocker les paramètres de qualité dans le fichier image. Photodemon peut contourner ceci en abaissant les parametres de qualité d'autres métadonnées (telles que la quantisation).</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais PhotoDemon peut toujours tenter de les extraire</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces donnnées, PhotoDemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>La plupart des photos numériques comprennent des instructions de rotation (métadonnées d'orientation EXIF), que PhotoDemon va utiliser pour faire pivoter automatiquement les photos. Certains smartphones et caméras plus âgés ne peuvent pas écrire ces instructions correctement, donc si vos photos sont importées sur le côté ou à l'envers, vous pouvez essayer de désactiver la fonction de rotation automatique.</translation>
+</phrase>
+
+<phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation>si votre PC reboote pendant l'utilisation de PhotoDemon, PhotoDemon peut restaurer automatiquement votre session précédente.</translation>
+</phrase>
+
+<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation>lors de la fermeture d'images, m'avertir au sujet de modifications non enregistrées</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation>pour la commande "Enregistrer sous", utiliser comme format de fichier par défaut</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>quand "Enregistrer" est utilisé</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation>sauvegarde sécurisée</translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation>changements non sauvegardés</translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation>format par défaut</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>lister PhotoDemon comme dernier logiciel d'édition utilisé</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation>dossier par défaut</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation>pour la commande "Enregistrer sous", utiliser comme dossier de destination</translation>
+</phrase>
+
+<phrase>
+<original>when "Save as" is used</original>
+<translation>quand "Enregistrer sous" est utilisé</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation>Par défaut, PhotoDemon va vous avertir si vous tentez de fermer une image avec des changements non enregistrés.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's folder</original>
+<translation>le dossier de l'image en cours</translation>
+</phrase>
+
+<phrase>
+<original>the last-used folder</original>
+<translation>le dernier dossier utilisé</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation>La plupart des éditeurs photo utilisent le dossier de l'image en cours,. Pour les flux de travail nécessitant de charger les images d'un dossier mais de les sauvegarder dans un dossier différent, indiquez "dernier dossier utilisé" pour gagner du temps</translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation>le même format que l'image en cours</translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation>le dernier format d'image utilisé</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation>La plupart des éditeurs photo utilisent le format de l'image en cours. Pour les flux de travail nécessitant de charger l'image dans un format (par ex: RAW) mais de la sauvegarder dans un autre format (par ex: JPEG), indiquez "dernier format d'image utilisé" pour gagner du temps</translation>
+</phrase>
+
+<phrase>
+<original>overwrite the current file (standard behavior)</original>
+<translation>écraser le fichier courant (comportement standard)</translation>
+</phrase>
+
+<phrase>
+<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>enregistrer une nouvelle copie, par exemple "fichier(2).jpg" (comportement sécurisé)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer" sauvegarde  l'image en écrasant sa version originale, en effaçant cette copie pour toujours. PhotoDemon offre une option "plus sûre", où chaque sauvegarde effectuée produit une nouvelle copie du fichier.</translation>
+</phrase>
+
+<phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation>suggérer le nom de fichier courant (comportement par defaut)</translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>suggérer une nouvelle copie tel "nom de fichier (2).jpg (comportement sûr)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. PhotoDemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>La spécification EXIF demande aux programmes de correctement s'identifier en tant que logiciel d'origine lors de l'export des images. Pour augmenter la confidentialité, vous pouvez suspendre ce comportement.</translation>
+</phrase>
+
+<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>comprimer les données annuler/refaire au niveau suivant</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>lors de la décoration des éléments d'interface</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>lors de la génération des miniatures d'images et de calques</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>lors du rendu de la zone de travail de l'image</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>interface</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>aucune compression (plus rapide)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>compression maximale (plus lent)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>annuler/refaire</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>miniatures d'image</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>fenêtre</translation>
+</phrase>
+
+<phrase>
+<original>maximize quality</original>
+<translation>maximiser la qualité</translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation>équilibrer le rendement et la qualité</translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation>maximiser les performances</translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation>Certains éléments de l'interface reçoivent des décorations personnalisées (comme des ombres portées). Sur les ordinateurs plus anciens, ces décorations peuvent être suspendus pour une petite amélioration de performance.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation>PhotoDemon génère beaucoup de miniatures, spécialement quand les images contiennent plusieurs calques. La qualité de ces miniatures peut être abaissée pour améliorer les performances.</translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation>Le rendu de l'image principale est un goulot d'étranglement fréquent pour les performances de PhotoDemon. Le réglage automatique est recommandé, mais pour les ordinateurs plus anciens, vous pouvez sélectionner manuellement l'option  "Maximiser les performances" quitte à sacrifier la qualité pour les performances brutes.</translation>
+</phrase>
+
+<phrase>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation>Un bas taux de compression requiert plus d'espace disque, mais les opérations annuler/refaire seront plus rapides.
+la compression forte requiert moins d'espace disque, mais les opération annuler/refaire seront plus lentes. les données d'annulation sont effacées quand l'image est fermée, donc ce paramètre affecte l'espace disque seulement durant le temps où les images sont éditées</translation>
+</phrase>
+
+<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>utiliser la compensation de point noir</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>afficher l'intention de rendu</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>affichages disponibles</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>désactiver la gestion des couleurs de l'affichage</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>utiliser les profils système actuels pour chaque affichage</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>profil de couleur pour cet affichage</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>afficher les stratégies</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>utiliser des profils personnalisés pour chaque affichage</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>Veuillez sélectionner un profil de couleur</translation>
+</phrase>
+
+<phrase>
+<original>Primary display</original>
+<translation>Affichage principal</translation>
+</phrase>
+
+<phrase>
+<original>Secondary display</original>
+<translation>Affichage secondaire</translation>
+</phrase>
+
+<phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation>La désactivation de la gestion des couleurs de l'affichage peut fournir une petite amélioration des performances. Si votre écran n'est pas configuré pour la gestion des couleurs, utilisez ce paramètre.</translation>
+</phrase>
+
+<phrase>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<translation>Ce paramètre est le meilleur choix pour la plupart des utilisateurs. Si vous n'avez aucune idée de ce qu'est la gestion de couleur est, utilisez ce paramètre. Si vous avez correctement configuré un profil d'affichage via le panneau de configuration de Windows, utilisez également ce paramètre.</translation>
+</phrase>
+
+<phrase>
+<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
+<translation>Pour configurer des profils de couleurs personnalisés sur une base par moniteur, veuillez utiliser ce paramètre.</translation>
+</phrase>
+
+<phrase>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<translation>Veuillez spécifier un profil de couleur pour chaque moniteur actuellement connecté au système. Entre parenthèses sont les paramètres relatifs à la carte graphique du moniteur nommé.</translation>
+</phrase>
+
+<phrase>
+<original>Click this button to bring up a "browse for color profile" dialog.</original>
+<translation>Cliquez sur ce bouton pour faire apparaître une boîte de dialogue "parcourir pour trouver le profil de couleur".</translation>
+</phrase>
+
+<phrase>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation>Si vous ne savez pas ce que ce paramètre contrôle, réglez-le sur "Perceptuel". L'intention de rendu perceptuel est le meilleur choix pour la plupart des utilisateurs.</translation>
+</phrase>
+
+<phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide a préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à executer, BPC devrait être coché.</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer peuplé au moment de l'exécution)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>vérification automatique des mises à jour</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>permettre des mises à jour selon ces canaux</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>options de mise à jour</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>avertir lorsqu'une mise à jour est prête</translation>
+</phrase>
+
+<phrase>
+<original>each session</original>
+<translation>chaque session</translation>
+</phrase>
+
+<phrase>
+<original>weekly</original>
+<translation>hebdomadaire</translation>
+</phrase>
+
+<phrase>
+<original>monthly</original>
+<translation>mensuelle</translation>
+</phrase>
+
+<phrase>
+<original>never (not recommended)</original>
+<translation>jamais (non recommandé)</translation>
+</phrase>
+
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>Parce que  PhotoDemon est une application portable, les mises à jour ne peuvent être vérifiées lorsque le programme est en cours d'exécution. Par défaut, PhotoDemon va vérifier les mises à jour chaque fois que le programme est lancé, mais vous pouvez réduire cette fréquence, si désiré.</translation>
+</phrase>
+
+<phrase>
+<original>stable releases</original>
+<translation>versions stables</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>versions stables et bêta</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>versions stables, bêta et développeur</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>Une des meilleures façons de soutenir PhotoDemon est d'aider les tests de nouvelles versions. Par défaut, PhotoDemon proposera deux versions, stable et bêta, mais les vrais aventuriers peut également essayer les  versions de développeur. (les Versions Développeurs donnent un accès immédiat aux dernières améliorations de programme, mais vous pourriez rencontrer quelques bugs.)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>PhotoDemon peut vous avertir quand il est prêt à appliquer une mise à jour. Cela vous permet d'utiliser la version mise à jour immédiatement.</translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation>Vous avez placé PhotoDemon dans un dossier système restreint. Les mesures de sécurité empêchant PhotoDemon de modifier ce dossier, les mises à jour automatiques sont désormais désactivées. Pour les restaurer, vous devez déplacer PhotoDemon vers un dossier non-administrateur, comme Bureau, Documents, ou Téléchargements.
+
+ (Si vous laissez PhotoDemon où il est, n'oubliez pas de visiter de temps en temps photodemon.org pour vérifier les nouvelles versions.)</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>Les développeurs de PhotoDemon sont respectueux de votre vie privée, aucune information - statistique ou autre - n'est téléchargée pendant le processus de mise à jour.
+
+Les mises à jour impliquent tout simplement de télécharger plusieurs petits fichiers XML à partir photodemon.org. Ces fichiers contiennent les derniers logiciel, plug-in, et versions de langues. 
+
+Si des versions mises à jour sont trouvées, et que les préférences de l'utilisateur le permettent, les fichiers mis à jour sont ensuite téléchargés et patchés automatiquement.
+
+Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter photodemon.org de temps en temps pour vérifier les nouvelles versions.</translation>
+</phrase>
+
+<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>entrée de souris haute résolution</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>réinitialiser tous les paramètres du programme</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>utilisation de la mémoire sera affichée ici</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostics de mémoire</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>emplacement des fichiers temporaires</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>recommencer</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>dossier des paramètres de l'application</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>générer des journaux de débogage</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation>ATTENTION: ce dossier n'est pas valide (accès interdit). Veuillez fournir un dossier valide. Si un nouveau dossier n'est pas fourni, PhotoDemon utilisera le dossier temporaire du système.</translation>
+</phrase>
+
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation>Ce nouvel emplacement de dossier temporaire ne prendra effet qu'après le redémarrage du programme.</translation>
+</phrase>
+
+<phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>Dans les versions développeur, les données de déboggage sont stockées dans \Data\Debug . Si vous rencontrez des bugs dans une version stable, veuillez activer manuellement ce paramètre. Cela aidera les développeurs à résoudre ces problèmes</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>Lorsque vous utilisez le Bureau à distance ou une VM (machine virtuelle), l'entrée de la souris à haute résolution peut ne pas fonctionner correctement. C'est un bug Windows de longue date. Dans ces situations, vous pouvez utiliser ce paramètre pour restaurer le comportement correct de la souris.</translation>
+</phrase>
+
+<phrase>
+<original>current PhotoDemon memory usage</original>
+<translation>utilisation actuelle de la mémoire par PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>max PhotoDemon memory usage this session</original>
+<translation>maximum d'utilisation de la mémoire par PhotoDemon pour cette session</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation>Cliquer pour sélectionner un dossier temporaire</translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation>Ce bouton réinitialise tous les paramètres de Photodemon. Si le programme a un comportement inattendu, cela peut résoude le problème.</translation>
+</phrase>
+
+<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5917 phrases. -->
-<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
 <!-- These 2777 phrases contain approximately 12046 total words. -->
 
 </pdData>

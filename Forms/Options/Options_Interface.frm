@@ -252,6 +252,29 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'Tools > Options > Interface panel
+'Copyright 2002-2025 by Tanner Helland
+'Created: 8/November/02
+'Last updated: 02/April/25
+'Last update: split this panel into a standalone form
+'
+'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
+' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
+'
+'All Tools > Options child panels must some mandatory public functions, including ones for loading
+' and saving user preferences, as well as validating any UI elements where the user can enter
+' custom values.  (A reset-style function is *not* required; this is automatically handled by
+' FormOptions.)
+'
+'This form, like all Tools > Options panels, interacts heavily with the UserPrefs module.
+' (That module is responsible for all low-level preference reading/writing.)
+'
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
+'
+'***************************************************************************
+
 Option Explicit
 
 'Used to see if the user physically clicked a combo box, or if VB selected it on its own
@@ -340,6 +363,8 @@ Private Sub csAlphaOne_ColorChanged()
         m_userInitiatedAlphaSelection = True
     End If
     
+    FormOptions.RestoreActivePanelBehavior
+    
 End Sub
 
 Private Sub csAlphaTwo_ColorChanged()
@@ -351,6 +376,16 @@ Private Sub csAlphaTwo_ColorChanged()
         m_userInitiatedAlphaSelection = True
     End If
     
+    FormOptions.RestoreActivePanelBehavior
+    
+End Sub
+
+Private Sub csCanvasColor_ColorChanged()
+    FormOptions.RestoreActivePanelBehavior
+End Sub
+
+Private Sub csCanvasColor_NeedParentForm(parentForm As Form)
+    Set parentForm = Me
 End Sub
 
 Private Sub Form_Load()
@@ -431,6 +466,8 @@ Private Sub picGrid_DrawMe(ByVal targetDC As Long, ByVal ctlWidth As Long, ByVal
     Dim tmpPen As pd2DPen
     Drawing2D.QuickCreateSolidPen tmpPen, 1, g_Themer.GetGenericUIColor(UI_GrayNeutral)
     PD2D.DrawRectangleI tmpSurface, tmpPen, 0, 0, ctlWidth - 1, ctlHeight - 1
+    
+    Set tmpPen = Nothing: Set tmpBrush = Nothing: Set tmpSurface = Nothing
     
 End Sub
 
@@ -528,4 +565,3 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     Interface.ApplyThemeAndTranslations Me
 End Sub
-

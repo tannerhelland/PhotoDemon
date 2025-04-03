@@ -175,6 +175,29 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'Tools > Options > Advanced panel
+'Copyright 2002-2025 by Tanner Helland
+'Created: 8/November/02
+'Last updated: 02/April/25
+'Last update: split this panel into a standalone form
+'
+'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
+' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
+'
+'All Tools > Options child panels must some mandatory public functions, including ones for loading
+' and saving user preferences, as well as validating any UI elements where the user can enter
+' custom values.  (A reset-style function is *not* required; this is automatically handled by
+' FormOptions.)
+'
+'This form, like all Tools > Options panels, interacts heavily with the UserPrefs module.
+' (That module is responsible for all low-level preference reading/writing.)
+'
+'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
+' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
+'
+'***************************************************************************
+
 Option Explicit
 
 'Resetting preferences involves some circular bullshit, so the magic happens back in FormOptions

@@ -107,6 +107,9 @@ Private m_numOptionPanels As Long, m_Panels() As OptionPanelTracker
 Private m_ActivePanel As PD_OptionPanel
 Private m_ActivePanelHWnd As Long
 
+'Position and dimensions of the panel; populated only after the first child form has been loaded and displayed
+Private m_PanelRect As RectL_WH
+
 'When the preferences category is changed, only display the controls in that category
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
     UpdateActivePanel buttonIndex
@@ -198,15 +201,16 @@ Private Sub UpdateActivePanel(ByVal idxPanel As Long)
                 
                 'Position the panel slightly to the right of the vertical options list, and at the same
                 ' top position as said list.
-                Dim newLeft As Long, newTop As Long, newWidth As Long, newHeight As Long
-                newLeft = Me.btsvCategory.GetLeft + Me.btsvCategory.GetWidth + Interface.FixDPI(12)
-                newTop = Me.btsvCategory.GetTop
-                newWidth = g_WindowManager.GetClientWidth(Me.hWnd) - newLeft
-                newHeight = (cmdBarMini.GetTop - newTop) - 1
+                With m_PanelRect
+                    .Left = Me.btsvCategory.GetLeft + Me.btsvCategory.GetWidth + Interface.FixDPI(12)
+                    .Top = Me.btsvCategory.GetTop
+                    .Width = g_WindowManager.GetClientWidth(Me.hWnd) - .Left
+                    .Height = (cmdBarMini.GetTop - .Top) - 1
+                End With
                 
                 'Use the window manager's child panel manager to handle this for us.
                 ' (It automatically tracks window bits and restores them when panels are deactivated.)
-                g_WindowManager.ActivateToolPanel m_Panels(i).PanelHWnd, Me.hWnd, 0, newLeft, newTop, newWidth, newHeight
+                g_WindowManager.ActivateToolPanel m_Panels(i).PanelHWnd, Me.hWnd, 0, m_PanelRect.Left, m_PanelRect.Top, m_PanelRect.Width, m_PanelRect.Height
                 m_ActivePanelHWnd = m_Panels(i).PanelHWnd
                 Exit For
                 
@@ -217,10 +221,7 @@ Private Sub UpdateActivePanel(ByVal idxPanel As Long)
         'Then, forcibly hide all other panels
         For i = 0 To m_numOptionPanels - 1
             If (i <> m_ActivePanel) Then
-                If (m_Panels(i).PanelHWnd <> 0) Then
-                    g_WindowManager.SetVisibilityByHWnd m_Panels(i).PanelHWnd, False
-                    'm_Panels(i).PanelHWnd = 0
-                End If
+                If (m_Panels(i).PanelHWnd <> 0) Then g_WindowManager.SetVisibilityByHWnd m_Panels(i).PanelHWnd, False
             End If
         Next i
         
@@ -504,4 +505,11 @@ Public Sub ResetAllPreferences()
         
     End If
     
+End Sub
+
+'For reasons I don't fully understand, raising a modal dialog from one of our child forms
+' breaks interactions until we reset window bits.  Child options forms must call this function after a
+' modal dialog is raised, which will restore bits and get things working again.
+Public Sub RestoreActivePanelBehavior()
+    g_WindowManager.ActivateToolPanel m_ActivePanelHWnd, Me.hWnd, m_ActivePanelHWnd, m_PanelRect.Left, m_PanelRect.Top, m_PanelRect.Width, m_PanelRect.Height
 End Sub

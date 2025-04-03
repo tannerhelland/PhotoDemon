@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.17</langversion>
+<langversion>1.0.18</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -14345,340 +14345,6 @@ Chcete-li pokračovat, stáhněte si novou kopii PhotoDemon z photodemon.org.</t
 </phrase>
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation>text titulkového pruhu</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>maximální počet posledních souborů k zapamatování</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>hlavní okno</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>hlavní okno</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation>velikost mřížky</translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation>barvy mřížky</translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation>text nabídky posledního souboru</translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation>barva pozadí plátna</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>vzdálenost záběru (v pixelech)
-</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>když obrázky dorazí z externího zdroje (například Průzkumník Windows)</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>zobrazit možnosti mapování tónů při importu snímků HDR a RAW</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>dodržujte pokyny k automatickému otáčení uvnitř obrázku</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>snímky s vysokým dynamickým rozsahem (HDR)
-</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>násilně extrahovat značky binárního typu jako Base64 (pomalé)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>odhadnout nastavení původní kvality JPEG</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>extrahovat neznámé značky</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>automaticky skrýt duplicitní značky</translation>
-</phrase>
-
-<phrase>
-<original>app instances</original>
-<translation>instance aplikací</translation>
-</phrase>
-
-<phrase>
-<original>session restore</original>
-<translation>obnovení relace</translation>
-</phrase>
-
-<phrase>
-<original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>automaticky obnovovat relace přerušené aktualizacemi systému nebo restartováním</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn about unsaved changes</original>
-<translation>při zavírání obrázků upozornit na neuložené změny</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the default file format to</original>
-<translation>při použití "Uložit jako" nastavte výchozí soubor na</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>při použití "Uložit"</translation>
-</phrase>
-
-<phrase>
-<original>safe saving</original>
-<translation>bezpečné uložení</translation>
-</phrase>
-
-<phrase>
-<original>unsaved changes</original>
-<translation>neuložené změny</translation>
-</phrase>
-
-<phrase>
-<original>default format</original>
-<translation>výchozí formát</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>uveďte PhotoDemon jako poslední použitý editační program</translation>
-</phrase>
-
-<phrase>
-<original>default folder</original>
-<translation>výchozí složka
-</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the initial folder to</original>
-<translation>při použití "Uložit jako" nastavte výchozí složku na</translation>
-</phrase>
-
-<phrase>
-<original>when "Save as" is used</original>
-<translation>při použití "Uložit jako"</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>při generování obrázků a náhledů vrstev</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>při zdobení prvků rozhraní</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>při generování obrázků a náhledů vrstev</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>při vykreslování obrazového plátna</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>rozhraní</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>žádná komprese (nejrychlejší)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>maximální komprese (nejpomalejší)</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>vrátit zpět/znovu</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>miniatury</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>výřez</translation>
-</phrase>
-
-<phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>použijte kompenzaci černého bodu</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>zobrazit záměr vykreslení</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>dostupné displeje</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>vypnout správu barev displeje</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>použít aktuální systémové profily pro každý displej</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>barevný profil pro tento displej</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>zásady zobrazování</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>používat vlastní profily pro každý displej</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>vstup myši s vysokým rozlišením</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>resetujte všechna nastavení programu</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>zde se zobrazí využití paměti</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostika paměti</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>dočasné umístění souboru</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>začít znovu</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>složka nastavení aplikace</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>generovat protokoly ladění
-</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(odmítnutí odpovědnosti je vyplněno za běhu)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automaticky kontrolovat aktualizace</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>povolit aktualizace z těchto stop</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>možnosti aktualizace</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>upozornit, až bude aktualizace připravena</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Ukládání předvoleb</translation>
 </phrase>
@@ -14686,25 +14352,6 @@ Chcete-li pokračovat, stáhněte si novou kopii PhotoDemon z photodemon.org.</t
 <phrase>
 <original>Preferences updated.</original>
 <translation>Předvolby byly aktualizovány.</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>Vyberte prosím barevný profil</translation>
-</phrase>
-
-<phrase>
-<original>All settings will be restored to their default values.  This action cannot be undone.
-
-Are you sure you want to continue?</original>
-<translation>Všechna nastavení budou obnovena na výchozí hodnoty.  Tuto akci nelze vrátit zpět.
-
-Opravdu chcete pokračovat?</translation>
-</phrase>
-
-<phrase>
-<original>Reset PhotoDemon</original>
-<translation>Resetujte PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14738,365 +14385,20 @@ Opravdu chcete pokračovat?</translation>
 </phrase>
 
 <phrase>
-<original>compact (filename only)</original>
-<translation>kompaktní (pouze název souboru)</translation>
-</phrase>
-
-<phrase>
-<original>verbose (filename and path)</original>
-<translation>podrobný (název souboru a cesta)</translation>
-</phrase>
-
-<phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>Záhlaví hlavního okna PhotoDemon zobrazuje informace o aktuálně načteném obrázku.  Pomocí této předvolby můžete ovládat, kolik informací se zobrazí.</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Šířka nabídky "Poslední soubory" je omezena systémem Windows.  Aby se zabránilo přetečení této nabídky, může PhotoDemon zobrazovat pouze názvy obrázků místo úplných umístění obrázků.</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>střední tóny</translation>
-</phrase>
-
-<phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Pro usnadnění identifikace průhledných pixelů se „za“ objeví speciální mřížka.  Toto nastavení upravuje vzhled mřížky.</translation>
-</phrase>
-
-<phrase>
-<original>small</original>
-<translation>malý</translation>
-</phrase>
-
-<phrase>
-<original>large</original>
-<translation>velký</translation>
-</phrase>
-
-<phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>Snímky HDR a RAW obsahují více barev, než mohou obrazovky počítače fyzicky zobrazit.  Před zobrazením takových obrázků musí být na původní obrazová data aplikována operace mapování tónů.</translation>
-</phrase>
-
-<phrase>
-<original>load into this instance</original>
-<translation>načíst do této instance</translation>
-</phrase>
-
-<phrase>
-<original>load into a new PhotoDemon instance</original>
-<translation>načíst do nové instance PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Starší fotoaparáty a software pro úpravu fotografií nemusí správně vkládat metadata, což vede k více kopií metadat v rámci jednoho souboru.  PhotoDemon může automaticky vyřešit duplicitní záznamy za vás.</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Formát JPEG neposkytuje způsob, jak uložit nastavení kvality JPEG do obrazových souborů.  PhotoDemon to může obejít odvozením nastavení kvality z jiných metadat (jako jsou kvantizační tabulky).</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Někteří výrobci fotoaparátů ukládají proprietární značky metadat uvnitř obrazových souborů.  Tyto značky nejsou obecně užitečné pro lidi, ale PhotoDemon se je může pokusit extrahovat.</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Ve výchozím nastavení se velké binární značky (jako miniatury obrázků) nezpracovávají.  Místo toho PhotoDemon jednoduše hlásí velikost vložených dat.  Pokud tato data požadujete, PhotoDemon je může ručně převést na Base64 pro další analýzu.</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Většina digitálních fotografií obsahuje pokyny k otočení (metadata orientace EXIF), které PhotoDemon použije k automatickému otočení fotografií.  Některé starší smartphony a fotoaparáty nemusí tyto pokyny psát správně, takže pokud se vaše fotografie importují na stranu nebo obráceně, můžete zkusit deaktivovat funkci automatického otáčení.</translation>
-</phrase>
-
-<phrase>
-<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>Pokud se váš počítač restartuje, když je spuštěn PhotoDemon, PhotoDemon může automaticky obnovit vaši předchozí relaci.</translation>
-</phrase>
-
-<phrase>
-<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Ve výchozím nastavení vás PhotoDemon upozorní, když se pokusíte zavřít obrázek s neuloženými změnami.
-<překlad></překlad></translation>
-</phrase>
-
-<phrase>
-<original>the current image's folder</original>
-<translation>složka aktuálního obrázku</translation>
-</phrase>
-
-<phrase>
-<original>the last-used folder</original>
-<translation>naposledy použitou složku</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>Většina editorů fotografií ve výchozím nastavení použije složku aktuálního obrázku.  U pracovních postupů, které zahrnují načítání obrázků z jedné složky, ale ukládání do nové složky, použijte naposledy použitou složku, abyste ušetřili čas.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's format</original>
-<translation>formát aktuálního obrázku</translation>
-</phrase>
-
-<phrase>
-<original>the last-used format</original>
-<translation>naposledy použitý formát</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>Většina editorů fotografií má výchozí formát aktuálního obrázku.  U pracovních postupů, které zahrnují načítání obrázků v jednom formátu (např. RAW), ale ukládání do nového formátu (např. JPEG), použijte pro úsporu času naposledy použitý formát.</translation>
-</phrase>
-
-<phrase>
-<original>overwrite the current file (standard behavior)</original>
-<translation>přepsat aktuální soubor (standardní chování)</translation>
-</phrase>
-
-<phrase>
-<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>uložit novou kopii, např. "název souboru (2).jpg" (bezpečné chování)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>Ve většině editorů fotografií příkaz „Uložit“ uloží obrázek přes jeho původní verzi a tuto kopii navždy smaže.  PhotoDemon poskytuje "bezpečnější" možnost, kde každé uložení vede k vytvoření nové kopie souboru.
-<překlad></překlad></translation>
-</phrase>
-
-<phrase>
-<original>suggest the current filename (standard behavior)</original>
-<translation>navrhněte aktuální název souboru (standardní chování)</translation>
-</phrase>
-
-<phrase>
-<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>navrhnout novou kopii, např. "název souboru (bezpečné chování)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>Ve většině editorů fotografií má příkaz „Uložit jako“ výchozí název aktuálního souboru.  PhotoDemon také poskytuje "bezpečnější" možnost, kdy Uložit jako automaticky zvýší názvy souborů za vás.</translation>
-</phrase>
-
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>Specifikace EXIF ​​vyžaduje, aby se programy při exportu obrazových souborů správně identifikovaly jako původní software.  Pro zvýšení soukromí můžete toto chování pozastavit.</translation>
-</phrase>
-
-<phrase>
-<original>maximize quality</original>
-<translation>maximalizovat kvalitu</translation>
-</phrase>
-
-<phrase>
-<original>balance performance and quality</original>
-<translation>vyvážení výkonu a kvality</translation>
-</phrase>
-
-<phrase>
-<original>maximize performance</original>
-<translation>maximalizovat výkon</translation>
-</phrase>
-
-<phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Některé prvky rozhraní dostávají vlastní dekorace (jako vržené stíny).  Na starších počítačích lze tyto dekorace pozastavit pro malé zvýšení výkonu.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon generuje mnoho miniatur, zvláště když obrázky obsahují více vrstev.  Pro zlepšení výkonu lze snížit kvalitu miniatur.</translation>
-</phrase>
-
-<phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Vykreslování primárního obrazového plátna je běžným úzkým hrdlem pro výkon PhotoDemon.  Automatické nastavení se doporučuje, ale u starších počítačů můžete ručně vybrat možnost Maximalizovat výkon a obětovat kvalitu za nezpracovaný výkon.</translation>
-</phrase>
-
-<phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Nastavení nízké komprese vyžaduje více místa na disku, ale operace zpět/opakování budou rychlejší.  Nastavení vysoké komprese vyžaduje méně místa na disku, ale operace zpět/opakování budou pomalejší.  Při zavření obrázků jsou data zpět vymazána, takže toto nastavení ovlivní pouze místo na disku, když jsou obrázky aktivně upravovány.</translation>
-</phrase>
-
-<phrase>
-<original>Primary display</original>
-<translation>Primární displej</translation>
-</phrase>
-
-<phrase>
-<original>Secondary display</original>
-<translation>Sekundární displej</translation>
-</phrase>
-
-<phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>Vypnutí správy barev displeje může poskytnout malé zvýšení výkonu.  Pokud váš displej není aktuálně nakonfigurován pro správu barev, použijte toto nastavení.</translation>
-</phrase>
-
-<phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Toto nastavení je nejlepší volbou pro většinu uživatelů.  Pokud netušíte, co je správa barev, použijte toto nastavení.  Pokud jste správně nakonfigurovali profil zobrazení prostřednictvím ovládacího panelu Windows, použijte také toto nastavení.</translation>
-</phrase>
-
-<phrase>
-<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Chcete-li konfigurovat vlastní profily barev na základě jednotlivých monitorů, použijte toto nastavení.</translation>
-</phrase>
-
-<phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Zadejte prosím barevný profil pro každý monitor aktuálně připojený k systému.  Všimněte si, že text v závorkách je grafický adaptér řídící pojmenovaný monitor.</translation>
-</phrase>
-
-<phrase>
-<original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Klepnutím na toto tlačítko zobrazíte dialogové okno „Procházet profil barev“.</translation>
-</phrase>
-
-<phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Pokud nevíte, co toto nastavení ovládá, nastavte jej na "Perceptual".  Percepční záměr vykreslení je pro většinu uživatelů tou nejlepší volbou.</translation>
-</phrase>
-
-<phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC je primárně relevantní v kolorimetrických záměrech vykreslování, kde pomáhá zachovat detaily v tmavých (stínových) oblastech obrázků.  U většiny pracovních postupů by měl být BPC zapnutý.
-</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>each session</original>
-<translation>při každém spuštení</translation>
-</phrase>
-
-<phrase>
-<original>weekly</original>
-<translation>týdně</translation>
-</phrase>
-
-<phrase>
-<original>monthly</original>
-<translation>měsíčně</translation>
-</phrase>
-
-<phrase>
-<original>never (not recommended)</original>
-<translation>nikdy (nedoporučuje se)
-</translation>
-</phrase>
-
-<phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>Protože je PhotoDemon přenosná aplikace, může kontrolovat aktualizace pouze tehdy, když je program spuštěn.  Ve výchozím nastavení bude PhotoDemon kontrolovat aktualizace při každém spuštění programu, ale v případě potřeby můžete tuto frekvenci snížit.</translation>
-</phrase>
-
-<phrase>
-<original>stable releases</original>
-<translation>stabilní vydání</translation>
-</phrase>
-
-<phrase>
-<original>stable and beta releases</original>
-<translation>stabilní a beta verze</translation>
-</phrase>
-
-<phrase>
-<original>stable, beta, and developer releases</original>
-<translation>stabilní, beta a vývojová verze</translation>
-</phrase>
-
-<phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Jedním z nejlepších způsobů, jak podpořit PhotoDemon, je pomoci s testováním nových verzí.  Ve výchozím nastavení PhotoDemon navrhne jak stabilní, tak beta verzi, ale skutečně odvážní mohou vyzkoušet i verze pro vývojáře.  (Vydání pro vývojáře vám poskytují okamžitý přístup k nejnovějším vylepšením programu, ale můžete narazit na nějaké chyby.)</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon vás může upozornit, když je připraven použít aktualizaci.  To vám umožní okamžitě používat aktualizovanou verzi.
-<překlad></překlad></translation>
-</phrase>
-
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
-(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>Umístili jste PhotoDemon do omezené systémové složky.  Bezpečnostní opatření brání PhotoDemonu v úpravě této složky, takže automatické aktualizace jsou nyní zakázány.  Chcete-li je obnovit, musíte přesunout PhotoDemon do jiné složky než správce, jako je plocha, dokumenty nebo soubory ke stažení.
+Are you sure you want to continue?</original>
+<translation>Všechna nastavení budou obnovena na výchozí hodnoty.  Tuto akci nelze vrátit zpět.
 
-(Pokud necháte PhotoDemon tam, kde je, nezapomeňte čas od času navštívit photodemon.org a zkontrolovat nové verze.)
-</translation>
-</phrase>
-
-<phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
-
-If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Vývojáři PhotoDemon berou soukromí velmi vážně, takže během procesu aktualizace nejsou nahrány žádné informace – statistické ani jiné.  Aktualizace jednoduše zahrnují stažení několika malých souborů XML z photodemon.org. Tyto soubory obsahují nejnovější software, plugin a čísla jazykových verzí. Pokud jsou nalezeny aktualizované verze a uživatelské předvolby to umožňují, aktualizované soubory se pak automaticky stáhnou a opraví.
-
-Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času navštívit photodemon.org a zkontrolovat nové verze.</translation>
-</phrase>
-
-<phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>Ve vývojářských sestaveních se ladicí data automaticky zaznamenávají do složky \Data\Debug programu.  Pokud ve stabilní verzi narazíte na chyby, aktivujte toto nastavení ručně.  To pomůže vývojářům vyřešit váš problém.</translation>
-</phrase>
-
-<phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Při použití vzdálené plochy nebo virtuálního počítače nemusí vstup myši s vysokým rozlišením fungovat správně.  Toto je dlouhodobá chyba Windows.  V těchto situacích můžete toto nastavení použít k obnovení správného chování myši.</translation>
-</phrase>
-
-<phrase>
-<original>current PhotoDemon memory usage</original>
-<translation>aktuální využití paměti PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>max PhotoDemon memory usage this session</original>
-<translation>maximální využití paměti PhotoDemon v této relaci</translation>
-</phrase>
-
-<phrase>
-<original>Click to select a new temporary folder.</original>
-<translation>Klepnutím vyberte novou dočasnou složku.</translation>
-</phrase>
-
-<phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Toto tlačítko resetuje všechna nastavení PhotoDemon.  Pokud se program chová neočekávaně, může to problém vyřešit.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>VAROVÁNÍ: tato složka je neplatná (přístup zakázán).  Zadejte platnou složku.  Pokud není poskytnuta nová složka, PhotoDemon použije systémovou dočasnou složku.</translation>
+Opravdu chcete pokračovat?</translation>
 </phrase>
 
 <phrase>
-<original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>Toto nové umístění dočasné složky se projeví až po restartování programu.</translation>
+<original>Reset PhotoDemon</original>
+<translation>Resetujte PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -15305,12 +14607,724 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>title bar text</original>
+<translation>text titulkového pruhu</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>maximální počet posledních souborů k zapamatování</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>hlavní okno</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>hlavní okno</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation>velikost mřížky</translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation>barvy mřížky</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>text nabídky posledního souboru</translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation>barva pozadí plátna</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>vzdálenost záběru (v pixelech)
+</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation>kompaktní (pouze název souboru)</translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation>podrobný (název souboru a cesta)</translation>
+</phrase>
+
+<phrase>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation>Záhlaví hlavního okna PhotoDemon zobrazuje informace o aktuálně načteném obrázku.  Pomocí této předvolby můžete ovládat, kolik informací se zobrazí.</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>Šířka nabídky "Poslední soubory" je omezena systémem Windows.  Aby se zabránilo přetečení této nabídky, může PhotoDemon zobrazovat pouze názvy obrázků místo úplných umístění obrázků.</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>střední tóny</translation>
+</phrase>
+
+<phrase>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation>Pro usnadnění identifikace průhledných pixelů se „za“ objeví speciální mřížka.  Toto nastavení upravuje vzhled mřížky.</translation>
+</phrase>
+
+<phrase>
+<original>small</original>
+<translation>malý</translation>
+</phrase>
+
+<phrase>
+<original>large</original>
+<translation>velký</translation>
+</phrase>
+
+<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>when images arrive from an external source (like Windows Explorer)</original>
+<translation>když obrázky dorazí z externího zdroje (například Průzkumník Windows)</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>zobrazit možnosti mapování tónů při importu snímků HDR a RAW</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>dodržujte pokyny k automatickému otáčení uvnitř obrázku</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>snímky s vysokým dynamickým rozsahem (HDR)
+</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>násilně extrahovat značky binárního typu jako Base64 (pomalé)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>odhadnout nastavení původní kvality JPEG</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>extrahovat neznámé značky</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>automaticky skrýt duplicitní značky</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation>instance aplikací</translation>
+</phrase>
+
+<phrase>
+<original>session restore</original>
+<translation>obnovení relace</translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation>automaticky obnovovat relace přerušené aktualizacemi systému nebo restartováním</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>Snímky HDR a RAW obsahují více barev, než mohou obrazovky počítače fyzicky zobrazit.  Před zobrazením takových obrázků musí být na původní obrazová data aplikována operace mapování tónů.</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation>načíst do této instance</translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation>načíst do nové instance PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>Starší fotoaparáty a software pro úpravu fotografií nemusí správně vkládat metadata, což vede k více kopií metadat v rámci jednoho souboru.  PhotoDemon může automaticky vyřešit duplicitní záznamy za vás.</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>Formát JPEG neposkytuje způsob, jak uložit nastavení kvality JPEG do obrazových souborů.  PhotoDemon to může obejít odvozením nastavení kvality z jiných metadat (jako jsou kvantizační tabulky).</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>Někteří výrobci fotoaparátů ukládají proprietární značky metadat uvnitř obrazových souborů.  Tyto značky nejsou obecně užitečné pro lidi, ale PhotoDemon se je může pokusit extrahovat.</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>Ve výchozím nastavení se velké binární značky (jako miniatury obrázků) nezpracovávají.  Místo toho PhotoDemon jednoduše hlásí velikost vložených dat.  Pokud tato data požadujete, PhotoDemon je může ručně převést na Base64 pro další analýzu.</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>Většina digitálních fotografií obsahuje pokyny k otočení (metadata orientace EXIF), které PhotoDemon použije k automatickému otočení fotografií.  Některé starší smartphony a fotoaparáty nemusí tyto pokyny psát správně, takže pokud se vaše fotografie importují na stranu nebo obráceně, můžete zkusit deaktivovat funkci automatického otáčení.</translation>
+</phrase>
+
+<phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation>Pokud se váš počítač restartuje, když je spuštěn PhotoDemon, PhotoDemon může automaticky obnovit vaši předchozí relaci.</translation>
+</phrase>
+
+<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation>při zavírání obrázků upozornit na neuložené změny</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation>při použití "Uložit jako" nastavte výchozí soubor na</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>při použití "Uložit"</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation>bezpečné uložení</translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation>neuložené změny</translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation>výchozí formát</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>uveďte PhotoDemon jako poslední použitý editační program</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation>výchozí složka
+</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation>při použití "Uložit jako" nastavte výchozí složku na</translation>
+</phrase>
+
+<phrase>
+<original>when "Save as" is used</original>
+<translation>při použití "Uložit jako"</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation>Ve výchozím nastavení vás PhotoDemon upozorní, když se pokusíte zavřít obrázek s neuloženými změnami.
+<překlad></překlad></translation>
+</phrase>
+
+<phrase>
+<original>the current image's folder</original>
+<translation>složka aktuálního obrázku</translation>
+</phrase>
+
+<phrase>
+<original>the last-used folder</original>
+<translation>naposledy použitou složku</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation>Většina editorů fotografií ve výchozím nastavení použije složku aktuálního obrázku.  U pracovních postupů, které zahrnují načítání obrázků z jedné složky, ale ukládání do nové složky, použijte naposledy použitou složku, abyste ušetřili čas.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation>formát aktuálního obrázku</translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation>naposledy použitý formát</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation>Většina editorů fotografií má výchozí formát aktuálního obrázku.  U pracovních postupů, které zahrnují načítání obrázků v jednom formátu (např. RAW), ale ukládání do nového formátu (např. JPEG), použijte pro úsporu času naposledy použitý formát.</translation>
+</phrase>
+
+<phrase>
+<original>overwrite the current file (standard behavior)</original>
+<translation>přepsat aktuální soubor (standardní chování)</translation>
+</phrase>
+
+<phrase>
+<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>uložit novou kopii, např. "název souboru (2).jpg" (bezpečné chování)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<translation>Ve většině editorů fotografií příkaz „Uložit“ uloží obrázek přes jeho původní verzi a tuto kopii navždy smaže.  PhotoDemon poskytuje "bezpečnější" možnost, kde každé uložení vede k vytvoření nové kopie souboru.
+<překlad></překlad></translation>
+</phrase>
+
+<phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation>navrhněte aktuální název souboru (standardní chování)</translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>navrhnout novou kopii, např. "název souboru (bezpečné chování)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation>Ve většině editorů fotografií má příkaz „Uložit jako“ výchozí název aktuálního souboru.  PhotoDemon také poskytuje "bezpečnější" možnost, kdy Uložit jako automaticky zvýší názvy souborů za vás.</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>Specifikace EXIF ​​vyžaduje, aby se programy při exportu obrazových souborů správně identifikovaly jako původní software.  Pro zvýšení soukromí můžete toto chování pozastavit.</translation>
+</phrase>
+
+<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>při generování obrázků a náhledů vrstev</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>při zdobení prvků rozhraní</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>při generování obrázků a náhledů vrstev</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>při vykreslování obrazového plátna</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>rozhraní</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>žádná komprese (nejrychlejší)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>maximální komprese (nejpomalejší)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>vrátit zpět/znovu</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>miniatury</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>výřez</translation>
+</phrase>
+
+<phrase>
+<original>maximize quality</original>
+<translation>maximalizovat kvalitu</translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation>vyvážení výkonu a kvality</translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation>maximalizovat výkon</translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation>Některé prvky rozhraní dostávají vlastní dekorace (jako vržené stíny).  Na starších počítačích lze tyto dekorace pozastavit pro malé zvýšení výkonu.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation>PhotoDemon generuje mnoho miniatur, zvláště když obrázky obsahují více vrstev.  Pro zlepšení výkonu lze snížit kvalitu miniatur.</translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation>Vykreslování primárního obrazového plátna je běžným úzkým hrdlem pro výkon PhotoDemon.  Automatické nastavení se doporučuje, ale u starších počítačů můžete ručně vybrat možnost Maximalizovat výkon a obětovat kvalitu za nezpracovaný výkon.</translation>
+</phrase>
+
+<phrase>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation>Nastavení nízké komprese vyžaduje více místa na disku, ale operace zpět/opakování budou rychlejší.  Nastavení vysoké komprese vyžaduje méně místa na disku, ale operace zpět/opakování budou pomalejší.  Při zavření obrázků jsou data zpět vymazána, takže toto nastavení ovlivní pouze místo na disku, když jsou obrázky aktivně upravovány.</translation>
+</phrase>
+
+<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>použijte kompenzaci černého bodu</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>zobrazit záměr vykreslení</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>dostupné displeje</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>vypnout správu barev displeje</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>použít aktuální systémové profily pro každý displej</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>barevný profil pro tento displej</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>zásady zobrazování</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>používat vlastní profily pro každý displej</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>Vyberte prosím barevný profil</translation>
+</phrase>
+
+<phrase>
+<original>Primary display</original>
+<translation>Primární displej</translation>
+</phrase>
+
+<phrase>
+<original>Secondary display</original>
+<translation>Sekundární displej</translation>
+</phrase>
+
+<phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation>Vypnutí správy barev displeje může poskytnout malé zvýšení výkonu.  Pokud váš displej není aktuálně nakonfigurován pro správu barev, použijte toto nastavení.</translation>
+</phrase>
+
+<phrase>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<translation>Toto nastavení je nejlepší volbou pro většinu uživatelů.  Pokud netušíte, co je správa barev, použijte toto nastavení.  Pokud jste správně nakonfigurovali profil zobrazení prostřednictvím ovládacího panelu Windows, použijte také toto nastavení.</translation>
+</phrase>
+
+<phrase>
+<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
+<translation>Chcete-li konfigurovat vlastní profily barev na základě jednotlivých monitorů, použijte toto nastavení.</translation>
+</phrase>
+
+<phrase>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<translation>Zadejte prosím barevný profil pro každý monitor aktuálně připojený k systému.  Všimněte si, že text v závorkách je grafický adaptér řídící pojmenovaný monitor.</translation>
+</phrase>
+
+<phrase>
+<original>Click this button to bring up a "browse for color profile" dialog.</original>
+<translation>Klepnutím na toto tlačítko zobrazíte dialogové okno „Procházet profil barev“.</translation>
+</phrase>
+
+<phrase>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation>Pokud nevíte, co toto nastavení ovládá, nastavte jej na "Perceptual".  Percepční záměr vykreslení je pro většinu uživatelů tou nejlepší volbou.</translation>
+</phrase>
+
+<phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation>BPC je primárně relevantní v kolorimetrických záměrech vykreslování, kde pomáhá zachovat detaily v tmavých (stínových) oblastech obrázků.  U většiny pracovních postupů by měl být BPC zapnutý.
+</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(odmítnutí odpovědnosti je vyplněno za běhu)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automaticky kontrolovat aktualizace</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>povolit aktualizace z těchto stop</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>možnosti aktualizace</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>upozornit, až bude aktualizace připravena</translation>
+</phrase>
+
+<phrase>
+<original>each session</original>
+<translation>při každém spuštení</translation>
+</phrase>
+
+<phrase>
+<original>weekly</original>
+<translation>týdně</translation>
+</phrase>
+
+<phrase>
+<original>monthly</original>
+<translation>měsíčně</translation>
+</phrase>
+
+<phrase>
+<original>never (not recommended)</original>
+<translation>nikdy (nedoporučuje se)
+</translation>
+</phrase>
+
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>Protože je PhotoDemon přenosná aplikace, může kontrolovat aktualizace pouze tehdy, když je program spuštěn.  Ve výchozím nastavení bude PhotoDemon kontrolovat aktualizace při každém spuštění programu, ale v případě potřeby můžete tuto frekvenci snížit.</translation>
+</phrase>
+
+<phrase>
+<original>stable releases</original>
+<translation>stabilní vydání</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>stabilní a beta verze</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>stabilní, beta a vývojová verze</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>Jedním z nejlepších způsobů, jak podpořit PhotoDemon, je pomoci s testováním nových verzí.  Ve výchozím nastavení PhotoDemon navrhne jak stabilní, tak beta verzi, ale skutečně odvážní mohou vyzkoušet i verze pro vývojáře.  (Vydání pro vývojáře vám poskytují okamžitý přístup k nejnovějším vylepšením programu, ale můžete narazit na nějaké chyby.)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>PhotoDemon vás může upozornit, když je připraven použít aktualizaci.  To vám umožní okamžitě používat aktualizovanou verzi.
+<překlad></překlad></translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation>Umístili jste PhotoDemon do omezené systémové složky.  Bezpečnostní opatření brání PhotoDemonu v úpravě této složky, takže automatické aktualizace jsou nyní zakázány.  Chcete-li je obnovit, musíte přesunout PhotoDemon do jiné složky než správce, jako je plocha, dokumenty nebo soubory ke stažení.
+
+(Pokud necháte PhotoDemon tam, kde je, nezapomeňte čas od času navštívit photodemon.org a zkontrolovat nové verze.)
+</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>Vývojáři PhotoDemon berou soukromí velmi vážně, takže během procesu aktualizace nejsou nahrány žádné informace – statistické ani jiné.  Aktualizace jednoduše zahrnují stažení několika malých souborů XML z photodemon.org. Tyto soubory obsahují nejnovější software, plugin a čísla jazykových verzí. Pokud jsou nalezeny aktualizované verze a uživatelské předvolby to umožňují, aktualizované soubory se pak automaticky stáhnou a opraví.
+
+Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času navštívit photodemon.org a zkontrolovat nové verze.</translation>
+</phrase>
+
+<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>vstup myši s vysokým rozlišením</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>resetujte všechna nastavení programu</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>zde se zobrazí využití paměti</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostika paměti</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>dočasné umístění souboru</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>začít znovu</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>složka nastavení aplikace</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>generovat protokoly ladění
+</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation>VAROVÁNÍ: tato složka je neplatná (přístup zakázán).  Zadejte platnou složku.  Pokud není poskytnuta nová složka, PhotoDemon použije systémovou dočasnou složku.</translation>
+</phrase>
+
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation>Toto nové umístění dočasné složky se projeví až po restartování programu.</translation>
+</phrase>
+
+<phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>Ve vývojářských sestaveních se ladicí data automaticky zaznamenávají do složky \Data\Debug programu.  Pokud ve stabilní verzi narazíte na chyby, aktivujte toto nastavení ručně.  To pomůže vývojářům vyřešit váš problém.</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>Při použití vzdálené plochy nebo virtuálního počítače nemusí vstup myši s vysokým rozlišením fungovat správně.  Toto je dlouhodobá chyba Windows.  V těchto situacích můžete toto nastavení použít k obnovení správného chování myši.</translation>
+</phrase>
+
+<phrase>
+<original>current PhotoDemon memory usage</original>
+<translation>aktuální využití paměti PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>max PhotoDemon memory usage this session</original>
+<translation>maximální využití paměti PhotoDemon v této relaci</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation>Klepnutím vyberte novou dočasnou složku.</translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation>Toto tlačítko resetuje všechna nastavení PhotoDemon.  Pokud se program chová neočekávaně, může to problém vyřešit.</translation>
+</phrase>
+
+<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5917 phrases. -->
-<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
 <!-- These 2777 phrases contain approximately 12046 total words. -->
 
 </pdData>

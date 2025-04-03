@@ -1096,6 +1096,97 @@ ShowPDDialogError:
 
 End Sub
 
+'If you need to raise a popup from a custom owner (like the Tools > Options panel, where PD messes with form ownership),
+' use this function instead.  It doesn't provide the same auto-positioning behavior as PD's core "ShowDialog", but it
+' allows you to specify a custom parent.
+Public Sub ShowCustomPopup(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form, ByRef parentForm As Form, Optional ByVal doNotUnload As Boolean = False)
+
+    On Error GoTo ShowModalDialogError
+    
+    Dim initModalDialogState As Boolean
+    initModalDialogState = m_ModalDialogActive
+    m_ModalDialogActive = True
+    
+    'Make sure PD's main form is visible
+    If (FormMain.WindowState = vbMinimized) Then FormMain.WindowState = vbNormal
+    
+    'TODO: do any callers actually require this?
+    'Reset our "last dialog result" tracker.  (We use "ignore" as the "default" value, as it's a value PD never utilizes internally.)
+    'm_LastShowDialogResult = vbIgnore
+    
+    'Start by loading the form and hiding it
+    If (dialogForm Is Nothing) Then Load dialogForm
+    dialogForm.Visible = False
+    
+    'Retrieve and cache the hWnd; we need access to this even if the form is unloaded, so we can properly deregister it
+    ' with the window manager.
+    Dim dialogHWnd As Long
+    dialogHWnd = dialogForm.hWnd
+    
+    'If the window has a previous position stored, use that.
+    'Dim prevPositionStored As Boolean
+    'If (Not g_WindowManager Is Nothing) Then prevPositionStored = g_WindowManager.IsPreviousPositionStored(dialogForm)
+    
+    'If a previous position is *not* stored, center it against the parent dialog.
+    'If (Not prevPositionStored) Then
+        
+        'Get the rect of the main form, which we will use to calculate a center position
+        Dim ownerRect As winRect
+        GetWindowRect parentForm.hWnd, ownerRect
+        
+        'Determine the center of that rect
+        Dim centerX As Long, centerY As Long
+        centerX = ownerRect.x1 + (ownerRect.x2 - ownerRect.x1) \ 2
+        centerY = ownerRect.y1 + (ownerRect.y2 - ownerRect.y1) \ 2
+        
+        'Get the rect of the child dialog
+        Dim dialogRect As winRect
+        GetWindowRect dialogHWnd, dialogRect
+        
+        'Determine an upper-left point for the dialog based on its size
+        Dim newLeft As Long, newTop As Long
+        newLeft = centerX - ((dialogRect.x2 - dialogRect.x1) \ 2)
+        newTop = centerY - ((dialogRect.y2 - dialogRect.y1) \ 2)
+        
+        'If this position results in the dialog sitting off-screen, move it so that its bottom-right corner is always on-screen.
+        ' (All PD dialogs have bottom-right OK/Cancel buttons, so that's the most important part of the dialog to show.)
+        If newLeft + (dialogRect.x2 - dialogRect.x1) > g_Displays.GetDesktopRight Then newLeft = g_Displays.GetDesktopRight - (dialogRect.x2 - dialogRect.x1)
+        If newTop + (dialogRect.y2 - dialogRect.y1) > g_Displays.GetDesktopBottom Then newTop = g_Displays.GetDesktopBottom - (dialogRect.y2 - dialogRect.y1)
+        
+        'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
+        MoveWindow dialogHWnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
+        
+    'End If
+        
+    'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
+    ' on older OSes, even though a toolbox window has focus.
+    Interface.FixPopupWindow dialogHWnd, True
+    
+    'Use VB to actually display the dialog.  Note that code execution will pause here until the form is closed.
+    ' (As usual, disclaimers apply to message-loop functions like DoEvents.)
+    dialogForm.Show dialogModality, parentForm
+    
+    'Now that the dialog has finished, we must replace the windows icons with its original ones -
+    ' otherwise, VB will mistakenly unload our custom icons with the window!
+    Interface.FixPopupWindow dialogHWnd, False
+    
+    'If the form has not been unloaded, unload it now
+    If (Not (dialogForm Is Nothing)) And (Not doNotUnload) Then
+        Unload dialogForm
+        Set dialogForm = Nothing
+    End If
+    
+    m_ModalDialogActive = initModalDialogState
+    
+    Exit Sub
+    
+'For reasons I can't yet ascertain, this function will sometimes fail, claiming that a modal window is already active.  If that happens,
+' we can just exit.
+ShowModalDialogError:
+    m_ModalDialogActive = False
+
+End Sub
+
 'Any commandbar-based dialog will automatically notify us of its "OK" or "Cancel" result; subsequent functions can check this return
 ' via GetLastShowDialogResult(), below.
 Public Sub NotifyShowDialogResult(ByVal msgResult As VbMsgBoxResult, Optional ByVal nonStandardDialogSource As Boolean = False)
