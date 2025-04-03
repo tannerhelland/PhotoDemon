@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.30</langversion>
+<langversion>9.0.31</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -12579,7 +12579,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -14684,6 +14684,6 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- As of this build, PhotoDemon contains 5910 phrases. -->
 <!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>

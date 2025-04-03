@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2024.12.352</langversion>
+		<langversion>2024.12.353</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -12522,7 +12522,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -14617,6 +14617,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 	<!-- As of this build, PhotoDemon contains 5910 phrases. -->
 	<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-	<!-- These 2777 phrases contain approximately 12046 total words. -->
+	<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 	</pdData>

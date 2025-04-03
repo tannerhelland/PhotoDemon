@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).24</langversion>
+<langversion>2028.8 Alfa (Build 25).25</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -12579,7 +12579,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -14684,6 +14684,6 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- As of this build, PhotoDemon contains 5910 phrases. -->
 <!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>

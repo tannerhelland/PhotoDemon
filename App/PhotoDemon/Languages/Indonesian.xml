@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1746</langversion>
+<langversion>8.9.1747</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -12579,7 +12579,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -14684,6 +14684,6 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <!-- As of this build, PhotoDemon contains 5910 phrases. -->
 <!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>

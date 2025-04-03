@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.57</langversion>
+<langversion>1.0.58</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -12544,7 +12544,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -14639,6 +14639,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 5910 phrases. -->
 <!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>

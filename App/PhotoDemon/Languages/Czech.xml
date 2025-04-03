@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.18</langversion>
+<langversion>1.0.19</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -13203,7 +13203,7 @@ aplikace - Windows 95, 98, ME
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -15325,6 +15325,6 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- As of this build, PhotoDemon contains 5910 phrases. -->
 <!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>

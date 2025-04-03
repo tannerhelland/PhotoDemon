@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語 (Japanese)</langname>
-<langversion>2024.7.26</langversion>
+<langversion>2024.7.27</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Kenji Hoshimoto (Hosiken)</author>
@@ -12580,7 +12580,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -14685,6 +14685,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 5910 phrases. -->
 <!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>
