@@ -559,6 +559,10 @@ End Type
 
 Private m_ToolActions() As PD_ToolboxAction, m_numToolActions As Long
 
+'hWnd of the currently active tool panel.  We must track this and pass it to the window manager
+' when loading a new tool panel.
+Private m_CurrentToolPanelHwnd As Long
+
 Private Sub cmdFile_Click(Index As Integer, ByVal Shift As ShiftConstants)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
@@ -1011,7 +1015,7 @@ Private Sub NewToolSelected()
     'With all tool settings initialized, set focus to the canvas.  (Because the previous
     ' tool panel was unloaded, focus can be unpredictable if left up to the system.)
     If (Not g_WindowManager Is Nothing) Then FormMain.MainCanvas(0).SetFocusToCanvasView
-        
+    
 End Sub
 
 'External functions can use this to request the selection of a new tool (for example, Select All uses this to set the
@@ -1050,12 +1054,8 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     
     'If our panel tracker doesn't exist, create it now
     If (m_NumOfPanels = 0) Then
-        
-        'Unfortunately, we don't currently have an easy way to generate this value automatically,
-        ' so it must be hard-coded.
         m_NumOfPanels = NUM_OF_TOOL_PANELS
         ReDim m_Panels(0 To m_NumOfPanels - 1) As ToolPanelTracker
-        
     End If
     
     'Next, we need to display the correct tool options panel.  There is no set pattern to this;
@@ -1184,8 +1184,8 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
         
     End If
     
-    'Next, some tools display information about the current layer.  Synchronize that information before proceeding, so that the
-    ' option panel's information is correct as soon as the window appears.
+    'Next, some tools display information about the current layer.  Synchronize that information before proceeding,
+    ' so that the option panel's information is correct as soon as the window appears.
     Tools.SyncToolOptionsUIToCurrentLayer
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
@@ -1223,7 +1223,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     'Next, we want to display the current tool options panel, while hiding all inactive ones.
     ' (This must be handled carefully, or we risk accidentally enabling unloaded panels,
     '  which we don't want as toolpanels are quite resource-heavy.)
-    g_WindowManager.DeactivateToolPanel
+    g_WindowManager.DeactivateToolPanel m_CurrentToolPanelHwnd
     
     'To prevent flicker, we handle this in two passes.
     
@@ -1235,12 +1235,13 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
             'If this is the active panel, display it
             If (i = m_ActiveToolPanel) Then
                 g_WindowManager.ActivateToolPanel m_Panels(i).PanelHWnd, toolbar_Options.hWnd
+                m_CurrentToolPanelHwnd = m_Panels(i).PanelHWnd
                 Exit For
             End If
             
         Next i
         
-        'Next, hide all other panels
+        'Next, forcibly hide all other panels
         For i = 0 To m_NumOfPanels - 1
             
             If (i <> m_ActiveToolPanel) Then
@@ -1590,10 +1591,11 @@ Public Sub FreeAllToolpanels()
     UserControls.HideOpenFlyouts 0&
     
     'The active toolpanel (if one exists) has had its window bits manually modified so that we can
-    ' embed it at the bottom of the main window.  Make certain those window bits are reset before
+    ' embed it atop the parent tool options window.  Make certain those window bits are reset before
     ' we attempt to unload the panel using built-in VB keywords (because VB will crash if it
     ' encounters unexpected window bits, especially WS_CHILD).
-    If (Not g_WindowManager Is Nothing) Then g_WindowManager.DeactivateToolPanel
+    If (Not g_WindowManager Is Nothing) And (m_CurrentToolPanelHwnd <> 0) Then g_WindowManager.DeactivateToolPanel m_CurrentToolPanelHwnd
+    m_CurrentToolPanelHwnd = 0
     
     'Make sure our internal toolbox collection actually exists before attempting to iterate it
     If (m_NumOfPanels = 0) Then Exit Sub

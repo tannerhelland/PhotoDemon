@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12 Alpha - Build 304.5</langversion>
+<langversion>2024.12 Alpha - Build 304.7</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -12580,7 +12580,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -13716,336 +13716,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation>Масштабирование с помощью прокрутки мыши</translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation>Текст заголовка</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>Количество недавно использованных файлов для запоминания</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>Недавно использованные файлы</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>Главное окно</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation>Размер сетки</translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation>Цвет сетки</translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation>Текст меню недавно использованного файла</translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation>Цвет фона холста</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>привязка расстояний (в пикселях)</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation>угловая привязка расстояний (в градусах)</translation>
-</phrase>
-
-<phrase>
-<original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>Если изображение получено из внешнего источника (например, из проводника Windows)</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>Показывать параметры тональной компрессии при импорте изображений HDR или RAW.</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>Следовать инструкции по автоповороту файла изображения.</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>Изображения с высоким динамическим диапазоном (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>Принудительное извлечение двоичных тегов в формате Base64 (медленно)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>Оценка исходных настроек качества JPEG</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>Извлечь неизвестные теги</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>Автоскрытие повторяющихся тегов</translation>
-</phrase>
-
-<phrase>
-<original>app instances</original>
-<translation>Экземпляры приложений</translation>
-</phrase>
-
-<phrase>
-<original>session restore</original>
-<translation>Восстановление сеанса</translation>
-</phrase>
-
-<phrase>
-<original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>Автовосстановление сеанса, прерванного обновлением или перезагрузкой системы</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn about unsaved changes</original>
-<translation>Предупреждать о несохранённых изменениях при закрытии изображений</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the default file format to</original>
-<translation>При использовании параметра "Сохранить как", установить формат файла по умолчанию</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>При использовании "Сохранить"</translation>
-</phrase>
-
-<phrase>
-<original>safe saving</original>
-<translation>Безопасное сохранение</translation>
-</phrase>
-
-<phrase>
-<original>unsaved changes</original>
-<translation>Несохранённые изменения</translation>
-</phrase>
-
-<phrase>
-<original>default format</original>
-<translation>Формат по умолчанию</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>PhotoDemon в качестве редактора изображения.</translation>
-</phrase>
-
-<phrase>
-<original>default folder</original>
-<translation>Папка по умолчанию</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the initial folder to</original>
-<translation>Папка для "Сохранить как"</translation>
-</phrase>
-
-<phrase>
-<original>when "Save as" is used</original>
-<translation>При использовании "Сохранить как"</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>Сжатие данных для отмены/повтора на следующем уровне</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>При оформлении элементов интерфейса</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>При создании миниатюр изображений и слоев</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>При рендеринге холста изображения</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>Интерфейс</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>Без сжатия (быстрый)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>Максимальное сжатие (медленно)</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>Отменить/Повторить</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>Миниатюры</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>Область просмотра</translation>
-</phrase>
-
-<phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation>использовать встроенные профили ICC, если они доступны</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>Компенсация чёрной точки</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>Способ цветопередачи</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>Доступные дисплеи</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>Отключить управление цветом дисплея</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>Использовать текущие системные профили для каждого дисплея</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>Цветовой профиль этого дисплея</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Просмотр политик</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>Использовать пользовательский профиль для каждого дисплея</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation>политика файлов</translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation>использовать данные управления цветом, относящиеся к конкретному формату, если они доступны</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>Мышь с высоким разрешением</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Сброс всех настроек программы</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Здесь отображается объём используемой памяти</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Диагностика памяти</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Временное расположение файла</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>Вернуться к значению по умолчанию</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>Папка настроек приложения</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>Создание журнала отладки</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(отказ от ответственности заполняется во время выполнения)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>Автоматически проверять наличие обновлений</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>Разрешить обновление этой версии</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Параметры обновления</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>Информировать меня когда будут обновления</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Сохранение настроек</translation>
 </phrase>
@@ -14053,25 +13723,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>Preferences updated.</original>
 <translation>Настройки обновлены.</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>Выбери цветовой профиль</translation>
-</phrase>
-
-<phrase>
-<original>All settings will be restored to their default values.  This action cannot be undone.
-
-Are you sure you want to continue?</original>
-<translation>Все настройки будут возвращены к значениям по умолчанию. Эту операцию невозможно отменить.
-
-Продолжить?</translation>
-</phrase>
-
-<phrase>
-<original>Reset PhotoDemon</original>
-<translation>Перезагрузить PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14105,359 +13756,20 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>compact (filename only)</original>
-<translation>Компактный (только имя файла)</translation>
-</phrase>
-
-<phrase>
-<original>verbose (filename and path)</original>
-<translation>Подробный (имя файла и путь к нему)</translation>
-</phrase>
-
-<phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>В строке заголовка главного окна PhotoDemon отображается информация о загруженном в данный момент изображении.Используй этот параметр по умолчанию, чтобы контролировать объём отображаемой информации.</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Меню "Недавно использованные файлы" ограничено Windows по ширине. Чтобы предотвратить переполнение этого меню, PhotoDemon позволяет отображать только имя изображения вместо полного местоположения изображения.</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>Полутона</translation>
-</phrase>
-
-<phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Чтобы упростить идентификацию прозрачных пикселей, на его "обратной стороне" отображается специальная сетка.  Этот параметр изменяет внешний вид сетки.</translation>
-</phrase>
-
-<phrase>
-<original>small</original>
-<translation>Мелкий</translation>
-</phrase>
-
-<phrase>
-<original>large</original>
-<translation>Крупный</translation>
-</phrase>
-
-<phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>Изображения HDR и RAW содержат больше цветов, чем физически может отобразить экран ПК. Перед отображением такого изображения к исходным данным изображения необходимо применить операцию тонального преобразования.</translation>
-</phrase>
-
-<phrase>
-<original>load into this instance</original>
-<translation>Загрузить в этот экземпляр</translation>
-</phrase>
-
-<phrase>
-<original>load into a new PhotoDemon instance</original>
-<translation>Загрузить в новый экземпляр PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Старые камеры и программное обеспечение для редактирования фотографий могут неправильно вставлять метаданные и создавать несколько копий метаданных в одном файле.   PhotoDemon может автоматически устранять повторяющиеся записи.</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Формат JPEG не позволяет хранить настройки качества JPEG внутри файлов изображений. PhotoDemon может обойти эту проблему, извлекая настройки качества из других метаданных (например, таблиц квантования).</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Некоторые производители фотоаппаратов хранят свои собственные теги метаданных в файлах изображений.  Эти теги, как правило, бесполезны для людей, но PhotoDemon все равно может попытаться извлечь их.</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>По умолчанию большие двоичные теги (например, миниатюры изображений) не обрабатываются. Вместо этого PhotoDemon просто сообщает размер встроенных данных. Если эти данные необходимы, PhotoDemon может вручную преобразовать их в Base64 для дальнейшего анализа.</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Большинство цифровых фотографий содержат инструкции по повороту (метаданные ориентации EXIF), которые PhotoDemon использует для автоматического поворота фотографии. В некоторых старых смартфонах и фотоаппаратах эти инструкции могут быть неправильно описаны, поэтому, если фотографии импортированы в боковом или перевернутом виде, попробуй отключить функцию автоматического поворота.</translation>
-</phrase>
-
-<phrase>
-<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>Если компьютер перезагрузится во время работы PhotoDemon, PhotoDemon автоматически восстановит предыдущий сеанс.</translation>
-</phrase>
-
-<phrase>
-<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>По умолчанию PhotoDemon предупредит, если ты попытаешься закрыть изображение с несохранёнными изменениями.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's folder</original>
-<translation>Текущая папка с изображениями</translation>
-</phrase>
-
-<phrase>
-<original>the last-used folder</original>
-<translation>Последняя используемая папка</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>Большинство фоторедакторов по умолчанию используют папку текущего изображения. Для рабочих процессов, в которых изображения загружаются из одной папки и сохраняются в новой папке, для экономии времени используй последнюю использованную папку.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's format</original>
-<translation>Текущий формат изображения</translation>
-</phrase>
-
-<phrase>
-<original>the last-used format</original>
-<translation>Недавно используемый формат</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>Большинство фоторедакторов по умолчанию используют текущий формат изображения. Для рабочих процессов, которые загружают изображения в одном формате (например, RAW) и сохраняют их в новом формате (например, JPEG), используй недавно использованный формат, чтобы сэкономить время.</translation>
-</phrase>
-
-<phrase>
-<original>overwrite the current file (standard behavior)</original>
-<translation>Перезаписать текущий файл (стандартный вариант)</translation>
-</phrase>
-
-<phrase>
-<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>Сохранить новую копию. Пример: "Имя файла (2).jpg" (безопасный вариант)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>В большинстве фоторедакторов команда "Сохранить" сохраняет изображение поверх исходной версии и безвозвратно стирает копию. PhotoDemon предлагает "более безопасный" вариант: при каждом сохранении создается новая копия файла.</translation>
-</phrase>
-
-<phrase>
-<original>suggest the current filename (standard behavior)</original>
-<translation>Предложить текущее имя файла (стандартный вариант)</translation>
-</phrase>
-
-<phrase>
-<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>Предложить новую копию, например: "имя файла (2).jpg" (безопасный вариант).</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>В большинстве фоторедакторов команда "Сохранить как" по умолчанию использует текущее имя файла. PhotoDemon также предоставляет "более безопасную" опцию, при которой "Сохранить как" автоматически увеличивает цифру в имени файла.</translation>
-</phrase>
-
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>Спецификация EXIF требует, чтобы программы правильно идентифицировали себя как оригинальное программное обеспечение при экспорте файлов изображений. Для повышения конфиденциальности можно приостановить это действие.</translation>
-</phrase>
-
-<phrase>
-<original>maximize quality</original>
-<translation>Максимальное качество</translation>
-</phrase>
-
-<phrase>
-<original>balance performance and quality</original>
-<translation>Баланс производительности и качества</translation>
-</phrase>
-
-<phrase>
-<original>maximize performance</original>
-<translation>Максимальная производительность</translation>
-</phrase>
-
-<phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Некоторые элементы интерфейса имеют собственные оформления (например, тени). На старых ПК можно получить небольшой прирост производительности, приостановив эти оформления.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon генерирует множество миниатюр изображений, особенно если изображение содержит несколько слоев. Можно уменьшить качество миниатюр, чтобы повысить производительность.</translation>
-</phrase>
-
-<phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Рендеринг основного изображения на холсте является распространенным узким местом производительности Photodemon.  Рекомендуется использовать автоматическую настройку, но на старых ПК можно вручную выбрать параметр "Максимизировать производительность", пожертвовав качеством в пользу производительности</translation>
-</phrase>
-
-<phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Настройки низкого сжатия требуют больше места на диске, но операции отмены/повтора будут выполняться быстрее. Настройки высокого сжатия требуют меньше места на диске, но операции отмены/повтора будут выполняться медленнее. Данные отмены стираются при закрытии изображений, поэтому этот параметр влияет на дисковое пространство только во время активного редактирования изображений.</translation>
-</phrase>
-
-<phrase>
-<original>Primary display</original>
-<translation>Главный дисплей</translation>
-</phrase>
-
-<phrase>
-<original>Secondary display</original>
-<translation>Дополнительный дисплей</translation>
-</phrase>
-
-<phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>Отключение управления цветом дисплея может немного улучшить производительность. Используй этот параметр, если дисплей в настоящее время не настроен для управления цветом.</translation>
-</phrase>
-
-<phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Этот параметр является лучшим выбором для большинства пользователей. Используй эту настройку, если не знаешь, что такое управление цветом. Также используй этот параметр, если правильно настроен профиль отображения в панели управления Windows.</translation>
-</phrase>
-
-<phrase>
-<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Используй этот параметр, чтобы установить собственный цветовой профиль для каждого монитора.</translation>
-</phrase>
-
-<phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Укажи цветовой профиль для каждого монитора, подключенного в данный момент к системе. Обрати внимание, что текст в скобках — это адаптер дисплея, который управляет указанным монитором.</translation>
-</phrase>
-
-<phrase>
-<original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Нажми эту кнопку, чтобы открыть диалоговое окно "Просмотр цветового профиля".</translation>
-</phrase>
-
-<phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Перцепционная-для фотографий. Насыщенность-для диаграммы и графики. Относительная колориметрическая-для векторной графики. Абсолютная колориметрическая-для логотипов.</translation>
-</phrase>
-
-<phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC в первую очередь связан с колориметрической визуализацией и помогает сохранить детали в тёмных (теневых) областях изображения. Для большинства рабочих процессов требуется включение BPC.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation>Встроенные профили ICC улучшают точность цветопередачи. Даже если этот параметр отключен, PhotoDemon может по-прежнему использовать профили ICC для некоторых задач (например, для обработки данных CMYK).</translation>
-</phrase>
-
-<phrase>
-<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation>Некоторые форматы изображений поддерживают как профили ICC, так и собственные решения по управлению цветом. PhotoDemon всегда предпочитает профили ICC, но если ни один из них не встроен, можно попробовать другие подходы к управлению цветом.</translation>
-</phrase>
-
-<phrase>
-<original>each session</original>
-<translation>Каждый сеанс</translation>
-</phrase>
-
-<phrase>
-<original>weekly</original>
-<translation>Еженедельно</translation>
-</phrase>
-
-<phrase>
-<original>monthly</original>
-<translation>Ежемесячно</translation>
-</phrase>
-
-<phrase>
-<original>never (not recommended)</original>
-<translation>Никогда(не рекомендуется)</translation>
-</phrase>
-
-<phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon — портативное приложение, поэтому проверять наличие обновлений можно только во время работы программы. По умолчанию PhotoDemon проверяет наличие обновлений при каждом запуске программы, но при необходимости можно уменьшить эту частоту.</translation>
-</phrase>
-
-<phrase>
-<original>stable releases</original>
-<translation>Стабильная версия</translation>
-</phrase>
-
-<phrase>
-<original>stable and beta releases</original>
-<translation>Стабильные и бета-версии</translation>
-</phrase>
-
-<phrase>
-<original>stable, beta, and developer releases</original>
-<translation>Стабильные, бета-версии и версии для разработчиков</translation>
-</phrase>
-
-<phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Один из лучших способов поддержки PhotoDemon — это помощь в тестировании новых версий. По умолчанию PhotoDemon предлагает как стабильные, так и бета-версии, но если ты действительно предприимчив, можешь попробовать версию для разработчиков. (Версии для разработчиков дают немедленный доступ к последним улучшениям программы, но могут содержать ошибки)</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon может уведомить, когда обновления будут готовы к применению. Это позволит сразу же использовать обновлённую версию.</translation>
-</phrase>
-
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
-(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>PhotoDemon помещён в системную папку с ограниченным доступом. Из соображений безопасности PhotoDemon не может изменять эту папку, Поэтому автоматические обновления теперь отключены. Чтобы восстановить их, необходимо переместить PhotoDemon в папку без прав администратора, такую как Рабочий стол, Документы или Загрузки.
+Are you sure you want to continue?</original>
+<translation>Все настройки будут возвращены к значениям по умолчанию. Эту операцию невозможно отменить.
 
-(Если решил сохранить PhotoDemon, не забывай время от времени посещать PhotoDemon.org, чтобы проверить наличие новых версий)</translation>
-</phrase>
-
-<phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
-
-If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Разработчики PhotoDemon очень серьезно относятся к твоей конфиденциальности, поэтому в процессе обновления не загружается никакая статистика или другая информация. Для обновления просто загружаются несколько небольших XML-файлов с PhotoDemon.org. Эти файлы содержат новейшее программное обеспечение, плагины и номера языковых версий. Если найдена обновлённая версия и это разрешено пользовательскими настройками, обновлённый файл будет загружен и установлен автоматически.
-
-Если решил отключить обновления, не забывай время от времени посещать PhotoDemon.org, чтобы проверить наличие новых версий.</translation>
-</phrase>
-
-<phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>В сборках для разработчиков отладочные данные автоматически сохраняются в папке \Data\Debug программы. Если столкнулся с ошибкой в стабильной версии, включи этот параметр вручную. Это поможет разработчикам решать проблему.</translation>
-</phrase>
-
-<phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>При использовании удалённого рабочего стола или виртуальной машины, ввод данных с помощью мыши в высоком разрешении может работать некорректно.  Это давняя ошибка в Windows.  В таких ситуациях можешь использовать эту настройку для восстановления правильного поведения мыши.</translation>
-</phrase>
-
-<phrase>
-<original>current PhotoDemon memory usage</original>
-<translation>Текущее использование памяти PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>max PhotoDemon memory usage this session</original>
-<translation>Максимальное использование памяти PhotoDemon для этой сессии</translation>
-</phrase>
-
-<phrase>
-<original>Click to select a new temporary folder.</original>
-<translation>Нажми, чтобы выбрать новую временную папку.</translation>
-</phrase>
-
-<phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Эта кнопка сбросит все настройки PhotoDemon. Если программа ведёт себя некорректно - это может решить проблему.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>Внимание: Эта папка недействительна (доступ к ней закрыт).Укажи новую папку, или PhotoDemon будет использовать системную папку Temp.</translation>
+Продолжить?</translation>
 </phrase>
 
 <phrase>
-<original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>Новое местоположение временной папки не вступит в силу до тех пор, пока не перезапустится программу.</translation>
+<original>Reset PhotoDemon</original>
+<translation>Перезагрузить PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14665,12 +13977,714 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation>Масштабирование с помощью прокрутки мыши</translation>
+</phrase>
+
+<phrase>
+<original>title bar text</original>
+<translation>Текст заголовка</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>Количество недавно использованных файлов для запоминания</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>Недавно использованные файлы</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>Главное окно</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation>Размер сетки</translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation>Цвет сетки</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>Текст меню недавно использованного файла</translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation>Цвет фона холста</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>привязка расстояний (в пикселях)</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation>угловая привязка расстояний (в градусах)</translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation>Компактный (только имя файла)</translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation>Подробный (имя файла и путь к нему)</translation>
+</phrase>
+
+<phrase>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation>В строке заголовка главного окна PhotoDemon отображается информация о загруженном в данный момент изображении.Используй этот параметр по умолчанию, чтобы контролировать объём отображаемой информации.</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>Меню "Недавно использованные файлы" ограничено Windows по ширине. Чтобы предотвратить переполнение этого меню, PhotoDemon позволяет отображать только имя изображения вместо полного местоположения изображения.</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>Полутона</translation>
+</phrase>
+
+<phrase>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation>Чтобы упростить идентификацию прозрачных пикселей, на его "обратной стороне" отображается специальная сетка.  Этот параметр изменяет внешний вид сетки.</translation>
+</phrase>
+
+<phrase>
+<original>small</original>
+<translation>Мелкий</translation>
+</phrase>
+
+<phrase>
+<original>large</original>
+<translation>Крупный</translation>
+</phrase>
+
+<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>when images arrive from an external source (like Windows Explorer)</original>
+<translation>Если изображение получено из внешнего источника (например, из проводника Windows)</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>Показывать параметры тональной компрессии при импорте изображений HDR или RAW.</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>Следовать инструкции по автоповороту файла изображения.</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>Изображения с высоким динамическим диапазоном (HDR)</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>Принудительное извлечение двоичных тегов в формате Base64 (медленно)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>Оценка исходных настроек качества JPEG</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>Извлечь неизвестные теги</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>Автоскрытие повторяющихся тегов</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation>Экземпляры приложений</translation>
+</phrase>
+
+<phrase>
+<original>session restore</original>
+<translation>Восстановление сеанса</translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation>Автовосстановление сеанса, прерванного обновлением или перезагрузкой системы</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>Изображения HDR и RAW содержат больше цветов, чем физически может отобразить экран ПК. Перед отображением такого изображения к исходным данным изображения необходимо применить операцию тонального преобразования.</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation>Загрузить в этот экземпляр</translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation>Загрузить в новый экземпляр PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>Старые камеры и программное обеспечение для редактирования фотографий могут неправильно вставлять метаданные и создавать несколько копий метаданных в одном файле.   PhotoDemon может автоматически устранять повторяющиеся записи.</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>Формат JPEG не позволяет хранить настройки качества JPEG внутри файлов изображений. PhotoDemon может обойти эту проблему, извлекая настройки качества из других метаданных (например, таблиц квантования).</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>Некоторые производители фотоаппаратов хранят свои собственные теги метаданных в файлах изображений.  Эти теги, как правило, бесполезны для людей, но PhotoDemon все равно может попытаться извлечь их.</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>По умолчанию большие двоичные теги (например, миниатюры изображений) не обрабатываются. Вместо этого PhotoDemon просто сообщает размер встроенных данных. Если эти данные необходимы, PhotoDemon может вручную преобразовать их в Base64 для дальнейшего анализа.</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>Большинство цифровых фотографий содержат инструкции по повороту (метаданные ориентации EXIF), которые PhotoDemon использует для автоматического поворота фотографии. В некоторых старых смартфонах и фотоаппаратах эти инструкции могут быть неправильно описаны, поэтому, если фотографии импортированы в боковом или перевернутом виде, попробуй отключить функцию автоматического поворота.</translation>
+</phrase>
+
+<phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation>Если компьютер перезагрузится во время работы PhotoDemon, PhotoDemon автоматически восстановит предыдущий сеанс.</translation>
+</phrase>
+
+<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation>Предупреждать о несохранённых изменениях при закрытии изображений</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation>При использовании параметра "Сохранить как", установить формат файла по умолчанию</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>При использовании "Сохранить"</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation>Безопасное сохранение</translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation>Несохранённые изменения</translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation>Формат по умолчанию</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>PhotoDemon в качестве редактора изображения.</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation>Папка по умолчанию</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation>Папка для "Сохранить как"</translation>
+</phrase>
+
+<phrase>
+<original>when "Save as" is used</original>
+<translation>При использовании "Сохранить как"</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation>По умолчанию PhotoDemon предупредит, если ты попытаешься закрыть изображение с несохранёнными изменениями.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's folder</original>
+<translation>Текущая папка с изображениями</translation>
+</phrase>
+
+<phrase>
+<original>the last-used folder</original>
+<translation>Последняя используемая папка</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation>Большинство фоторедакторов по умолчанию используют папку текущего изображения. Для рабочих процессов, в которых изображения загружаются из одной папки и сохраняются в новой папке, для экономии времени используй последнюю использованную папку.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation>Текущий формат изображения</translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation>Недавно используемый формат</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation>Большинство фоторедакторов по умолчанию используют текущий формат изображения. Для рабочих процессов, которые загружают изображения в одном формате (например, RAW) и сохраняют их в новом формате (например, JPEG), используй недавно использованный формат, чтобы сэкономить время.</translation>
+</phrase>
+
+<phrase>
+<original>overwrite the current file (standard behavior)</original>
+<translation>Перезаписать текущий файл (стандартный вариант)</translation>
+</phrase>
+
+<phrase>
+<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>Сохранить новую копию. Пример: "Имя файла (2).jpg" (безопасный вариант)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<translation>В большинстве фоторедакторов команда "Сохранить" сохраняет изображение поверх исходной версии и безвозвратно стирает копию. PhotoDemon предлагает "более безопасный" вариант: при каждом сохранении создается новая копия файла.</translation>
+</phrase>
+
+<phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation>Предложить текущее имя файла (стандартный вариант)</translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>Предложить новую копию, например: "имя файла (2).jpg" (безопасный вариант).</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation>В большинстве фоторедакторов команда "Сохранить как" по умолчанию использует текущее имя файла. PhotoDemon также предоставляет "более безопасную" опцию, при которой "Сохранить как" автоматически увеличивает цифру в имени файла.</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>Спецификация EXIF требует, чтобы программы правильно идентифицировали себя как оригинальное программное обеспечение при экспорте файлов изображений. Для повышения конфиденциальности можно приостановить это действие.</translation>
+</phrase>
+
+<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>Сжатие данных для отмены/повтора на следующем уровне</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>При оформлении элементов интерфейса</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>При создании миниатюр изображений и слоев</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>При рендеринге холста изображения</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>Интерфейс</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>Без сжатия (быстрый)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>Максимальное сжатие (медленно)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>Отменить/Повторить</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>Миниатюры</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>Область просмотра</translation>
+</phrase>
+
+<phrase>
+<original>maximize quality</original>
+<translation>Максимальное качество</translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation>Баланс производительности и качества</translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation>Максимальная производительность</translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation>Некоторые элементы интерфейса имеют собственные оформления (например, тени). На старых ПК можно получить небольшой прирост производительности, приостановив эти оформления.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation>PhotoDemon генерирует множество миниатюр изображений, особенно если изображение содержит несколько слоев. Можно уменьшить качество миниатюр, чтобы повысить производительность.</translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation>Рендеринг основного изображения на холсте является распространенным узким местом производительности Photodemon.  Рекомендуется использовать автоматическую настройку, но на старых ПК можно вручную выбрать параметр "Максимизировать производительность", пожертвовав качеством в пользу производительности</translation>
+</phrase>
+
+<phrase>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation>Настройки низкого сжатия требуют больше места на диске, но операции отмены/повтора будут выполняться быстрее. Настройки высокого сжатия требуют меньше места на диске, но операции отмены/повтора будут выполняться медленнее. Данные отмены стираются при закрытии изображений, поэтому этот параметр влияет на дисковое пространство только во время активного редактирования изображений.</translation>
+</phrase>
+
+<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation>использовать встроенные профили ICC, если они доступны</translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>Компенсация чёрной точки</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>Способ цветопередачи</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>Доступные дисплеи</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>Отключить управление цветом дисплея</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>Использовать текущие системные профили для каждого дисплея</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>Цветовой профиль этого дисплея</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Просмотр политик</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>Использовать пользовательский профиль для каждого дисплея</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation>политика файлов</translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation>использовать данные управления цветом, относящиеся к конкретному формату, если они доступны</translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>Выбери цветовой профиль</translation>
+</phrase>
+
+<phrase>
+<original>Primary display</original>
+<translation>Главный дисплей</translation>
+</phrase>
+
+<phrase>
+<original>Secondary display</original>
+<translation>Дополнительный дисплей</translation>
+</phrase>
+
+<phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation>Отключение управления цветом дисплея может немного улучшить производительность. Используй этот параметр, если дисплей в настоящее время не настроен для управления цветом.</translation>
+</phrase>
+
+<phrase>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<translation>Этот параметр является лучшим выбором для большинства пользователей. Используй эту настройку, если не знаешь, что такое управление цветом. Также используй этот параметр, если правильно настроен профиль отображения в панели управления Windows.</translation>
+</phrase>
+
+<phrase>
+<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
+<translation>Используй этот параметр, чтобы установить собственный цветовой профиль для каждого монитора.</translation>
+</phrase>
+
+<phrase>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<translation>Укажи цветовой профиль для каждого монитора, подключенного в данный момент к системе. Обрати внимание, что текст в скобках — это адаптер дисплея, который управляет указанным монитором.</translation>
+</phrase>
+
+<phrase>
+<original>Click this button to bring up a "browse for color profile" dialog.</original>
+<translation>Нажми эту кнопку, чтобы открыть диалоговое окно "Просмотр цветового профиля".</translation>
+</phrase>
+
+<phrase>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation>Перцепционная-для фотографий. Насыщенность-для диаграммы и графики. Относительная колориметрическая-для векторной графики. Абсолютная колориметрическая-для логотипов.</translation>
+</phrase>
+
+<phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation>BPC в первую очередь связан с колориметрической визуализацией и помогает сохранить детали в тёмных (теневых) областях изображения. Для большинства рабочих процессов требуется включение BPC.</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation>Встроенные профили ICC улучшают точность цветопередачи. Даже если этот параметр отключен, PhotoDemon может по-прежнему использовать профили ICC для некоторых задач (например, для обработки данных CMYK).</translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation>Некоторые форматы изображений поддерживают как профили ICC, так и собственные решения по управлению цветом. PhotoDemon всегда предпочитает профили ICC, но если ни один из них не встроен, можно попробовать другие подходы к управлению цветом.</translation>
+</phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(отказ от ответственности заполняется во время выполнения)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>Автоматически проверять наличие обновлений</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>Разрешить обновление этой версии</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Параметры обновления</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>Информировать меня когда будут обновления</translation>
+</phrase>
+
+<phrase>
+<original>each session</original>
+<translation>Каждый сеанс</translation>
+</phrase>
+
+<phrase>
+<original>weekly</original>
+<translation>Еженедельно</translation>
+</phrase>
+
+<phrase>
+<original>monthly</original>
+<translation>Ежемесячно</translation>
+</phrase>
+
+<phrase>
+<original>never (not recommended)</original>
+<translation>Никогда(не рекомендуется)</translation>
+</phrase>
+
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>PhotoDemon — портативное приложение, поэтому проверять наличие обновлений можно только во время работы программы. По умолчанию PhotoDemon проверяет наличие обновлений при каждом запуске программы, но при необходимости можно уменьшить эту частоту.</translation>
+</phrase>
+
+<phrase>
+<original>stable releases</original>
+<translation>Стабильная версия</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>Стабильные и бета-версии</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>Стабильные, бета-версии и версии для разработчиков</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>Один из лучших способов поддержки PhotoDemon — это помощь в тестировании новых версий. По умолчанию PhotoDemon предлагает как стабильные, так и бета-версии, но если ты действительно предприимчив, можешь попробовать версию для разработчиков. (Версии для разработчиков дают немедленный доступ к последним улучшениям программы, но могут содержать ошибки)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>PhotoDemon может уведомить, когда обновления будут готовы к применению. Это позволит сразу же использовать обновлённую версию.</translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation>PhotoDemon помещён в системную папку с ограниченным доступом. Из соображений безопасности PhotoDemon не может изменять эту папку, Поэтому автоматические обновления теперь отключены. Чтобы восстановить их, необходимо переместить PhotoDemon в папку без прав администратора, такую как Рабочий стол, Документы или Загрузки.
+
+(Если решил сохранить PhotoDemon, не забывай время от времени посещать PhotoDemon.org, чтобы проверить наличие новых версий)</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>Разработчики PhotoDemon очень серьезно относятся к твоей конфиденциальности, поэтому в процессе обновления не загружается никакая статистика или другая информация. Для обновления просто загружаются несколько небольших XML-файлов с PhotoDemon.org. Эти файлы содержат новейшее программное обеспечение, плагины и номера языковых версий. Если найдена обновлённая версия и это разрешено пользовательскими настройками, обновлённый файл будет загружен и установлен автоматически.
+
+Если решил отключить обновления, не забывай время от времени посещать PhotoDemon.org, чтобы проверить наличие новых версий.</translation>
+</phrase>
+
+<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>Мышь с высоким разрешением</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Сброс всех настроек программы</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Здесь отображается объём используемой памяти</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Диагностика памяти</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Временное расположение файла</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>Вернуться к значению по умолчанию</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>Папка настроек приложения</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>Создание журнала отладки</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation>Внимание: Эта папка недействительна (доступ к ней закрыт).Укажи новую папку, или PhotoDemon будет использовать системную папку Temp.</translation>
+</phrase>
+
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation>Новое местоположение временной папки не вступит в силу до тех пор, пока не перезапустится программу.</translation>
+</phrase>
+
+<phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>В сборках для разработчиков отладочные данные автоматически сохраняются в папке \Data\Debug программы. Если столкнулся с ошибкой в стабильной версии, включи этот параметр вручную. Это поможет разработчикам решать проблему.</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>При использовании удалённого рабочего стола или виртуальной машины, ввод данных с помощью мыши в высоком разрешении может работать некорректно.  Это давняя ошибка в Windows.  В таких ситуациях можешь использовать эту настройку для восстановления правильного поведения мыши.</translation>
+</phrase>
+
+<phrase>
+<original>current PhotoDemon memory usage</original>
+<translation>Текущее использование памяти PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>max PhotoDemon memory usage this session</original>
+<translation>Максимальное использование памяти PhotoDemon для этой сессии</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation>Нажми, чтобы выбрать новую временную папку.</translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation>Эта кнопка сбросит все настройки PhotoDemon. Если программа ведёт себя некорректно - это может решить проблему.</translation>
+</phrase>
+
+<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5917 phrases. -->
-<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>

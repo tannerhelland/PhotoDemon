@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).23</langversion>
+<langversion>2028.8 Alfa (Build 25).25</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -12579,7 +12579,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -13715,336 +13715,6 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 </phrase>
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation>virsraksta joslas teksts</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>maksimālais jaunāko failu skaits, kas jāatceras</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>nesenie faili</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>galvenais logs</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation>režģa lielums</translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation>režģa krāsas</translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation>nesenā faila izvēlnes teksts</translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation>audekla fona krāsa</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>piespraušanas attālums (pikseļos)</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>kad attēli tiek saņemti no ārēja avota (piemēram, Windows Explorer)</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>rādīt toņu kartēšanas izvēles, importējot HDR un RAW attēlus</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>paklausīt automātiskās pagriešanas norādījumiem attēlu failos</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>augsta dinamiskā diapazona (HDR) attēli</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>piespiedu kārtā iegūt bināra tipa tagus kā Base64 (lēni)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>novērtēt sākotnējos JPEG kvalitātes iestatījumus</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>izvilkt nezināmas birkas</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>automātiski paslēpt dublējošos tagus</translation>
-</phrase>
-
-<phrase>
-<original>app instances</original>
-<translation>lietotnes gadījumi</translation>
-</phrase>
-
-<phrase>
-<original>session restore</original>
-<translation>sesijas atjaunošana</translation>
-</phrase>
-
-<phrase>
-<original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>automātiski atjaunot sesijas, kas pārtrauktas sistēmas atjauninājumu vai restartēšanas dēļ</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn about unsaved changes</original>
-<translation>aizverot attēlus, brīdināt par nesaglabātām izmaiņām</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the default file format to</original>
-<translation>izmantojot "Saglabāt kā", iestatiet noklusējuma faila formātu kā</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>kad tiek izmantots "Saglabāt"</translation>
-</phrase>
-
-<phrase>
-<original>safe saving</original>
-<translation>droša taupīšana</translation>
-</phrase>
-
-<phrase>
-<original>unsaved changes</original>
-<translation>nesaglabātās izmaiņas</translation>
-</phrase>
-
-<phrase>
-<original>default format</original>
-<translation>noklusējuma formāts</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>sarakstā PhotoDemon kā pēdējo izmantoto rediģēšanas programmatūru</translation>
-</phrase>
-
-<phrase>
-<original>default folder</original>
-<translation>noklusējuma mape</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the initial folder to</original>
-<translation>izmantojot "Saglabāt kā", iestatiet sākotnējo mapi uz</translation>
-</phrase>
-
-<phrase>
-<original>when "Save as" is used</original>
-<translation>kad tiek izmantots "Saglabāt kā"</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>saspiest atsaukšanas/atsaukšanas atcelšanas datus šādā līmenī</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>dekorējot saskarnes elementus</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>ģenerējot attēlu un slāņu sīktēlu attēlus</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>attēla audekla atveidošanas laikā</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>saskarne</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>bez saspiešanas (visātrāk)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>maksimālā saspiešana (vislēnākā)</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>atsaukt/atcelt atsaukšanu</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>miniatūras</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>skatlogs</translation>
-</phrase>
-
-<phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>izmantot melnā punkta kompensāciju</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>displeja atveidošanas nolūks</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>pieejamie displeji</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>izslēgt displeja krāsu pārvaldību</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>izmantot pašreizējos sistēmas profilus katram displejam</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>šī displeja krāsu profils</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>attēlošanas politika</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>izmantot pielāgotus profilus katram displejam</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>augstas izšķirtspējas peles ievade</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>visu programmas iestatījumu atiestatīšana</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>atmiņas izmantošana tiks parādīta šeit</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>atmiņas diagnostika</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>pagaidu faila atrašanās vieta</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>sākt no jauna</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>lietojumprogrammas iestatījumu mape</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>ģenerēt atkļūdošanas žurnālus</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(atruna, kas tiek ievadīta darbības laikā)</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automātiski pārbaudīt atjauninājumus</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>atļaut atjauninājumus no šiem celiņiem</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>atjaunināšanas iespējas</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>paziņot, kad atjauninājums ir gatavs</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Preferences saglabāšana</translation>
 </phrase>
@@ -14052,25 +13722,6 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 <phrase>
 <original>Preferences updated.</original>
 <translation>Preferences atjauninātas.</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>Lūdzu, izvēlieties krāsu profilu</translation>
-</phrase>
-
-<phrase>
-<original>All settings will be restored to their default values.  This action cannot be undone.
-
-Are you sure you want to continue?</original>
-<translation>Tiks atjaunotas visu iestatījumu noklusējuma vērtības.  Šo darbību nevar atcelt.
-
-Vai esat pārliecināts, ka vēlaties turpināt?</translation>
-</phrase>
-
-<phrase>
-<original>Reset PhotoDemon</original>
-<translation>Atiestatīt PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14104,359 +13755,20 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <phrase>
-<original>compact (filename only)</original>
-<translation>kompakts (tikai faila nosaukums)</translation>
-</phrase>
-
-<phrase>
-<original>verbose (filename and path)</original>
-<translation>izvērsts (faila nosaukums un ceļš)</translation>
-</phrase>
-
-<phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>Photodemon galvenā loga nosaukuma joslā tiek parādīta informācija par pašlaik ielādēto attēlu.  Izmantojiet šo preferenci, lai kontrolētu, cik daudz informācijas tiek parādīts.</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Izvēlnes "Nesenie faili" platumu ierobežo operētājsistēma Windows.  Lai novērstu šīs izvēlnes pārpildīšanos, PhotoDemon var attēlot tikai attēlu nosaukumus, nevis pilnu attēlu atrašanās vietu.</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>vidustoņi</translation>
-</phrase>
-
-<phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Lai palīdzētu atpazīt caurspīdīgos pikseļus, "aiz tiem" tiek parādīts īpašs režģis.  Šis iestatījums maina režģa izskatu.</translation>
-</phrase>
-
-<phrase>
-<original>small</original>
-<translation>mazs</translation>
-</phrase>
-
-<phrase>
-<original>large</original>
-<translation>liels</translation>
-</phrase>
-
-<phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR un RAW attēlos ir vairāk krāsu, nekā datora ekrāns spēj fiziski attēlot.  Pirms šādu attēlu attēlošanas oriģinālajiem attēla datiem jāpiemēro toņu kartēšanas operācija.</translation>
-</phrase>
-
-<phrase>
-<original>load into this instance</original>
-<translation>ielādēt šajā instancē</translation>
-</phrase>
-
-<phrase>
-<original>load into a new PhotoDemon instance</original>
-<translation>ielādēt jaunā PhotoDemon instancē</translation>
-</phrase>
-
-<phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Vecākas fotokameras un fotoattēlu rediģēšanas programmatūra var nepareizi ievietot metadatus, tāpēc vienā failā var būt vairākas metadatu kopijas.  PhotoDemon var automātiski atrisināt dublējošos ierakstus.</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>JPEG formāts nenodrošina iespēju saglabāt JPEG kvalitātes iestatījumus attēlu failos.  PhotoDemon to var apiet, atvasinot kvalitātes iestatījumus no citiem metadatiem (piemēram, kvantizācijas tabulām).</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Daži kameru ražotāji attēla failos saglabā patentētas metadatu birkas.  Šīs birkas cilvēkiem parasti nav noderīgas, taču PhotoDemon var mēģināt tās iegūt.</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Pēc noklusējuma lielie binārie tagi (piemēram, attēlu sīktēli) netiek apstrādāti.  Tā vietā PhotoDemon vienkārši paziņo ievietoto datu lielumu.  Ja jums ir nepieciešami šie dati, PhotoDemon var manuāli konvertēt tos Base64 formātā turpmākai analīzei.</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Lielākajā daļā digitālo fotoattēlu ir iekļauti rotācijas norādījumi (EXIF orientācijas metadati), kurus PhotoDemon izmantos, lai automātiski pagrieztu fotoattēlus.  Daži vecāki viedtālruņi un fotoaparāti var nepareizi ierakstīt šos norādījumus, tāpēc, ja jūsu fotogrāfijas tiek importētas sāniski vai otrādi, varat mēģināt atspējot automātiskās pagriešanas funkciju.</translation>
-</phrase>
-
-<phrase>
-<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>Ja dators tiek restartēts, kamēr darbojas PhotoDemon, PhotoDemon var automātiski atjaunot iepriekšējo sesiju.</translation>
-</phrase>
-
-<phrase>
-<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Pēc noklusējuma PhotoDemon jūs brīdinās, ja mēģināsiet aizvērt attēlu ar nesaglabātām izmaiņām.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's folder</original>
-<translation>pašreizējā attēla mape</translation>
-</phrase>
-
-<phrase>
-<original>the last-used folder</original>
-<translation>pēdējo izmantoto mapi</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>Lielākā daļa fotoattēlu redaktoru pēc noklusējuma izmanto pašreizējā attēla mapi.  Lai ietaupītu laiku, darbplūsmās, kas ietver attēlu ielādēšanu no vienas mapes, bet saglabāšanu jaunā mapē, izmantojiet pēdējo izmantoto mapi.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's format</original>
-<translation>pašreizējā attēla formāts</translation>
-</phrase>
-
-<phrase>
-<original>the last-used format</original>
-<translation>pēdējais izmantotais formāts</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>Lielākā daļa fotoattēlu redaktoru pēc noklusējuma izmanto pašreizējā attēla formātu.  Lai ietaupītu laiku, darbplūsmās, kas ietver attēlu ielādēšanu vienā formātā (piemēram, RAW), bet saglabāšanu jaunā formātā (piemēram, JPEG), izmantojiet pēdējo izmantoto formātu.</translation>
-</phrase>
-
-<phrase>
-<original>overwrite the current file (standard behavior)</original>
-<translation>pārrakstīt pašreizējo failu (standarta uzvedība)</translation>
-</phrase>
-
-<phrase>
-<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>saglabāt jaunu kopiju, piemēram, "faila nosaukums (2).jpg" (droša uzvedība)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>Lielākajā daļā fotoattēlu redaktoru komanda "Saglabāt" saglabā attēlu virs tā sākotnējās versijas, uz visiem laikiem izdzēšot šo kopiju.  PhotoDemon nodrošina "drošāku" opciju, kurā katra saglabāšanas rezultātā tiek izveidota jauna faila kopija.</translation>
-</phrase>
-
-<phrase>
-<original>suggest the current filename (standard behavior)</original>
-<translation>ieteikt pašreizējo faila nosaukumu (standarta uzvedība)</translation>
-</phrase>
-
-<phrase>
-<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>ieteikt jaunu kopiju, piemēram, "faila nosaukums (2).jpg" (droša uzvedība)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>Lielākajā daļā fotoattēlu redaktoru komandai "Saglabāt kā" pēc noklusējuma tiek izmantots pašreizējais faila nosaukums.  PhotoDemon piedāvā arī "drošāku" opciju, kur Save As automātiski palielinās failu nosaukumus jūsu vietā.</translation>
-</phrase>
-
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>EXIF specifikācija pieprasa, lai programmas, eksportējot attēlu failus, pareizi identificētu sevi kā izcelsmes programmatūru.  Lai nodrošinātu lielāku konfidencialitāti, varat apturēt šo rīcību.</translation>
-</phrase>
-
-<phrase>
-<original>maximize quality</original>
-<translation>maksimizēt kvalitāti</translation>
-</phrase>
-
-<phrase>
-<original>balance performance and quality</original>
-<translation>līdzsvarot veiktspēju un kvalitāti</translation>
-</phrase>
-
-<phrase>
-<original>maximize performance</original>
-<translation>maksimizēt veiktspēju</translation>
-</phrase>
-
-<phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Dažiem interfeisa elementiem tiek piešķirti pielāgotie rotājumi (piemēram, krītošās ēnas).  Vecākos personālajos datoros šīs dekorācijas var apturēt, lai nedaudz palielinātu veiktspēju.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon ģenerē daudz sīktēlu attēlu, īpaši, ja attēlos ir vairāki slāņi.  Lai uzlabotu veiktspēju, var samazināt miniatūru kvalitāti.</translation>
-</phrase>
-
-<phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Galvenā attēla audekla renderēšana ir biežākais PhotoDemon veiktspējas traucēklis.  Ieteicams izmantot automātisko iestatījumu, bet vecākiem datoriem varat manuāli izvēlēties opciju Maksimizēt veiktspēju, upurētējot kvalitāti par labu datora veiktspējai.</translation>
-</phrase>
-
-<phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Zemas saspiešanas iestatījumi prasa vairāk vietas uz diska, bet atsaukšanas/atcelt atsaukšanas operācijas būs ātrākas.  Liela saspiešanas iestatījumi prasa mazāk vietas uz diska, bet atsaukšanas/pārlabošanas operācijas būs lēnākas.  Atcelšanas dati tiek dzēsti, kad attēli tiek aizvērti, tāpēc šis iestatījums ietekmē diska vietu tikai tad, kad attēli tiek aktīvi rediģēti.</translation>
-</phrase>
-
-<phrase>
-<original>Primary display</original>
-<translation>Primārais displejs</translation>
-</phrase>
-
-<phrase>
-<original>Secondary display</original>
-<translation>Sekundārais displejs</translation>
-</phrase>
-
-<phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>Izslēdzot displeja krāsu pārvaldību, var nedaudz palielināt veiktspēju.  Ja displejā pašlaik nav konfigurēta krāsu pārvaldība, izmantojiet šo iestatījumu.</translation>
-</phrase>
-
-<phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Šis iestatījums ir vislabākā izvēle lielākajai daļai lietotāju.  Ja jums nav ne jausmas, kas ir krāsu pārvaldība, izmantojiet šo iestatījumu.  Ja esat pareizi konfigurējis displeja profilu, izmantojot Windows vadības paneli, arī izmantojiet šo iestatījumu.</translation>
-</phrase>
-
-<phrase>
-<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Lai konfigurētu pielāgotus krāsu profilus katram monitoram, izmantojiet šo iestatījumu.</translation>
-</phrase>
-
-<phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Lūdzu, norādiet krāsu profilu katram sistēmai pašlaik pievienotajam monitoram.  Ievērojiet, ka teksts iekavās ir displeja adapteris, kas darbina norādīto monitoru.</translation>
-</phrase>
-
-<phrase>
-<original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Noklikšķiniet uz šīs pogas, lai atvērtu dialoglodziņu "Meklēt krāsu profilu".</translation>
-</phrase>
-
-<phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Ja nezināt, ko šis iestatījums kontrolē, iestatiet to uz "Perceptual".  Lielākajai daļai lietotāju vislabākā izvēle ir perceptuālā atveidošanas nodoms.</translation>
-</phrase>
-
-<phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC galvenokārt ir svarīgs kolorimetriskās atveidošanas nolūkos, kur tas palīdz saglabāt detalizāciju attēlu tumšajos (ēnu) apgabalos.  Lielākajā daļā darbplūsmu BPC ir jāieslēdz.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>each session</original>
-<translation>katrā sesijā</translation>
-</phrase>
-
-<phrase>
-<original>weekly</original>
-<translation>iknedēļas</translation>
-</phrase>
-
-<phrase>
-<original>monthly</original>
-<translation>ikmēneša</translation>
-</phrase>
-
-<phrase>
-<original>never (not recommended)</original>
-<translation>nekad (nav ieteicams)</translation>
-</phrase>
-
-<phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>Tā kā PhotoDemon ir portatīvā lietojumprogramma, tā var pārbaudīt atjauninājumus tikai tad, kad programma darbojas.  Pēc noklusējuma PhotoDemon pārbauda atjauninājumus ikreiz, kad programma tiek palaista, taču pēc vēlēšanās šo biežumu var samazināt.</translation>
-</phrase>
-
-<phrase>
-<original>stable releases</original>
-<translation>stabilās versijas</translation>
-</phrase>
-
-<phrase>
-<original>stable and beta releases</original>
-<translation>stabilās un beta versijas</translation>
-</phrase>
-
-<phrase>
-<original>stable, beta, and developer releases</original>
-<translation>stabilās, beta un izstrādātāju versijas</translation>
-</phrase>
-
-<phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Viens no labākajiem veidiem, kā atbalstīt PhotoDemon, ir palīdzēt testēt jaunas versijas.  Pēc noklusējuma PhotoDemon piedāvās gan stabilās, gan beta versijas, bet patiesi drosmīgie var izmēģināt arī izstrādātāju versijas.  (Izstrādātāju versijas nodrošina tūlītēju piekļuvi jaunākajiem programmas uzlabojumiem, bet jūs varat saskarties ar dažām kļūdām)</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon var paziņot, kad ir gatavs piemērot atjauninājumu.  Tas ļauj atjaunināto versiju izmantot nekavējoties.</translation>
-</phrase>
-
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
-(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>Jūs esat ievietojis PhotoDemon ierobežotā sistēmas mapē.  Drošības pasākumi neļauj PhotoDemon mainīt šo mapi, tāpēc automātiskie atjauninājumi tagad ir atspējoti.  Lai tos atjaunotu, PhotoDemon jāpārvieto uz mapi, kas nav administrēta, piemēram, darbvirsmas, dokumentu vai lejupielādes mape.
+Are you sure you want to continue?</original>
+<translation>Tiks atjaunotas visu iestatījumu noklusējuma vērtības.  Šo darbību nevar atcelt.
 
-(Ja atstājat PhotoDemon tur, kur tas ir, lūdzu, neaizmirstiet laiku pa laikam apmeklēt vietni photodemon.org, lai pārbaudītu, vai nav pieejamas jaunas versijas.)</translation>
-</phrase>
-
-<phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
-
-If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>PhotoDemon izstrādātāji ļoti nopietni izturas pret konfidencialitāti, tāpēc atjaunināšanas procesā netiek augšupielādēta nekāda informācija - ne statistiska, ne cita.  Veicot atjauninājumus, vienkārši tiek lejupielādēti vairāki nelieli XML faili no photodemon.org. Šajos failos ir jaunākās programmatūras, spraudņu un valodu versiju numuri. Ja tiek atrastas atjauninātas versijas un lietotāja preferences to atļauj, atjauninātie faili tiek lejupielādēti un automātiski ielāgoti.
-
-Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam apmeklēt photodemon.org, lai pārbaudītu, vai nav pieejamas jaunas versijas.</translation>
-</phrase>
-
-<phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>Izstrādātāja būvēs atkļūdošanas dati tiek automātiski reģistrēti programmas mapē \Data\Debug.  Ja stabilā versijā sastopaties ar kļūdām, lūdzu, aktivizējiet šo iestatījumu manuāli.  Tas palīdzēs izstrādātājiem atrisināt jūsu problēmu.</translation>
-</phrase>
-
-<phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Izmantojot attālo darbvirsmu vai virtuālo mašīnu, augstas izšķirtspējas peles ievade var nedarboties pareizi.  Tā ir ilgstoši pastāvoša Windows kļūda.  Šādās situācijās varat izmantot šo iestatījumu, lai atjaunotu pareizu peles darbību.</translation>
-</phrase>
-
-<phrase>
-<original>current PhotoDemon memory usage</original>
-<translation>pašreizējā PhotoDemon atmiņas izmantošana</translation>
-</phrase>
-
-<phrase>
-<original>max PhotoDemon memory usage this session</original>
-<translation>max PhotoDemon atmiņas izmantošana šajā sesijā</translation>
-</phrase>
-
-<phrase>
-<original>Click to select a new temporary folder.</original>
-<translation>Noklikšķiniet, lai atlasītu jaunu pagaidu mapi.</translation>
-</phrase>
-
-<phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Ar šo pogu tiek atiestatīti visi PhotoDemon iestatījumi.  Ja programma rīkojas neparedzēti, tas var atrisināt problēmu.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>BRĪDINĀJUMS: šī mape ir nederīga (piekļuve aizliegta).  Lūdzu, norādiet derīgu mapi.  Ja netiek norādīta jauna mape, PhotoDemon izmantos sistēmas pagaidu mapi.</translation>
+Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <phrase>
-<original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>Šī jaunā pagaidu mapes atrašanās vieta stāsies spēkā tikai pēc programmas restartēšanas.</translation>
+<original>Reset PhotoDemon</original>
+<translation>Atiestatīt PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14664,12 +13976,714 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>title bar text</original>
+<translation>virsraksta joslas teksts</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>maksimālais jaunāko failu skaits, kas jāatceras</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>nesenie faili</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>galvenais logs</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation>režģa lielums</translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation>režģa krāsas</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>nesenā faila izvēlnes teksts</translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation>audekla fona krāsa</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>piespraušanas attālums (pikseļos)</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation>kompakts (tikai faila nosaukums)</translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation>izvērsts (faila nosaukums un ceļš)</translation>
+</phrase>
+
+<phrase>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation>Photodemon galvenā loga nosaukuma joslā tiek parādīta informācija par pašlaik ielādēto attēlu.  Izmantojiet šo preferenci, lai kontrolētu, cik daudz informācijas tiek parādīts.</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>Izvēlnes "Nesenie faili" platumu ierobežo operētājsistēma Windows.  Lai novērstu šīs izvēlnes pārpildīšanos, PhotoDemon var attēlot tikai attēlu nosaukumus, nevis pilnu attēlu atrašanās vietu.</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>vidustoņi</translation>
+</phrase>
+
+<phrase>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation>Lai palīdzētu atpazīt caurspīdīgos pikseļus, "aiz tiem" tiek parādīts īpašs režģis.  Šis iestatījums maina režģa izskatu.</translation>
+</phrase>
+
+<phrase>
+<original>small</original>
+<translation>mazs</translation>
+</phrase>
+
+<phrase>
+<original>large</original>
+<translation>liels</translation>
+</phrase>
+
+<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>when images arrive from an external source (like Windows Explorer)</original>
+<translation>kad attēli tiek saņemti no ārēja avota (piemēram, Windows Explorer)</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>rādīt toņu kartēšanas izvēles, importējot HDR un RAW attēlus</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>paklausīt automātiskās pagriešanas norādījumiem attēlu failos</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>augsta dinamiskā diapazona (HDR) attēli</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>piespiedu kārtā iegūt bināra tipa tagus kā Base64 (lēni)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>novērtēt sākotnējos JPEG kvalitātes iestatījumus</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>izvilkt nezināmas birkas</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>automātiski paslēpt dublējošos tagus</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation>lietotnes gadījumi</translation>
+</phrase>
+
+<phrase>
+<original>session restore</original>
+<translation>sesijas atjaunošana</translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation>automātiski atjaunot sesijas, kas pārtrauktas sistēmas atjauninājumu vai restartēšanas dēļ</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>HDR un RAW attēlos ir vairāk krāsu, nekā datora ekrāns spēj fiziski attēlot.  Pirms šādu attēlu attēlošanas oriģinālajiem attēla datiem jāpiemēro toņu kartēšanas operācija.</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation>ielādēt šajā instancē</translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation>ielādēt jaunā PhotoDemon instancē</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>Vecākas fotokameras un fotoattēlu rediģēšanas programmatūra var nepareizi ievietot metadatus, tāpēc vienā failā var būt vairākas metadatu kopijas.  PhotoDemon var automātiski atrisināt dublējošos ierakstus.</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>JPEG formāts nenodrošina iespēju saglabāt JPEG kvalitātes iestatījumus attēlu failos.  PhotoDemon to var apiet, atvasinot kvalitātes iestatījumus no citiem metadatiem (piemēram, kvantizācijas tabulām).</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>Daži kameru ražotāji attēla failos saglabā patentētas metadatu birkas.  Šīs birkas cilvēkiem parasti nav noderīgas, taču PhotoDemon var mēģināt tās iegūt.</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>Pēc noklusējuma lielie binārie tagi (piemēram, attēlu sīktēli) netiek apstrādāti.  Tā vietā PhotoDemon vienkārši paziņo ievietoto datu lielumu.  Ja jums ir nepieciešami šie dati, PhotoDemon var manuāli konvertēt tos Base64 formātā turpmākai analīzei.</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>Lielākajā daļā digitālo fotoattēlu ir iekļauti rotācijas norādījumi (EXIF orientācijas metadati), kurus PhotoDemon izmantos, lai automātiski pagrieztu fotoattēlus.  Daži vecāki viedtālruņi un fotoaparāti var nepareizi ierakstīt šos norādījumus, tāpēc, ja jūsu fotogrāfijas tiek importētas sāniski vai otrādi, varat mēģināt atspējot automātiskās pagriešanas funkciju.</translation>
+</phrase>
+
+<phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation>Ja dators tiek restartēts, kamēr darbojas PhotoDemon, PhotoDemon var automātiski atjaunot iepriekšējo sesiju.</translation>
+</phrase>
+
+<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation>aizverot attēlus, brīdināt par nesaglabātām izmaiņām</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation>izmantojot "Saglabāt kā", iestatiet noklusējuma faila formātu kā</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>kad tiek izmantots "Saglabāt"</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation>droša taupīšana</translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation>nesaglabātās izmaiņas</translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation>noklusējuma formāts</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>sarakstā PhotoDemon kā pēdējo izmantoto rediģēšanas programmatūru</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation>noklusējuma mape</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation>izmantojot "Saglabāt kā", iestatiet sākotnējo mapi uz</translation>
+</phrase>
+
+<phrase>
+<original>when "Save as" is used</original>
+<translation>kad tiek izmantots "Saglabāt kā"</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation>Pēc noklusējuma PhotoDemon jūs brīdinās, ja mēģināsiet aizvērt attēlu ar nesaglabātām izmaiņām.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's folder</original>
+<translation>pašreizējā attēla mape</translation>
+</phrase>
+
+<phrase>
+<original>the last-used folder</original>
+<translation>pēdējo izmantoto mapi</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation>Lielākā daļa fotoattēlu redaktoru pēc noklusējuma izmanto pašreizējā attēla mapi.  Lai ietaupītu laiku, darbplūsmās, kas ietver attēlu ielādēšanu no vienas mapes, bet saglabāšanu jaunā mapē, izmantojiet pēdējo izmantoto mapi.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation>pašreizējā attēla formāts</translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation>pēdējais izmantotais formāts</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation>Lielākā daļa fotoattēlu redaktoru pēc noklusējuma izmanto pašreizējā attēla formātu.  Lai ietaupītu laiku, darbplūsmās, kas ietver attēlu ielādēšanu vienā formātā (piemēram, RAW), bet saglabāšanu jaunā formātā (piemēram, JPEG), izmantojiet pēdējo izmantoto formātu.</translation>
+</phrase>
+
+<phrase>
+<original>overwrite the current file (standard behavior)</original>
+<translation>pārrakstīt pašreizējo failu (standarta uzvedība)</translation>
+</phrase>
+
+<phrase>
+<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>saglabāt jaunu kopiju, piemēram, "faila nosaukums (2).jpg" (droša uzvedība)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<translation>Lielākajā daļā fotoattēlu redaktoru komanda "Saglabāt" saglabā attēlu virs tā sākotnējās versijas, uz visiem laikiem izdzēšot šo kopiju.  PhotoDemon nodrošina "drošāku" opciju, kurā katra saglabāšanas rezultātā tiek izveidota jauna faila kopija.</translation>
+</phrase>
+
+<phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation>ieteikt pašreizējo faila nosaukumu (standarta uzvedība)</translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>ieteikt jaunu kopiju, piemēram, "faila nosaukums (2).jpg" (droša uzvedība)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation>Lielākajā daļā fotoattēlu redaktoru komandai "Saglabāt kā" pēc noklusējuma tiek izmantots pašreizējais faila nosaukums.  PhotoDemon piedāvā arī "drošāku" opciju, kur Save As automātiski palielinās failu nosaukumus jūsu vietā.</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>EXIF specifikācija pieprasa, lai programmas, eksportējot attēlu failus, pareizi identificētu sevi kā izcelsmes programmatūru.  Lai nodrošinātu lielāku konfidencialitāti, varat apturēt šo rīcību.</translation>
+</phrase>
+
+<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>saspiest atsaukšanas/atsaukšanas atcelšanas datus šādā līmenī</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>dekorējot saskarnes elementus</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>ģenerējot attēlu un slāņu sīktēlu attēlus</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>attēla audekla atveidošanas laikā</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>saskarne</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>bez saspiešanas (visātrāk)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>maksimālā saspiešana (vislēnākā)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>atsaukt/atcelt atsaukšanu</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>miniatūras</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>skatlogs</translation>
+</phrase>
+
+<phrase>
+<original>maximize quality</original>
+<translation>maksimizēt kvalitāti</translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation>līdzsvarot veiktspēju un kvalitāti</translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation>maksimizēt veiktspēju</translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation>Dažiem interfeisa elementiem tiek piešķirti pielāgotie rotājumi (piemēram, krītošās ēnas).  Vecākos personālajos datoros šīs dekorācijas var apturēt, lai nedaudz palielinātu veiktspēju.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation>PhotoDemon ģenerē daudz sīktēlu attēlu, īpaši, ja attēlos ir vairāki slāņi.  Lai uzlabotu veiktspēju, var samazināt miniatūru kvalitāti.</translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation>Galvenā attēla audekla renderēšana ir biežākais PhotoDemon veiktspējas traucēklis.  Ieteicams izmantot automātisko iestatījumu, bet vecākiem datoriem varat manuāli izvēlēties opciju Maksimizēt veiktspēju, upurētējot kvalitāti par labu datora veiktspējai.</translation>
+</phrase>
+
+<phrase>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation>Zemas saspiešanas iestatījumi prasa vairāk vietas uz diska, bet atsaukšanas/atcelt atsaukšanas operācijas būs ātrākas.  Liela saspiešanas iestatījumi prasa mazāk vietas uz diska, bet atsaukšanas/pārlabošanas operācijas būs lēnākas.  Atcelšanas dati tiek dzēsti, kad attēli tiek aizvērti, tāpēc šis iestatījums ietekmē diska vietu tikai tad, kad attēli tiek aktīvi rediģēti.</translation>
+</phrase>
+
+<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>izmantot melnā punkta kompensāciju</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>displeja atveidošanas nolūks</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>pieejamie displeji</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>izslēgt displeja krāsu pārvaldību</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>izmantot pašreizējos sistēmas profilus katram displejam</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>šī displeja krāsu profils</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>attēlošanas politika</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>izmantot pielāgotus profilus katram displejam</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>Lūdzu, izvēlieties krāsu profilu</translation>
+</phrase>
+
+<phrase>
+<original>Primary display</original>
+<translation>Primārais displejs</translation>
+</phrase>
+
+<phrase>
+<original>Secondary display</original>
+<translation>Sekundārais displejs</translation>
+</phrase>
+
+<phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation>Izslēdzot displeja krāsu pārvaldību, var nedaudz palielināt veiktspēju.  Ja displejā pašlaik nav konfigurēta krāsu pārvaldība, izmantojiet šo iestatījumu.</translation>
+</phrase>
+
+<phrase>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<translation>Šis iestatījums ir vislabākā izvēle lielākajai daļai lietotāju.  Ja jums nav ne jausmas, kas ir krāsu pārvaldība, izmantojiet šo iestatījumu.  Ja esat pareizi konfigurējis displeja profilu, izmantojot Windows vadības paneli, arī izmantojiet šo iestatījumu.</translation>
+</phrase>
+
+<phrase>
+<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
+<translation>Lai konfigurētu pielāgotus krāsu profilus katram monitoram, izmantojiet šo iestatījumu.</translation>
+</phrase>
+
+<phrase>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<translation>Lūdzu, norādiet krāsu profilu katram sistēmai pašlaik pievienotajam monitoram.  Ievērojiet, ka teksts iekavās ir displeja adapteris, kas darbina norādīto monitoru.</translation>
+</phrase>
+
+<phrase>
+<original>Click this button to bring up a "browse for color profile" dialog.</original>
+<translation>Noklikšķiniet uz šīs pogas, lai atvērtu dialoglodziņu "Meklēt krāsu profilu".</translation>
+</phrase>
+
+<phrase>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation>Ja nezināt, ko šis iestatījums kontrolē, iestatiet to uz "Perceptual".  Lielākajai daļai lietotāju vislabākā izvēle ir perceptuālā atveidošanas nodoms.</translation>
+</phrase>
+
+<phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation>BPC galvenokārt ir svarīgs kolorimetriskās atveidošanas nolūkos, kur tas palīdz saglabāt detalizāciju attēlu tumšajos (ēnu) apgabalos.  Lielākajā daļā darbplūsmu BPC ir jāieslēdz.</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(atruna, kas tiek ievadīta darbības laikā)</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automātiski pārbaudīt atjauninājumus</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>atļaut atjauninājumus no šiem celiņiem</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>atjaunināšanas iespējas</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>paziņot, kad atjauninājums ir gatavs</translation>
+</phrase>
+
+<phrase>
+<original>each session</original>
+<translation>katrā sesijā</translation>
+</phrase>
+
+<phrase>
+<original>weekly</original>
+<translation>iknedēļas</translation>
+</phrase>
+
+<phrase>
+<original>monthly</original>
+<translation>ikmēneša</translation>
+</phrase>
+
+<phrase>
+<original>never (not recommended)</original>
+<translation>nekad (nav ieteicams)</translation>
+</phrase>
+
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>Tā kā PhotoDemon ir portatīvā lietojumprogramma, tā var pārbaudīt atjauninājumus tikai tad, kad programma darbojas.  Pēc noklusējuma PhotoDemon pārbauda atjauninājumus ikreiz, kad programma tiek palaista, taču pēc vēlēšanās šo biežumu var samazināt.</translation>
+</phrase>
+
+<phrase>
+<original>stable releases</original>
+<translation>stabilās versijas</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>stabilās un beta versijas</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>stabilās, beta un izstrādātāju versijas</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>Viens no labākajiem veidiem, kā atbalstīt PhotoDemon, ir palīdzēt testēt jaunas versijas.  Pēc noklusējuma PhotoDemon piedāvās gan stabilās, gan beta versijas, bet patiesi drosmīgie var izmēģināt arī izstrādātāju versijas.  (Izstrādātāju versijas nodrošina tūlītēju piekļuvi jaunākajiem programmas uzlabojumiem, bet jūs varat saskarties ar dažām kļūdām)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>PhotoDemon var paziņot, kad ir gatavs piemērot atjauninājumu.  Tas ļauj atjaunināto versiju izmantot nekavējoties.</translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation>Jūs esat ievietojis PhotoDemon ierobežotā sistēmas mapē.  Drošības pasākumi neļauj PhotoDemon mainīt šo mapi, tāpēc automātiskie atjauninājumi tagad ir atspējoti.  Lai tos atjaunotu, PhotoDemon jāpārvieto uz mapi, kas nav administrēta, piemēram, darbvirsmas, dokumentu vai lejupielādes mape.
+
+(Ja atstājat PhotoDemon tur, kur tas ir, lūdzu, neaizmirstiet laiku pa laikam apmeklēt vietni photodemon.org, lai pārbaudītu, vai nav pieejamas jaunas versijas.)</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>PhotoDemon izstrādātāji ļoti nopietni izturas pret konfidencialitāti, tāpēc atjaunināšanas procesā netiek augšupielādēta nekāda informācija - ne statistiska, ne cita.  Veicot atjauninājumus, vienkārši tiek lejupielādēti vairāki nelieli XML faili no photodemon.org. Šajos failos ir jaunākās programmatūras, spraudņu un valodu versiju numuri. Ja tiek atrastas atjauninātas versijas un lietotāja preferences to atļauj, atjauninātie faili tiek lejupielādēti un automātiski ielāgoti.
+
+Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam apmeklēt photodemon.org, lai pārbaudītu, vai nav pieejamas jaunas versijas.</translation>
+</phrase>
+
+<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>augstas izšķirtspējas peles ievade</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>visu programmas iestatījumu atiestatīšana</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>atmiņas izmantošana tiks parādīta šeit</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>atmiņas diagnostika</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>pagaidu faila atrašanās vieta</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>sākt no jauna</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>lietojumprogrammas iestatījumu mape</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>ģenerēt atkļūdošanas žurnālus</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation>BRĪDINĀJUMS: šī mape ir nederīga (piekļuve aizliegta).  Lūdzu, norādiet derīgu mapi.  Ja netiek norādīta jauna mape, PhotoDemon izmantos sistēmas pagaidu mapi.</translation>
+</phrase>
+
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation>Šī jaunā pagaidu mapes atrašanās vieta stāsies spēkā tikai pēc programmas restartēšanas.</translation>
+</phrase>
+
+<phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>Izstrādātāja būvēs atkļūdošanas dati tiek automātiski reģistrēti programmas mapē \Data\Debug.  Ja stabilā versijā sastopaties ar kļūdām, lūdzu, aktivizējiet šo iestatījumu manuāli.  Tas palīdzēs izstrādātājiem atrisināt jūsu problēmu.</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>Izmantojot attālo darbvirsmu vai virtuālo mašīnu, augstas izšķirtspējas peles ievade var nedarboties pareizi.  Tā ir ilgstoši pastāvoša Windows kļūda.  Šādās situācijās varat izmantot šo iestatījumu, lai atjaunotu pareizu peles darbību.</translation>
+</phrase>
+
+<phrase>
+<original>current PhotoDemon memory usage</original>
+<translation>pašreizējā PhotoDemon atmiņas izmantošana</translation>
+</phrase>
+
+<phrase>
+<original>max PhotoDemon memory usage this session</original>
+<translation>max PhotoDemon atmiņas izmantošana šajā sesijā</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation>Noklikšķiniet, lai atlasītu jaunu pagaidu mapi.</translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation>Ar šo pogu tiek atiestatīti visi PhotoDemon iestatījumi.  Ja programma rīkojas neparedzēti, tas var atrisināt problēmu.</translation>
+</phrase>
+
+<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5917 phrases. -->
-<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 </pdData>

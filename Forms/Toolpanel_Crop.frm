@@ -850,7 +850,7 @@ Private Sub Form_Load()
     
     ddGuides.Clear
     ddGuides.AddItem "none", 0
-    ddGuides.AddItem "center lines", 1
+    ddGuides.AddItem "centerlines", 1
     ddGuides.AddItem "rule of thirds", 2
     ddGuides.AddItem "rule of fifths", 3
     ddGuides.AddItem "golden ratio", 4

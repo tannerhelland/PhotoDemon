@@ -108,10 +108,10 @@ Private m_SVGColors As pdDictionary
 '             (This reference will be used to provide live updates as the user plays with the color dialog.)
 '
 ' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
-Public Function ShowColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As pdColorSelector) As Boolean
+Public Function ShowColorDialog(ByRef colorReceive As Long, Optional ByVal initialColor As Long = vbWhite, Optional ByRef callingControl As pdColorSelector, Optional ByRef callerParent As Form = Nothing) As Boolean
     
     'As of November 2014, PhotoDemon has its own color selector!
-    If ChoosePDColor(initialColor, colorReceive, callingControl) = vbOK Then
+    If Dialogs.ChoosePDColor(initialColor, colorReceive, callingControl, callerParent) = vbOK Then
         ShowColorDialog = True
     Else
         ShowColorDialog = False

@@ -56,6 +56,12 @@ Option Explicit
 'This control doesn't really do anything interesting, besides allow a color to be selected.
 Public Event ColorChanged()
 
+'If this control is embedded in a subpanel where we've manually manipulated window bits
+' (like an options panel in Tools > Options), this control will raise this event prior to raising
+' the full color selection window - handle it and supply the *true* parent form, so that window
+' order is handled correctly.  (If you don't handle this event, default PD form order is used.)
+Public Event NeedParentForm(ByRef parentForm As Form)
+
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
@@ -220,8 +226,12 @@ Public Sub DisplayColorSelection()
     Dim newColorSelection As Long, oldColor As Long
     oldColor = Color
     
+    'Allow our parent to pass
+    Dim callerParent As Form: Set callerParent = Nothing
+    RaiseEvent NeedParentForm(callerParent)
+    
     'Use the default color dialog to select a new color
-    If ShowColorDialog(newColorSelection, CLng(curColor), Me) Then
+    If Colors.ShowColorDialog(newColorSelection, CLng(curColor), Me, callerParent) Then
         Color = newColorSelection
     Else
         Color = oldColor

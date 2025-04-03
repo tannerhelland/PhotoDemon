@@ -365,7 +365,7 @@ Private Sub cmdBarMini_OKClick()
 End Sub
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl As pdColorSelector = Nothing)
+Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl As pdColorSelector = Nothing, Optional ByRef callerParent As Form = Nothing)
         
     m_suspendParentNotifications = True
         
@@ -419,8 +419,12 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     
     m_suspendParentNotifications = False
     
-    'Display the dialog
-    ShowPDDialog vbModal, Me, True
+    'Display the dialog, and if the caller supplied a custom parent, center the dialog against *that* window
+    If (callerParent Is Nothing) Then
+        Interface.ShowPDDialog vbModal, Me, True
+    Else
+        Interface.ShowCustomPopup vbModal, Me, callerParent, True
+    End If
 
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，2024.12）</langname>
-<langversion>2024.12.31</langversion>
+<langversion>2024.12.33</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 9, 2025</author>
@@ -12573,7 +12573,7 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>center lines</original>
+<original>centerlines</original>
 <translation></translation>
 </phrase>
 
@@ -13709,336 +13709,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation>使用鼠标滚轮缩放</translation>
-</phrase>
-
-<phrase>
-<original>title bar text</original>
-<translation>标题栏</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>记录最近文件的最大数量</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>最近的文件</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>主窗口</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation>网格大小</translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation>网格颜色</translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation>最近的文件名显示格式</translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation>画布背景色</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>对齐捕获距离（像素）</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation>角度捕捉距离（单位:度）</translation>
-</phrase>
-
-<phrase>
-<original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>当图像来自外部来源（如Windows资源管理器）时。</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>当导入HDR和原图像时显示色相映射选项</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>根据图像文件内的元数据旋转图片方向</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>高动态范围图像（HDR）</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>强制转换二进制标签为Base64（慢）</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>评估原始JPEG质量设置</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>提取未知标签</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>自动隐藏重复标签</translation>
-</phrase>
-
-<phrase>
-<original>app instances</original>
-<translation>应用程序实例</translation>
-</phrase>
-
-<phrase>
-<original>session restore</original>
-<translation>恢复会话</translation>
-</phrase>
-
-<phrase>
-<original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>自动恢复因系统更新或重新启动而中断的会话</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn about unsaved changes</original>
-<translation>关闭图像时，警告未保存的更改</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the default file format to</original>
-<translation>使用“另存为”时，将使用默认文件格式</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>当使用“保存”时</translation>
-</phrase>
-
-<phrase>
-<original>safe saving</original>
-<translation>安全保存</translation>
-</phrase>
-
-<phrase>
-<original>unsaved changes</original>
-<translation>未保存的更改</translation>
-</phrase>
-
-<phrase>
-<original>default format</original>
-<translation>默认格式</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>将PhotoDemon列为最后使用的编辑软件</translation>
-</phrase>
-
-<phrase>
-<original>default folder</original>
-<translation>默认文件夹</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the initial folder to</original>
-<translation>“另存为”时的默认文件夹</translation>
-</phrase>
-
-<phrase>
-<original>when "Save as" is used</original>
-<translation>使用“另存为”时</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>按照下面的级别压缩undo/redo数据</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>装饰界面元素时</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>生成图像和图层缩略图时</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>渲染图像画布时</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>界面</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>无压缩（最快）</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>最大压缩（最慢）</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>撤销/重做</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>缩略图</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>可视窗口</translation>
-</phrase>
-
-<phrase>
-<original>use embedded ICC profiles, when available</original>
-<translation>使用嵌入式ICC配置文件（如果可用）</translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>使用黑点补偿</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>显示渲染目标</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>可用显示器</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>关闭显示颜色管理</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>使用每个显示器的当前系统配置文件</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>显示策略</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>为每个显示使用自定义配置文件</translation>
-</phrase>
-
-<phrase>
-<original>file policies</original>
-<translation>文件策略</translation>
-</phrase>
-
-<phrase>
-<original>use format-specific color management data, when available</original>
-<translation>使用特定格式的颜色管理数据（如果可用）</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>高分辨率鼠标输入</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>重置所有程序设置</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>内存的使用将会显示在这里</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>内存使用情况：</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>临时文件位置：</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>重置为默认值：</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>应用程序设置文件夹</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>生成调试日志</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>（免责声明）</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>自动检查更新</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>选择更新版本</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>更新选项</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>更新准备就绪时通知</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>保存偏好</translation>
 </phrase>
@@ -14046,25 +13716,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>Preferences updated.</original>
 <translation>更新选项。</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>请选择一个颜色配置文件</translation>
-</phrase>
-
-<phrase>
-<original>All settings will be restored to their default values.  This action cannot be undone.
-
-Are you sure you want to continue?</original>
-<translation>所有设置都将恢复到默认值。此动作无法撤消。
-
-您确定要继续吗？</translation>
-</phrase>
-
-<phrase>
-<original>Reset PhotoDemon</original>
-<translation>重置 PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14098,359 +13749,20 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>compact (filename only)</original>
-<translation>紧凑（仅限文件名）</translation>
-</phrase>
-
-<phrase>
-<original>verbose (filename and path)</original>
-<translation>完整（文件名和路径）</translation>
-</phrase>
-
-<phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>PhotoDemon主窗口的标题栏显示有关当前加载的图像的信息， 使用此首选项可以控制显示的信息量。</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>在“最近的文件”菜单的宽度是由Windows的限制。为了防止溢出这个菜单，PhotoDemon可以用文件名替代文件完整路径。</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>中调</translation>
-</phrase>
-
-<phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>为了帮助识别透明像素，在它们的"后面"会出现一个特殊的网格。此设置可以修改网格的外观。</translation>
-</phrase>
-
-<phrase>
-<original>small</original>
-<translation>小型</translation>
-</phrase>
-
-<phrase>
-<original>large</original>
-<translation>大型</translation>
-</phrase>
-
-<phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR和原图像包含比PC屏幕可以显示更多的颜色。在显示这些图像之前，必须将图像映射操作应用于原始图像数据。</translation>
-</phrase>
-
-<phrase>
-<original>load into this instance</original>
-<translation>加载到此实例</translation>
-</phrase>
-
-<phrase>
-<original>load into a new PhotoDemon instance</original>
-<translation>加载到一个新的PhotoDemon实例</translation>
-</phrase>
-
-<phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>较旧的相机和照片编辑软件可能无法正确嵌入元数据，从而导致单个文件中的存在多个元数据副本，PhotoDemon可以自动为您解决重复的条目。</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>JPEG格式不提供在图像文件中存储JPEG质量设置的方法。PhotoDemon可以通过推断其他元数据（如量化表）的质量设置来解决这个问题。</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>一些相机制造商在图像文件中存储专有元数据标签，这些标签通常对个人无用，但PhotoDemon可以尝试提取它们。</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>默认情况下，不处理大型二进制标记（如图像缩略图）。相反，PhotoDemon只是报告嵌入数据的大小。 如果您需要此数据，PhotoDemon可以手动将其转换为Base64格式以进行进一步分析。</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>大部分的数码照片包括旋转标记（EXIF元数据），PhotoDemon将使用它来自动旋转照片。一些老的智能手机和相机可能不正确设置方向，所以如果您的照片变成横向或倒置，您可以尝试禁用自动旋转功能。</translation>
-</phrase>
-
-<phrase>
-<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>如果您的电脑在PhotoDemon运行时重新启动，PhotoDemon可以自动恢复您以前的会话。</translation>
-</phrase>
-
-<phrase>
-<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>默认情况下，当您尝试使用未保存的更改关闭图像时，PhotoDemon将发出警告。</translation>
-</phrase>
-
-<phrase>
-<original>the current image's folder</original>
-<translation>当前图像的文件夹</translation>
-</phrase>
-
-<phrase>
-<original>the last-used folder</original>
-<translation>最后使用的文件夹</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>大多数照片编辑器默认为当前图像的文件夹。如果要从一个文件夹加载图像并保存到新文件夹的批量工作，请使用“最后使用的文件夹”以节省时间。</translation>
-</phrase>
-
-<phrase>
-<original>the current image's format</original>
-<translation>当前图像的格式</translation>
-</phrase>
-
-<phrase>
-<original>the last-used format</original>
-<translation>最后使用的格式</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>大多数照片编辑器默认为当前图像的格式。对于涉及以一种格式（如RAW）加载图像但保存为新格式（如JPEG）的批量工作，请使用“最后使用的格式”以节省时间。</translation>
-</phrase>
-
-<phrase>
-<original>overwrite the current file (standard behavior)</original>
-<translation>改写当前文件（默认行为）</translation>
-</phrase>
-
-<phrase>
-<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>保存一个新的副本，如“文件名（2）.JPG”（安全推荐）</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>在大多数照片编辑器中，“保存”命令会将图像保存在原始版本上，从而永远删除该副本。PhotoDemon提供了一个“更安全”的选项，每次保存都会产生一个新的文件副本。</translation>
-</phrase>
-
-<phrase>
-<original>suggest the current filename (standard behavior)</original>
-<translation>建议当前文件名（标准行为）</translation>
-</phrase>
-
-<phrase>
-<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>建议新的副本，例如“filename（2）.jpg”（安全推荐）</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>在大多数照片编辑器中，“另存为”命令默认为当前文件名。PhotoDemon还提供了一个“更安全”的选项，“另存为”将自动为在文件名上增加数字序号。</translation>
-</phrase>
-
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>EXIF规范要求程序在导出图像文件时正确地将自己标识为原始软件。为了保护隐私，您可以禁用此行为。</translation>
-</phrase>
-
-<phrase>
-<original>maximize quality</original>
-<translation>最高质量</translation>
-</phrase>
-
-<phrase>
-<original>balance performance and quality</original>
-<translation>平衡性能和质量</translation>
-</phrase>
-
-<phrase>
-<original>maximize performance</original>
-<translation>最高性能</translation>
-</phrase>
-
-<phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>一些界面控件有美化显示效果（如阴影）。在较旧的电脑上，可以禁用这些效果来小幅提高性能。</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon会生成许多缩略图，尤其是当图像包含多层时，可以降低缩略图质量以提高性能。</translation>
-</phrase>
-
-<phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>渲染主图像画布是PhotoDemon性能的常见瓶颈。建议使用自动设置。但对于较旧的电脑，您可以手动选择“最大化性能”选项，以牺牲质量换取性能。</translation>
-</phrase>
-
-<phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>低压缩设置需要更多磁盘空间，但撤消/重做操作会更快。高压缩设置需要较少的磁盘空间，但撤消/重做操作会较慢。关闭图像时，将删除撤消数据，因此该设置仅在正在编辑图像时占用磁盘空间。</translation>
-</phrase>
-
-<phrase>
-<original>Primary display</original>
-<translation>主显示器</translation>
-</phrase>
-
-<phrase>
-<original>Secondary display</original>
-<translation>次显示器</translation>
-</phrase>
-
-<phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>关闭显示器颜色管理可以稍微提升性能，如果您的显示器当前未配置颜色管理，请使用此设置。</translation>
-</phrase>
-
-<phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>此设置适用于大多数用户的最佳选择。如果您不知道什么是色彩管理，使用此设置。如果您已经正确通过Windows控制面板配置显示配置文件，也可以使用此设置。</translation>
-</phrase>
-
-<phrase>
-<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>要在每个显示器的基础配置自定义颜色配置文件，请使用此设置。</translation>
-</phrase>
-
-<phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>请为当前连接到系统的每个显示器指定一个颜色配置文件。请注意，括号中的文本是显示适配器驱动提供的。</translation>
-</phrase>
-
-<phrase>
-<original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>选择显示器的颜色配置文件。颜色配置文件(也称为ICC或ICM文件)包含一组设置,这些设置有助于校准颜色在显示器上的显示方式。</translation>
-</phrase>
-
-<phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>如果您不知道此设置的控制方式，请将其设置为“感知”。感知渲染是大多数用户的最佳选择。</translation>
-</phrase>
-
-<phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC主要与色度渲染意图相关，它有助于保留图像暗（阴影）区域的细节。对于大多数工作流程，应打开BPC。</translation>
-</phrase>
-
-<phrase>
-<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation>嵌入式ICC配置文件提高了色彩保真度。即使关闭此设置，PhotoDemon仍可能将ICC配置文件用于某些任务（如处理CMYK数据）。</translation>
-</phrase>
-
-<phrase>
-<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation>一些图像格式支持ICC配置文件和它们自己的颜色管理解决方案。PhotoDemon总是更喜欢ICC配置文件，但当没有嵌入时，可以尝试其他颜色管理方法。</translation>
-</phrase>
-
-<phrase>
-<original>each session</original>
-<translation>每次启动</translation>
-</phrase>
-
-<phrase>
-<original>weekly</original>
-<translation>每周</translation>
-</phrase>
-
-<phrase>
-<original>monthly</original>
-<translation>每月</translation>
-</phrase>
-
-<phrase>
-<original>never (not recommended)</original>
-<translation>从不（不推荐）</translation>
-</phrase>
-
-<phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>因为PhotoDemon是一种便携式的应用程序，它只在程序运行时检查更新。默认情况下，PhotoDemon将在每次程序启动时检查更新。如果需要的话您可以降低这种频率。</translation>
-</phrase>
-
-<phrase>
-<original>stable releases</original>
-<translation>稳定版</translation>
-</phrase>
-
-<phrase>
-<original>stable and beta releases</original>
-<translation>稳定版和测试版</translation>
-</phrase>
-
-<phrase>
-<original>stable, beta, and developer releases</original>
-<translation>稳定版、测试版和开发版（技术预览版）</translation>
-</phrase>
-
-<phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>其中一个支持PhotoDemon的最佳方法是帮助测试新版本。默认情况下，PhotoDemon会建议使用稳定版和beta版，但如果想冒险您也可以尝试开发版（技术预览版）。（开发版让您立即获得最新的程序改进，但您也可能会遇到一些错误。）</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>当PhotoDemon已经准备好更新版本时，会通知您。您可以立即使用更新的版本。</translation>
-</phrase>
-
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
-(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>您已将PhotoDemon放置在受限制的系统文件夹中。安全预防措施可防止PhotoDemon修改此文件夹，因此自动更新现在已被禁用。要恢复它们，您必须将PhotoDemon移动到非管理文件夹，如桌面，文档或下载。
+Are you sure you want to continue?</original>
+<translation>所有设置都将恢复到默认值。此动作无法撤消。
 
-（如果您手头没有PhotoDemon，可以访问PhotoDemon.org网站检查是否有新版本。）</translation>
-</phrase>
-
-<phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
-
-If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>PhotoDemon开发者很重视隐私，所以更新过程不会上传个人信息或其他类似内容。更新只会从PhotoDemon.org下载几个小的XML文件。这些文件包含最新的软件，插件和语言的版本号。如果发现有更新的版本，并且发现有用户选项设置中允许更新的文件，软件会下载并自动更新。
-
-如果您选择禁用更新，请访问PhotoDemon.org网站检查是否有新版本。</translation>
-</phrase>
-
-<phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>在开发人员构建中，调试数据会自动记录到程序的 \Data\Debug 文件夹中。如果您在稳定版本中遇到错误，请手动激活此设置。这将有助于开发人员解决您的问题。</translation>
-</phrase>
-
-<phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>使用远程桌面或虚拟机时，高分辨率鼠标输入可能无法正常工作。这是一个长期存在的Windows问题，在这些情况下您可以使用此设置确保鼠标行为正确。</translation>
-</phrase>
-
-<phrase>
-<original>current PhotoDemon memory usage</original>
-<translation>当前PhotoDemon内存使用情况</translation>
-</phrase>
-
-<phrase>
-<original>max PhotoDemon memory usage this session</original>
-<translation>本次会话PhotoDemon使用最大内存</translation>
-</phrase>
-
-<phrase>
-<original>Click to select a new temporary folder.</original>
-<translation>单击以选中新的临时文件夹。</translation>
-</phrase>
-
-<phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>此按钮可重置所有PhotoDemon设置。如果程序出现意外行为，重置设置可能会解决问题。</translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>警告：这个文件夹无效（禁止访问）。请提供一个有效的文件夹。如果没有提供一个新的有效文件夹，PhotoDemon将使用系统临时文件夹。</translation>
+您确定要继续吗？</translation>
 </phrase>
 
 <phrase>
-<original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>新的临时文件夹目录将在重新启动程序后生效。</translation>
+<original>Reset PhotoDemon</original>
+<translation>重置 PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 203 phrases. 56 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14658,13 +13970,715 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation>使用鼠标滚轮缩放</translation>
+</phrase>
+
+<phrase>
+<original>title bar text</original>
+<translation>标题栏</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>记录最近文件的最大数量</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>最近的文件</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>主窗口</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation>网格大小</translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation>网格颜色</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>最近的文件名显示格式</translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation>画布背景色</translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>对齐捕获距离（像素）</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation>角度捕捉距离（单位:度）</translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation>紧凑（仅限文件名）</translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation>完整（文件名和路径）</translation>
+</phrase>
+
+<phrase>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation>PhotoDemon主窗口的标题栏显示有关当前加载的图像的信息， 使用此首选项可以控制显示的信息量。</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>在“最近的文件”菜单的宽度是由Windows的限制。为了防止溢出这个菜单，PhotoDemon可以用文件名替代文件完整路径。</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>中调</translation>
+</phrase>
+
+<phrase>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation>为了帮助识别透明像素，在它们的"后面"会出现一个特殊的网格。此设置可以修改网格的外观。</translation>
+</phrase>
+
+<phrase>
+<original>small</original>
+<translation>小型</translation>
+</phrase>
+
+<phrase>
+<original>large</original>
+<translation>大型</translation>
+</phrase>
+
+<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<phrase>
+<original>when images arrive from an external source (like Windows Explorer)</original>
+<translation>当图像来自外部来源（如Windows资源管理器）时。</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>当导入HDR和原图像时显示色相映射选项</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>根据图像文件内的元数据旋转图片方向</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>高动态范围图像（HDR）</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>强制转换二进制标签为Base64（慢）</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>评估原始JPEG质量设置</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>提取未知标签</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>自动隐藏重复标签</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation>应用程序实例</translation>
+</phrase>
+
+<phrase>
+<original>session restore</original>
+<translation>恢复会话</translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation>自动恢复因系统更新或重新启动而中断的会话</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>HDR和原图像包含比PC屏幕可以显示更多的颜色。在显示这些图像之前，必须将图像映射操作应用于原始图像数据。</translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation>加载到此实例</translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation>加载到一个新的PhotoDemon实例</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>较旧的相机和照片编辑软件可能无法正确嵌入元数据，从而导致单个文件中的存在多个元数据副本，PhotoDemon可以自动为您解决重复的条目。</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>JPEG格式不提供在图像文件中存储JPEG质量设置的方法。PhotoDemon可以通过推断其他元数据（如量化表）的质量设置来解决这个问题。</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>一些相机制造商在图像文件中存储专有元数据标签，这些标签通常对个人无用，但PhotoDemon可以尝试提取它们。</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>默认情况下，不处理大型二进制标记（如图像缩略图）。相反，PhotoDemon只是报告嵌入数据的大小。 如果您需要此数据，PhotoDemon可以手动将其转换为Base64格式以进行进一步分析。</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>大部分的数码照片包括旋转标记（EXIF元数据），PhotoDemon将使用它来自动旋转照片。一些老的智能手机和相机可能不正确设置方向，所以如果您的照片变成横向或倒置，您可以尝试禁用自动旋转功能。</translation>
+</phrase>
+
+<phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation>如果您的电脑在PhotoDemon运行时重新启动，PhotoDemon可以自动恢复您以前的会话。</translation>
+</phrase>
+
+<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation>关闭图像时，警告未保存的更改</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation>使用“另存为”时，将使用默认文件格式</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>当使用“保存”时</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation>安全保存</translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation>未保存的更改</translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation>默认格式</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>将PhotoDemon列为最后使用的编辑软件</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation>默认文件夹</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation>“另存为”时的默认文件夹</translation>
+</phrase>
+
+<phrase>
+<original>when "Save as" is used</original>
+<translation>使用“另存为”时</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation>默认情况下，当您尝试使用未保存的更改关闭图像时，PhotoDemon将发出警告。</translation>
+</phrase>
+
+<phrase>
+<original>the current image's folder</original>
+<translation>当前图像的文件夹</translation>
+</phrase>
+
+<phrase>
+<original>the last-used folder</original>
+<translation>最后使用的文件夹</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation>大多数照片编辑器默认为当前图像的文件夹。如果要从一个文件夹加载图像并保存到新文件夹的批量工作，请使用“最后使用的文件夹”以节省时间。</translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation>当前图像的格式</translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation>最后使用的格式</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation>大多数照片编辑器默认为当前图像的格式。对于涉及以一种格式（如RAW）加载图像但保存为新格式（如JPEG）的批量工作，请使用“最后使用的格式”以节省时间。</translation>
+</phrase>
+
+<phrase>
+<original>overwrite the current file (standard behavior)</original>
+<translation>改写当前文件（默认行为）</translation>
+</phrase>
+
+<phrase>
+<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>保存一个新的副本，如“文件名（2）.JPG”（安全推荐）</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<translation>在大多数照片编辑器中，“保存”命令会将图像保存在原始版本上，从而永远删除该副本。PhotoDemon提供了一个“更安全”的选项，每次保存都会产生一个新的文件副本。</translation>
+</phrase>
+
+<phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation>建议当前文件名（标准行为）</translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>建议新的副本，例如“filename（2）.jpg”（安全推荐）</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation>在大多数照片编辑器中，“另存为”命令默认为当前文件名。PhotoDemon还提供了一个“更安全”的选项，“另存为”将自动为在文件名上增加数字序号。</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>EXIF规范要求程序在导出图像文件时正确地将自己标识为原始软件。为了保护隐私，您可以禁用此行为。</translation>
+</phrase>
+
+<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>按照下面的级别压缩undo/redo数据</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>装饰界面元素时</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>生成图像和图层缩略图时</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>渲染图像画布时</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>界面</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>无压缩（最快）</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>最大压缩（最慢）</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>撤销/重做</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>缩略图</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>可视窗口</translation>
+</phrase>
+
+<phrase>
+<original>maximize quality</original>
+<translation>最高质量</translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation>平衡性能和质量</translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation>最高性能</translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation>一些界面控件有美化显示效果（如阴影）。在较旧的电脑上，可以禁用这些效果来小幅提高性能。</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation>PhotoDemon会生成许多缩略图，尤其是当图像包含多层时，可以降低缩略图质量以提高性能。</translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation>渲染主图像画布是PhotoDemon性能的常见瓶颈。建议使用自动设置。但对于较旧的电脑，您可以手动选择“最大化性能”选项，以牺牲质量换取性能。</translation>
+</phrase>
+
+<phrase>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation>低压缩设置需要更多磁盘空间，但撤消/重做操作会更快。高压缩设置需要较少的磁盘空间，但撤消/重做操作会较慢。关闭图像时，将删除撤消数据，因此该设置仅在正在编辑图像时占用磁盘空间。</translation>
+</phrase>
+
+<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation>使用嵌入式ICC配置文件（如果可用）</translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>使用黑点补偿</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>显示渲染目标</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>可用显示器</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>关闭显示颜色管理</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>使用每个显示器的当前系统配置文件</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>显示策略</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>为每个显示使用自定义配置文件</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation>文件策略</translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation>使用特定格式的颜色管理数据（如果可用）</translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>请选择一个颜色配置文件</translation>
+</phrase>
+
+<phrase>
+<original>Primary display</original>
+<translation>主显示器</translation>
+</phrase>
+
+<phrase>
+<original>Secondary display</original>
+<translation>次显示器</translation>
+</phrase>
+
+<phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation>关闭显示器颜色管理可以稍微提升性能，如果您的显示器当前未配置颜色管理，请使用此设置。</translation>
+</phrase>
+
+<phrase>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<translation>此设置适用于大多数用户的最佳选择。如果您不知道什么是色彩管理，使用此设置。如果您已经正确通过Windows控制面板配置显示配置文件，也可以使用此设置。</translation>
+</phrase>
+
+<phrase>
+<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
+<translation>要在每个显示器的基础配置自定义颜色配置文件，请使用此设置。</translation>
+</phrase>
+
+<phrase>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<translation>请为当前连接到系统的每个显示器指定一个颜色配置文件。请注意，括号中的文本是显示适配器驱动提供的。</translation>
+</phrase>
+
+<phrase>
+<original>Click this button to bring up a "browse for color profile" dialog.</original>
+<translation>选择显示器的颜色配置文件。颜色配置文件(也称为ICC或ICM文件)包含一组设置,这些设置有助于校准颜色在显示器上的显示方式。</translation>
+</phrase>
+
+<phrase>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation>如果您不知道此设置的控制方式，请将其设置为“感知”。感知渲染是大多数用户的最佳选择。</translation>
+</phrase>
+
+<phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation>BPC主要与色度渲染意图相关，它有助于保留图像暗（阴影）区域的细节。对于大多数工作流程，应打开BPC。</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation>嵌入式ICC配置文件提高了色彩保真度。即使关闭此设置，PhotoDemon仍可能将ICC配置文件用于某些任务（如处理CMYK数据）。</translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation>一些图像格式支持ICC配置文件和它们自己的颜色管理解决方案。PhotoDemon总是更喜欢ICC配置文件，但当没有嵌入时，可以尝试其他颜色管理方法。</translation>
+</phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>（免责声明）</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>自动检查更新</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>选择更新版本</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>更新选项</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>更新准备就绪时通知</translation>
+</phrase>
+
+<phrase>
+<original>each session</original>
+<translation>每次启动</translation>
+</phrase>
+
+<phrase>
+<original>weekly</original>
+<translation>每周</translation>
+</phrase>
+
+<phrase>
+<original>monthly</original>
+<translation>每月</translation>
+</phrase>
+
+<phrase>
+<original>never (not recommended)</original>
+<translation>从不（不推荐）</translation>
+</phrase>
+
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>因为PhotoDemon是一种便携式的应用程序，它只在程序运行时检查更新。默认情况下，PhotoDemon将在每次程序启动时检查更新。如果需要的话您可以降低这种频率。</translation>
+</phrase>
+
+<phrase>
+<original>stable releases</original>
+<translation>稳定版</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>稳定版和测试版</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>稳定版、测试版和开发版（技术预览版）</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>其中一个支持PhotoDemon的最佳方法是帮助测试新版本。默认情况下，PhotoDemon会建议使用稳定版和beta版，但如果想冒险您也可以尝试开发版（技术预览版）。（开发版让您立即获得最新的程序改进，但您也可能会遇到一些错误。）</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>当PhotoDemon已经准备好更新版本时，会通知您。您可以立即使用更新的版本。</translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation>您已将PhotoDemon放置在受限制的系统文件夹中。安全预防措施可防止PhotoDemon修改此文件夹，因此自动更新现在已被禁用。要恢复它们，您必须将PhotoDemon移动到非管理文件夹，如桌面，文档或下载。
+
+（如果您手头没有PhotoDemon，可以访问PhotoDemon.org网站检查是否有新版本。）</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>PhotoDemon开发者很重视隐私，所以更新过程不会上传个人信息或其他类似内容。更新只会从PhotoDemon.org下载几个小的XML文件。这些文件包含最新的软件，插件和语言的版本号。如果发现有更新的版本，并且发现有用户选项设置中允许更新的文件，软件会下载并自动更新。
+
+如果您选择禁用更新，请访问PhotoDemon.org网站检查是否有新版本。</translation>
+</phrase>
+
+<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>高分辨率鼠标输入</translation>
+</phrase>
+
+<phrase>
+<original>reset all program settings</original>
+<translation>重置所有程序设置</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>内存的使用将会显示在这里</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>内存使用情况：</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>临时文件位置：</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>重置为默认值：</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>应用程序设置文件夹</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>生成调试日志</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation>警告：这个文件夹无效（禁止访问）。请提供一个有效的文件夹。如果没有提供一个新的有效文件夹，PhotoDemon将使用系统临时文件夹。</translation>
+</phrase>
+
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation>新的临时文件夹目录将在重新启动程序后生效。</translation>
+</phrase>
+
+<phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>在开发人员构建中，调试数据会自动记录到程序的 \Data\Debug 文件夹中。如果您在稳定版本中遇到错误，请手动激活此设置。这将有助于开发人员解决您的问题。</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>使用远程桌面或虚拟机时，高分辨率鼠标输入可能无法正常工作。这是一个长期存在的Windows问题，在这些情况下您可以使用此设置确保鼠标行为正确。</translation>
+</phrase>
+
+<phrase>
+<original>current PhotoDemon memory usage</original>
+<translation>当前PhotoDemon内存使用情况</translation>
+</phrase>
+
+<phrase>
+<original>max PhotoDemon memory usage this session</original>
+<translation>本次会话PhotoDemon使用最大内存</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation>单击以选中新的临时文件夹。</translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation>此按钮可重置所有PhotoDemon设置。如果程序出现意外行为，重置设置可能会解决问题。</translation>
+</phrase>
+
+<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2777</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5917 phrases. -->
-<!-- 3140 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12046 total words. -->
+<!-- As of this build, PhotoDemon contains 5910 phrases. -->
+<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
+<!-- These 2777 phrases contain approximately 12045 total words. -->
 
 <special-translations>
 

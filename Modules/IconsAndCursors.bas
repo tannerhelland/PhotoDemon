@@ -32,7 +32,7 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function LoadImageAsString Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal uType As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal fuLoad As Long) As Long
+Private Declare Function LoadImageW Lib "user32" (ByVal hInst As Long, ByVal lpsz As Long, ByVal uType As Long, ByVal cxDesired As Long, ByVal cyDesired As Long, ByVal fuLoad As Long) As Long
 Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 
 Private Enum DrawIconEx_Flags
@@ -689,8 +689,8 @@ End Sub
 ' appear in the Alt+Tab dialog of older OSes.
 Public Sub ChangeWindowIcon(ByVal targetHWnd As Long, ByVal hIconSmall As Long, ByVal hIconLarge As Long, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
     If (targetHWnd <> 0) Then
-        dstSmallIcon = SendMessageA(targetHWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
         dstLargeIcon = SendMessageA(targetHWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge)
+        dstSmallIcon = SendMessageA(targetHWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
     End If
 End Sub
 
@@ -705,12 +705,14 @@ End Sub
 'When all images are unloaded (or when the program is first loaded), we must reset the program icon to its default values.
 Public Sub ResetAppIcons()
     
+    Const DEFAULT_ICON As String = "AAA"
+    
     If (m_DefaultIconLarge = 0) Then
-        m_DefaultIconLarge = LoadImageAsString(App.hInstance, "AAA", IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), LR_SHARED)
+        m_DefaultIconLarge = LoadImageW(App.hInstance, StrPtr(DEFAULT_ICON), IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), 0&)
     End If
     
     If (m_DefaultIconSmall = 0) Then
-        m_DefaultIconSmall = LoadImageAsString(App.hInstance, "AAA", IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_SHARED)
+        m_DefaultIconSmall = LoadImageW(App.hInstance, StrPtr(DEFAULT_ICON), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0&)
     End If
     
     ChangeAppIcons m_DefaultIconSmall, m_DefaultIconLarge
@@ -726,8 +728,8 @@ Public Sub SetThunderMainIcon()
     
     Dim tmHWnd As Long
     tmHWnd = OS.ThunderMainHWnd()
-    SendMessageA tmHWnd, WM_SETICON, ICON_SMALL, ByVal m_DefaultIconLarge
-    SendMessageA tmHWnd, WM_SETICON, ICON_BIG, ByVal m_DefaultIconSmall
+    SendMessageA tmHWnd, WM_SETICON, ICON_SMALL, ByVal m_DefaultIconSmall
+    SendMessageA tmHWnd, WM_SETICON, ICON_BIG, ByVal m_DefaultIconLarge
 
 End Sub
 
