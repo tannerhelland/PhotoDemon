@@ -29,21 +29,11 @@ Begin VB.Form options_Advanced
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdButtonStrip btsMouseHighRes 
-      Height          =   975
-      Left            =   0
-      TabIndex        =   0
-      Top             =   1950
-      Width           =   8175
-      _ExtentX        =   14420
-      _ExtentY        =   1720
-      Caption         =   "high-resolution mouse input"
-   End
    Begin PhotoDemon.pdButton cmdReset 
       Height          =   600
       Left            =   240
-      TabIndex        =   1
-      Top             =   4665
+      TabIndex        =   0
+      Top             =   3465
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   1058
@@ -52,8 +42,8 @@ Begin VB.Form options_Advanced
    Begin PhotoDemon.pdButton cmdTmpPath 
       Height          =   450
       Left            =   7680
-      TabIndex        =   2
-      Top             =   5775
+      TabIndex        =   1
+      Top             =   4575
       Width           =   525
       _ExtentX        =   926
       _ExtentY        =   794
@@ -62,8 +52,8 @@ Begin VB.Form options_Advanced
    Begin PhotoDemon.pdTextBox txtTempPath 
       Height          =   315
       Left            =   240
-      TabIndex        =   3
-      Top             =   5850
+      TabIndex        =   2
+      Top             =   4650
       Width           =   7335
       _ExtentX        =   12938
       _ExtentY        =   556
@@ -72,7 +62,7 @@ Begin VB.Form options_Advanced
    Begin PhotoDemon.pdLabel lblMemoryUsageMax 
       Height          =   345
       Left            =   240
-      Top             =   3855
+      Top             =   2655
       Width           =   7965
       _ExtentX        =   14049
       _ExtentY        =   609
@@ -82,7 +72,7 @@ Begin VB.Form options_Advanced
    Begin PhotoDemon.pdLabel lblMemoryUsageCurrent 
       Height          =   345
       Left            =   240
-      Top             =   3495
+      Top             =   2280
       Width           =   7965
       _ExtentX        =   14049
       _ExtentY        =   609
@@ -93,7 +83,7 @@ Begin VB.Form options_Advanced
       Height          =   285
       Index           =   5
       Left            =   0
-      Top             =   3135
+      Top             =   1935
       Width           =   8130
       _ExtentX        =   14340
       _ExtentY        =   503
@@ -105,7 +95,7 @@ Begin VB.Form options_Advanced
       Height          =   285
       Index           =   19
       Left            =   0
-      Top             =   5400
+      Top             =   4200
       Width           =   8145
       _ExtentX        =   14367
       _ExtentY        =   503
@@ -116,7 +106,7 @@ Begin VB.Form options_Advanced
    Begin PhotoDemon.pdLabel lblTempPathWarning 
       Height          =   480
       Left            =   240
-      Top             =   6240
+      Top             =   5040
       Visible         =   0   'False
       Width           =   8025
       _ExtentX        =   14155
@@ -129,7 +119,7 @@ Begin VB.Form options_Advanced
       Height          =   285
       Index           =   1
       Left            =   0
-      Top             =   4305
+      Top             =   3105
       Width           =   8130
       _ExtentX        =   14340
       _ExtentY        =   503
@@ -162,7 +152,7 @@ Begin VB.Form options_Advanced
    Begin PhotoDemon.pdButtonStrip btsDebug 
       Height          =   975
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   780
       Width           =   8175
       _ExtentX        =   14420
@@ -244,12 +234,6 @@ Private Sub Form_Load()
     btsDebug.AddItem "yes", 2
     btsDebug.AssignTooltip "In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem."
     
-    'High-res mouse input only needs to be deactivated if there are obvious glitches.  This is a Windows-level
-    ' problem that seems to show up on VMs and Remote Desktop (see https://forums.getpaint.net/topic/28852-line-jumpsskips-to-top-of-window-while-drawing/)
-    btsMouseHighRes.AddItem "off", 0
-    btsMouseHighRes.AddItem "on", 1
-    btsMouseHighRes.AssignTooltip "When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior."
-    
     lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format$(OS.AppMemoryUsageInMB(), "#,#") & " M"
     lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format$(OS.AppMemoryUsageInMB(True), "#,#") & " M"
     
@@ -263,7 +247,6 @@ Public Sub LoadUserPreferences()
     'Advanced preferences
     lblSettingsFolder.Caption = UserPrefs.GetDataPath()
     btsDebug.ListIndex = UserPrefs.GetPref_Long("Core", "GenerateDebugLogs", 0)
-    If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
     txtTempPath.Text = UserPrefs.GetTempPath
     
 End Sub
@@ -289,9 +272,6 @@ Public Sub SaveUserPreferences()
     End If
     
     If Strings.StringsNotEqual(Trim$(txtTempPath), UserPrefs.GetTempPath, True) Then UserPrefs.SetTempPath Trim$(txtTempPath)
-    
-    If (btsMouseHighRes.ListIndex = 1) Then UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", True Else UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", False
-    Tools.SetToolSetting_HighResMouse (btsMouseHighRes.ListIndex = 1)
     
 End Sub
 

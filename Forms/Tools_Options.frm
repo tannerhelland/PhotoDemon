@@ -79,16 +79,19 @@ Option Explicit
 Private Enum PD_OptionPanel
     OP_None = -1
     OP_Interface = 0
-    OP_Loading = 1
-    OP_Saving = 2
-    OP_Performance = 3
-    OP_ColorManagement = 4
-    OP_Updates = 5
-    OP_Advanced = 6
+    OP_Menus = 1
+    OP_Performance = 2
+    OP_Loading = 3
+    OP_Saving = 4
+    OP_ColorManagement = 5
+    OP_Fonts = 6
+    OP_InputDevices = 7
+    OP_Updates = 8
+    OP_Advanced = 9
 End Enum
 
 #If False Then
-    Private Const OP_None = -1, OP_Interface = 0, OP_Loading = 1, OP_Saving = 2, OP_Performance = 3, OP_ColorManagement = 4, OP_Updates = 5, OP_Advanced = 6
+    Private Const OP_None = -1, OP_Interface = 0, OP_Menus = 1, OP_Performance = 2, OP_Loading = 3, OP_Saving = 4, OP_ColorManagement = 5, OP_Fonts = 6, OP_InputDevices = 7, OP_Updates = 8, OP_Advanced = 9
 #End If
 
 Private Const MAX_NUM_OPTION_PANELS As Long = OP_Advanced + 1
@@ -137,6 +140,18 @@ Private Sub UpdateActivePanel(ByVal idxPanel As Long)
                 options_Interface.LoadUserPreferences
                 options_Interface.UpdateAgainstCurrentTheme
                 m_Panels(m_ActivePanel).PanelHWnd = options_Interface.hWnd
+            
+            Case OP_Menus
+                Load options_Menus
+                options_Menus.LoadUserPreferences
+                options_Menus.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Menus.hWnd
+            
+            Case OP_Performance
+                Load options_Performance
+                options_Performance.LoadUserPreferences
+                options_Performance.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Performance.hWnd
                 
             Case OP_Loading
                 Load options_Loading
@@ -150,17 +165,23 @@ Private Sub UpdateActivePanel(ByVal idxPanel As Long)
                 options_Saving.UpdateAgainstCurrentTheme
                 m_Panels(m_ActivePanel).PanelHWnd = options_Saving.hWnd
                 
-            Case OP_Performance
-                Load options_Performance
-                options_Performance.LoadUserPreferences
-                options_Performance.UpdateAgainstCurrentTheme
-                m_Panels(m_ActivePanel).PanelHWnd = options_Performance.hWnd
-                
             Case OP_ColorManagement
                 Load options_ColorManagement
                 options_ColorManagement.LoadUserPreferences
                 options_ColorManagement.UpdateAgainstCurrentTheme
                 m_Panels(m_ActivePanel).PanelHWnd = options_ColorManagement.hWnd
+            
+            Case OP_Fonts
+                Load options_Fonts
+                options_Fonts.LoadUserPreferences
+                options_Fonts.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Fonts.hWnd
+                
+            Case OP_InputDevices
+                Load options_Input
+                options_Input.LoadUserPreferences
+                options_Input.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Input.hWnd
                 
             Case OP_Updates
                 Load options_Updates
@@ -243,14 +264,20 @@ Private Sub cmdBarMini_OKClick()
             Select Case i
                 Case OP_Interface
                     validateCheck = validateCheck And options_Interface.ValidateAllInput()
+                Case OP_Menus
+                    validateCheck = validateCheck And options_Menus.ValidateAllInput()
+                Case OP_Performance
+                    validateCheck = validateCheck And options_Performance.ValidateAllInput()
                 Case OP_Loading
                     validateCheck = validateCheck And options_Loading.ValidateAllInput()
                 Case OP_Saving
                     validateCheck = validateCheck And options_Saving.ValidateAllInput()
-                Case OP_Performance
-                    validateCheck = validateCheck And options_Performance.ValidateAllInput()
                 Case OP_ColorManagement
                     validateCheck = validateCheck And options_ColorManagement.ValidateAllInput()
+                Case OP_Fonts
+                    validateCheck = validateCheck And options_Fonts.ValidateAllInput()
+                Case OP_InputDevices
+                    validateCheck = validateCheck And options_Input.ValidateAllInput()
                 Case OP_Updates
                     validateCheck = validateCheck And options_Updates.ValidateAllInput()
                 Case OP_Advanced
@@ -278,7 +305,7 @@ Private Sub cmdBarMini_OKClick()
     'After updates on 22 Oct 2014, the preference saving sequence should happen in a flash, but just in case,
     ' we'll supply a bit of processing feedback.
     FormMain.Enabled = False
-    ProgressBars.SetProgBarMax 8
+    ProgressBars.SetProgBarMax MAX_NUM_OPTION_PANELS
     ProgressBars.SetProgBarVal 1
     
     'First, make note of the active panel, so we can default to that if the user returns to this dialog
@@ -293,14 +320,20 @@ Private Sub cmdBarMini_OKClick()
             Select Case i
                 Case OP_Interface
                     options_Interface.SaveUserPreferences
+                Case OP_Menus
+                    options_Menus.SaveUserPreferences
+                Case OP_Performance
+                    options_Performance.SaveUserPreferences
                 Case OP_Loading
                     options_Loading.SaveUserPreferences
                 Case OP_Saving
                     options_Saving.SaveUserPreferences
-                Case OP_Performance
-                    options_Performance.SaveUserPreferences
                 Case OP_ColorManagement
                     options_ColorManagement.SaveUserPreferences
+                Case OP_Fonts
+                    options_Fonts.SaveUserPreferences
+                Case OP_InputDevices
+                    options_Input.SaveUserPreferences
                 Case OP_Updates
                     options_Updates.SaveUserPreferences
                 Case OP_Advanced
@@ -356,24 +389,30 @@ Private Sub Form_Load()
     With btsvCategory
         
         'Start by adding captions for each button.  This will also update the control's layout to match.
-        .AddItem "Interface", 0
-        .AddItem "Loading", 1
-        .AddItem "Saving", 2
-        .AddItem "Performance", 3
-        .AddItem "Color management", 4
-        .AddItem "Updates", 5
-        .AddItem "Advanced", 6
+        .AddItem "Interface", OP_Interface
+        .AddItem "Menus", OP_Menus
+        .AddItem "Performance", OP_Performance
+        .AddItem "Loading", OP_Loading
+        .AddItem "Saving", OP_Saving
+        .AddItem "Color management", OP_ColorManagement
+        .AddItem "Fonts", OP_Fonts
+        .AddItem "Input devices", OP_InputDevices
+        .AddItem "Updates", OP_Updates
+        .AddItem "Advanced", OP_Advanced
         
         'Next, add images to each button
         Dim prefButtonSize As Long
-        prefButtonSize = Interface.FixDPI(32)
-        .AssignImageToItem 0, "pref_interface", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
-        .AssignImageToItem 1, "pref_loading", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
-        .AssignImageToItem 2, "pref_saving", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
-        .AssignImageToItem 3, "pref_performance", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
-        .AssignImageToItem 4, "pref_colormanagement", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
-        .AssignImageToItem 5, "pref_updates", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
-        .AssignImageToItem 6, "pref_advanced", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        prefButtonSize = Interface.FixDPI(24)
+        .AssignImageToItem OP_Interface, "pref_interface", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Menus, "menu", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Performance, "pref_performance", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Loading, "pref_loading", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Saving, "pref_saving", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_ColorManagement, "pref_colormanagement", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Fonts, "font", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_InputDevices, "keyboard", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Updates, "pref_updates", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Advanced, "pref_advanced", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         
     End With
     
@@ -416,11 +455,18 @@ Private Sub Form_Unload(Cancel As Integer)
         If m_Panels(i).PanelWasLoaded Then
             
             Select Case i
-                    
-                'Move/size tool
+                
                 Case OP_Interface
                     Unload options_Interface
                     Set options_Interface = Nothing
+                    
+                Case OP_Menus
+                    Unload options_Menus
+                    Set options_Menus = Nothing
+                    
+                Case OP_Performance
+                    Unload options_Performance
+                    Set options_Performance = Nothing
                     
                 Case OP_Loading
                     Unload options_Loading
@@ -430,13 +476,17 @@ Private Sub Form_Unload(Cancel As Integer)
                     Unload options_Saving
                     Set options_Saving = Nothing
                     
-                Case OP_Performance
-                    Unload options_Performance
-                    Set options_Performance = Nothing
-                    
                 Case OP_ColorManagement
                     Unload options_ColorManagement
                     Set options_ColorManagement = Nothing
+                
+                Case OP_Fonts
+                    Unload options_Fonts
+                    Set options_Fonts = Nothing
+                
+                Case OP_InputDevices
+                    Unload options_Input
+                    Set options_Input = Nothing
                     
                 Case OP_Updates
                     Unload options_Updates
@@ -481,14 +531,20 @@ Public Sub ResetAllPreferences()
                 Select Case i
                     Case OP_Interface
                         options_Interface.LoadUserPreferences
+                    Case OP_Menus
+                        options_Menus.LoadUserPreferences
+                    Case OP_Performance
+                        options_Performance.LoadUserPreferences
                     Case OP_Loading
                         options_Loading.LoadUserPreferences
                     Case OP_Saving
                         options_Saving.LoadUserPreferences
-                    Case OP_Performance
-                        options_Performance.LoadUserPreferences
                     Case OP_ColorManagement
                         options_ColorManagement.LoadUserPreferences
+                    Case OP_Fonts
+                        options_Fonts.LoadUserPreferences
+                    Case OP_InputDevices
+                        options_Input.LoadUserPreferences
                     Case OP_Updates
                         options_Updates.LoadUserPreferences
                     Case OP_Advanced

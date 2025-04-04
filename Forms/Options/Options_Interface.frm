@@ -30,35 +30,10 @@ Begin VB.Form options_Interface
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdCheckBox chkZoomMouse 
-      Height          =   360
-      Left            =   90
-      TabIndex        =   0
-      Top             =   1965
-      Width           =   7815
-      _ExtentX        =   13785
-      _ExtentY        =   635
-      Caption         =   "zoom with mouse wheel"
-      Value           =   0   'False
-   End
-   Begin PhotoDemon.pdSpinner spnSnapDistance 
-      Height          =   375
-      Index           =   0
-      Left            =   120
-      TabIndex        =   1
-      Top             =   4800
-      Width           =   1935
-      _ExtentX        =   3413
-      _ExtentY        =   661
-      DefaultValue    =   8
-      Min             =   1
-      Max             =   255
-      Value           =   8
-   End
    Begin PhotoDemon.pdPictureBox picGrid 
       Height          =   735
       Left            =   150
-      Top             =   5760
+      Top             =   2520
       Width           =   735
       _ExtentX        =   1296
       _ExtentY        =   1296
@@ -66,7 +41,7 @@ Begin VB.Form options_Interface
    Begin PhotoDemon.pdColorSelector csCanvasColor 
       Height          =   375
       Left            =   3840
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   375
       Width           =   2175
       _ExtentX        =   3836
@@ -75,36 +50,13 @@ Begin VB.Form options_Interface
    Begin PhotoDemon.pdButtonStrip btsTitleText 
       Height          =   975
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   840
       Width           =   7815
       _ExtentX        =   13785
       _ExtentY        =   1720
       Caption         =   "title bar text:"
       FontSizeCaption =   10
-   End
-   Begin PhotoDemon.pdLabel lblRecentFileCount 
-      Height          =   240
-      Left            =   135
-      Top             =   2820
-      Width           =   3480
-      _ExtentX        =   6138
-      _ExtentY        =   423
-      Caption         =   "maximum number of recent files to remember: "
-      ForeColor       =   4210752
-      Layout          =   2
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   13
-      Left            =   0
-      Top             =   2415
-      Width           =   8100
-      _ExtentX        =   14288
-      _ExtentY        =   503
-      Caption         =   "recent files"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -121,8 +73,8 @@ Begin VB.Form options_Interface
    Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
       Height          =   810
       Left            =   1080
-      TabIndex        =   4
-      Top             =   5700
+      TabIndex        =   2
+      Top             =   2460
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1429
@@ -132,8 +84,8 @@ Begin VB.Form options_Interface
    Begin PhotoDemon.pdDropDown cboAlphaCheck 
       Height          =   795
       Left            =   4140
-      TabIndex        =   5
-      Top             =   5700
+      TabIndex        =   3
+      Top             =   2460
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1402
@@ -143,8 +95,8 @@ Begin VB.Form options_Interface
    Begin PhotoDemon.pdColorSelector csAlphaOne 
       Height          =   690
       Left            =   7260
-      TabIndex        =   6
-      Top             =   5760
+      TabIndex        =   4
+      Top             =   2520
       Width           =   465
       _ExtentX        =   820
       _ExtentY        =   1217
@@ -153,8 +105,8 @@ Begin VB.Form options_Interface
    Begin PhotoDemon.pdColorSelector csAlphaTwo 
       Height          =   690
       Left            =   7770
-      TabIndex        =   7
-      Top             =   5760
+      TabIndex        =   5
+      Top             =   2520
       Width           =   465
       _ExtentX        =   820
       _ExtentY        =   1217
@@ -164,24 +116,13 @@ Begin VB.Form options_Interface
       Height          =   285
       Index           =   2
       Left            =   0
-      Top             =   5280
+      Top             =   2040
       Width           =   8205
       _ExtentX        =   14473
       _ExtentY        =   503
       Caption         =   "transparency"
       FontSize        =   12
       ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdButtonStrip btsMRUStyle 
-      Height          =   975
-      Left            =   120
-      TabIndex        =   8
-      Top             =   3210
-      Width           =   7815
-      _ExtentX        =   13785
-      _ExtentY        =   1508
-      Caption         =   "recent file menu text:"
-      FontSizeCaption =   10
    End
    Begin PhotoDemon.pdLabel lblCanvasColor 
       Height          =   240
@@ -193,58 +134,6 @@ Begin VB.Form options_Interface
       Caption         =   "canvas background color:"
       ForeColor       =   4210752
       Layout          =   2
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   23
-      Left            =   0
-      Top             =   4320
-      Width           =   4020
-      _ExtentX        =   14288
-      _ExtentY        =   503
-      Caption         =   "snap distance (in pixels)"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   25
-      Left            =   4080
-      Top             =   4320
-      Width           =   4020
-      _ExtentX        =   7091
-      _ExtentY        =   503
-      Caption         =   "angle snap distance (in degrees)"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdSpinner spnSnapDistance 
-      Height          =   375
-      Index           =   1
-      Left            =   4200
-      TabIndex        =   9
-      Top             =   4800
-      Width           =   1935
-      _ExtentX        =   3413
-      _ExtentY        =   661
-      DefaultValue    =   5
-      Min             =   1
-      Max             =   15
-      SigDigits       =   1
-      Value           =   5
-   End
-   Begin PhotoDemon.pdSpinner tudRecentFiles 
-      Height          =   345
-      Left            =   3840
-      TabIndex        =   10
-      Top             =   2760
-      Width           =   1935
-      _ExtentX        =   3413
-      _ExtentY        =   609
-      DefaultValue    =   10
-      Min             =   1
-      Max             =   32
-      Value           =   10
    End
 End
 Attribute VB_Name = "options_Interface"
@@ -399,15 +288,6 @@ Private Sub Form_Load()
     csCanvasColor.SetLeft lblCanvasColor.GetLeft + lblCanvasColor.GetWidth + Interface.FixDPI(8)
     csCanvasColor.SetWidth (btsTitleText.GetLeft + btsTitleText.GetWidth) - (csCanvasColor.GetLeft)
     
-    lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent files to remember: ")
-    tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + Interface.FixDPI(8)
-    
-    btsMRUStyle.AddItem "compact (filename only)", 0
-    btsMRUStyle.AddItem "verbose (filename and path)", 1
-    btsMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
-    
-    chkZoomMouse.Value = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
-    
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.Clear
     cboAlphaCheck.AddItem "highlights", 0
@@ -476,10 +356,7 @@ Public Sub LoadUserPreferences()
     'Interface preferences
     btsTitleText.ListIndex = UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0)
     csCanvasColor.Color = UserPrefs.GetCanvasColor()
-    tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
-    btsMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
-    spnSnapDistance(0).Value = UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
-    spnSnapDistance(1).Value = UserPrefs.GetPref_Float("Interface", "snap-degrees", 7.5)
+    
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
     csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
@@ -496,31 +373,6 @@ Public Sub SaveUserPreferences()
     UserPrefs.SetPref_Long "Interface", "Window Caption Length", btsTitleText.ListIndex
     UserPrefs.SetPref_String "Interface", "Canvas Color", Colors.GetHexStringFromRGB(csCanvasColor.Color)
     UserPrefs.SetCanvasColor csCanvasColor.Color
-    
-    'Changes to the recent files list (including count and how it's displayed) may require us to
-    ' trigger a full rebuild of the menu
-    Dim mruNeedsToBeRebuilt As Boolean
-    mruNeedsToBeRebuilt = (btsMRUStyle.ListIndex <> UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0))
-    UserPrefs.SetPref_Long "Interface", "MRU Caption Length", btsMRUStyle.ListIndex
-    
-    Dim newMaxRecentFiles As Long
-    If tudRecentFiles.IsValid Then newMaxRecentFiles = tudRecentFiles.Value Else newMaxRecentFiles = 10
-    If (Not mruNeedsToBeRebuilt) Then mruNeedsToBeRebuilt = (newMaxRecentFiles <> UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10))
-    UserPrefs.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
-    
-    'If any MRUs need to be rebuilt, do so now
-    If mruNeedsToBeRebuilt Then
-        g_RecentFiles.NotifyMaxLimitChanged
-        g_RecentMacros.MRU_NotifyNewMaxLimit
-    End If
-    
-    UserPrefs.SetPref_Boolean "Interface", "wheel-zoom", chkZoomMouse.Value
-    UserPrefs.SetZoomWithWheel chkZoomMouse.Value
-    
-    UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance(0).Value
-    UserPrefs.SetPref_Long "Interface", "snap-degrees", spnSnapDistance(1).Value
-    Snap.SetSnap_Distance spnSnapDistance(0).Value
-    Snap.SetSnap_Degrees spnSnapDistance(1).Value
     
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
     UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
