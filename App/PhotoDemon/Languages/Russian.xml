@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12 Alpha - Build 353.2</langversion>
+<langversion>2024.12.363</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -13733,7 +13733,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>Меню</translation>
 </phrase>
 
 <phrase>
@@ -13753,12 +13753,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>Шрифты</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>Устройства ввода</translation>
 </phrase>
 
 <phrase>
@@ -14652,12 +14652,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>шрифт интерфейса</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>Изменения вступят в силу при следующем запуске PhotoDemon.</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
