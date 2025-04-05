@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.19</langversion>
+<langversion>1.0.20</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -14360,8 +14360,8 @@ Chcete-li pokračovat, stáhněte si novou kopii PhotoDemon z photodemon.org.</t
 </phrase>
 
 <phrase>
-<original>Loading</original>
-<translation>Načítání</translation>
+<original>Menus</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14370,8 +14370,23 @@ Chcete-li pokračovat, stáhněte si novou kopii PhotoDemon z photodemon.org.</t
 </phrase>
 
 <phrase>
+<original>Loading</original>
+<translation>Načítání</translation>
+</phrase>
+
+<phrase>
 <original>Color management</original>
 <translation>Správa barev</translation>
+</phrase>
+
+<phrase>
+<original>Fonts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Input devices</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14398,7 +14413,7 @@ Opravdu chcete pokračovat?</translation>
 <translation>Resetujte PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14608,23 +14623,8 @@ Opravdu chcete pokračovat?</translation>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>title bar text</original>
 <translation>text titulkového pruhu</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>maximální počet posledních souborů k zapamatování</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>hlavní okno</translation>
 </phrase>
 
 <phrase>
@@ -14643,24 +14643,8 @@ Opravdu chcete pokračovat?</translation>
 </phrase>
 
 <phrase>
-<original>recent file menu text</original>
-<translation>text nabídky posledního souboru</translation>
-</phrase>
-
-<phrase>
 <original>canvas background color</original>
 <translation>barva pozadí plátna</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>vzdálenost záběru (v pixelech)
-</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14676,11 +14660,6 @@ Opravdu chcete pokračovat?</translation>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>Záhlaví hlavního okna PhotoDemon zobrazuje informace o aktuálně načteném obrázku.  Pomocí této předvolby můžete ovládat, kolik informací se zobrazí.</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Šířka nabídky "Poslední soubory" je omezena systémem Windows.  Aby se zabránilo přetečení této nabídky, může PhotoDemon zobrazovat pouze názvy obrázků místo úplných umístění obrázků.</translation>
 </phrase>
 
 <phrase>
@@ -14703,7 +14682,7 @@ Opravdu chcete pokračovat?</translation>
 <translation>velký</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
@@ -15237,11 +15216,6 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 <!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
-<original>high-resolution mouse input</original>
-<translation>vstup myši s vysokým rozlišením</translation>
-</phrase>
-
-<phrase>
 <original>reset all program settings</original>
 <translation>resetujte všechna nastavení programu</translation>
 </phrase>
@@ -15293,11 +15267,6 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 </phrase>
 
 <phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Při použití vzdálené plochy nebo virtuálního počítače nemusí vstup myši s vysokým rozlišením fungovat správně.  Toto je dlouhodobá chyba Windows.  V těchto situacích můžete toto nastavení použít k obnovení správného chování myši.</translation>
-</phrase>
-
-<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>aktuální využití paměti PhotoDemon</translation>
 </phrase>
@@ -15317,14 +15286,76 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 <translation>Toto tlačítko resetuje všechna nastavení PhotoDemon.  Pokud se program chová neočekávaně, může to problém vyřešit.</translation>
 </phrase>
 
-<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>interface font</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Changes will take effect the next time you start PhotoDemon.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_Fonts.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>vzdálenost záběru (v pixelech)
+</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>vstup myši s vysokým rozlišením</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>Při použití vzdálené plochy nebo virtuálního počítače nemusí vstup myši s vysokým rozlišením fungovat správně.  Toto je dlouhodobá chyba Windows.  V těchto situacích můžete toto nastavení použít k obnovení správného chování myši.</translation>
+</phrase>
+
+<!-- Options_Input.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>maximální počet posledních souborů k zapamatování</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>hlavní okno</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>text nabídky posledního souboru</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>Šířka nabídky "Poslední soubory" je omezena systémem Windows.  Aby se zabránilo přetečení této nabídky, může PhotoDemon zobrazovat pouze názvy obrázků místo úplných umístění obrázků.</translation>
+</phrase>
+
+<!-- Options_Menus.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2777</phrasecount>
+<phrasecount>2782</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12045 total words. -->
+<!-- As of this build, PhotoDemon contains 5916 phrases. -->
+<!-- 3134 are duplicates, so only 2782 unique phrases have been written to file. -->
+<!-- These 2782 phrases contain approximately 12061 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語 (Japanese)</langname>
-<langversion>2024.7.27</langversion>
+<langversion>2024.7.28</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Kenji Hoshimoto (Hosiken)</author>
@@ -13731,8 +13731,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>Loading</original>
-<translation>読み込み中</translation>
+<original>Menus</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13741,8 +13741,23 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>Loading</original>
+<translation>読み込み中</translation>
+</phrase>
+
+<phrase>
 <original>Color management</original>
 <translation>カラー マネジメント</translation>
+</phrase>
+
+<phrase>
+<original>Fonts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Input devices</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13769,7 +13784,7 @@ Are you sure you want to continue?</original>
 <translation>PhotoDemon をリセット</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13978,23 +13993,8 @@ Are you sure you want to continue?</original>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>title bar text</original>
 <translation>タイトル バーのテキスト</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>記憶する最近使ったファイルの最大数</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>最近使ったファイル</translation>
 </phrase>
 
 <phrase>
@@ -14013,23 +14013,8 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>recent file menu text</original>
-<translation>最近使ったファイル メニューのテキスト</translation>
-</phrase>
-
-<phrase>
 <original>canvas background color</original>
 <translation>キャンバスの背景色</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>スナップ距離 (ピクセル)</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14045,11 +14030,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>PhotoDemon メイン ウィンドウのタイトル バーには、現在ロードされている画像に関する情報が表示されます。  この環境設定を使用して、表示される情報量を制御します。</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>“最近使ったファイル” メニューの幅は Windows によって制限されています。  このメニューがあふれるのを防ぐために、PhotoDemon では画像の完全な場所ではなく画像名のみを表示できます。</translation>
 </phrase>
 
 <phrase>
@@ -14072,7 +14052,7 @@ Are you sure you want to continue?</original>
 <translation>大きい</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
@@ -14598,11 +14578,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
-<original>high-resolution mouse input</original>
-<translation>高解像度マウス入力</translation>
-</phrase>
-
-<phrase>
 <original>reset all program settings</original>
 <translation>すべてのプログラム設定をリセット</translation>
 </phrase>
@@ -14653,11 +14628,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>リモート デスクトップまたは VM (仮想マシン) を使用する場合、高解像度のマウス入力が正しく動作しない場合があります。  これは Windows の長年のバグです。  このような状況では、この設定を使用してマウスの正しい動作を復元できます。</translation>
-</phrase>
-
-<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>現在の PhotoDemon のメモリー使用量</translation>
 </phrase>
@@ -14677,14 +14647,75 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>このボタンは、全ての PhotoDemon 設定をリセットします。  プログラムが予期しない動作をしている場合、これにより問題が解決することがあります。</translation>
 </phrase>
 
-<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>interface font</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Changes will take effect the next time you start PhotoDemon.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_Fonts.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>スナップ距離 (ピクセル)</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>高解像度マウス入力</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>リモート デスクトップまたは VM (仮想マシン) を使用する場合、高解像度のマウス入力が正しく動作しない場合があります。  これは Windows の長年のバグです。  このような状況では、この設定を使用してマウスの正しい動作を復元できます。</translation>
+</phrase>
+
+<!-- Options_Input.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>記憶する最近使ったファイルの最大数</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>最近使ったファイル</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>最近使ったファイル メニューのテキスト</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>“最近使ったファイル” メニューの幅は Windows によって制限されています。  このメニューがあふれるのを防ぐために、PhotoDemon では画像の完全な場所ではなく画像名のみを表示できます。</translation>
+</phrase>
+
+<!-- Options_Menus.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2777</phrasecount>
+<phrasecount>2782</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12045 total words. -->
+<!-- As of this build, PhotoDemon contains 5916 phrases. -->
+<!-- 3134 are duplicates, so only 2782 unique phrases have been written to file. -->
+<!-- These 2782 phrases contain approximately 12061 total words. -->
 
 </pdData>

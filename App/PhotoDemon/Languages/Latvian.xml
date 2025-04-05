@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).25</langversion>
+<langversion>2028.8 Alfa (Build 25).26</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -13730,8 +13730,8 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 </phrase>
 
 <phrase>
-<original>Loading</original>
-<translation>Iekraušana</translation>
+<original>Menus</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13740,8 +13740,23 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 </phrase>
 
 <phrase>
+<original>Loading</original>
+<translation>Iekraušana</translation>
+</phrase>
+
+<phrase>
 <original>Color management</original>
 <translation>Krāsu pārvaldība</translation>
+</phrase>
+
+<phrase>
+<original>Fonts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Input devices</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13768,7 +13783,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <translation>Atiestatīt PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13977,23 +13992,8 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>zoom with mouse wheel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>title bar text</original>
 <translation>virsraksta joslas teksts</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>maksimālais jaunāko failu skaits, kas jāatceras</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>nesenie faili</translation>
 </phrase>
 
 <phrase>
@@ -14012,23 +14012,8 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <phrase>
-<original>recent file menu text</original>
-<translation>nesenā faila izvēlnes teksts</translation>
-</phrase>
-
-<phrase>
 <original>canvas background color</original>
 <translation>audekla fona krāsa</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>piespraušanas attālums (pikseļos)</translation>
-</phrase>
-
-<phrase>
-<original>angle snap distance (in degrees)</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14044,11 +14029,6 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>Photodemon galvenā loga nosaukuma joslā tiek parādīta informācija par pašlaik ielādēto attēlu.  Izmantojiet šo preferenci, lai kontrolētu, cik daudz informācijas tiek parādīts.</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Izvēlnes "Nesenie faili" platumu ierobežo operētājsistēma Windows.  Lai novērstu šīs izvēlnes pārpildīšanos, PhotoDemon var attēlot tikai attēlu nosaukumus, nevis pilnu attēlu atrašanās vietu.</translation>
 </phrase>
 
 <phrase>
@@ -14071,7 +14051,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <translation>liels</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 36 phrases. 17 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
@@ -14597,11 +14577,6 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 <!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
-<original>high-resolution mouse input</original>
-<translation>augstas izšķirtspējas peles ievade</translation>
-</phrase>
-
-<phrase>
 <original>reset all program settings</original>
 <translation>visu programmas iestatījumu atiestatīšana</translation>
 </phrase>
@@ -14652,11 +14627,6 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 </phrase>
 
 <phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Izmantojot attālo darbvirsmu vai virtuālo mašīnu, augstas izšķirtspējas peles ievade var nedarboties pareizi.  Tā ir ilgstoši pastāvoša Windows kļūda.  Šādās situācijās varat izmantot šo iestatījumu, lai atjaunotu pareizu peles darbību.</translation>
-</phrase>
-
-<phrase>
 <original>current PhotoDemon memory usage</original>
 <translation>pašreizējā PhotoDemon atmiņas izmantošana</translation>
 </phrase>
@@ -14676,14 +14646,75 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 <translation>Ar šo pogu tiek atiestatīti visi PhotoDemon iestatījumi.  Ja programma rīkojas neparedzēti, tas var atrisināt problēmu.</translation>
 </phrase>
 
-<!-- Options_Advanced.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>interface font</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Changes will take effect the next time you start PhotoDemon.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_Fonts.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>zoom with mouse wheel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>piespraušanas attālums (pikseļos)</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>augstas izšķirtspējas peles ievade</translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>Izmantojot attālo darbvirsmu vai virtuālo mašīnu, augstas izšķirtspējas peles ievade var nedarboties pareizi.  Tā ir ilgstoši pastāvoša Windows kļūda.  Šādās situācijās varat izmantot šo iestatījumu, lai atjaunotu pareizu peles darbību.</translation>
+</phrase>
+
+<!-- Options_Input.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>maksimālais jaunāko failu skaits, kas jāatceras</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>nesenie faili</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>nesenā faila izvēlnes teksts</translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>Izvēlnes "Nesenie faili" platumu ierobežo operētājsistēma Windows.  Lai novērstu šīs izvēlnes pārpildīšanos, PhotoDemon var attēlot tikai attēlu nosaukumus, nevis pilnu attēlu atrašanās vietu.</translation>
+</phrase>
+
+<!-- Options_Menus.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2777</phrasecount>
+<phrasecount>2782</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5910 phrases. -->
-<!-- 3133 are duplicates, so only 2777 unique phrases have been written to file. -->
-<!-- These 2777 phrases contain approximately 12045 total words. -->
+<!-- As of this build, PhotoDemon contains 5916 phrases. -->
+<!-- 3134 are duplicates, so only 2782 unique phrases have been written to file. -->
+<!-- These 2782 phrases contain approximately 12061 total words. -->
 
 </pdData>
