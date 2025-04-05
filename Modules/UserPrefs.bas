@@ -663,6 +663,7 @@ Public Sub ResetPreferences()
     Files.FileDeleteIfExists m_PreferencesPath
     CreateNewPreferencesFile
     LoadUserSettings
+    Fonts.DetermineUIFont
 End Sub
 
 'Create a new preferences XML file from scratch.  When new preferences are added to the preferences dialog, they should also be

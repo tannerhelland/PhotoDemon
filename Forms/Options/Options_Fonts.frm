@@ -29,6 +29,28 @@ Begin VB.Form options_Fonts
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdLabel lblInfo 
+      Height          =   735
+      Index           =   0
+      Left            =   120
+      Top             =   960
+      Width           =   7935
+      _ExtentX        =   13996
+      _ExtentY        =   1296
+      Alignment       =   2
+      Caption         =   ""
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdDropDownFont ddFont 
+      Height          =   855
+      Left            =   0
+      TabIndex        =   0
+      Top             =   0
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   1508
+      Caption         =   "interface font"
+   End
 End
 Attribute VB_Name = "options_Fonts"
 Attribute VB_GlobalNameSpace = False
@@ -61,104 +83,52 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Form_Load()
-'
-'    'Interface prefs
-'    btsTitleText.AddItem "compact (filename only)", 0
-'    btsTitleText.AddItem "verbose (filename and path)", 1
-'    btsTitleText.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
-'
-'    lblCanvasColor.Caption = g_Language.TranslateMessage("canvas background color: ")
-'    csCanvasColor.SetLeft lblCanvasColor.GetLeft + lblCanvasColor.GetWidth + Interface.FixDPI(8)
-'    csCanvasColor.SetWidth (btsTitleText.GetLeft + btsTitleText.GetWidth) - (csCanvasColor.GetLeft)
-'
-'    lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent files to remember: ")
-'    tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + Interface.FixDPI(8)
-'
-'    btsMRUStyle.AddItem "compact (filename only)", 0
-'    btsMRUStyle.AddItem "verbose (filename and path)", 1
-'    btsMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
-'
-'    chkZoomMouse.Value = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
-'
-'    m_userInitiatedAlphaSelection = False
-'    cboAlphaCheck.Clear
-'    cboAlphaCheck.AddItem "highlights", 0
-'    cboAlphaCheck.AddItem "midtones", 1
-'    cboAlphaCheck.AddItem "shadows", 2, True
-'    cboAlphaCheck.AddItem "red", 3
-'    cboAlphaCheck.AddItem "orange", 4
-'    cboAlphaCheck.AddItem "green", 5
-'    cboAlphaCheck.AddItem "blue", 6
-'    cboAlphaCheck.AddItem "purple", 7, True
-'    cboAlphaCheck.AddItem "custom", 8
-'    cboAlphaCheck.AssignTooltip "To help identify transparent pixels, a special grid appears ""behind"" them.  This setting modifies the grid's appearance."
-'    m_userInitiatedAlphaSelection = True
-'
-'    cboAlphaCheckSize.Clear
-'    cboAlphaCheckSize.AddItem "small", 0
-'    cboAlphaCheckSize.AddItem "medium", 1
-'    cboAlphaCheckSize.AddItem "large", 2
-'    cboAlphaCheckSize.AssignTooltip "To help identify transparent pixels, a special grid appears ""behind"" them.  This setting modifies the grid's appearance."
-'
+    
+    'Populate the font UI
+    ddFont.InitializeFontList
+    
 End Sub
 
 Public Sub LoadUserPreferences()
-'
-'    'Interface preferences
-'    btsTitleText.ListIndex = UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0)
-'    csCanvasColor.Color = UserPrefs.GetCanvasColor()
-'    tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
-'    btsMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
-'    spnSnapDistance(0).Value = UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
-'    spnSnapDistance(1).Value = UserPrefs.GetPref_Float("Interface", "snap-degrees", 7.5)
-'    m_userInitiatedAlphaSelection = False
-'    cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
-'    csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
-'    csAlphaTwo.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
-'    m_userInitiatedAlphaSelection = True
-'    cboAlphaCheckSize.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Size", 1)
-'    UpdateAlphaGridVisibility
-'
+    
+    'Technically, the active font name comes from the font engine, *not* user prefs.
+    ' Start there, but if there's a difference, default to the one in the user prefs file.
+    ' (This would mean the user has changed the font this session, but *not* restarted the app.)
+    Dim curFontName As String, curFontPref As String
+    curFontName = Fonts.GetUIFontName()
+    curFontPref = UserPrefs.GetUIFontName()
+    
+    Dim targetName As String
+    If Strings.StringsEqual(curFontName, curFontPref, True) Then
+        targetName = curFontName
+    Else
+        
+        'The user prefs value will be NULL until the user interacts with it
+        If (LenB(curFontPref) > 0) Then
+            
+            'If the font doesn't exist on this PC, revert to PD's default UI font
+            Dim cFont As pdFont: Set cFont = New pdFont
+            If cFont.DoesFontExist(curFontPref) Then
+                targetName = curFontPref
+            Else
+                targetName = curFontName
+            End If
+        
+        'Use PD's default font
+        Else
+            targetName = curFontName
+        End If
+    End If
+    
+    'Default to the most appropriate font
+    ddFont.ListIndex = ddFont.ListIndexByString(targetName, vbTextCompare)
+    
 End Sub
 
 Public Sub SaveUserPreferences()
-'
-'    'Interface preferences
-'    UserPrefs.SetPref_Long "Interface", "Window Caption Length", btsTitleText.ListIndex
-'    UserPrefs.SetPref_String "Interface", "Canvas Color", Colors.GetHexStringFromRGB(csCanvasColor.Color)
-'    UserPrefs.SetCanvasColor csCanvasColor.Color
-'
-'    'Changes to the recent files list (including count and how it's displayed) may require us to
-'    ' trigger a full rebuild of the menu
-'    Dim mruNeedsToBeRebuilt As Boolean
-'    mruNeedsToBeRebuilt = (btsMRUStyle.ListIndex <> UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0))
-'    UserPrefs.SetPref_Long "Interface", "MRU Caption Length", btsMRUStyle.ListIndex
-'
-'    Dim newMaxRecentFiles As Long
-'    If tudRecentFiles.IsValid Then newMaxRecentFiles = tudRecentFiles.Value Else newMaxRecentFiles = 10
-'    If (Not mruNeedsToBeRebuilt) Then mruNeedsToBeRebuilt = (newMaxRecentFiles <> UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10))
-'    UserPrefs.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
-'
-'    'If any MRUs need to be rebuilt, do so now
-'    If mruNeedsToBeRebuilt Then
-'        g_RecentFiles.NotifyMaxLimitChanged
-'        g_RecentMacros.MRU_NotifyNewMaxLimit
-'    End If
-'
-'    UserPrefs.SetPref_Boolean "Interface", "wheel-zoom", chkZoomMouse.Value
-'    UserPrefs.SetZoomWithWheel chkZoomMouse.Value
-'
-'    UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance(0).Value
-'    UserPrefs.SetPref_Long "Interface", "snap-degrees", spnSnapDistance(1).Value
-'    Snap.SetSnap_Distance spnSnapDistance(0).Value
-'    Snap.SetSnap_Degrees spnSnapDistance(1).Value
-'
-'    UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
-'    UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
-'    UserPrefs.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)
-'    UserPrefs.SetPref_Long "Transparency", "Alpha Check Size", cboAlphaCheckSize.ListIndex
-'    Drawing.CreateAlphaCheckerboardDIB g_CheckerboardPattern
-'
+    
+    UserPrefs.SetPref_String "Interface", "UIFont", ddFont.List(ddFont.ListIndex, False)
+    
 End Sub
 
 'Upon calling, validate all input.  Return FALSE if validation on 1+ controls fails.
@@ -187,5 +157,8 @@ End Function
 'This function is called at least once, immediately following Form_Load(),
 ' but it can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    lblInfo(0).Caption = g_Language.TranslateMessage("Changes will take effect the next time you start PhotoDemon.")
     Interface.ApplyThemeAndTranslations Me
+    
 End Sub
