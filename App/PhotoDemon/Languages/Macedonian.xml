@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1756</langversion>
+<langversion>8.9.1757</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -14674,6 +14674,11 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Options_Input.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>display access keys (mnemonics)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent files to remember</original>
 <translation>максималниот број на неодамна записи за датотеки</translation>
 </phrase>
@@ -14689,18 +14694,23 @@ If сеуште изберете да го исклучите ажурирања
 </phrase>
 
 <phrase>
+<original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
 <translation>"Претходни датотеки" ширина мени е ограничен од страна на Windows. За да се спречи ова мени од преплавени, PhotoDemon може да се прикаже имињата на сликите не само наместо целосно локации сликата.</translation>
 </phrase>
 
-<!-- Options_Menus.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2782</phrasecount>
+<phrasecount>2784</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5916 phrases. -->
-<!-- 3134 are duplicates, so only 2782 unique phrases have been written to file. -->
-<!-- These 2782 phrases contain approximately 12061 total words. -->
+<!-- As of this build, PhotoDemon contains 5921 phrases. -->
+<!-- 3137 are duplicates, so only 2784 unique phrases have been written to file. -->
+<!-- These 2784 phrases contain approximately 12094 total words. -->
 
 </pdData>

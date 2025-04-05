@@ -29,10 +29,20 @@ Begin VB.Form options_Menus
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsMnemonics 
+      Height          =   975
+      Left            =   0
+      TabIndex        =   2
+      Top             =   0
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   1720
+      Caption         =   "display access keys (mnemonics)"
+   End
    Begin PhotoDemon.pdLabel lblRecentFileCount 
       Height          =   240
       Left            =   135
-      Top             =   420
+      Top             =   1500
       Width           =   3480
       _ExtentX        =   6138
       _ExtentY        =   423
@@ -44,7 +54,7 @@ Begin VB.Form options_Menus
       Height          =   285
       Index           =   13
       Left            =   0
-      Top             =   15
+      Top             =   1095
       Width           =   8100
       _ExtentX        =   14288
       _ExtentY        =   503
@@ -56,7 +66,7 @@ Begin VB.Form options_Menus
       Height          =   975
       Left            =   120
       TabIndex        =   0
-      Top             =   810
+      Top             =   1890
       Width           =   7815
       _ExtentX        =   13785
       _ExtentY        =   1508
@@ -67,7 +77,7 @@ Begin VB.Form options_Menus
       Height          =   345
       Left            =   3840
       TabIndex        =   1
-      Top             =   360
+      Top             =   1440
       Width           =   1935
       _ExtentX        =   3413
       _ExtentY        =   609
@@ -109,20 +119,45 @@ Option Explicit
 
 Private Sub Form_Load()
 
+    btsMnemonics.AddItem "auto", 0
+    btsMnemonics.AddItem "on", 1
+    btsMnemonics.AddItem "off", 2
+    
     btsMRUStyle.AddItem "compact (filename only)", 0
     btsMRUStyle.AddItem "verbose (filename and path)", 1
     
 End Sub
 
 Public Sub LoadUserPreferences()
-
+    
+    Select Case UserPrefs.GetPref_Long("Interface", "display-mnemonics", PD_BOOL_AUTO)
+        Case PD_BOOL_FALSE
+            btsMnemonics.ListIndex = 2
+        Case PD_BOOL_TRUE
+            btsMnemonics.ListIndex = 1
+        Case Else
+            btsMnemonics.ListIndex = 0
+    End Select
+    
     tudRecentFiles.Value = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
     btsMRUStyle.ListIndex = UserPrefs.GetPref_Long("Interface", "MRU Caption Length", 0)
     
 End Sub
 
 Public Sub SaveUserPreferences()
-
+    
+    'Immediately relay the mnemonics setting to the menu engine
+    Select Case btsMnemonics.ListIndex
+        Case 0
+            UserPrefs.SetPref_Long "Interface", "display-mnemonics", PD_BOOL_AUTO
+        Case 1
+            UserPrefs.SetPref_Long "Interface", "display-mnemonics", PD_BOOL_TRUE
+        Case 2
+            UserPrefs.SetPref_Long "Interface", "display-mnemonics", PD_BOOL_FALSE
+    End Select
+    Menus.SetMnemonicsBehavior UserPrefs.GetPref_Long("Interface", "display-mnemonics", PD_BOOL_AUTO)
+    Menus.UpdateAgainstCurrentTheme True
+    
     'Changes to the recent files list (including count and how it's displayed) may require us to
     ' trigger a full rebuild of the menu
     Dim mruNeedsToBeRebuilt As Boolean
@@ -168,6 +203,8 @@ End Function
 'This function is called at least once, immediately following Form_Load(),
 ' but it can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    btsMnemonics.AssignTooltip "Access keys (mnemonics) allow you to navigate menus using the keyboard.  In ""auto"" mode, languages without native access keys will display the U.S. English access key for each menu."
     
     lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent files to remember: ")
     tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + Interface.FixDPI(8)

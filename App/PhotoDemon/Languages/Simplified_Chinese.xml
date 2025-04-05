@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（夜间更新版，2024.12）</langname>
-<langversion>2024.12.34</langversion>
+<langversion>2024.12.35</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on March 9, 2025</author>
@@ -14682,6 +14682,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Options_Input.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
+<original>display access keys (mnemonics)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent files to remember</original>
 <translation>记录最近文件的最大数量</translation>
 </phrase>
@@ -14697,19 +14702,24 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
 <translation>在“最近的文件”菜单的宽度是由Windows的限制。为了防止溢出这个菜单，PhotoDemon可以用文件名替代文件完整路径。</translation>
 </phrase>
 
-<!-- Options_Menus.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2782</phrasecount>
+<phrasecount>2784</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5916 phrases. -->
-<!-- 3134 are duplicates, so only 2782 unique phrases have been written to file. -->
-<!-- These 2782 phrases contain approximately 12061 total words. -->
+<!-- As of this build, PhotoDemon contains 5921 phrases. -->
+<!-- 3137 are duplicates, so only 2784 unique phrases have been written to file. -->
+<!-- These 2784 phrases contain approximately 12094 total words. -->
 
 <special-translations>
 

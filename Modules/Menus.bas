@@ -149,10 +149,18 @@ Private Const MENU_SEPARATOR As String = "-"
 Private m_Menus() As PD_MenuEntry
 Private m_NumOfMenus As Long
 
+'In languages that do not map cleanly to keyboard keys (i.e. languages with IME-driven input),
+' PD automatically uses the original English text for mnemonics.  These mnemonics are displayed in parentheses
+' to the right of the localized menu text.  As of v2025.4, the user can switch this behavior between "auto/on/off".
+Private m_WideMenuMnemonics As PD_BOOL
+
 'Early in the PD load process, we initialize the default set of menus.  In the future, it may be nice to let
 ' users customize this to match their favorite software (e.g. PhotoShop), but that's a ways off as I've yet to
 ' build a menu control capable of that level of customization support.
 Public Sub InitializeMenus()
+        
+    'First, load menu mnemonic behavior
+    Menus.SetMnemonicsBehavior UserPrefs.GetPref_Long("Interface", "display-mnemonics", PD_BOOL_AUTO)
     
     'File Menu
     AddMenuItem "File", "file_top", 0
@@ -815,13 +823,21 @@ End Sub
 'After the active language changes, you must call this menu to translate all menu captions.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal redrawMenuBar As Boolean = True)
     
+    'Failsafe only
+    Dim useTranslations As Boolean
+    If (g_Language Is Nothing) Then
+        useTranslations = False
+    Else
+        useTranslations = g_Language.TranslationActive
+    End If
+    
     'Before proceeding, cache any hotkey-related translations (so we don't have to keep translating them)
     Hotkeys.UpdateHotkeyLocalization
     
     Dim i As Long
     
     'Next, translate menu captions from English to the currently active language
-    If g_Language.TranslationActive Then
+    If useTranslations Then
         
         For i = 0 To m_NumOfMenus - 1
             
@@ -1032,27 +1048,39 @@ Private Sub DetermineMnemonics()
                 
                 With m_Menus(i)
                     
-                    'Check for e.g. Chinese strings
+                    'Figure out whether to use the English char or a localized one
                     If noKeys Then
+                        mnChar = Mid$(.me_TextEn, mnPos, 1)
+                    Else
+                        mnChar = Mid$(.me_TextTranslated, mnPos, 1)
+                    End If
+                    
+                    'Check for e.g. Chinese strings
+                    If (noKeys And (m_WideMenuMnemonics = PD_BOOL_AUTO)) Or (m_WideMenuMnemonics = PD_BOOL_TRUE) Then
+                        
+                        Const STR_ELLIPSES As String = "..."
+                        Const STR_AMPERSAND As String = "&"
+                        Const STR_MNEMONIC_START As String = " (&"
+                        Const STR_MNEMONIC_END As String = ")"
                         
                         'Append the original English character to the end of the localized string
                         ' (if ellipses aren't used, or immediately before the ellipsis)
-                        mnChar = Mid$(.me_TextEn, mnPos, 1)
                         Dim posEllipsis As Long
-                        posEllipsis = InStr(1, .me_TextTranslated, "...", vbBinaryCompare)
+                        posEllipsis = InStr(1, .me_TextTranslated, STR_ELLIPSES, vbBinaryCompare)
                         If (posEllipsis = 0) Then
-                            .me_TextWithMnemonics = .me_TextTranslated & "(&" & UCase$(mnChar) & ")"
+                            .me_TextWithMnemonics = .me_TextTranslated & STR_MNEMONIC_START & UCase$(mnChar) & STR_MNEMONIC_END
                         Else
-                            .me_TextWithMnemonics = Left$(.me_TextTranslated, posEllipsis - 1) & "(&" & UCase$(mnChar) & ")" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (posEllipsis - 1))
+                            .me_TextWithMnemonics = Left$(.me_TextTranslated, posEllipsis - 1) & STR_MNEMONIC_START & UCase$(mnChar) & STR_MNEMONIC_END & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (posEllipsis - 1))
                         End If
                         
-                    'Place the marker directly inside the localized caption
+                    'Place the marker directly inside the localized caption if we can
                     Else
-                        mnChar = Mid$(.me_TextTranslated, mnPos, 1)
-                        If (mnPos > 1) Then
-                            .me_TextWithMnemonics = Left$(.me_TextTranslated, mnPos - 1) & "&" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
-                        Else
-                            .me_TextWithMnemonics = "&" & .me_TextTranslated
+                        If (Not noKeys) Then
+                            If (mnPos > 1) Then
+                                .me_TextWithMnemonics = Left$(.me_TextTranslated, mnPos - 1) & STR_AMPERSAND & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
+                            Else
+                                .me_TextWithMnemonics = STR_AMPERSAND & .me_TextTranslated
+                            End If
                         End If
                     End If
                     
@@ -1273,29 +1301,40 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
                 If (mnPos > 0) Then
                     
                     With m_Menus(i)
+                    
+                        'Figure out whether to use the English char or a localized one
+                        If noKeys Then
+                            mnChar = Mid$(.me_TextEn, mnPos, 1)
+                        Else
+                            mnChar = Mid$(.me_TextTranslated, mnPos, 1)
+                        End If
                         
                         'Check for e.g. Chinese strings
-                        If noKeys Then
+                        If (noKeys And (m_WideMenuMnemonics = PD_BOOL_AUTO)) Or (m_WideMenuMnemonics = PD_BOOL_TRUE) Then
+                            
+                            Const STR_ELLIPSES As String = "..."
+                            Const STR_AMPERSAND As String = "&"
+                            Const STR_MNEMONIC_START As String = " (&"
+                            Const STR_MNEMONIC_END As String = ")"
                             
                             'Append the original English character to the end of the localized string
                             ' (if ellipses aren't used, or immediately before the ellipsis)
-                            mnChar = Mid$(.me_TextEn, mnPos, 1)
-                            
                             Dim posEllipsis As Long
-                            posEllipsis = InStr(1, .me_TextTranslated, "...", vbBinaryCompare)
+                            posEllipsis = InStr(1, .me_TextTranslated, STR_ELLIPSES, vbBinaryCompare)
                             If (posEllipsis = 0) Then
-                                newText = .me_TextTranslated & "(&" & UCase$(mnChar) & ")"
+                                newText = .me_TextTranslated & STR_MNEMONIC_START & UCase$(mnChar) & STR_MNEMONIC_END
                             Else
-                                newText = Left$(.me_TextTranslated, posEllipsis - 1) & "(&" & UCase$(mnChar) & ")" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (posEllipsis - 1))
+                                newText = Left$(.me_TextTranslated, posEllipsis - 1) & STR_MNEMONIC_START & UCase$(mnChar) & STR_MNEMONIC_END & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (posEllipsis - 1))
                             End If
                             
                         'Place the marker directly inside the localized caption
                         Else
-                            mnChar = Mid$(.me_TextTranslated, mnPos, 1)
-                            If (mnPos > 1) Then
-                                newText = Left$(.me_TextTranslated, mnPos - 1) & "&" & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
-                            Else
-                                newText = "&" & .me_TextTranslated
+                            If (Not noKeys) Then
+                                If (mnPos > 1) Then
+                                    newText = Left$(.me_TextTranslated, mnPos - 1) & STR_AMPERSAND & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
+                                Else
+                                    newText = STR_AMPERSAND & .me_TextTranslated
+                                End If
                             End If
                         End If
                         
@@ -1774,6 +1813,13 @@ Public Sub SetMenuEnabled(ByRef mnuName As String, Optional ByVal isEnabled As B
     
 End Sub
 
+Public Sub SetMnemonicsBehavior(ByVal newBehavior As PD_BOOL)
+    m_WideMenuMnemonics = newBehavior
+    If (m_WideMenuMnemonics <> PD_BOOL_TRUE) And (m_WideMenuMnemonics <> PD_BOOL_FALSE) And (m_WideMenuMnemonics <> PD_BOOL_AUTO) Then
+        m_WideMenuMnemonics = PD_BOOL_AUTO
+    End If
+End Sub
+
 Private Sub GetAllMatchingMenuIndices(ByRef menuID As String, ByRef numOfMenus As Long, ByRef menuArray() As Long)
 
     'At present, there will never be more than two menus matching a given ID; this can be revisited in the future,
@@ -2218,7 +2264,7 @@ Private Sub UpdateMenuText_ByIndex(ByVal mnuIndex As Long)
         SetMenuItemInfoW hMenu, GetHMenuIndex(mnuIndex), 1&, tmpMii
         
     Else
-        InternalMenuWarning "UpdateMenuText_ByIndex", "null hMenu (" & mnuIndex & ")"
+        InternalMenuWarning "UpdateMenuText_ByIndex", "null hMenu: " & mnuIndex
     End If
 
 End Sub
