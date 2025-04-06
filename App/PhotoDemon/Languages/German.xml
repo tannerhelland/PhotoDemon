@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 352.2</langversion>
+<langversion>2024.12 Alpha - Build 364</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2958,7 +2958,7 @@ Deskription: %2
 
 <phrase>
 <original>font face</original>
-<translation>Font</translation>
+<translation>Fontbild (-Familie)</translation>
 </phrase>
 
 <phrase>
@@ -13731,7 +13731,7 @@ Um fortzusetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.o
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>Menüs</translation>
 </phrase>
 
 <phrase>
@@ -13751,12 +13751,12 @@ Um fortzusetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.o
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>Fonts</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>Eingabegeräte</translation>
 </phrase>
 
 <phrase>
@@ -14650,12 +14650,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>Interface-Font</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>Änderungen werden wirksam, wenn Sie PhotoDemon das nächste Mal starten.</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -14689,7 +14689,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>Zugriffstasten anzeigen (Mnemonik)</translation>
 </phrase>
 
 <phrase>
@@ -14709,7 +14709,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>Zugriffstasten (Mnemonik) ermöglichen Ihnen, unter Verwendung der Tastatur durch die Menüs zu navigieren. Im "Auto"-Modus wird bei Sprachen ohne native Zugriffstasten für jedes Menü die Zugriffstaste in amerikanischem Englisch (U.S. English) angezeigt.</translation>
 </phrase>
 
 <phrase>
