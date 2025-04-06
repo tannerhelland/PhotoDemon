@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12.363</langversion>
+<langversion>2024.12.364</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -14691,7 +14691,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>Отображение клавиш доступа (мнемоника)</translation>
 </phrase>
 
 <phrase>
@@ -14711,7 +14711,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>Клавиши доступа (мнемонические) позволяют перемещаться по меню с помощью клавиатуры.  В режиме "авто" для языков, для которых нет собственных клавиш доступа, для каждого меню будет отображаться клавиша доступа на английском языке США.</translation>
 </phrase>
 
 <phrase>
