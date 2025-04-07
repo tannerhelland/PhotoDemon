@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).28</langversion>
+<langversion>2028.8 Alfa (Build 25).29</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -14054,6 +14054,11 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>display splash screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>kad attēli tiek saņemti no ārēja avota (piemēram, Windows Explorer)</translation>
 </phrase>
@@ -14109,8 +14114,8 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR un RAW attēlos ir vairāk krāsu, nekā datora ekrāns spēj fiziski attēlot.  Pirms šādu attēlu attēlošanas oriģinālajiem attēla datiem jāpiemēro toņu kartēšanas operācija.</translation>
+<original>startup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14121,6 +14126,11 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <phrase>
 <original>load into a new PhotoDemon instance</original>
 <translation>ielādēt jaunā PhotoDemon instancē</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>HDR un RAW attēlos ir vairāk krāsu, nekā datora ekrāns spēj fiziski attēlot.  Pirms šādu attēlu attēlošanas oriģinālajiem attēla datiem jāpiemēro toņu kartēšanas operācija.</translation>
 </phrase>
 
 <phrase>
@@ -14153,7 +14163,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <translation>Ja dators tiek restartēts, kamēr darbojas PhotoDemon, PhotoDemon var automātiski atjaunot iepriekšējo sesiju.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 24 phrases. 2 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14736,10 +14746,10 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2787</phrasecount>
+<phrasecount>2789</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5924 phrases. -->
-<!-- 3137 are duplicates, so only 2787 unique phrases have been written to file. -->
-<!-- These 2787 phrases contain approximately 12102 total words. -->
+<!-- As of this build, PhotoDemon contains 5926 phrases. -->
+<!-- 3137 are duplicates, so only 2789 unique phrases have been written to file. -->
+<!-- These 2789 phrases contain approximately 12106 total words. -->
 
 </pdData>

@@ -1222,7 +1222,7 @@ End Function
 Public Sub LogStartupEvent(ByRef sMsg As String)
     
     Static loadProgress As Long
-        
+    
     'In debug mode, mirror message output to PD's central Debugger
     PDDebug.LogAction sMsg, PDM_User_Message
     

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12.365</langversion>
+<langversion>2024.12.366</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -14056,6 +14056,11 @@ Are you sure you want to continue?</original>
 <!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>display splash screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>Если изображение получено из внешнего источника (например, из проводника Windows)</translation>
 </phrase>
@@ -14111,8 +14116,8 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>Изображения HDR и RAW содержат больше цветов, чем физически может отобразить экран ПК. Перед отображением такого изображения к исходным данным изображения необходимо применить операцию тонального преобразования.</translation>
+<original>startup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14123,6 +14128,11 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>load into a new PhotoDemon instance</original>
 <translation>Загрузить в новый экземпляр PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>Изображения HDR и RAW содержат больше цветов, чем физически может отобразить экран ПК. Перед отображением такого изображения к исходным данным изображения необходимо применить операцию тонального преобразования.</translation>
 </phrase>
 
 <phrase>
@@ -14155,7 +14165,7 @@ Are you sure you want to continue?</original>
 <translation>Если компьютер перезагрузится во время работы PhotoDemon, PhotoDemon автоматически восстановит предыдущий сеанс.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 24 phrases. 2 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14738,10 +14748,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2787</phrasecount>
+<phrasecount>2789</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5924 phrases. -->
-<!-- 3137 are duplicates, so only 2787 unique phrases have been written to file. -->
-<!-- These 2787 phrases contain approximately 12102 total words. -->
+<!-- As of this build, PhotoDemon contains 5926 phrases. -->
+<!-- 3137 are duplicates, so only 2789 unique phrases have been written to file. -->
+<!-- These 2789 phrases contain approximately 12106 total words. -->
 
 </pdData>

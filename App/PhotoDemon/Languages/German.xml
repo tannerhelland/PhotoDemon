@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 364.1</langversion>
+<langversion>2024.12 Alpha - Build 364.2</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14054,6 +14054,11 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 <!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>display splash screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>Wenn Bilder aus einer externen Quelle (wie Windows-Explorer) ankommen</translation>
 </phrase>
@@ -14109,8 +14114,8 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 </phrase>
 
 <phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Bildschirme physikalisch anzeigen können. Vor dem Anzeigen solcher Bilder muss eine Tone-Mapping-Operation auf die Original-Bilddaten angewandt werden.</translation>
+<original>startup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14121,6 +14126,11 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 <phrase>
 <original>load into a new PhotoDemon instance</original>
 <translation>In eine neue PhotoDemon-Instanz laden</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>HDR- und RAW-Bilder enthalten mehr Farben als PC-Bildschirme physikalisch anzeigen können. Vor dem Anzeigen solcher Bilder muss eine Tone-Mapping-Operation auf die Original-Bilddaten angewandt werden.</translation>
 </phrase>
 
 <phrase>
@@ -14153,7 +14163,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 <translation>Wenn Ihr PC rebootet, während PhotoDemon ausgeführt wird, kann PhotoDemon Ihre vorherige Session automatisch wiederherstellen.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 24 phrases. 2 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14736,10 +14746,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2787</phrasecount>
+<phrasecount>2789</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5924 phrases. -->
-<!-- 3137 are duplicates, so only 2787 unique phrases have been written to file. -->
-<!-- These 2787 phrases contain approximately 12102 total words. -->
+<!-- As of this build, PhotoDemon contains 5926 phrases. -->
+<!-- 3137 are duplicates, so only 2789 unique phrases have been written to file. -->
+<!-- These 2789 phrases contain approximately 12106 total words. -->
 
 </pdData>

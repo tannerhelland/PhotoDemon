@@ -491,7 +491,7 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     perfCheck.MarkEvent "Display splash screen"
-    FormSplash.Show vbModeless
+    If UserPrefs.GetPref_Boolean("Loading", "splash-screen", True) Then FormSplash.Show vbModeless
     
     '*************************************************************************************************************************************
     ' If this is not a production build, initialize PhotoDemon's central debugger

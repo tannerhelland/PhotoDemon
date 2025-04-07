@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1750</langversion>
+<langversion>8.9.1751</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -14054,6 +14054,11 @@ Apakah anda yakin ingin melanjutkan?</translation>
 <!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
+<original>display splash screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
 <translation>Saat gambar tiba dari sumber eksternal (seperti Windows Explorer)</translation>
 </phrase>
@@ -14109,8 +14114,8 @@ Apakah anda yakin ingin melanjutkan?</translation>
 </phrase>
 
 <phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>HDR dan gambar mentah berisi lebih banyak warna daripada layar PC yang dapat ditampilkan secara fisik.Sebelum menampilkan gambar tersebut, operasi pemetaan nada harus diterapkan pada data gambar asli.</translation>
+<original>startup</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14121,6 +14126,11 @@ Apakah anda yakin ingin melanjutkan?</translation>
 <phrase>
 <original>load into a new PhotoDemon instance</original>
 <translation>Muat ke instance fotodemon baru</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>HDR dan gambar mentah berisi lebih banyak warna daripada layar PC yang dapat ditampilkan secara fisik.Sebelum menampilkan gambar tersebut, operasi pemetaan nada harus diterapkan pada data gambar asli.</translation>
 </phrase>
 
 <phrase>
@@ -14153,7 +14163,7 @@ Apakah anda yakin ingin melanjutkan?</translation>
 <translation>Jika PC Anda reboot saat photodemon sedang berjalan, Photodemon dapat secara otomatis mengembalikan sesi Anda sebelumnya.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 22 phrases. 2 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 24 phrases. 2 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14736,10 +14746,10 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2787</phrasecount>
+<phrasecount>2789</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5924 phrases. -->
-<!-- 3137 are duplicates, so only 2787 unique phrases have been written to file. -->
-<!-- These 2787 phrases contain approximately 12102 total words. -->
+<!-- As of this build, PhotoDemon contains 5926 phrases. -->
+<!-- 3137 are duplicates, so only 2789 unique phrases have been written to file. -->
+<!-- These 2789 phrases contain approximately 12106 total words. -->
 
 </pdData>
