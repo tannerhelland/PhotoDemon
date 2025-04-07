@@ -186,6 +186,7 @@ Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Lo
 Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As GP_Result
 Private Declare Function GdipGetFontCollectionFamilyCount Lib "gdiplus" (ByVal hFontCollection As Long, ByRef dstNumFound As Long) As GP_Result
 Private Declare Function GdipGetFontCollectionFamilyList Lib "gdiplus" (ByVal hFontCollection As Long, ByVal numSought As Long, ByVal ptrDstArrayFamilies As Long, ByRef dstNumActuallyFound As Long) As GP_Result
+Private Declare Function GdipGetFamilyName Lib "gdiplus" (ByVal pFontFamily As Long, ByVal pDstName As Long, ByVal srcLangID As Integer) As GP_Result
 
 'GDI+ string format functions
 Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As GP_StringFormatFlags, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
@@ -337,6 +338,10 @@ Private m_FontCacheClean As Boolean
 'If we have to fall back to plain GDI for rendering, we use a temporary 24-bpp DIB to cache the results.  This is then manually
 ' transferred to the 32-bpp target.
 Private m_tmpDIB As pdDIB
+
+'Matching font names to font families is cumbersome, and we don't want to do it more than we have to.
+' After a successful match, the result is cached here.
+Private m_UserFontMatches As pdVariantHash
 
 'Get/set the current rendering string.  PD uses a lot of tricks to improve rendering performance, including ignoring redraw requests if none of the
 ' class's internals have changed, so the current text must be assigned via these functions prior to actual rendering.
@@ -1347,42 +1352,85 @@ Private Function CreateGDIPlusFont() As Boolean
         hGdipUserFonts = GDI_Plus.GDIPlus_GetUserFontCollection()
         If (hGdipUserFonts <> 0) Then
             
-            'Retrieve a list of user-added font families.
-            Dim lstFontFamilies() As Long, numFontFamilies As Long
-            If (GdipGetFontCollectionFamilyCount(hGdipUserFonts, numFontFamilies) = GP_OK) Then
-            If (numFontFamilies > 0) Then
-                
-                ReDim lstFontFamilies(0 To numFontFamilies - 1) As Long
-                If (GdipGetFontCollectionFamilyList(hGdipUserFonts, numFontFamilies, VarPtr(lstFontFamilies(0)), numFontFamilies) <> GP_OK) Then
-                    numFontFamilies = 0
-                End If
-                
-            '/End numFontFamilies > 0
-            End If
-            '/End GdipGetFontCollectionFamilyCount
-            End If
+            'See if we can simply pull from previously cached successes
+            Dim idxBest As Long, idxReturn As Variant
+            Dim cachedFontFamily As Long
             
-            'Ensure we have some user font families to query
-            If (numFontFamilies > 0) Then
+            If (m_UserFontMatches Is Nothing) Then Set m_UserFontMatches = New pdVariantHash
+            If m_UserFontMatches.GetItemByKey(m_FontFace, idxReturn) Then
+                cachedFontFamily = idxReturn
                 
-                'Query families until we're able to create the font.
-                Dim i As Long
-                For i = 0 To numFontFamilies - 1
+            'This font face has never been created before.  Do so now!
+            Else
+                
+                'Retrieve a list of user-added font families.
+                Dim lstFontFamilies() As Long, numFontFamilies As Long
+                If (GdipGetFontCollectionFamilyCount(hGdipUserFonts, numFontFamilies) = GP_OK) Then
+                If (numFontFamilies > 0) Then
                     
-                    gdipReturn = GdipCreateFont(lstFontFamilies(i), m_FontSize, GetFontStylesAsGdipLong, ConvertPDFontUnitToGdipFontUnit(m_FontSizeUnit), m_GDIPlusFont)
-                    If (gdipReturn = GP_OK) Then
-                        If (m_GDIPlusFont <> 0) Then GdipDeleteFont m_GDIPlusFont
-                        m_GDIPlusFont = 0
-                        m_GDIPlusFontFamilyIsPrivate = True
-                        m_GDIPlusFontFamily = lstFontFamilies(i)
-                        Exit For
+                    ReDim lstFontFamilies(0 To numFontFamilies - 1) As Long
+                    If (GdipGetFontCollectionFamilyList(hGdipUserFonts, numFontFamilies, VarPtr(lstFontFamilies(0)), numFontFamilies) <> GP_OK) Then
+                        numFontFamilies = 0
                     End If
                     
-                Next i
+                '/End numFontFamilies > 0
+                End If
+                '/End GdipGetFontCollectionFamilyCount
+                End If
+                
+                'Ensure we have some user font families to query
+                If (numFontFamilies > 0) Then
+                    
+                    'Find the best match for the requested font name
+                    Const LF_FACESIZEW As Long = 64
+                    
+                    'Use Levenshtein distance for matching
+                    Dim minDistance As Long, curDistance As Long
+                    idxBest = 0
+                    minDistance = 100
+                    
+                    Dim i As Long
+                    For i = 0 To numFontFamilies - 1
+                        
+                        Dim srcName As String
+                        srcName = String$(LF_FACESIZEW \ 2, 0)
+                        
+                        Const LANG_NEUTRAL As Integer = 0
+                        
+                        If (GdipGetFamilyName(lstFontFamilies(i), StrPtr(srcName), LANG_NEUTRAL) = GP_OK) Then
+                            srcName = Strings.TrimNull(srcName)
+                            curDistance = Strings.StringDistance(m_FontFace, srcName, True)
+                            If (curDistance < minDistance) Then
+                                minDistance = curDistance
+                                idxBest = i
+                            End If
+                        End If
+                    
+                    Next i
+                    
+                    'Store this result in the hash table
+                    m_UserFontMatches.AddItem m_FontFace, lstFontFamilies(idxBest)
+                    cachedFontFamily = lstFontFamilies(idxBest)
+                    
+                '/numFontFamilies > 0
+                End If
             
-            '/numFontFamilies > 0
+            '/End /not fontFoundAlready
             End If
-        
+            
+            'Ensure the font can be created using the best-matched name
+            If (cachedFontFamily <> 0) Then
+                
+                gdipReturn = GdipCreateFont(cachedFontFamily, m_FontSize, GetFontStylesAsGdipLong, ConvertPDFontUnitToGdipFontUnit(m_FontSizeUnit), m_GDIPlusFont)
+                If (gdipReturn = GP_OK) Then
+                    If (m_GDIPlusFont <> 0) Then GdipDeleteFont m_GDIPlusFont
+                    m_GDIPlusFont = 0
+                    m_GDIPlusFontFamilyIsPrivate = True
+                    m_GDIPlusFontFamily = cachedFontFamily
+                End If
+                
+            End If
+                
         '/ (hGdipUserFonts <> 0)
         End If
     

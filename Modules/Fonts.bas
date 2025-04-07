@@ -536,12 +536,39 @@ End Function
 
 Private Sub InitializeUserFonts()
     
-    'TODO: make a list of all user font locations
     Dim lstFontFolders As pdStringStack
     Set lstFontFolders = New pdStringStack
     
     'Always add the default PD font folder
     lstFontFolders.AddString UserPrefs.GetFontPath()
+    
+    'Load any/all custom font folders saved in previous sessions
+    Const FONT_PRESETS_FILE As String = "font_folders.txt"
+    Dim srcFile As String
+    srcFile = UserPrefs.GetPresetPath & FONT_PRESETS_FILE
+    If Files.FileExists(srcFile) Then
+        
+        'Load preset file
+        Dim srcList As String
+        If Files.FileLoadAsString(srcFile, srcList, True) Then
+            
+            'Iterate lines in the file
+            Dim cStack As pdStringStack: Set cStack = New pdStringStack
+            If cStack.CreateFromMultilineString(srcList, vbCrLf) Then
+                
+                Dim i As Long
+                For i = 0 To cStack.GetNumOfStrings - 1
+                    srcFile = cStack.GetString(i)
+                    If (LenB(srcFile) > 0) Then
+                        If Files.PathExists(srcFile, False) Then lstFontFolders.AddString srcFile
+                    End If
+                Next i
+                
+            End If
+            
+        End If
+        
+    End If
     
     'Iterate all font folders, iterate files *within* those folders, and add each in turn.
     Dim srcFontFolder As String
@@ -565,7 +592,6 @@ Private Sub InitializeUserFonts()
                 ' to GDI+ (which ensures availability to GDI+ font calls).
                 If addedSuccessfully Then
                     m_UserAddedFonts.AddString srcFontFile
-                    Debug.Print "adding font to GDI+ " & srcFontFile
                     GDIPlus_AddRuntimeFont srcFontFile
                 End If
                 
