@@ -3,9 +3,8 @@ Attribute VB_Name = "Fonts"
 'PhotoDemon Font Manager
 'Copyright 2013-2025 by Tanner Helland
 'Created: 31/May/13
-'Last updated: 26/April/15
-'Last update: start splitting relevant bits from pdFont into this separate manager module.
-'              pdFont still exists for GDI font rendering purposes.
+'Last updated: 07/April/25
+'Last update: add support for rendering from custom user font files (never installed!) at run-time
 '
 'For many years, PhotoDemon has used the pdFont class for GDI text rendering.  Unfortunately, that class
 ' was designed before I knew much about GDI font management, and it has some sketchy design considerations
@@ -255,9 +254,13 @@ End Enum
 #End If
 
 'GDI font creation and management
+Private Declare Function AddFontResourceExW Lib "gdi32" (ByVal lFontName As Long, ByVal lFontCharacteristics As Long, ByVal lReserved As Long) As Long
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByRef lpLogFont As LOGFONTW) As Long
+Private Declare Function RemoveFontResourceExW Lib "gdi32" (ByVal lFontName As Long, ByVal lFontCharacteristics As Long, ByVal lReserved As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+
+Private Const FR_PRIVATE As Long = &H10 'Used by AddFontResourceEx
 
 'Various non-font-specific WAPI functions helpful for font assembly
 Private Const logPixelsX As Long = 88
@@ -307,6 +310,9 @@ Private m_ProgramFontCollection As pdFontCollection
 ' sophisticated caching system (as the cache gets thrashed by VB instantiating and destroying compile-time
 ' objects willy-nilly).
 Private m_DummyFont As pdFont
+
+'As of 2025.4, users can add arbitrary fonts from custom folders.  We must free these fonts at termination.
+Private m_UserAddedFonts As pdStringStack
 
 Public Sub DetermineUIFont()
     
@@ -455,12 +461,13 @@ Public Function BuildFontCaches() As Long
     UpdateLogFontValues
     
     'Next, prep a full font list for the advanced text tool.
-    '(We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large buffer in advance.)
+    '(We won't know the full number of available fonts until the Enum function finishes,
+    ' so prep an extra-large buffer in advance.)
     m_PDFontCache.ResetStack INITIAL_PDFONTCACHE_SIZE
     GetAllAvailableFonts
     
-    'Because the font cache(s) will potentially be accessed by tons of external functions, it pays to sort them just once,
-    ' at initialization time.
+    'Because the font cache(s) will potentially be accessed by tons of external functions,
+    ' it pays to sort them just once, at initialization time.
     m_PDFontCache.TrimStack
     m_PDFontCache.SortAlphabetically True
     
@@ -468,8 +475,9 @@ Public Function BuildFontCaches() As Long
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
     PDDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.GetNumOfStrings
     
-    'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions can use for
-    ' their own UI painting.
+    'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions
+    ' can use for their own UI painting.  This cache *only* uses the current app font, but in different sizes
+    ' and styles.
     InitProgramFontCollection
     
 End Function
@@ -484,19 +492,21 @@ Private Sub UpdateLogFontValues()
     GDI.FreeMemoryDC tmpDC
 End Sub
 
-'Prep the program font cache.  Individual functions may need to call this inside the designer, because PD's normal run-time
-' initialization steps won't have fired.
+'Prep the program font cache.  Individual functions may need to call this inside the designer,
+' because PD's normal run-time initialization steps won't have fired.
 Private Sub InitProgramFontCollection()
     
     Set m_ProgramFontCollection = New pdFontCollection
+    If (m_UserAddedFonts Is Nothing) Then Set m_UserAddedFonts = New pdStringStack
     
-    'When outside callers request a copy of the system font, they are allowed to request any size+style they want.  Font name,
-    ' however, never varies, so tell the font cache to only compare size and style when matching font requests.
+    'When outside callers request a copy of the system font, they are allowed to request any size+style they want.
+    ' Font name, however, never varies, so tell the font cache to only compare size and style when matching font requests.
     m_ProgramFontCollection.SetCacheMode FCM_SizeAndStyle
     
 End Sub
 
-'Retrieve all available fonts on this PC, regardless of font type
+'Retrieve all available fonts on this PC, regardless of font type.
+' As of 2025.4, this also retrieves fonts from custom folders added by the user.
 Private Function GetAllAvailableFonts() As Boolean
 
     'Prep a default LOGFONTW instance.  Note that EnumFontFamiliesEx only checks three params:
@@ -509,6 +519,10 @@ Private Function GetAllAvailableFonts() As Boolean
     Dim tmpLogFont As LOGFONTW
     tmpLogFont.lfCharSet = DEFAULT_CHARSET
     
+    'Before enumerating all available fonts, load any available user fonts for this session.
+    ' (Adding these *here* ensures they show up in subsequent EnumFontFamilesEx() calls.)
+    InitializeUserFonts
+    
     'Enumerate font families using a temporary DC
     Dim tmpDC As Long
     tmpDC = GDI.GetMemoryDC()
@@ -519,6 +533,98 @@ Private Function GetAllAvailableFonts() As Boolean
     GetAllAvailableFonts = (m_PDFontCache.GetNumOfStrings > 0)
 
 End Function
+
+Private Sub InitializeUserFonts()
+    
+    Dim lstFontFolders As pdStringStack
+    Set lstFontFolders = New pdStringStack
+    
+    'Always add the default PD font folder
+    lstFontFolders.AddString UserPrefs.GetFontPath()
+    
+    'Load any/all custom font folders saved in previous sessions
+    Const FONT_PRESETS_FILE As String = "font_folders.txt"
+    Dim srcFile As String
+    srcFile = UserPrefs.GetPresetPath & FONT_PRESETS_FILE
+    If Files.FileExists(srcFile) Then
+        
+        'Load preset file
+        Dim srcList As String
+        If Files.FileLoadAsString(srcFile, srcList, True) Then
+            
+            'Iterate lines in the file
+            Dim cStack As pdStringStack: Set cStack = New pdStringStack
+            If cStack.CreateFromMultilineString(srcList, vbCrLf) Then
+                
+                Dim i As Long
+                For i = 0 To cStack.GetNumOfStrings - 1
+                    srcFile = cStack.GetString(i)
+                    If (LenB(srcFile) > 0) Then
+                        If Files.PathExists(srcFile, False) Then lstFontFolders.AddString srcFile
+                    End If
+                Next i
+                
+            End If
+            
+        End If
+        
+    End If
+    
+    'Iterate all font folders, iterate files *within* those folders, and add each in turn.
+    Dim srcFontFolder As String
+    Do While lstFontFolders.PopString(srcFontFolder)
+        
+        'Only retrieve actual font files, not text or license or other files
+        Dim lstFontFiles As pdStringStack
+        Set lstFontFiles = New pdStringStack
+        If Files.RetrieveAllFiles(srcFontFolder, lstFontFiles, True, False, "ttf|ttc|otf") Then
+            
+            If (m_UserAddedFonts Is Nothing) Then Set m_UserAddedFonts = New pdStringStack
+            
+            'Iterate all discovered fonts
+            Dim srcFontFile As String
+            Do While lstFontFiles.PopString(srcFontFile)
+                
+                Dim addedSuccessfully As Boolean
+                addedSuccessfully = (AddFontResourceExW(StrPtr(srcFontFile), FR_PRIVATE, 0&) <> 0&)
+                
+                'On successful additions to GDI, note the added file, then add the same font
+                ' to GDI+ (which ensures availability to GDI+ font calls).
+                If addedSuccessfully Then
+                    m_UserAddedFonts.AddString srcFontFile
+                    GDIPlus_AddRuntimeFont srcFontFile
+                End If
+                
+            Loop
+            
+        '/End If: 1+ files retrieved
+        End If
+        
+    Loop
+    
+End Sub
+
+Public Function UserFonts_GetNumAdded() As Long
+    If (Not m_UserAddedFonts Is Nothing) Then UserFonts_GetNumAdded = m_UserAddedFonts.GetNumOfStrings()
+End Function
+
+'At shutdown, release any/all loaded fonts
+Public Sub ReleaseUserFonts()
+    
+    'Start by unloading GDI+ fonts
+    GDI_Plus.GDIPlus_ReleaseRuntimeFonts
+    
+    'Next comes GDI fonts
+    If (Not m_UserAddedFonts Is Nothing) Then
+        
+        Dim srcFontFile As String
+        Do While m_UserAddedFonts.PopString(srcFontFile)
+            RemoveFontResourceExW StrPtr(srcFontFile), FR_PRIVATE, 0&
+        Loop
+        
+    End If
+    
+End Sub
 
 'Callback function for EnumFontFamiliesEx
 Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWTEXTMETRIC, ByVal srcFontType As Long, ByVal lParam As Long) As Long

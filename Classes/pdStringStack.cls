@@ -603,11 +603,14 @@ Friend Sub CreateFromStringArray(ByRef srcStringArray() As String)
 End Sub
 
 'Fill this stack by parsing a string.  VBA.Split() is currently used; obviously a faster solution could be implemented.
-Friend Sub CreateFromMultilineString(ByRef srcString As String, Optional ByVal lineDelimiter As String = vbCrLf)
+'
+'Returns: TRUE if the stack contains at least one line after the call returns
+Friend Function CreateFromMultilineString(ByRef srcString As String, Optional ByVal lineDelimiter As String = vbCrLf) As Boolean
     Dim tmpArray() As String
     tmpArray = Split(srcString, lineDelimiter, , vbBinaryCompare)
     Me.CreateFromStringArray tmpArray
-End Sub
+    CreateFromMultilineString = (Me.GetNumOfStrings > 0)
+End Function
 
 'Remove a string from the current stack.
 ' IMPORTANT NOTE: use this function sparingly, because even though it's optimized using

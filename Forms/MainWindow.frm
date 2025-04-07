@@ -2314,6 +2314,10 @@ Private Sub Form_Unload(Cancel As Integer)
     PDDebug.LogAction "Removing printer temp files..."
     Printing.PerformPrinterCleanup
     
+    'Destroy all user-added font resources
+    PDDebug.LogAction "Destroying custom fonts..."
+    Fonts.ReleaseUserFonts
+    
     'Destroy all custom-created icons and cursors
     PDDebug.LogAction "Destroying custom icons and cursors..."
     IconsAndCursors.UnloadAllCursors

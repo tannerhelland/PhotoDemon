@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.56</langversion>
+<langversion>9.0.57</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -14647,7 +14647,22 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 <!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
+<original>add another folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font folders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>interface font</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove this folder</original>
 <translation></translation>
 </phrase>
 
@@ -14656,7 +14671,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 <translation></translation>
 </phrase>
 
-<!-- Options_Fonts.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>zoom with mouse wheel</original>
@@ -14719,10 +14734,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2784</phrasecount>
+<phrasecount>2787</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5921 phrases. -->
-<!-- 3137 are duplicates, so only 2784 unique phrases have been written to file. -->
-<!-- These 2784 phrases contain approximately 12094 total words. -->
+<!-- As of this build, PhotoDemon contains 5924 phrases. -->
+<!-- 3137 are duplicates, so only 2787 unique phrases have been written to file. -->
+<!-- These 2787 phrases contain approximately 12102 total words. -->
 
 </pdData>

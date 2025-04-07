@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text Layer Renderer (using some hellish combination of GDI, GDI+, Uniscribe, and custom code)
 'Copyright 2015-2025 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 13/September/22
-'Last update: add new support for rendering the text outline *beneath* the text fill (see #428 on GitHub)
+'Last updated: 07/April/25
+'Last update: add support for creating GDI+ fonts from user-specified (non-system) font files
 '
 'This class handles the messy business of font management for PD's basic and advanced text layers.
 ' It intermixes GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
@@ -184,6 +184,9 @@ Private Declare Function GdipIsStyleAvailable Lib "gdiplus" (ByVal srcFontFamily
 'GDI+ font functions
 Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As GP_FontStyle, ByVal srcMeasurementUnit As GP_Unit, ByRef dstCreatedFont As Long) As GP_Result
 Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As GP_Result
+Private Declare Function GdipGetFontCollectionFamilyCount Lib "gdiplus" (ByVal hFontCollection As Long, ByRef dstNumFound As Long) As GP_Result
+Private Declare Function GdipGetFontCollectionFamilyList Lib "gdiplus" (ByVal hFontCollection As Long, ByVal numSought As Long, ByVal ptrDstArrayFamilies As Long, ByRef dstNumActuallyFound As Long) As GP_Result
+Private Declare Function GdipGetFamilyName Lib "gdiplus" (ByVal pFontFamily As Long, ByVal pDstName As Long, ByVal srcLangID As Integer) As GP_Result
 
 'GDI+ string format functions
 Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As GP_StringFormatFlags, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
@@ -320,7 +323,7 @@ Private m_CharMirror As PD_CharacterMirror
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
 Private m_GDIPlusFont As Long
-Private m_GDIPlusFontFamily As Long
+Private m_GDIPlusFontFamily As Long, m_GDIPlusFontFamilyIsPrivate As Boolean
 Private m_GDIPlusStringFormat As Long
 Private m_GDIFont As Long
 
@@ -335,6 +338,10 @@ Private m_FontCacheClean As Boolean
 'If we have to fall back to plain GDI for rendering, we use a temporary 24-bpp DIB to cache the results.  This is then manually
 ' transferred to the 32-bpp target.
 Private m_tmpDIB As pdDIB
+
+'Matching font names to font families is cumbersome, and we don't want to do it more than we have to.
+' After a successful match, the result is cached here.
+Private m_UserFontMatches As pdVariantHash
 
 'Get/set the current rendering string.  PD uses a lot of tricks to improve rendering performance, including ignoring redraw requests if none of the
 ' class's internals have changed, so the current text must be assigned via these functions prior to actual rendering.
@@ -1260,8 +1267,10 @@ Friend Function CreateFontObject() As Boolean
         m_GDIPlusFont = 0
     End If
     
+    'Private font families are families created user-added font files.  They are maintained separately
+    ' and freed via special APIs, so *do not* release them via GdipDeleteFontFamily.
     If (m_GDIPlusFontFamily <> 0) Then
-        GdipDeleteFontFamily m_GDIPlusFontFamily
+        If (Not m_GDIPlusFontFamilyIsPrivate) Then GdipDeleteFontFamily m_GDIPlusFontFamily
         m_GDIPlusFontFamily = 0
     End If
     
@@ -1320,12 +1329,113 @@ End Function
 ' Note that GDI+ creates two relevant objects: font family, and font itself.
 Private Function CreateGDIPlusFont() As Boolean
     
-    'If a GDI+ font family already exists, free it
-    If (m_GDIPlusFontFamily <> 0) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    'If a GDI+ font family already exists, free it.
+    ' (Note that private families - e.g. font families created from user-added familes - are *not* deleted here,
+    '  by design; they are persistent for the session and released at shutdown time.)
+    If (m_GDIPlusFontFamily <> 0) Then
+        If (Not m_GDIPlusFontFamilyIsPrivate) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+        m_GDIPlusFontFamily = 0
+    End If
+    m_GDIPlusFontFamilyIsPrivate = False
     
     'Attempt to retrieve a GDI+ font family matching this name
     Dim gdipReturn As GP_Result
     gdipReturn = GdipCreateFontFamilyFromName(StrPtr(m_FontFace), 0&, m_GDIPlusFontFamily)
+    
+    'If this failed, the font may be a user font family
+    If (gdipReturn <> GP_OK) And (Fonts.UserFonts_GetNumAdded() > 0) Then
+        
+        'The user added one or more fonts this session.
+        
+        'Get a handle to the GDI+ private collection for this session
+        Dim hGdipUserFonts As Long
+        hGdipUserFonts = GDI_Plus.GDIPlus_GetUserFontCollection()
+        If (hGdipUserFonts <> 0) Then
+            
+            'See if we can simply pull from previously cached successes
+            Dim idxBest As Long, idxReturn As Variant
+            Dim cachedFontFamily As Long
+            
+            If (m_UserFontMatches Is Nothing) Then Set m_UserFontMatches = New pdVariantHash
+            If m_UserFontMatches.GetItemByKey(m_FontFace, idxReturn) Then
+                cachedFontFamily = idxReturn
+                
+            'This font face has never been created before.  Do so now!
+            Else
+                
+                'Retrieve a list of user-added font families.
+                Dim lstFontFamilies() As Long, numFontFamilies As Long
+                If (GdipGetFontCollectionFamilyCount(hGdipUserFonts, numFontFamilies) = GP_OK) Then
+                If (numFontFamilies > 0) Then
+                    
+                    ReDim lstFontFamilies(0 To numFontFamilies - 1) As Long
+                    If (GdipGetFontCollectionFamilyList(hGdipUserFonts, numFontFamilies, VarPtr(lstFontFamilies(0)), numFontFamilies) <> GP_OK) Then
+                        numFontFamilies = 0
+                    End If
+                    
+                '/End numFontFamilies > 0
+                End If
+                '/End GdipGetFontCollectionFamilyCount
+                End If
+                
+                'Ensure we have some user font families to query
+                If (numFontFamilies > 0) Then
+                    
+                    'Find the best match for the requested font name
+                    Const LF_FACESIZEW As Long = 64
+                    
+                    'Use Levenshtein distance for matching
+                    Dim minDistance As Long, curDistance As Long
+                    idxBest = 0
+                    minDistance = 100
+                    
+                    Dim i As Long
+                    For i = 0 To numFontFamilies - 1
+                        
+                        Dim srcName As String
+                        srcName = String$(LF_FACESIZEW \ 2, 0)
+                        
+                        Const LANG_NEUTRAL As Integer = 0
+                        
+                        If (GdipGetFamilyName(lstFontFamilies(i), StrPtr(srcName), LANG_NEUTRAL) = GP_OK) Then
+                            srcName = Strings.TrimNull(srcName)
+                            curDistance = Strings.StringDistance(m_FontFace, srcName, True)
+                            If (curDistance < minDistance) Then
+                                minDistance = curDistance
+                                idxBest = i
+                            End If
+                        End If
+                    
+                    Next i
+                    
+                    'Store this result in the hash table
+                    m_UserFontMatches.AddItem m_FontFace, lstFontFamilies(idxBest)
+                    cachedFontFamily = lstFontFamilies(idxBest)
+                    
+                '/numFontFamilies > 0
+                End If
+            
+            '/End /not fontFoundAlready
+            End If
+            
+            'Ensure the font can be created using the best-matched name
+            If (cachedFontFamily <> 0) Then
+                
+                gdipReturn = GdipCreateFont(cachedFontFamily, m_FontSize, GetFontStylesAsGdipLong, ConvertPDFontUnitToGdipFontUnit(m_FontSizeUnit), m_GDIPlusFont)
+                If (gdipReturn = GP_OK) Then
+                    If (m_GDIPlusFont <> 0) Then GdipDeleteFont m_GDIPlusFont
+                    m_GDIPlusFont = 0
+                    m_GDIPlusFontFamilyIsPrivate = True
+                    m_GDIPlusFontFamily = cachedFontFamily
+                End If
+                
+            End If
+                
+        '/ (hGdipUserFonts <> 0)
+        End If
+    
+    '/ (gdipReturn <> GP_OK) And (Fonts.UserFonts_GetNumAdded() > 0)
+    End If
     
     'If GDI+ reported success and a non-zero handle was obtained, carry on!
     If (gdipReturn = GP_OK) And (m_GDIPlusFontFamily <> 0) Then
@@ -1355,8 +1465,13 @@ Private Function CreateGDIPlusFont() As Boolean
         
             ReportGDIPlusFailure gdipReturn
             
-            'Delete the font family we created as well, then exit
-            If (m_GDIPlusFontFamily <> 0) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+            'Private font families are families created user-added font files.  They are maintained separately
+            ' and freed via special APIs, so *do not* release them via GdipDeleteFontFamily.
+            If (m_GDIPlusFontFamily <> 0) Then
+                If (Not m_GDIPlusFontFamilyIsPrivate) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+                m_GDIPlusFontFamily = 0
+            End If
+            
             CreateGDIPlusFont = False
             
         End If
@@ -2262,11 +2377,23 @@ End Function
 Friend Sub ReleaseAsManyResourcesAsPossible()
     
     'Release any GDI+ objects that are easily re-created
-    If (m_GDIPlusFont <> 0) Then GdipDeleteFont m_GDIPlusFont
-    If (m_GDIPlusFontFamily <> 0) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    If (m_GDIPlusFont <> 0) Then
+        GdipDeleteFont m_GDIPlusFont
+        m_GDIPlusFont = 0
+    End If
+    
+    'Private font families are families created user-added font files.  They are maintained separately
+    ' and freed via special APIs, so *do not* release them via GdipDeleteFontFamily.
+    If (m_GDIPlusFontFamily <> 0) Then
+        If (Not m_GDIPlusFontFamilyIsPrivate) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+        m_GDIPlusFontFamily = 0
+    End If
     
     'Release any GDI objects that are easily re-created
-    If (m_GDIFont <> 0) Then DeleteObject m_GDIFont
+    If (m_GDIFont <> 0) Then
+        DeleteObject m_GDIFont
+        m_GDIFont = 0
+    End If
     
     'Free our glyph collection, if one exists
     Set m_GlyphCollection = Nothing
@@ -2344,7 +2471,10 @@ Private Sub Class_Terminate()
     
     'Release any GDI+ objects we created
     If (m_GDIPlusFont <> 0) Then GdipDeleteFont m_GDIPlusFont
-    If (m_GDIPlusFontFamily <> 0) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    
+    'Private font families are families created user-added font files.  They are maintained separately
+    ' and freed via special APIs, so *do not* release them via GdipDeleteFontFamily.
+    If (m_GDIPlusFontFamily <> 0) And (Not m_GDIPlusFontFamilyIsPrivate) Then GdipDeleteFontFamily m_GDIPlusFontFamily
     If (m_GDIPlusStringFormat <> 0) Then GdipDeleteStringFormat m_GDIPlusStringFormat
     
     'Release any GDI objects we created
