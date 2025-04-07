@@ -63,6 +63,7 @@ Private m_LUTPathDefault As String, m_LUTPathUser As String
 Private m_GradientPathDefault As String, m_GradientPathUser As String
 Private m_PalettePath As String, m_SelectionPath As String
 Private m_8bfPath As String, m_HotkeyPath As String
+Private m_FontPath As String    'While PD has its own local font folder, the user can add more folders via Tools > Options
 
 Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
 Private m_DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
@@ -196,6 +197,10 @@ Public Sub SetColorProfilePath(ByRef newPath As String)
     m_ColorProfilePath = Files.PathAddBackslash(Files.FileGetPath(newPath))
     SetPref_String "Paths", "ColorProfiles", m_ColorProfilePath
 End Sub
+
+Public Function GetFontPath() As String
+    GetFontPath = m_FontPath
+End Function
 
 Public Function GetGradientPath(Optional ByVal useDefaultLocation As Boolean = False) As String
     If useDefaultLocation Then
@@ -494,6 +499,9 @@ Public Function InitializePaths() As Boolean
     
     m_DebugPath = m_DataPath & "Debug\"
     If (Not Files.PathExists(m_DebugPath)) Then Files.PathCreate m_DebugPath
+    
+    m_FontPath = m_DataPath & "Fonts\"
+    If (Not Files.PathExists(m_FontPath)) Then Files.PathCreate m_FontPath
     
     m_GradientPathDefault = m_DataPath & "Gradients\"
     m_GradientPathUser = m_GradientPathDefault  'This will be overwritten with the user's current path, if any, in a subsequent step

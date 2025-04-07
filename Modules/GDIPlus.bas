@@ -3,9 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright 2012-2025 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 21/June/22
-'Last update: ensure GDI+ image export uses safe overwriting (e.g. do not overwrite an existing file
-'             until we verify that the export was successful)
+'Last updated: 07/April/25
+'Last update: add support for rendering from non-system (user-specified) font files
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally
 ' used as a fallback for image loading and saving if the FreeImage DLL was not found, but over time
@@ -1042,6 +1041,10 @@ Private Declare Function GdipImageSelectActiveFrame Lib "gdiplus" (ByVal hImage 
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal ptrSrcFilename As Long, ByRef dstGdipImage As Long) As GP_Result
 Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal srcIStream As Long, ByRef dstGdipImage As Long) As GP_Result
 
+Private Declare Function GdipDeletePrivateFontCollection Lib "gdiplus" (ByRef srcFontCollection As Long) As GP_Result
+Private Declare Function GdipNewPrivateFontCollection Lib "gdiplus" (ByRef dstFontCollection As Long) As GP_Result
+Private Declare Function GdipPrivateAddFontFile Lib "gdiplus" (ByVal dstFontCollection As Long, ByVal lSrcFilename As Long) As GP_Result
+
 Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToFilename As Long, ByVal ptrToEncoderGUID As Long, ByVal ptrToEncoderParams As Long) As GP_Result
 Private Declare Function GdipSaveImageToStream Lib "gdiplus" (ByVal hImage As Long, ByVal dstIStream As Long, ByVal ptrToEncoderGUID As Long, ByVal ptrToEncoderParams As Long) As GP_Result
 
@@ -1114,6 +1117,9 @@ Private m_hMultiPageImage As Long, m_OriginalFIF As PD_IMAGE_FORMAT
 'When loading GIFs, we need to cache some extra GIF-related metadata (e.g. frame times).
 ' This metadata gets embedded into a parent pdImage object, and reused at export time as relevant.
 Private m_FrameTimes() As Long, m_FrameCount As Long
+
+'If the user adds custom fonts at run-time, we need to maintain them in a persistent FontCollection object.
+Private m_UserFontCollection As Long
 
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
@@ -3387,7 +3393,10 @@ End Function
 
 'At shutdown, this function must be called to release our GDI+ instance
 Public Function GDIP_StopEngine() As Boolean
-
+    
+    'Release any custom collection we have created
+    GDIPlus_ReleaseRuntimeFonts
+    
     'Release any dummy containers we have created
     GdipDeleteGraphics m_TransformGraphics
     Set m_TransformDIB = Nothing
@@ -4559,4 +4568,52 @@ Public Sub GDIPlus_PathGradientSetGamma(ByVal hGradientBrush As Long, ByVal newG
     Dim tmpReturn As GP_Result
     tmpReturn = GdipSetPathGradientGammaCorrection(hGradientBrush, IIf(newGamma, 1, 0))
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Sub
+
+'In 2025.4, I added the ability for users to add their own fonts at run-time.  To be available to GDI+,
+' these must be maintained in a private font collection.
+Public Function GDIPlus_AddRuntimeFont(ByRef srcFontFile As String) As Boolean
+    
+    Dim gpResult As GP_Result
+    
+    'Ensure the central GDI+ font collection exists
+    If (m_UserFontCollection = 0) Then
+        gpResult = GdipNewPrivateFontCollection(m_UserFontCollection)
+        If (gpResult <> GP_OK) Then InternalGDIPlusError "Couldn't create GDI+ font collection", vbNullString, gpResult
+    End If
+    
+    'We can only add fonts if the central collection was successfully created
+    If (m_UserFontCollection <> 0) Then
+        gpResult = GdipPrivateAddFontFile(m_UserFontCollection, StrPtr(srcFontFile))
+        If (gpResult <> GP_OK) Then InternalGDIPlusError "Couldn't add font", srcFontFile, gpResult
+    End If
+    
+End Function
+
+Public Function GDIPlus_GetUserFontCollection() As Long
+    GDIPlus_GetUserFontCollection = m_UserFontCollection
+End Function
+
+'At termination, free all GDI+ fonts
+Public Sub GDIPlus_ReleaseRuntimeFonts()
+        
+    On Error GoTo BadGdipBehavior
+    
+    If (m_UserFontCollection <> 0) Then
+        
+        'NOTE: if any private font families were freed *before* freeing the private font collection,
+        ' this function will crash.  Do *not* manually free private font families - they are freed
+        ' automatically by GDI+ when the parent collection is freed.
+        Dim gpResult As GP_Result
+        gpResult = GdipDeletePrivateFontCollection(m_UserFontCollection)
+        If (gpResult = GP_OK) Then
+            m_UserFontCollection = 0
+        Else
+            InternalGDIPlusError "Couldn't free GDI+ font collection", vbNullString, gpResult
+        End If
+        
+    End If
+    
+BadGdipBehavior:
+    
 End Sub

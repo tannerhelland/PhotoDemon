@@ -29,11 +29,21 @@ Begin VB.Form options_Fonts
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdListBox lstFonts 
+      Height          =   1695
+      Left            =   0
+      TabIndex        =   1
+      Top             =   0
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   2990
+      Caption         =   "font folders:"
+   End
    Begin PhotoDemon.pdLabel lblInfo 
       Height          =   735
       Index           =   0
       Left            =   120
-      Top             =   960
+      Top             =   2760
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   1296
@@ -45,7 +55,7 @@ Begin VB.Form options_Fonts
       Height          =   855
       Left            =   0
       TabIndex        =   0
-      Top             =   0
+      Top             =   1800
       Width           =   8175
       _ExtentX        =   14420
       _ExtentY        =   1508
@@ -86,6 +96,9 @@ Private Sub Form_Load()
     
     'Populate the font UI
     ddFont.InitializeFontList
+    
+    'Load all user font folders.  The default PD font folder is always available, but the user can add more.
+    lstFonts.AddItem UserPrefs.GetFontPath(), 0, True
     
 End Sub
 
