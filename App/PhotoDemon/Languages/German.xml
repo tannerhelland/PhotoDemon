@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 364.3</langversion>
+<langversion>2024.12 Alpha - Build 378.1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14055,7 +14055,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>Splash-Screen anzeigen</translation>
 </phrase>
 
 <phrase>
@@ -14090,7 +14090,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>Startup</translation>
 </phrase>
 
 <phrase>
@@ -14600,12 +14600,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>Einen weiteren Ordner hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>Font-Ordner</translation>
 </phrase>
 
 <phrase>
@@ -14615,7 +14615,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>Diesen Ordner entfernen</translation>
 </phrase>
 
 <phrase>
