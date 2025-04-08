@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Clipboard Interface
 'Copyright 2001-2025 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 25/August/22
-'Last update: add support for `Explorer > Copy as Path` context menu (this command places quotes around the target file path)
+'Last updated: 08/April/25
+'Last update: fix behavior when copy+pasting internal data formats (like layers with active affine transforms)
 '
 'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here,
 ' but in the separate pdClipboard object, which includes a ton of specialized helper functions.
@@ -163,9 +163,10 @@ Private m_ClipboardDIB As pdDIB
 'Stashing layer data will generate a layer header and vector stash as well
 Private m_StashedLayer As String, m_StashedVector As String
 
-'When stashing clipboard data, we use a temp file.  Note that certain internal types of copy+paste (e.g. copy+pasting
-' a vector layer) may store multiple types of stash data.
-Private m_StashFile As String, m_StashFileLayer As String, m_StashFileVector As String
+'When stashing clipboard data, we use a temp file.
+' Note that certain internal types of copy+paste (e.g. copy+pasting a vector layer, or a layer with active affine transforms)
+' may stash multiple types of data.
+Private m_StashFile As String, m_StashFileLayer As String, m_StashFileLayerAffineOrig As String, m_StashFileVector As String
 
 'Clipboard interaction object; importantly, if delayed rendering is active, this class *will* raise events that must be handled.
 Private WithEvents m_Clipboard As pdClipboard
@@ -675,7 +676,13 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
                             'Load the stashed pixel data into a standalone DIB
                             Dim tmpDIB As pdDIB
                             Set tmpDIB = New pdDIB
-                            ClipboardPaste_InternalData = Loading.QuickLoadImageToDIB(m_StashFile, tmpDIB, False, False)
+                            
+                            If PDImages.GetActiveImage.GetLayerByID(newLayerID).AffineTransformsActive(True) Then
+                                ClipboardPaste_InternalData = Loading.QuickLoadImageToDIB(m_StashFileLayerAffineOrig, tmpDIB, False, False)
+                            Else
+                                ClipboardPaste_InternalData = Loading.QuickLoadImageToDIB(m_StashFile, tmpDIB, False, False)
+                            End If
+                            
                             If ClipboardPaste_InternalData Then
                                 
                                 'Forcibly convert the new layer to 32bpp
@@ -691,6 +698,10 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
                             
                         End If
                         
+                        'Because this layer has been pasted with all custom parameters intact - including position! -
+                        ' we now need to determine if the layer even appears within its new image container.
+                        Layers.EnsureLayerInbounds newLayerID
+                        
                         'Notify the parent image of these changes, as it needs to generate a new composite image
                         PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
                         
@@ -705,7 +716,7 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
                     ClipboardPaste_InternalData = Loading.LoadFileAsNewImage(m_StashFile, sTitle, False)
                 End If
             End If
-                
+            
             'If we made it all the way here, the load was (probably?) successful
             If ClipboardPaste_InternalData Then Message "Clipboard data imported successfully "
             
@@ -1750,6 +1761,7 @@ End Function
 Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     
     'The specific data we stash varies according to a few different parameters.
+    Dim writeUnAffinedToo As Boolean: writeUnAffinedToo = False
     
     'First, check for an active selection
     If PDImages.GetActiveImage.IsSelectionActive Then
@@ -1767,7 +1779,8 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         If copyMerged Then
             PDImages.GetActiveImage.GetCompositedImage m_ClipboardDIB, True
         Else
-            If PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive() Then
+            If PDImages.GetActiveImage.GetActiveLayer.AffineTransformsActive(True) Then
+                writeUnAffinedToo = True
                 PDImages.GetActiveImage.GetActiveLayer.GetAffineTransformedDIB m_ClipboardDIB, 0, 0
             Else
                 If (m_ClipboardDIB Is Nothing) Then Set m_ClipboardDIB = New pdDIB
@@ -1780,6 +1793,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     'Remove any previously stashed file(s).  (This can happen if the user copies, but doesn't paste.)
     If (LenB(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
     If (LenB(m_StashFileLayer) <> 0) Then Files.FileDeleteIfExists m_StashFileLayer
+    If (LenB(m_StashFileLayerAffineOrig) <> 0) Then Files.FileDeleteIfExists m_StashFileLayerAffineOrig
     If (LenB(m_StashFileVector) <> 0) Then Files.FileDeleteIfExists m_StashFileVector
     
     'Grab a new temporary filename for pixel data
@@ -1794,13 +1808,22 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         'Erase the temporary DIB
         m_ClipboardDIB.EraseDIB
         
+        'If the target layer has active affine transforms, save an *untransformed* copy too
+        ' (we'll preferentially use it for internal copy+paste ops).
+        If writeUnAffinedToo Then
+            m_StashFileLayerAffineOrig = OS.UniqueTempFilename(customExtension:="tmpdib")
+            PDImages.GetActiveImage.GetActiveLayer.GetLayerDIB.WriteToFile m_StashFileLayerAffineOrig, cf_Lz4
+        Else
+            Files.FileDeleteIfExists m_StashFileLayerAffineOrig
+            m_StashFileLayerAffineOrig = vbNullString
+        End If
+        
         'Erase any stored layer and vector data
         m_StashedLayer = vbNullString
         m_StashedVector = vbNullString
         
         'If the cut/copy action is an entire source layer, also cache the layer header (and vector data if relevant).
         If (Not PDImages.GetActiveImage.IsSelectionActive) And (Not copyMerged) Then
-            'Private m_StashedLayer As String, m_StashedVector As String
             
             If (LenB(m_StashFileLayer) = 0) Then m_StashFileLayer = OS.UniqueTempFilename(customExtension:="txt")
             Files.FileSaveAsText PDImages.GetActiveImage.GetActiveLayer.GetLayerHeaderAsXML(), m_StashFileLayer
@@ -1855,6 +1878,7 @@ End Function
 ' Note that this action is *not* reversible, so make sure it's what you want/need to do.
 Private Sub DestroyStashedData()
     If (LenB(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
+    If (LenB(m_StashFileLayerAffineOrig) <> 0) Then Files.FileDeleteIfExists m_StashFileLayerAffineOrig
     If (LenB(m_StashFileLayer) <> 0) Then Files.FileDeleteIfExists m_StashFileLayer
     If (LenB(m_StashFileVector) <> 0) Then Files.FileDeleteIfExists m_StashFileVector
 End Sub
@@ -2275,6 +2299,7 @@ Private Sub Class_Terminate()
     
     'Perform a failsafe check against un-destroyed stash data
     If (LenB(m_StashFile) <> 0) Then Files.FileDeleteIfExists m_StashFile
+    If (LenB(m_StashFileLayerAffineOrig) <> 0) Then Files.FileDeleteIfExists m_StashFileLayerAffineOrig
     If (LenB(m_StashFileLayer) <> 0) Then Files.FileDeleteIfExists m_StashFileLayer
     If (LenB(m_StashFileVector) <> 0) Then Files.FileDeleteIfExists m_StashFileVector
     

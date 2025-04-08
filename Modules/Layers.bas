@@ -940,6 +940,38 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
     
 End Sub
 
+'Ensure a given layer index is inbounds its parent image.  We use this when pasting layers to a new image.
+' Returns TRUE if one or more layer positions are modified by the in-bounding.
+Public Function EnsureLayerInbounds(ByVal srcLayerID As Long) As Boolean
+    
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = PDImages.GetActiveImage.GetLayerByID(srcLayerID)
+    
+    Dim layerBoundsF As RectF
+    tmpLayer.GetLayerBoundaryRect layerBoundsF
+    
+    If (layerBoundsF.Left >= PDImages.GetActiveImage.Width) Then
+        tmpLayer.SetLayerOffsetX 0
+        EnsureLayerInbounds = True
+    End If
+    
+    If (layerBoundsF.Top >= PDImages.GetActiveImage.Height) Then
+        tmpLayer.SetLayerOffsetY 0
+        EnsureLayerInbounds = True
+    End If
+    
+    If (layerBoundsF.Left + layerBoundsF.Width <= 0) Then
+        tmpLayer.SetLayerOffsetX 0
+        EnsureLayerInbounds = True
+    End If
+    
+    If (layerBoundsF.Top + layerBoundsF.Height <= 0) Then
+        tmpLayer.SetLayerOffsetY 0
+        EnsureLayerInbounds = True
+    End If
+    
+End Function
+
 'Merge the layer at layerIndex up or down.
 Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Boolean)
     
