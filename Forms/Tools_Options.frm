@@ -83,15 +83,17 @@ Private Enum PD_OptionPanel
     OP_Performance = 2
     OP_Loading = 3
     OP_Saving = 4
-    OP_ColorManagement = 5
-    OP_Fonts = 6
-    OP_InputDevices = 7
-    OP_Updates = 8
-    OP_Advanced = 9
+    OP_Metadata = 5
+    OP_ColorManagement = 6
+    OP_Fonts = 7
+    OP_InputDevices = 8
+    OP_Updates = 9
+    OP_Advanced = 10
 End Enum
 
 #If False Then
-    Private Const OP_None = -1, OP_Interface = 0, OP_Menus = 1, OP_Performance = 2, OP_Loading = 3, OP_Saving = 4, OP_ColorManagement = 5, OP_Fonts = 6, OP_InputDevices = 7, OP_Updates = 8, OP_Advanced = 9
+    Private Const OP_None = -1, OP_Interface = 0, OP_Menus = 1, OP_Performance = 2, OP_Loading = 3, OP_Saving = 4, OP_Metadata = 5
+    Private Const OP_ColorManagement = 6, OP_Fonts = 7, OP_InputDevices = 8, OP_Updates = 9, OP_Advanced = 10
 #End If
 
 Private Const MAX_NUM_OPTION_PANELS As Long = OP_Advanced + 1
@@ -164,7 +166,13 @@ Private Sub UpdateActivePanel(ByVal idxPanel As Long)
                 options_Saving.LoadUserPreferences
                 options_Saving.UpdateAgainstCurrentTheme
                 m_Panels(m_ActivePanel).PanelHWnd = options_Saving.hWnd
-                
+            
+            Case OP_Metadata
+                Load options_Metadata
+                options_Metadata.LoadUserPreferences
+                options_Metadata.UpdateAgainstCurrentTheme
+                m_Panels(m_ActivePanel).PanelHWnd = options_Metadata.hWnd
+            
             Case OP_ColorManagement
                 Load options_ColorManagement
                 options_ColorManagement.LoadUserPreferences
@@ -272,6 +280,8 @@ Private Sub cmdBarMini_OKClick()
                     validateCheck = validateCheck And options_Loading.ValidateAllInput()
                 Case OP_Saving
                     validateCheck = validateCheck And options_Saving.ValidateAllInput()
+                Case OP_Metadata
+                    validateCheck = validateCheck And options_Metadata.ValidateAllInput()
                 Case OP_ColorManagement
                     validateCheck = validateCheck And options_ColorManagement.ValidateAllInput()
                 Case OP_Fonts
@@ -328,6 +338,8 @@ Private Sub cmdBarMini_OKClick()
                     options_Loading.SaveUserPreferences
                 Case OP_Saving
                     options_Saving.SaveUserPreferences
+                Case OP_Metadata
+                    options_Metadata.SaveUserPreferences
                 Case OP_ColorManagement
                     options_ColorManagement.SaveUserPreferences
                 Case OP_Fonts
@@ -394,6 +406,7 @@ Private Sub Form_Load()
         .AddItem "Performance", OP_Performance
         .AddItem "Loading", OP_Loading
         .AddItem "Saving", OP_Saving
+        .AddItem "Metadata", OP_Metadata
         .AddItem "Color management", OP_ColorManagement
         .AddItem "Fonts", OP_Fonts
         .AddItem "Input devices", OP_InputDevices
@@ -402,12 +415,13 @@ Private Sub Form_Load()
         
         'Next, add images to each button
         Dim prefButtonSize As Long
-        prefButtonSize = Interface.FixDPI(24)
+        prefButtonSize = Interface.FixDPI(22)
         .AssignImageToItem OP_Interface, "pref_interface", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         .AssignImageToItem OP_Menus, "menu", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         .AssignImageToItem OP_Performance, "pref_performance", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         .AssignImageToItem OP_Loading, "pref_loading", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         .AssignImageToItem OP_Saving, "pref_saving", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
+        .AssignImageToItem OP_Metadata, "image_metadata", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         .AssignImageToItem OP_ColorManagement, "pref_colormanagement", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         .AssignImageToItem OP_Fonts, "font", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
         .AssignImageToItem OP_InputDevices, "keyboard", Nothing, prefButtonSize, prefButtonSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_CatmullRom, rf_Automatic)
@@ -475,7 +489,11 @@ Private Sub Form_Unload(Cancel As Integer)
                 Case OP_Saving
                     Unload options_Saving
                     Set options_Saving = Nothing
-                    
+                
+                Case OP_Metadata
+                    Unload options_Metadata
+                    Set options_Metadata = Nothing
+                
                 Case OP_ColorManagement
                     Unload options_ColorManagement
                     Set options_ColorManagement = Nothing
@@ -539,6 +557,8 @@ Public Sub ResetAllPreferences()
                         options_Loading.LoadUserPreferences
                     Case OP_Saving
                         options_Saving.LoadUserPreferences
+                    Case OP_Metadata
+                        options_Metadata.LoadUserPreferences
                     Case OP_ColorManagement
                         options_ColorManagement.LoadUserPreferences
                     Case OP_Fonts

@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).29</langversion>
+<langversion>2028.8 Alfa (Build 25).30</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -13783,7 +13783,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <translation>Atiestatīt PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14069,33 +14069,8 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>paklausīt automātiskās pagriešanas norādījumiem attēlu failos</translation>
-</phrase>
-
-<phrase>
 <original>high-dynamic range (HDR) images</original>
 <translation>augsta dinamiskā diapazona (HDR) attēli</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>piespiedu kārtā iegūt bināra tipa tagus kā Base64 (lēni)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>novērtēt sākotnējos JPEG kvalitātes iestatījumus</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>izvilkt nezināmas birkas</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>automātiski paslēpt dublējošos tagus</translation>
 </phrase>
 
 <phrase>
@@ -14134,36 +14109,11 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Vecākas fotokameras un fotoattēlu rediģēšanas programmatūra var nepareizi ievietot metadatus, tāpēc vienā failā var būt vairākas metadatu kopijas.  PhotoDemon var automātiski atrisināt dublējošos ierakstus.</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>JPEG formāts nenodrošina iespēju saglabāt JPEG kvalitātes iestatījumus attēlu failos.  PhotoDemon to var apiet, atvasinot kvalitātes iestatījumus no citiem metadatiem (piemēram, kvantizācijas tabulām).</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Daži kameru ražotāji attēla failos saglabā patentētas metadatu birkas.  Šīs birkas cilvēkiem parasti nav noderīgas, taču PhotoDemon var mēģināt tās iegūt.</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Pēc noklusējuma lielie binārie tagi (piemēram, attēlu sīktēli) netiek apstrādāti.  Tā vietā PhotoDemon vienkārši paziņo ievietoto datu lielumu.  Ja jums ir nepieciešami šie dati, PhotoDemon var manuāli konvertēt tos Base64 formātā turpmākai analīzei.</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Lielākajā daļā digitālo fotoattēlu ir iekļauti rotācijas norādījumi (EXIF orientācijas metadati), kurus PhotoDemon izmantos, lai automātiski pagrieztu fotoattēlus.  Daži vecāki viedtālruņi un fotoaparāti var nepareizi ierakstīt šos norādījumus, tāpēc, ja jūsu fotogrāfijas tiek importētas sāniski vai otrādi, varat mēģināt atspējot automātiskās pagriešanas funkciju.</translation>
-</phrase>
-
-<phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
 <translation>Ja dators tiek restartēts, kamēr darbojas PhotoDemon, PhotoDemon var automātiski atjaunot iepriekšējo sesiju.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 24 phrases. 2 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14193,11 +14143,6 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <phrase>
 <original>default format</original>
 <translation>noklusējuma formāts</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>sarakstā PhotoDemon kā pēdējo izmantoto rediģēšanas programmatūru</translation>
 </phrase>
 
 <phrase>
@@ -14280,12 +14225,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <translation>Lielākajā daļā fotoattēlu redaktoru komandai "Saglabāt kā" pēc noklusējuma tiek izmantots pašreizējais faila nosaukums.  PhotoDemon piedāvā arī "drošāku" opciju, kur Save As automātiski palielinās failu nosaukumus jūsu vietā.</translation>
 </phrase>
 
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>EXIF specifikācija pieprasa, lai programmas, eksportējot attēlu failus, pareizi identificētu sevi kā izcelsmes programmatūru.  Lai nodrošinātu lielāku konfidencialitāti, varat apturēt šo rīcību.</translation>
-</phrase>
-
-<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14686,7 +14626,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>zoom with mouse wheel</original>
+<original>mouse wheel behavior</original>
 <translation></translation>
 </phrase>
 
@@ -14706,11 +14646,16 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 </phrase>
 
 <phrase>
+<original>scroll</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
 <translation>Izmantojot attālo darbvirsmu vai virtuālo mašīnu, augstas izšķirtspējas peles ievade var nedarboties pareizi.  Tā ir ilgstoši pastāvoša Windows kļūda.  Šādās situācijās varat izmantot šo iestatījumu, lai atjaunotu pareizu peles darbību.</translation>
 </phrase>
 
-<!-- Options_Input.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>display access keys (mnemonics)</original>
@@ -14744,12 +14689,84 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>paklausīt automātiskās pagriešanas norādījumiem attēlu failos</translation>
+</phrase>
+
+<phrase>
+<original>loading</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>piespiedu kārtā iegūt bināra tipa tagus kā Base64 (lēni)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>novērtēt sākotnējos JPEG kvalitātes iestatījumus</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>izvilkt nezināmas birkas</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>automātiski paslēpt dublējošos tagus</translation>
+</phrase>
+
+<phrase>
+<original>saving</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>sarakstā PhotoDemon kā pēdējo izmantoto rediģēšanas programmatūru</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>Vecākas fotokameras un fotoattēlu rediģēšanas programmatūra var nepareizi ievietot metadatus, tāpēc vienā failā var būt vairākas metadatu kopijas.  PhotoDemon var automātiski atrisināt dublējošos ierakstus.</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>JPEG formāts nenodrošina iespēju saglabāt JPEG kvalitātes iestatījumus attēlu failos.  PhotoDemon to var apiet, atvasinot kvalitātes iestatījumus no citiem metadatiem (piemēram, kvantizācijas tabulām).</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>Daži kameru ražotāji attēla failos saglabā patentētas metadatu birkas.  Šīs birkas cilvēkiem parasti nav noderīgas, taču PhotoDemon var mēģināt tās iegūt.</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>Pēc noklusējuma lielie binārie tagi (piemēram, attēlu sīktēli) netiek apstrādāti.  Tā vietā PhotoDemon vienkārši paziņo ievietoto datu lielumu.  Ja jums ir nepieciešami šie dati, PhotoDemon var manuāli konvertēt tos Base64 formātā turpmākai analīzei.</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>Lielākajā daļā digitālo fotoattēlu ir iekļauti rotācijas norādījumi (EXIF orientācijas metadati), kurus PhotoDemon izmantos, lai automātiski pagrieztu fotoattēlus.  Daži vecāki viedtālruņi un fotoaparāti var nepareizi ierakstīt šos norādījumus, tāpēc, ja jūsu fotogrāfijas tiek importētas sāniski vai otrādi, varat mēģināt atspējot automātiskās pagriešanas funkciju.</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>EXIF specifikācija pieprasa, lai programmas, eksportējot attēlu failus, pareizi identificētu sevi kā izcelsmes programmatūru.  Lai nodrošinātu lielāku konfidencialitāti, varat apturēt šo rīcību.</translation>
+</phrase>
+
+<!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2789</phrasecount>
+<phrasecount>2792</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5926 phrases. -->
-<!-- 3137 are duplicates, so only 2789 unique phrases have been written to file. -->
-<!-- These 2789 phrases contain approximately 12106 total words. -->
+<!-- As of this build, PhotoDemon contains 5929 phrases. -->
+<!-- 3137 are duplicates, so only 2792 unique phrases have been written to file. -->
+<!-- These 2792 phrases contain approximately 12108 total words. -->
 
 </pdData>

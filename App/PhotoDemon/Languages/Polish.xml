@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.58</langversion>
+<langversion>9.0.59</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -13781,7 +13781,7 @@ Are you sure you want to continue?</original>
 <translation>Zresetuj program PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14067,33 +14067,8 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>Przestrzegaj instrukcji autoobracania wewnątrz plików graficznych</translation>
-</phrase>
-
-<phrase>
 <original>high-dynamic range (HDR) images</original>
 <translation>Obrazy z dużym zakresem dynamiki (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>Wymuś wyodrębnianie tagów typu binarnego jako Base64 (wolny)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>Analizuj oryginalne ustawienia jakości JPEG</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>Wyodrębnij nieznane tagi</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>Automatycznie ukryj zdublowane tagi</translation>
 </phrase>
 
 <phrase>
@@ -14132,36 +14107,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Starsze aparaty i oprogramowania do edycji zdjęć mogą nieprawidłowo osadzać metadane, co prowadzi do wielu kopii metadanych w jednym pliku. PhotoDemon może automatycznie rozwiązać problemy ze zduplikowanymi wpisami.</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Format JPEG nie umożliwia przechowywanie ustawień jakości JPEG w plikach graficznych. PhotoDemon może obejść ten problem poprzez analizę ustawień jakości z innych metadanych (takich jak tabele kwantyzacji)</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Niektórzy producenci aparatów fotograficznych przechowują zastrzeżone znaczniki metadanych w plikach obrazów. Te znaczniki nie są na ogół przydatne, ale PhotoDemon i tak może próbować je wyodrębnić.</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Domyślnie duże tagi binarne (takie jak miniatury obrazów) nie są przetwarzane. Zamiast tego PhotoDemon po prostu raportuje rozmiar osadzonych danych. Jeśli potrzebujesz tych danych, PhotoDemon może ręcznie przekonwertować je do Base64 w celu dalszej analizy.</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Większość cyfrowych zdjęć zawiera instrukcje rotacji (metadane orientacji EXIF), które PhotoDemon będzie używać do automatycznego obracania zdjęć. Niektóre starsze smartfony i kamery mogą nie zapisywać tych instrukcji poprawnie, więc jeśli importowane zdjęcia są obrócone, można spróbować wyłączyć funkcję automatycznego obracania.</translation>
-</phrase>
-
-<phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
 <translation>Jeśli komputer zostanie zrestartowany, podczas gdy PhotoDemon jest uruchomiony, może on automatycznie przywrócić poprzednią sesję.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 24 phrases. 2 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14191,11 +14141,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>default format</original>
 <translation>Domyślny format</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>Lista PhotoDemon jako ostatnio używane oprogramowanie edycji</translation>
 </phrase>
 
 <phrase>
@@ -14278,12 +14223,7 @@ Are you sure you want to continue?</original>
 <translation>W większości edytorów graficznych, polecenie „Zapisz jako” domyślnie przyjmuje bieżącą nazwę pliku. PhotoDemon zapewnia także „bezpieczniejszą” opcję, w której polecenie "Zapisz jako" automatycznie tworzy nowe nazwy plików.</translation>
 </phrase>
 
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>Specyfikacja EXIF wymaga, aby używane programy poprawnie identyfikowały się podczas eksportowania plików obrazów. Aby zwiększyć prywatność, możesz wyłączyć to zachowanie</translation>
-</phrase>
-
-<!-- Options_Saving.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14684,7 +14624,7 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
-<original>zoom with mouse wheel</original>
+<original>mouse wheel behavior</original>
 <translation></translation>
 </phrase>
 
@@ -14704,11 +14644,16 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 </phrase>
 
 <phrase>
+<original>scroll</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
 <translation>Jeśli używasz Pulpitu Zdalnego lub VM (Virtual Machine), wejście myszy o wysokiej rozdzielczości może nie działać poprawnie. Jest to długotrwały błąd systemu Windows. W tych sytuacjach można użyć tego ustawienia, aby przywrócić prawidłowe zachowanie myszy.</translation>
 </phrase>
 
-<!-- Options_Input.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>display access keys (mnemonics)</original>
@@ -14742,12 +14687,84 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>Przestrzegaj instrukcji autoobracania wewnątrz plików graficznych</translation>
+</phrase>
+
+<phrase>
+<original>loading</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>Wymuś wyodrębnianie tagów typu binarnego jako Base64 (wolny)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>Analizuj oryginalne ustawienia jakości JPEG</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>Wyodrębnij nieznane tagi</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>Automatycznie ukryj zdublowane tagi</translation>
+</phrase>
+
+<phrase>
+<original>saving</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>Lista PhotoDemon jako ostatnio używane oprogramowanie edycji</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>Starsze aparaty i oprogramowania do edycji zdjęć mogą nieprawidłowo osadzać metadane, co prowadzi do wielu kopii metadanych w jednym pliku. PhotoDemon może automatycznie rozwiązać problemy ze zduplikowanymi wpisami.</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>Format JPEG nie umożliwia przechowywanie ustawień jakości JPEG w plikach graficznych. PhotoDemon może obejść ten problem poprzez analizę ustawień jakości z innych metadanych (takich jak tabele kwantyzacji)</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>Niektórzy producenci aparatów fotograficznych przechowują zastrzeżone znaczniki metadanych w plikach obrazów. Te znaczniki nie są na ogół przydatne, ale PhotoDemon i tak może próbować je wyodrębnić.</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>Domyślnie duże tagi binarne (takie jak miniatury obrazów) nie są przetwarzane. Zamiast tego PhotoDemon po prostu raportuje rozmiar osadzonych danych. Jeśli potrzebujesz tych danych, PhotoDemon może ręcznie przekonwertować je do Base64 w celu dalszej analizy.</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>Większość cyfrowych zdjęć zawiera instrukcje rotacji (metadane orientacji EXIF), które PhotoDemon będzie używać do automatycznego obracania zdjęć. Niektóre starsze smartfony i kamery mogą nie zapisywać tych instrukcji poprawnie, więc jeśli importowane zdjęcia są obrócone, można spróbować wyłączyć funkcję automatycznego obracania.</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>Specyfikacja EXIF wymaga, aby używane programy poprawnie identyfikowały się podczas eksportowania plików obrazów. Aby zwiększyć prywatność, możesz wyłączyć to zachowanie</translation>
+</phrase>
+
+<!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2789</phrasecount>
+<phrasecount>2792</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5926 phrases. -->
-<!-- 3137 are duplicates, so only 2789 unique phrases have been written to file. -->
-<!-- These 2789 phrases contain approximately 12106 total words. -->
+<!-- As of this build, PhotoDemon contains 5929 phrases. -->
+<!-- 3137 are duplicates, so only 2792 unique phrases have been written to file. -->
+<!-- These 2792 phrases contain approximately 12108 total words. -->
 
 </pdData>

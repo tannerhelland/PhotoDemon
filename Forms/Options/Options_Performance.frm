@@ -170,7 +170,7 @@ Attribute VB_Exposed = False
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
 '
-'All Tools > Options child panels must some mandatory public functions, including ones for loading
+'All Tools > Options child panels contain some mandatory public functions, including ones for loading
 ' and saving user preferences, as well as validating any UI elements where the user can enter
 ' custom values.  (A reset-style function is *not* required; this is automatically handled by
 ' FormOptions.)

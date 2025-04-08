@@ -42,7 +42,7 @@ Begin VB.Form options_Menus
    Begin PhotoDemon.pdLabel lblRecentFileCount 
       Height          =   240
       Left            =   135
-      Top             =   1500
+      Top             =   1620
       Width           =   3480
       _ExtentX        =   6138
       _ExtentY        =   423
@@ -54,7 +54,7 @@ Begin VB.Form options_Menus
       Height          =   285
       Index           =   13
       Left            =   0
-      Top             =   1095
+      Top             =   1215
       Width           =   8100
       _ExtentX        =   14288
       _ExtentY        =   503
@@ -66,7 +66,7 @@ Begin VB.Form options_Menus
       Height          =   975
       Left            =   120
       TabIndex        =   0
-      Top             =   1890
+      Top             =   2010
       Width           =   7815
       _ExtentX        =   13785
       _ExtentY        =   1508
@@ -77,7 +77,7 @@ Begin VB.Form options_Menus
       Height          =   345
       Left            =   3840
       TabIndex        =   1
-      Top             =   1440
+      Top             =   1590
       Width           =   1935
       _ExtentX        =   3413
       _ExtentY        =   609
@@ -102,7 +102,7 @@ Attribute VB_Exposed = False
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
 '
-'All Tools > Options child panels must some mandatory public functions, including ones for loading
+'All Tools > Options child panels contain some mandatory public functions, including ones for loading
 ' and saving user preferences, as well as validating any UI elements where the user can enter
 ' custom values.  (A reset-style function is *not* required; this is automatically handled by
 ' FormOptions.)

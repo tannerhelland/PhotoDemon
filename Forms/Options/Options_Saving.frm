@@ -33,7 +33,7 @@ Begin VB.Form options_Saving
       Height          =   330
       Left            =   180
       TabIndex        =   0
-      Top             =   5940
+      Top             =   5160
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   582
@@ -54,7 +54,7 @@ Begin VB.Form options_Saving
       Height          =   690
       Left            =   180
       TabIndex        =   2
-      Top             =   3840
+      Top             =   3000
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   582
@@ -63,21 +63,9 @@ Begin VB.Form options_Saving
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   4
-      Left            =   0
-      Top             =   2610
-      Width           =   8265
-      _ExtentX        =   14579
-      _ExtentY        =   503
-      Caption         =   "metadata"
-      FontSize        =   12
-      ForeColor       =   5263440
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
       Index           =   6
       Left            =   0
-      Top             =   3480
+      Top             =   2640
       Width           =   8175
       _ExtentX        =   14420
       _ExtentY        =   503
@@ -89,7 +77,7 @@ Begin VB.Form options_Saving
       Height          =   285
       Index           =   7
       Left            =   0
-      Top             =   5580
+      Top             =   4800
       Width           =   8145
       _ExtentX        =   14367
       _ExtentY        =   503
@@ -109,16 +97,6 @@ Begin VB.Form options_Saving
       FontSize        =   12
       ForeColor       =   5263440
    End
-   Begin PhotoDemon.pdCheckBox chkMetadataListPD 
-      Height          =   375
-      Left            =   180
-      TabIndex        =   3
-      Top             =   3000
-      Width           =   7935
-      _ExtentX        =   13996
-      _ExtentY        =   661
-      Caption         =   "list PhotoDemon as the last-used editing software"
-   End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   21
@@ -134,7 +112,7 @@ Begin VB.Form options_Saving
    Begin PhotoDemon.pdDropDown cboDefaultSaveFolder 
       Height          =   690
       Left            =   180
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   360
       Width           =   7980
       _ExtentX        =   14076
@@ -145,8 +123,8 @@ Begin VB.Form options_Saving
    Begin PhotoDemon.pdDropDown cboSaveAsBehavior 
       Height          =   690
       Left            =   180
-      TabIndex        =   5
-      Top             =   4680
+      TabIndex        =   4
+      Top             =   3840
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   582
@@ -169,7 +147,7 @@ Attribute VB_Exposed = False
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
 '
-'All Tools > Options child panels must some mandatory public functions, including ones for loading
+'All Tools > Options child panels contain some mandatory public functions, including ones for loading
 ' and saving user preferences, as well as validating any UI elements where the user can enter
 ' custom values.  (A reset-style function is *not* required; this is automatically handled by
 ' FormOptions.)
@@ -209,8 +187,6 @@ Private Sub Form_Load()
     cboSaveAsBehavior.AddItem "suggest a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
     cboSaveAsBehavior.AssignTooltip "In most photo editors, the ""Save as"" command defaults to the current filename.  PhotoDemon also provides a ""safer"" option, where Save As will automatically increment filenames for you."
     
-    chkMetadataListPD.AssignTooltip "The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior."
-    
 End Sub
 
 Public Sub LoadUserPreferences()
@@ -221,7 +197,6 @@ Public Sub LoadUserPreferences()
     If UserPrefs.GetPref_Boolean("Saving", "Use Last Folder", False) Then cboDefaultSaveFolder.ListIndex = 1 Else cboDefaultSaveFolder.ListIndex = 0
     cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
     If UserPrefs.GetPref_Boolean("Saving", "save-as-autoincrement", True) Then cboSaveAsBehavior.ListIndex = 1 Else cboSaveAsBehavior.ListIndex = 0
-    chkMetadataListPD.Value = UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True)
     
 End Sub
 
@@ -236,7 +211,6 @@ Public Sub SaveUserPreferences()
         toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
     End If
     
-    UserPrefs.SetPref_Boolean "Saving", "MetadataListPD", chkMetadataListPD.Value
     UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
     UserPrefs.SetPref_Long "Saving", "save-as-autoincrement", (cboSaveAsBehavior.ListIndex = 1)
     UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex

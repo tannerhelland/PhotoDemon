@@ -29,23 +29,22 @@ Begin VB.Form options_Input
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdCheckBox chkZoomMouse 
-      Height          =   360
+   Begin PhotoDemon.pdButtonStrip btsMouseWheel 
+      Height          =   975
       Left            =   0
-      TabIndex        =   0
-      Top             =   2160
-      Width           =   7815
-      _ExtentX        =   13785
-      _ExtentY        =   635
-      Caption         =   "zoom with mouse wheel"
-      Value           =   0   'False
+      TabIndex        =   3
+      Top             =   1200
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   1720
+      Caption         =   "mouse wheel behavior"
    End
    Begin PhotoDemon.pdSpinner spnSnapDistance 
       Height          =   375
       Index           =   0
       Left            =   120
-      TabIndex        =   1
-      Top             =   1560
+      TabIndex        =   0
+      Top             =   2760
       Width           =   1935
       _ExtentX        =   3413
       _ExtentY        =   661
@@ -58,7 +57,7 @@ Begin VB.Form options_Input
       Height          =   285
       Index           =   23
       Left            =   0
-      Top             =   1200
+      Top             =   2400
       Width           =   4020
       _ExtentX        =   14288
       _ExtentY        =   503
@@ -70,7 +69,7 @@ Begin VB.Form options_Input
       Height          =   285
       Index           =   25
       Left            =   4080
-      Top             =   1200
+      Top             =   2400
       Width           =   4020
       _ExtentX        =   7091
       _ExtentY        =   503
@@ -82,8 +81,8 @@ Begin VB.Form options_Input
       Height          =   375
       Index           =   1
       Left            =   4200
-      TabIndex        =   2
-      Top             =   1560
+      TabIndex        =   1
+      Top             =   2760
       Width           =   1935
       _ExtentX        =   3413
       _ExtentY        =   661
@@ -96,7 +95,7 @@ Begin VB.Form options_Input
    Begin PhotoDemon.pdButtonStrip btsMouseHighRes 
       Height          =   975
       Left            =   0
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   0
       Width           =   8175
       _ExtentX        =   14420
@@ -119,7 +118,7 @@ Attribute VB_Exposed = False
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
 '
-'All Tools > Options child panels must some mandatory public functions, including ones for loading
+'All Tools > Options child panels contain some mandatory public functions, including ones for loading
 ' and saving user preferences, as well as validating any UI elements where the user can enter
 ' custom values.  (A reset-style function is *not* required; this is automatically handled by
 ' FormOptions.)
@@ -141,23 +140,35 @@ Private Sub Form_Load()
     btsMouseHighRes.AddItem "off", 0
     btsMouseHighRes.AddItem "on", 1
     
+    btsMouseWheel.AddItem "scroll", 0
+    btsMouseWheel.AddItem "zoom", 1
+    
 End Sub
 
 Public Sub LoadUserPreferences()
-    chkZoomMouse.Value = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
+    
+    If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
+    
+    If UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False) Then
+        btsMouseWheel.ListIndex = 1
+    Else
+        btsMouseWheel.ListIndex = 0
+    End If
+    
     spnSnapDistance(0).Value = UserPrefs.GetPref_Long("Interface", "snap-distance", 8&)
     spnSnapDistance(1).Value = UserPrefs.GetPref_Float("Interface", "snap-degrees", 7.5)
-    If UserPrefs.GetPref_Boolean("Tools", "HighResMouseInput", True) Then btsMouseHighRes.ListIndex = 1 Else btsMouseHighRes.ListIndex = 0
+    
 End Sub
 
 Public Sub SaveUserPreferences()
 
-    UserPrefs.SetPref_Boolean "Interface", "wheel-zoom", chkZoomMouse.Value
-    UserPrefs.SetZoomWithWheel chkZoomMouse.Value
+    UserPrefs.SetPref_Boolean "Interface", "wheel-zoom", (btsMouseWheel.ListIndex = 1)
+    UserPrefs.SetZoomWithWheel (btsMouseWheel.ListIndex = 1)
 
     UserPrefs.SetPref_Long "Interface", "snap-distance", spnSnapDistance(0).Value
-    UserPrefs.SetPref_Long "Interface", "snap-degrees", spnSnapDistance(1).Value
     Snap.SetSnap_Distance spnSnapDistance(0).Value
+    
+    UserPrefs.SetPref_Long "Interface", "snap-degrees", spnSnapDistance(1).Value
     Snap.SetSnap_Degrees spnSnapDistance(1).Value
 
     If (btsMouseHighRes.ListIndex = 1) Then UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", True Else UserPrefs.SetPref_Boolean "Tools", "HighResMouseInput", False

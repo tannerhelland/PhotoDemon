@@ -32,8 +32,8 @@ Begin VB.Form options_Loading
    Begin PhotoDemon.pdCheckBox chkSplash 
       Height          =   330
       Left            =   180
-      TabIndex        =   8
-      Top             =   6240
+      TabIndex        =   3
+      Top             =   3600
       Width           =   8055
       _ExtentX        =   14208
       _ExtentY        =   582
@@ -54,99 +54,23 @@ Begin VB.Form options_Loading
       Height          =   330
       Left            =   180
       TabIndex        =   1
-      Top             =   1800
+      Top             =   1920
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   582
       Caption         =   "display tone mapping options when importing HDR and RAW images"
    End
-   Begin PhotoDemon.pdCheckBox chkLoadingOrientation 
-      Height          =   330
-      Left            =   180
-      TabIndex        =   2
-      Top             =   4560
-      Width           =   7920
-      _ExtentX        =   13970
-      _ExtentY        =   582
-      Caption         =   "obey auto-rotate instructions inside image files"
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   4
-      Left            =   0
-      Top             =   4200
-      Width           =   8100
-      _ExtentX        =   14288
-      _ExtentY        =   503
-      Caption         =   "orientation"
-      FontSize        =   12
-      ForeColor       =   5263440
-   End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   2
       Left            =   0
-      Top             =   1440
+      Top             =   1560
       Width           =   8115
       _ExtentX        =   14314
       _ExtentY        =   503
       Caption         =   "high-dynamic range (HDR) images"
       FontSize        =   12
       ForeColor       =   5263440
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   3
-      Left            =   0
-      Top             =   2280
-      Width           =   8265
-      _ExtentX        =   14579
-      _ExtentY        =   503
-      Caption         =   "metadata"
-      FontSize        =   12
-      ForeColor       =   5263440
-   End
-   Begin PhotoDemon.pdCheckBox chkMetadataBinary 
-      Height          =   330
-      Left            =   180
-      TabIndex        =   3
-      Top             =   3720
-      Width           =   7920
-      _ExtentX        =   13970
-      _ExtentY        =   582
-      Caption         =   "forcibly extract binary-type tags as Base64 (slow)"
-      Value           =   0   'False
-   End
-   Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
-      Height          =   330
-      Left            =   180
-      TabIndex        =   4
-      Top             =   3000
-      Width           =   7920
-      _ExtentX        =   13970
-      _ExtentY        =   582
-      Caption         =   "estimate original JPEG quality settings"
-   End
-   Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
-      Height          =   330
-      Left            =   180
-      TabIndex        =   5
-      Top             =   3360
-      Width           =   7920
-      _ExtentX        =   13970
-      _ExtentY        =   582
-      Caption         =   "extract unknown tags"
-      Value           =   0   'False
-   End
-   Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
-      Height          =   330
-      Left            =   180
-      TabIndex        =   6
-      Top             =   2640
-      Width           =   7920
-      _ExtentX        =   13970
-      _ExtentY        =   582
-      Caption         =   "automatically hide duplicate tags"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -164,7 +88,7 @@ Begin VB.Form options_Loading
       Height          =   285
       Index           =   5
       Left            =   0
-      Top             =   5040
+      Top             =   2400
       Width           =   8115
       _ExtentX        =   14314
       _ExtentY        =   503
@@ -175,8 +99,8 @@ Begin VB.Form options_Loading
    Begin PhotoDemon.pdCheckBox chkSystemReboots 
       Height          =   330
       Left            =   180
-      TabIndex        =   7
-      Top             =   5400
+      TabIndex        =   2
+      Top             =   2760
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   582
@@ -186,7 +110,7 @@ Begin VB.Form options_Loading
       Height          =   285
       Index           =   0
       Left            =   0
-      Top             =   5880
+      Top             =   3240
       Width           =   8115
       _ExtentX        =   14314
       _ExtentY        =   503
@@ -210,7 +134,7 @@ Attribute VB_Exposed = False
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
 '
-'All Tools > Options child panels must some mandatory public functions, including ones for loading
+'All Tools > Options child panels contain some mandatory public functions, including ones for loading
 ' and saving user preferences, as well as validating any UI elements where the user can enter
 ' custom values.  (A reset-style function is *not* required; this is automatically handled by
 ' FormOptions.)
@@ -236,11 +160,6 @@ Public Sub LoadUserPreferences()
     
     If UserPrefs.GetPref_Boolean("Loading", "Single Instance", False) Then btsMultiInstance.ListIndex = 0 Else btsMultiInstance.ListIndex = 1
     chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
-    chkMetadataDuplicates.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Hide Duplicates", True)
-    chkMetadataJPEG.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True)
-    chkMetadataUnknown.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False)
-    chkMetadataBinary.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False)
-    chkLoadingOrientation.Value = UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True)
     chkSystemReboots.Value = UserPrefs.GetPref_Boolean("Loading", "RestoreAfterReboot", False)
     chkSplash.Value = UserPrefs.GetPref_Boolean("Loading", "splash-screen", True)
     
@@ -251,13 +170,6 @@ Public Sub SaveUserPreferences()
     UserPrefs.SetPref_Boolean "Loading", "Single Instance", (btsMultiInstance.ListIndex = 0)
     
     UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", chkToneMapping.Value
-    
-    UserPrefs.SetPref_Boolean "Loading", "Metadata Hide Duplicates", chkMetadataDuplicates.Value
-    UserPrefs.SetPref_Boolean "Loading", "Metadata Estimate JPEG", chkMetadataJPEG.Value
-    UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Binary", chkMetadataBinary.Value
-    UserPrefs.SetPref_Boolean "Loading", "Metadata Extract Unknown", chkMetadataUnknown.Value
-    
-    UserPrefs.SetPref_Boolean "Loading", "ExifAutoRotate", chkLoadingOrientation.Value
     
     'Restore after reboot behavior requires an immediate API to de/activate
     UserPrefs.SetPref_Boolean "Loading", "RestoreAfterReboot", chkSystemReboots.Value
@@ -295,11 +207,6 @@ End Function
 Public Sub UpdateAgainstCurrentTheme()
     
     chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
-    chkMetadataDuplicates.AssignTooltip "Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you."
-    chkMetadataJPEG.AssignTooltip "The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables)."
-    chkMetadataUnknown.AssignTooltip "Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway."
-    chkMetadataBinary.AssignTooltip "By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis."
-    chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
     chkSystemReboots.AssignTooltip "If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session."
     
     Interface.ApplyThemeAndTranslations Me
