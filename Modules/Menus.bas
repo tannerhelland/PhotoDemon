@@ -1301,7 +1301,7 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
                 If (mnPos > 0) Then
                     
                     With m_Menus(i)
-                    
+                        
                         'Figure out whether to use the English char or a localized one
                         If noKeys Then
                             mnChar = Mid$(.me_TextEn, mnPos, 1)
@@ -1329,12 +1329,12 @@ Private Sub DetermineMnemonics_SingleMenu(ByRef mnuName As String, ByRef dstStac
                             
                         'Place the marker directly inside the localized caption
                         Else
-                            If (Not noKeys) Then
-                                If (mnPos > 1) Then
-                                    newText = Left$(.me_TextTranslated, mnPos - 1) & STR_AMPERSAND & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
-                                Else
-                                    newText = STR_AMPERSAND & .me_TextTranslated
-                                End If
+                            If (mnPos > 1) Then
+                                newText = Left$(.me_TextTranslated, mnPos - 1) & STR_AMPERSAND & Right$(.me_TextTranslated, Len(.me_TextTranslated) - (mnPos - 1))
+                            ElseIf (mnPos = 1) Then
+                                newText = STR_AMPERSAND & .me_TextTranslated
+                            Else
+                                newText = .me_TextTranslated
                             End If
                         End If
                         
