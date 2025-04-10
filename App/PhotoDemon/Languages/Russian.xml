@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12.367</langversion>
+<langversion>2024.12.388</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -14057,7 +14057,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>Отображать экран-заставку</translation>
 </phrase>
 
 <phrase>
@@ -14092,7 +14092,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>Запуск</translation>
 </phrase>
 
 <phrase>
@@ -14602,12 +14602,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>добавить другую папку</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>папка со шрифтами</translation>
 </phrase>
 
 <phrase>
@@ -14617,7 +14617,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>удалить эту папку</translation>
 </phrase>
 
 <phrase>
@@ -14629,7 +14629,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>поведение колесика мыши</translation>
 </phrase>
 
 <phrase>
@@ -14649,7 +14649,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>прокрутка</translation>
 </phrase>
 
 <phrase>
