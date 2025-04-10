@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 378.1</langversion>
+<langversion>2024.12 Alpha - Build 387</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1356,7 +1356,7 @@
 
 <phrase>
 <original>Unloading image %1 of %2</original>
-<translation>Entladen des Bildes %1 von %2</translation>
+<translation>Bild %1 von %2 wird entladen</translation>
 </phrase>
 
 <phrase>
@@ -1744,7 +1744,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Loading page %1 of %2</original>
-<translation>Laden der Seite %1 von %2</translation>
+<translation>Seite %1 von %2 wird geladen</translation>
 </phrase>
 
 <phrase>
@@ -3214,7 +3214,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in einem alternativen Format z
 
 <phrase>
 <original>Saving file</original>
-<translation>Datei wird gespeichert</translation>
+<translation>Speichern der Datei</translation>
 </phrase>
 
 <phrase>
@@ -4546,7 +4546,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Saving preset</original>
-<translation>Preset wird gespeichert</translation>
+<translation>Speichern des Preset</translation>
 </phrase>
 
 <phrase>
@@ -8109,12 +8109,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Animating image (stage %1 of %2)</original>
-<translation>Bild wird animiert (Stufe %1 von %2)</translation>
+<translation>Animieren des Bildes (Stufe %1 von %2)</translation>
 </phrase>
 
 <phrase>
 <original>Animating image</original>
-<translation>Bild wird animiert</translation>
+<translation>Animieren des Bildes</translation>
 </phrase>
 
 <phrase>
@@ -9821,7 +9821,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>Verarbeitung der Datei %1 von %2 (%3 Reparaturen durchgeführt)</translation>
+<translation>Datei %1 von %2 wird verarbeitet (%3 Reparaturen durchgeführt)</translation>
 </phrase>
 
 <phrase>
@@ -11870,7 +11870,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>flatten behavior</original>
-<translation>Auf Hintergrund-Layer reduzieren-Verhalten</translation>
+<translation>Auf Hintergrund-Layer reduzieren -Verhalten</translation>
 </phrase>
 
 <phrase>
@@ -12830,7 +12830,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>default selection behavior</original>
-<translation>Default-Auswahl-Verhalten</translation>
+<translation>Default-Auswahl -Verhalten</translation>
 </phrase>
 
 <phrase>
@@ -13514,7 +13514,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>Verarbeitung der Phrase %1 von %2</translation>
+<translation>Phrase %1 von %2 wird verarbeitet</translation>
 </phrase>
 
 <phrase>
@@ -13716,7 +13716,7 @@ Um fortzusetzen, laden Sie bitte eine neue Kopie von PhotoDemon von photodemon.o
 
 <phrase>
 <original>Saving preferences</original>
-<translation>Voreinstellungen werden gespeichert</translation>
+<translation>Speichern der Voreinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -14627,7 +14627,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>Mausrad-Verhalten</translation>
 </phrase>
 
 <phrase>
@@ -14647,7 +14647,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>Scrollen</translation>
 </phrase>
 
 <phrase>
@@ -14696,7 +14696,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>Laden</translation>
 </phrase>
 
 <phrase>
@@ -14721,7 +14721,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>Speichern</translation>
 </phrase>
 
 <phrase>
