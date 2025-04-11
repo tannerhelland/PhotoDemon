@@ -1124,8 +1124,16 @@ Private Function EvaluateMnemonics(ByRef mnTarget As String, ByVal mnuIndex As L
     Dim srcString As String
     srcString = m_Menus(mnuIndex).me_TextTranslated
     If (Not AtLeastOneAlphabetic(srcString)) Then
-        EvaluateMnemonics = False
-        Exit Function
+        
+        'Try again with en-US
+        srcString = m_Menus(mnuIndex).me_TextEn
+        If (Not AtLeastOneAlphabetic(srcString)) Then
+            EvaluateMnemonics = False
+            Exit Function
+        Else
+            srcString = m_Menus(mnuIndex).me_TextTranslated
+        End If
+        
     End If
     
     'At least one character in the string is alphabetical.  Next, we want to see if
