@@ -2297,22 +2297,22 @@ Please close this file in any other running programs, then try again.</original>
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>此文件的扩展名为“%1”，但实际上是“%2”格式。</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>PhotoDemon可以用正确的扩展名重命名文件吗？</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>（如果选择“是”，文件将重命名为“%1”）</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>文件扩展名错误</translation>
 </phrase>
 
 <phrase>
@@ -2353,7 +2353,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 <phrase>
 <original>Importing %1</original>
-<translation></translation>
+<translation>正在导入%1</translation>
 </phrase>
 
 <phrase>
@@ -2363,7 +2363,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 <phrase>
 <original>A third-party library (%1) reported the following error</original>
-<translation></translation>
+<translation>第三方库（%1）报告了以下错误</translation>
 </phrase>
 
 <phrase>
@@ -2751,12 +2751,15 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation></translation>
+<translation>缺少或禁用了必要的第三方库（%1）。
+
+
+要启用此功能，请重新下载PhotoDemon或恢复丢失的库。</translation>
 </phrase>
 
 <phrase>
 <original>Error: %1</original>
-<translation></translation>
+<translation>错误：%1</translation>
 </phrase>
 
 <phrase>
@@ -3812,7 +3815,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
+<translation>内存使用率过高；在继续操作之前，先将部分数据暂存到磁盘</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -7326,7 +7329,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>current page only</original>
-<translation></translation>
+<translation>仅当前页</translation>
 </phrase>
 
 <phrase>
@@ -12524,12 +12527,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>presets</original>
-<translation></translation>
+<translation>预置</translation>
 </phrase>
 
 <phrase>
 <original>guides</original>
-<translation></translation>
+<translation>指南</translation>
 </phrase>
 
 <phrase>
@@ -12569,32 +12572,32 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>resolution (PPI)</original>
-<translation></translation>
+<translation>分辨率（PPI）</translation>
 </phrase>
 
 <phrase>
 <original>centerlines</original>
-<translation></translation>
+<translation>中心线</translation>
 </phrase>
 
 <phrase>
 <original>rule of thirds</original>
-<translation></translation>
+<translation>三分法</translation>
 </phrase>
 
 <phrase>
 <original>rule of fifths</original>
-<translation></translation>
+<translation>五分法</translation>
 </phrase>
 
 <phrase>
 <original>golden ratio</original>
-<translation></translation>
+<translation>黄金比例</translation>
 </phrase>
 
 <phrase>
 <original>diagonals</original>
-<translation></translation>
+<translation>对角线</translation>
 </phrase>
 
 <phrase>
@@ -12614,12 +12617,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation></translation>
+<translation>分辨率用于将真实世界的测量值转换为像素。对于已经以像素为单位的测量，它将被忽略。</translation>
 </phrase>
 
 <phrase>
 <original>You can use this measurement in landscape or portrait orientation.</original>
-<translation></translation>
+<translation>您可以在横向或纵向方向上使用此测量。</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -13725,7 +13728,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>菜单</translation>
 </phrase>
 
 <phrase>
@@ -13745,12 +13748,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>字体</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>输入设备</translation>
 </phrase>
 
 <phrase>
@@ -14049,7 +14052,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>显示启动画面</translation>
 </phrase>
 
 <phrase>
@@ -14084,7 +14087,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>启动</translation>
 </phrase>
 
 <phrase>
@@ -14594,34 +14597,34 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>添加另一个文件夹</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>字体文件夹</translation>
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>界面字体</translation>
 </phrase>
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>删除此文件夹</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>更改将在下次启动PhotoDemon时生效。</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>鼠标滚轮行为</translation>
 </phrase>
 
 <phrase>
@@ -14641,7 +14644,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>滚动</translation>
 </phrase>
 
 <phrase>
@@ -14653,7 +14656,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>显示访问键（助记符）</translation>
 </phrase>
 
 <phrase>
@@ -14673,7 +14676,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>访问键（助记符）允许您使用键盘导航菜单。在“自动”模式下，没有本机访问键的语言将显示每个菜单的美式英语访问键。</translation>
 </phrase>
 
 <phrase>
@@ -14690,7 +14693,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>正在加载</translation>
 </phrase>
 
 <phrase>
@@ -14715,7 +14718,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>正在保存</translation>
 </phrase>
 
 <phrase>
