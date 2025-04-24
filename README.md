@@ -1,8 +1,8 @@
 ## Download
 
-| Stable (2024.12) | Nightly | Source code |
+| Stable (2025.4) | Nightly | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2024.12/PhotoDemon-2024.12.zip) | [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (24 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
+| [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2025.4/PhotoDemon-2025.4.zip) | [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (24 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
 
 ## About PhotoDemon
 
@@ -55,19 +55,11 @@ Many open-source photo editors are usability nightmares.  PhotoDemon tries not t
 * PhotoDemon isn't designed for operating systems other than Microsoft Windows.  A compatibility layer like [Wine](http://www.winehq.org/) may allow it to work on macOS, Linux, or BSD systems, but these configurations are not officially supported.
 * Due to its portable nature, PhotoDemon is only available as a 32-bit application.  (This means it cannot load or save images larger than ~2 GB in size.)
 
-## What's new in nightly builds
+## Recent changes
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/tannerhelland/PhotoDemon?style=flat-square)  ![GitHub commits since latest release](https://img.shields.io/github/commits-since/tannerhelland/PhotoDemon/latest?style=flat-square&color=light-green)
 
-[Current nightly builds](https://photodemon.org/download/) offer the following improvements over the [last stable release](https://photodemon.org/2022/09/08/photodemon-9-0.html).
-
-PhotoDemon 2024.12 just released, so there's not much new in nightly builds.
-
-Check back in a few weeks!
-
-### Other
-
-For a full list of changes, [visit the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/main).
+For a full list of recent improvements, [visit the project's commit log](https://github.com/tannerhelland/PhotoDemon/commits/main).
 
 ## Contributing
 

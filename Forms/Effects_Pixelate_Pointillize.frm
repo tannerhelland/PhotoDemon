@@ -134,8 +134,8 @@ Attribute VB_Exposed = False
 'Pointillize Effect UI
 'Copyright 2019-2025 by Tanner Helland
 'Created: 25/November/19
-'Last updated: 25/November/19
-'Last update: initial build
+'Last updated: 24/April/25
+'Last update: fix preview fit/1:1 zoom toggle not working
 'Dependencies: pdPoissonDisc (for generating the initial collection of filter nodes)
 '
 'PD's Pointillize filter is designed to mimic Photoshop's classic pointillize filter pretty closely
@@ -158,7 +158,6 @@ Option Explicit
 
 'We cache some variables at module-level to improve preview performance
 Private m_PreviewDIB As pdDIB
-Private m_LastParams As String
 
 'OK button
 Private Sub cmdBar_OKClick()
@@ -507,19 +506,7 @@ Public Sub Pointillize(ByVal effectParams As String, Optional ByVal toPreview As
 End Sub
 
 Private Sub UpdatePreview()
-    
-    If cmdBar.PreviewsAllowed Then
-        
-        Dim tmpParams As String
-        tmpParams = GetLocalParamString()
-        
-        If Strings.StringsNotEqual(m_LastParams, tmpParams) Then
-            m_LastParams = tmpParams
-            Me.Pointillize tmpParams, True, pdFxPreview
-        End If
-        
-    End If
-    
+    If cmdBar.PreviewsAllowed Then Me.Pointillize GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
