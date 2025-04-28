@@ -1109,6 +1109,13 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         ' on XP is a rare use-case.
         If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "gif", True)
         
+        '32-bit BMP files give FreeImage trouble.  Unfortunately, BMP handling via GDI+ varies by OS version.
+        ' (It's pretty good on Win 7+, but mediocre on XP.)
+        ' There's no good answer here, but for now we'll rely on GDI+, mostly because FreeImage will "successfully"
+        ' load some BMPs but only because it loads transparent surfaces at the target size, which makes it very
+        ' hard to detect failures.
+        If (Not tryGDIPlusFirst) Then tryGDIPlusFirst = Strings.StringsEqual(Files.FileGetExtension(srcFile), "bmp", True)
+        
         'To disable these various heuristics and force either GDI+ import (TRUE) or FreeImage import (FALSE),
         ' use this override:
         'tryGDIPlusFirst = False
