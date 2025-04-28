@@ -121,23 +121,19 @@ Private Sub cmdUserFonts_Click(Index As Integer)
     'Add a new font folder
     If (Index = 0) Then
         
-        Dim cFolder As cUnicodeBrowseFolders
-        Set cFolder = New cUnicodeBrowseFolders
-        
         'Default to the PD font folder, unless the user has already added another folder to the list
         ' (and selected it).
         Dim initFolder As String
         initFolder = UserPrefs.GetFontPath()
         If (lstFonts.ListIndex > 0) Then initFolder = lstFonts.List(lstFonts.ListIndex, False)
-        cFolder.InitialDirectory = initFolder
         
-        If cFolder.ShowBrowseForFolder(Me.hWnd) Then
-            
-            If Files.PathExists(cFolder.SelectedFolder, False) Then
-                lstFonts.AddItem cFolder.SelectedFolder
+        Dim newFolder As String
+        newFolder = Files.PathBrowseDialog(Me.hWnd, initFolder)
+        If (LenB(newFolder) <> 0) Then
+            If Files.PathExists(newFolder, False) Then
+                lstFonts.AddItem newFolder
                 lstFonts.ListIndex = lstFonts.ListCount - 1
             End If
-            
         End If
         
     'Remove the selected font folder
