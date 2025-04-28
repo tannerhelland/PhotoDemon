@@ -391,21 +391,29 @@ Private Sub pvInitStructure(hWnd As Long)
      m_File = vbNullString
      If Me.CustomHookProc = 0& Then                     ' no custom hook procedure set by user
         If Not m_InitPath = vbNullString Then           ' do we have a startup pidl/path
-            If m_ThunkAddr = 0& Then
-                lLastMethod = pvFindLastMethod()
-                m_ThunkAddr = VirtualAlloc(0&, FUNK_LEN, CB_MEM_COMMIT, CB_PAGE_RWX)
-                ReDim cb(0 To FUNK_LEN \ 4& - 1&)           ' Allocate executable memory
-                cb(0) = ObjPtr(Me)                          ' thunks call back here
-                cb(2) = &HBB60E089: cb(4) = &HE883C589: cb(5) = &HB9509004: cb(7) = &H74FF06E3
-                cb(8) = &HFAE2008D: cb(9) = &H53FF33FF: cb(10) = &HC2906104
-                
-                CopyMemory cb(1), ByVal lLastMethod, 4&
-                cb(3) = m_ThunkAddr
-                cb(6) = 4&
-                cb(11) = cb(6) * 4&
-                CopyMemory ByVal m_ThunkAddr, cb(0), FUNK_LEN
-            End If
-            obif.lpfnCallback = m_ThunkAddr + 8&
+            
+            'Thunks are not required in TwinBasic; use built-in language features instead!
+            ' (Thank you to @fafalone for this fix: https://github.com/tannerhelland/PhotoDemon/issues/665)
+            #If TWINBASIC Then
+                obif.lpfnCallback = AddressOf pvBrowseCallbackProc
+            #Else
+                If m_ThunkAddr = 0& Then
+                    lLastMethod = pvFindLastMethod()
+                    m_ThunkAddr = VirtualAlloc(0&, FUNK_LEN, CB_MEM_COMMIT, CB_PAGE_RWX)
+                    ReDim cb(0 To FUNK_LEN \ 4& - 1&)           ' Allocate executable memory
+                    cb(0) = ObjPtr(Me)                          ' thunks call back here
+                    cb(2) = &HBB60E089: cb(4) = &HE883C589: cb(5) = &HB9509004: cb(7) = &H74FF06E3
+                    cb(8) = &HFAE2008D: cb(9) = &H53FF33FF: cb(10) = &HC2906104
+                    
+                    CopyMemory cb(1), ByVal lLastMethod, 4&
+                    cb(3) = m_ThunkAddr
+                    cb(6) = 4&
+                    cb(11) = cb(6) * 4&
+                    CopyMemory ByVal m_ThunkAddr, cb(0), FUNK_LEN
+                End If
+                obif.lpfnCallback = m_ThunkAddr + 8&
+            #End If
+            
             If IsNumeric(m_InitPath) Then
                 obif.lpCallbackData = Val(m_InitPath)
             Else
