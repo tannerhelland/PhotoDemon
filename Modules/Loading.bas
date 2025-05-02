@@ -388,7 +388,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         'NOTE: some multipage formats (like PSD, ORA, ICO, etc) load all pages/frames in the initial
         ' load function.  This "separate multipage loader function" approach primarily exists for
         ' legacy functions where a 3rd-party library is responsible for parsing the extra pages.
-        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF)) Then
+        If imageHasMultiplePages And ((targetImage.GetOriginalFileFormat = PDIF_TIFF) Or (targetImage.GetOriginalFileFormat = PDIF_GIF) Or (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF) Or (targetImage.GetOriginalFileFormat = PDIF_DDS)) Then
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
             targetImage.ImgStorage.AddEntry "MultipageImportActive", True
@@ -426,7 +426,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             'Internal multipage loader; this is used for animated PNG files
             Else
-                If (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
+                If (targetImage.GetOriginalFileFormat = PDIF_PNG) Or (targetImage.GetOriginalFileFormat = PDIF_AVIF) Or (targetImage.GetOriginalFileFormat = PDIF_DDS) Then loadSuccessful = ImageImporter.LoadRemainingPNGFrames(targetImage)
             End If
             
             'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or PNG.
@@ -1040,6 +1040,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "pdfium"
         Case id_libheif
             GetDecoderName = "libheif"
+        Case id_DirectXTex
+            GetDecoderName = "DirectXTex"
         Case Else
             GetDecoderName = "unknown?!"
     End Select

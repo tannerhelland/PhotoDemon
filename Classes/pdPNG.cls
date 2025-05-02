@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2025 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 14/April/22
-'Last update: fix rare edge-case bug when quick-loading a DIB with an embedded ICC profile
+'Last updated: 01/May/25
+'Last update: allow caller to manually disable post-processing (e.g. color-management using gamma, chromaticity, etc)
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -200,6 +200,10 @@ Private m_flagActlPos As Long, m_streamingFrames() As PD_APNGFrame
 Private m_apngPrevFrame As pdDIB, m_apngBufferFrame As pdDIB, m_apngCurFrameBackup As pdDIB
 Private m_cmpTestBuffer() As Byte, m_cmpTestBufferSize As Long
 Private m_lastGoodFrame As Long
+
+'PD always attempts to use embedded color management data.  However, when converting from some source formats
+' (like DDS > PNG), color management data isn't useful.  The caller can forcibly request that we ignore it.
+Private m_IgnoreEmbeddedColorData As Boolean
 
 'Simplified wrapper to load a PNG automatically.
 Friend Function LoadPNG_Simple(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal checkExtension As Boolean = False, Optional ByVal loadFromPtr As Long = 0, Optional ByVal loadFromPtrLen As Long = 0, Optional ByVal offsetInSrcFile As Long = 0) As PD_PNGResult
@@ -1589,7 +1593,7 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
     ' at present.)  Note that photo editing software may handle gamma differently - I have *not* tested them
     ' thoroughly, and if they don't manage gamma correctly, I may need to revisit this design entirely.
     Dim gammaOK As Boolean
-    If (gammaIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() Then
+    If (gammaIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() And (Not m_IgnoreEmbeddedColorData) Then
         
         Dim gammaInt As Long
         gammaInt = m_Chunks(gammaIndex).GetGammaData(m_Warnings)
@@ -1607,7 +1611,7 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
     ' viewing conditions of the image.  If chromaticity *doesn't* exist, we'll just apply a bare
     ' gamma correction to the raw PNG pixel data.
     Dim chrmOK As Boolean
-    If (chrmIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() Then
+    If (chrmIndex >= 0) And ColorManagement.UseEmbeddedLegacyProfiles() And (Not m_IgnoreEmbeddedColorData) Then
         
         Dim chrmData() As Long
         If m_Chunks(chrmIndex).GetChromaticityData(chrmData, m_Warnings) Then
@@ -6757,6 +6761,10 @@ End Function
 Friend Function HasAlpha() As Boolean
     HasAlpha = (m_Header.ColorType = png_GreyscaleAlpha) Or (m_Header.ColorType = png_TruecolorAlpha) Or (Me.GetIndexOfChunk("tRNS") >= 0)
 End Function
+
+Friend Sub SetIgnoreColorData(ByVal newSetting As Boolean)
+    m_IgnoreEmbeddedColorData = newSetting
+End Sub
 
 'After all chunks have been loaded and parsed, you can call this function to convert the embedded IHDR chunk
 ' into a VB-friendly "png header" type.  Bad header values (e.g. width/height = 0) will return failure; you need
