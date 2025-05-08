@@ -1076,12 +1076,22 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
-    'A custom PCX parser was added in v2025.x
+    'A custom PCX parser was added in v2025.4
     If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_PCX Then
         CascadeLoadGenericImage = LoadPCX(srcFile, dstImage, dstDIB)
         If CascadeLoadGenericImage Then
             decoderUsed = id_PCXParser
             dstImage.SetOriginalFileFormat PDIF_PCX
+        End If
+    End If
+    
+    'FreeImage claims to work with DDS, but it only parses a tiny subset of ancient DDS files.
+    ' In v2025.5+, I added a workaround (on Win7+) using DirectXTex.
+    If (Not CascadeLoadGenericImage) And Plugin_DDS.IsDirectXTexAvailable() Then
+        CascadeLoadGenericImage = LoadDDS(srcFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages, (suspendWarnings <> vbYes))
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_DirectXTex
+            dstImage.SetOriginalFileFormat PDIF_DDS
         End If
     End If
     
@@ -1315,6 +1325,49 @@ Private Function LoadCBZ(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstDIB.SetColorManagementState cms_ProfileConverted
         
     End If
+    
+End Function
+
+Private Function LoadDDS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal allowErrorPopups As Boolean = False) As Boolean
+    
+    LoadDDS = False
+    On Error GoTo LoadFailed
+    
+    'FreeImage claims to support DDS, but it only supports a tiny subset of ancient DDS files.
+    ' In v2025.5+ I added DirectXTex as an alternate load path for DDS files.  This requires a copy
+    ' of texconv.exe in the /App/PhotoDemon/Plugins subfolder.
+    Dim potentialDDS As Boolean
+    potentialDDS = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "dds")
+    
+    'Let's also do a quick check for DDS file headers so we can reliably detect DDS files with
+    ' bad extensions (which would be missed by the check above).
+    If (Not potentialDDS) Then potentialDDS = Plugin_DDS.IsFilePotentiallyDDS(srcFile)
+    If potentialDDS Then
+        
+        If Plugin_DDS.IsDirectXTexAvailable() Then
+        
+            'It's an ugly workaround, but necessary; convert the DDS to a temporary image file
+            ' in a format we can directly process (currently PNG).
+            Dim tmpFile As String
+            LoadDDS = Plugin_DDS.ConvertDDStoStandardImage(srcFile, tmpFile, allowErrorPopups)
+            
+            'If that worked, load the intermediary image (PNG format) using the relevant decoder
+            If LoadDDS Then LoadDDS = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages, True)
+            
+            'Regardless of outcome, kill the temp file
+            Files.FileDeleteIfExists tmpFile
+            
+            'If succcessful, flag the image format and return
+            If LoadDDS Then dstImage.SetOriginalFileFormat PDIF_DDS
+            
+        End If
+        
+    End If
+    
+    Exit Function
+    
+LoadFailed:
+    LoadDDS = False
     
 End Function
 
@@ -1902,12 +1955,13 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
 End Function
 
-Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long) As Boolean
+Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB, ByRef imageHasMultiplePages As Boolean, ByRef numOfPages As Long, Optional ByVal disableEmbeddedColorData As Boolean = False) As Boolean
     
     LoadPNGOurselves = False
     
     'pdPNG handles all the dirty work for us
     Set m_PNG = New pdPNG
+    If disableEmbeddedColorData Then m_PNG.SetIgnoreColorData True
     LoadPNGOurselves = (m_PNG.LoadPNG_Simple(srcFile, dstImage, dstDIB, False) <= png_Warning)
     
     If LoadPNGOurselves Then
@@ -1933,7 +1987,7 @@ Private Function LoadPNGOurselves(ByRef srcFile As String, ByRef dstImage As pdI
         End If
         
         'Because color-management has already been handled (if applicable), this is a great time to premultiply alpha
-        dstDIB.SetAlphaPremultiplication True
+        If (Not dstDIB.GetAlphaPremultiplication()) Then dstDIB.SetAlphaPremultiplication True
         
         'If this is not an animated PNG, free all associated memory now.
         ' (Animated PNGs will be freed at a later stage.)

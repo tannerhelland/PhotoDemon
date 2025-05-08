@@ -121,3 +121,7 @@ App/PhotoDemon/Plugins/x64
 
 # twinBASIC projects use a /Build folder
 Support/twinBASIC/PDHelper/Build
+
+# debugging some plugins requires command-line, same folder availability of test files
+App/PhotoDemon/Plugins/*.dds
+App/PhotoDemon/Plugins/*.png

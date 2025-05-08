@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2025 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 24/March/25
-'Last update: replace some library-specific messages with generic error messages, to reduce localization burden
+'Last updated: 28/April/25
+'Last update: explore using DirectXTex as DDS library
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' Current builds require a number of third-party libraries for full feature availability.  (Some of these
@@ -29,12 +29,13 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST UPDATE THIS.  PhotoDemon iterates plugins in order,
 ' so if you do not update this count, the plugin at the end of the chain (probably zstd) won't be
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 15
+Private Const CORE_PLUGIN_COUNT As Long = 16
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using for..next loops (during initialization).
 Public Enum PD_PluginCore
     CCP_CharLS
+    CCP_DirectXTex
     CCP_ExifTool
     CCP_EZTwain
     CCP_FreeImage
@@ -52,7 +53,7 @@ Public Enum PD_PluginCore
 End Enum
 
 #If False Then
-    Private Const CCP_libavif = 0, CCP_CharLS = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
+    Private Const CCP_libavif = 0, CCP_CharLS = 0, CCP_DirectXTex = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
     Private Const CCP_libheif = 0, CCP_libjxl = 0, CCP_libwebp = 0, CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pdfium = 0
     Private Const CCP_pspiHost = 0, CCP_resvg = 0, CCP_zstd = 0
 #End If
@@ -60,6 +61,7 @@ End Enum
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
 ' the plugin is available, obviously).
 Private Const EXPECTED_CHARLS_VERSION As String = "2.4.2"
+Private Const EXPECTED_DIRECTXTEX_VERSION As String = "2024.10.29"
 Private Const EXPECTED_EXIFTOOL_VERSION As String = "12.70"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.19.0"
@@ -235,6 +237,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginFilename = "charls-2.dll"
+        Case CCP_DirectXTex
+            GetPluginFilename = "texconv.exe"
         Case CCP_ExifTool
             GetPluginFilename = "exiftool.exe"
         Case CCP_EZTwain
@@ -270,6 +274,8 @@ Public Function GetPluginName(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginName = "CharLS"
+        Case CCP_DirectXTex
+            GetPluginName = "DirectXTex"
         Case CCP_ExifTool
             GetPluginName = "ExifTool"
         Case CCP_EZTwain
@@ -316,6 +322,9 @@ Public Function GetPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
         
         Case CCP_CharLS
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_CharLS.GetVersion()
+        
+        Case CCP_DirectXTex
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_DDS.GetVersion()
         
         Case CCP_ExifTool
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = ExifTool.GetExifToolVersion()
@@ -381,6 +390,10 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
         Case CCP_CharLS
             dstStringStack.AddString "charls-2.LICENSE.md"
         
+        Case CCP_DirectXTex
+            dstStringStack.AddString "DirectXTex-LICENSE.txt"
+            dstStringStack.AddString "texdiag.exe"
+            
         Case CCP_ExifTool
             dstStringStack.AddString "exiftool-README.txt"
             
@@ -391,7 +404,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
             dstStringStack.AddString "freeimage-LICENSE.txt"
         
         Case CCP_libavif
-            dstStringStack.AddString "avifenc.txt"
+            dstStringStack.AddString "avifenc.exe"
             dstStringStack.AddString "avif-LICENSE.txt"
         
         Case CCP_libdeflate
@@ -455,6 +468,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As PD_PluginCore) As
     Select Case pluginEnumID
         Case CCP_CharLS
             IsPluginCurrentlyEnabled = Plugin_CharLS.IsCharLSEnabled()
+        Case CCP_DirectXTex
+            IsPluginCurrentlyEnabled = Plugin_DDS.IsDirectXTexAvailable()
         Case CCP_ExifTool
             IsPluginCurrentlyEnabled = m_ExifToolEnabled
         Case CCP_EZTwain
@@ -493,6 +508,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As PD_PluginCore, ByVal newEna
     Select Case pluginEnumID
         Case CCP_CharLS
             Plugin_CharLS.ForciblySetAvailability newEnabledState
+        Case CCP_DirectXTex
+            Plugin_DDS.ForciblySetAvailability newEnabledState
         Case CCP_ExifTool
             m_ExifToolEnabled = newEnabledState
         Case CCP_EZTwain
@@ -580,6 +597,8 @@ Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As PD_PluginCore) As 
     IsPluginUnavailableOnXP = False
     
     Select Case pluginEnumID
+        Case CCP_DirectXTex
+            IsPluginUnavailableOnXP = True
         Case CCP_libavif
             IsPluginUnavailableOnXP = True
         Case CCP_libheif
@@ -600,6 +619,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As PD_PluginCore) As St
     Select Case pluginEnumID
         Case CCP_CharLS
             ExpectedPluginVersion = EXPECTED_CHARLS_VERSION
+        Case CCP_DirectXTex
+            ExpectedPluginVersion = EXPECTED_DIRECTXTEX_VERSION
         Case CCP_ExifTool
             ExpectedPluginVersion = EXPECTED_EXIFTOOL_VERSION
         Case CCP_EZTwain
@@ -636,6 +657,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As PD_PluginCore) As String
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginHomepage = "https://github.com/team-charls/charls"
+        Case CCP_DirectXTex
+            GetPluginHomepage = "https://github.com/microsoft/DirectXTex"
         Case CCP_ExifTool
             GetPluginHomepage = "https://exiftool.org/"
         Case CCP_EZTwain
@@ -672,6 +695,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As PD_PluginCore) As Str
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
+        Case CCP_DirectXTex
+            GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_ExifTool
             GetPluginLicenseName = g_Language.TranslateMessage("artistic license")
         Case CCP_EZTwain
@@ -708,6 +733,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As PD_PluginCore) As Stri
     Select Case pluginEnumID
         Case CCP_CharLS
             GetPluginLicenseURL = "https://github.com/team-charls/charls/blob/master/LICENSE.md"
+        Case CCP_DirectXTex
+            GetPluginLicenseURL = "https://github.com/microsoft/DirectXTex/blob/main/LICENSE"
         Case CCP_ExifTool
             GetPluginLicenseURL = "http://dev.perl.org/licenses/artistic.html"
         Case CCP_EZTwain
@@ -757,6 +784,9 @@ Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolea
         
         Case CCP_CharLS
             initializationSuccessful = Plugin_CharLS.InitializeEngine(PluginManager.GetPluginPath())
+        
+        Case CCP_DirectXTex
+            initializationSuccessful = Plugin_DDS.InitializeEngine(PluginManager.GetPluginPath())
         
         'Unlike most plugins, ExifTool is an .exe file.  Because we interact with it asynchronously,
         ' we start it now, then leave it in "wait" mode.
@@ -833,6 +863,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As PD_PluginCore, ByVal plug
         
         Case CCP_CharLS
             Plugin_CharLS.ForciblySetAvailability pluginState
+        
+        Case CCP_DirectXTex
+            Plugin_DDS.ForciblySetAvailability pluginState
         
         Case CCP_ExifTool
             m_ExifToolEnabled = pluginState
