@@ -392,6 +392,7 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
         
         Case CCP_DirectXTex
             dstStringStack.AddString "DirectXTex-LICENSE.txt"
+            dstStringStack.AddString "texdiag.exe"
             
         Case CCP_ExifTool
             dstStringStack.AddString "exiftool-README.txt"

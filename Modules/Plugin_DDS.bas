@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_DDS"
 'DirectXTex (DDS) Interface
 'Copyright 2025-2025 by Tanner Helland
 'Created: 28/April/25
-'Last updated: 28/April/25
-'Last update: initial build
+'Last updated: 08/May/25
+'Last update: use texdiag.exe (from DirectXTex) to pull relevant DDS attributes prior to import
 '
 'Module for handling all DirectXTex interfacing (via texconv.exe).  This module is pointless without
 ' that exe, which needs to be placed in the App/PhotoDemon/Plugins subdirectory.
@@ -32,7 +32,11 @@ Option Explicit
 Private m_DirectXTexAvailable As Boolean
 
 'Version number is only retrieved once, then cached.
-Private m_LibFullPath As String, m_libVersion As String
+Private m_LibFullPath As String, m_LibVersion As String
+
+'PD ships with the additional "texdiag.exe" command-line app, which we can use to query some DDS info
+' (and set up better texconv.exe flags during import).
+Private m_pathToTexDiag As String
 
 'Convert a DDS file to some other image format.  Currently, PD converts DDS files to PNGs,
 ' then imports those PNGs directly.  Theoretically, you could use other intermediary formats,
@@ -59,6 +63,11 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
         InternalError funcName, "source file doesn't exist"
         Exit Function
     End If
+    
+    'Pull basic attributes from the DDS file.
+    ' (We can use these to assemble a better request for texdiag.)
+    Dim cAttributes As pdDictionary, attributesExist As Boolean
+    attributesExist = GetDDSAttributes(srcFile, cAttributes)
     
     'Ensure destination file has an appropriate extension (this is how the decoder knows which format to use)
     Dim outputPDIF As PD_IMAGE_FORMAT
@@ -88,11 +97,22 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
     'Additional options can improve support for legacy formats
     shellCmd.Append "--expand-luminance "
     
-    'Use sRGB output
-    'shellCmd.Append "--srgb-out "
+    'Sometimes sRGB output is ideal; sometimes it isn't.  To use it correctly, we need to match it
+    ' to images that actually contain sRGB data.
+    Dim srcIsSRGB As Boolean
+    If attributesExist And (Not cAttributes Is Nothing) Then
+        Dim srcColorFormat As String
+        srcColorFormat = cAttributes.GetEntry_String("format", vbNullString)
+        srcIsSRGB = Strings.StringsEqualRight(srcColorFormat, "srgb", True)
+        If srcIsSRGB Then shellCmd.Append "--srgb-out "
+    End If
     
     'Be explicit about output format (this allows expansiong of e.g. RG to RGBA)
-    shellCmd.Append "--format R8G8B8A8_UNORM "
+    If srcIsSRGB Then
+        shellCmd.Append "--format R8G8B8A8_UNORM_SRGB "
+    Else
+        shellCmd.Append "--format R8G8B8A8_UNORM "
+    End If
     
     'Tone-mapping might be appropriate for high-bit-depth images?
     'shellCmd.Append "--tonemap "
@@ -108,7 +128,6 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
     'Shell plugin and capture output for analysis
     Dim cShell As pdPipeSync
     Set cShell = New pdPipeSync
-    
     If cShell.RunAndCaptureOutput(pluginPath, shellCmd.ToString(), False) Then
         
         Dim outputString As String
@@ -316,8 +335,8 @@ End Sub
 Public Function GetVersion() As String
     
     'Version string is cached on first access
-    If (LenB(m_libVersion) <> 0) Then
-        GetVersion = m_libVersion
+    If (LenB(m_LibVersion) <> 0) Then
+        GetVersion = m_LibVersion
     Else
         
         Const FUNC_NAME As String = "GetVersion"
@@ -325,15 +344,15 @@ Public Function GetVersion() As String
         Dim cFSO As pdFSO
         Set cFSO = New pdFSO
         If cFSO.FileExists(m_LibFullPath) Then
-            cFSO.FileGetVersionAsString m_LibFullPath, m_libVersion
+            cFSO.FileGetVersionAsString m_LibFullPath, m_LibVersion
         End If
         
-        If (LenB(m_libVersion) = 0) Then
+        If (LenB(m_LibVersion) = 0) Then
             InternalError FUNC_NAME, "couldn't retrieve version"
-            m_libVersion = "unknown"
+            m_LibVersion = "unknown"
         End If
         
-        GetVersion = m_libVersion
+        GetVersion = m_LibVersion
         
     End If
     
@@ -353,6 +372,10 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     m_LibFullPath = pathToDLLFolder & "texconv.exe"
     m_DirectXTexAvailable = Files.FileExists(m_LibFullPath)
     InitializeEngine = m_DirectXTexAvailable
+    
+    'While here, see if we also have access to additional DDS support libraries
+    m_pathToTexDiag = pathToDLLFolder & "texdiag.exe"
+    If (Not Files.FileExists(m_pathToTexDiag)) Then m_pathToTexDiag = vbNullString
     
     If (Not InitializeEngine) Then
         PDDebug.LogAction "WARNING!  DDS support not available; plugins missing"
@@ -408,6 +431,72 @@ Public Function QuickLoadPotentialDDSToDIB(ByRef srcFile As String, ByRef dstDIB
         'Free the intermediary file before continuing
         Files.FileDeleteIfExists tmpFile
         If (Not dstDIB.GetAlphaPremultiplication) Then dstDIB.SetAlphaPremultiplication True
+        
+    End If
+    
+End Function
+
+'Use texdiag.exe to retrieve basic DDS file attributes.  Returns TRUE if attributes were received successfully.
+Private Function GetDDSAttributes(ByRef srcFile As String, ByRef dstAttributes As pdDictionary) As Boolean
+    
+    GetDDSAttributes = False
+    Set dstAttributes = New pdDictionary
+    
+    'Failsafe check for the helper app
+    If (LenB(m_pathToTexDiag) <> 0) Then
+        If (Not Files.FileExists(srcFile)) Then Exit Function
+    Else
+        Exit Function
+    End If
+    
+    'Run the helper app and poll stdout
+    Dim shellCmd As pdString
+    Set shellCmd = New pdString
+    shellCmd.Append "texconv.exe info "
+    shellCmd.Append """" & srcFile & """"
+    
+    Dim cShell As pdPipeSync
+    Set cShell = New pdPipeSync
+    If cShell.RunAndCaptureOutput(m_pathToTexDiag, shellCmd.ToString(), False) Then
+        
+        Dim outputString As String
+        outputString = cShell.GetStdOutDataAsString()
+        
+        'Look for the filename + the text "FAILED" in the output
+        If (InStr(1, outputString, Files.FileGetName(srcFile, False) & " FAILED", vbTextCompare) = 0) Then
+            
+            'Split the output string into lines
+            Dim cLines As pdStringStack
+            Set cLines = New pdStringStack
+            If cLines.CreateFromMultilineString(outputString) Then
+                
+                'If we've made it this far, we (probably?) have valid attributes for the target file
+                GetDDSAttributes = True
+                
+                'We now want to parse each line for key+value pairs.
+                Dim srcLine As String
+                Do While cLines.PopString(srcLine)
+                    
+                    Const EQUAL_SIGN As String = "="
+                    Dim eqPos As Long
+                    eqPos = InStr(1, srcLine, EQUAL_SIGN, vbBinaryCompare)
+                    If (eqPos > 0) Then
+                        
+                        Dim sKey As String, sValue As String
+                        sKey = Trim$(Left$(srcLine, eqPos - 1))
+                        sValue = Trim$(Right$(srcLine, Len(srcLine) - eqPos))
+                        dstAttributes.AddEntry sKey, sValue
+                        
+                        'To review attributes as they're parsed, use this:
+                        'pdDebug.LogAction sKey & ":" & sValue
+                        
+                    End If
+                    
+                Loop
+                
+            End If
+            
+        End If
         
     End If
     
