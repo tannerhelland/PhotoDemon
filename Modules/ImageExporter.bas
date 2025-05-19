@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 06/January/24
-'Last update: add PCX export
+'Last updated: 14/May/25
+'Last update: add DDS export
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.
 '
@@ -742,6 +742,74 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
 ExportBMPError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportBMP = False
+    
+End Function
+
+Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
+    
+    On Error GoTo ExportError
+    
+    ExportDDS = False
+    Dim sFileType As String: sFileType = "DDS"
+    
+    'If this system is not 64-bit capable, DirectXTex won't work
+    If (Not OS.OSSupports64bitExe) Then GoTo ExportError
+    
+    'Failsafe check for plugin initialization before proceeding
+    If (Not Plugin_DDS.IsDirectXTexAvailable()) Then GoTo ExportError
+    
+    'Generate a composited image copy, with alpha automatically un-premultiplied
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, False
+    
+    'Parse all relevant DDS parameters.  (See the export dialog for details on how these are generated.)
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString formatParams
+    
+    'PD's DDS interface requires us to first save a PNG file; the external DDS engine
+    ' will then convert this to an DDS file.
+    Dim cPNG As pdPNG
+    Set cPNG = New pdPNG
+    
+    'For performance reasons, write an uncompressed PNG
+    Const PNG_COMPRESS As Long = 0
+    
+    Dim imgSavedOK As Boolean
+    imgSavedOK = False
+    
+    'Generate a temporary filename for the intermediary PNG file.
+    Dim tmpFilename As String
+    tmpFilename = OS.UniqueTempFilename(customExtension:="png")
+    
+    'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
+    ' and format coverage than either FreeImage or GDI+.  Use it to dump a lossless copy of the current image
+    ' to file.
+    If (Not imgSavedOK) Then
+        PDDebug.LogAction "Using internal PNG encoder for this operation..."
+        imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, PNG_COMPRESS, vbNullString, True) < png_Failure)
+    
+        'If other mechanisms failed, attempt a failsafe export using GDI+.  (This should never trigger, but is
+        ' a holdover from when PD's PNG encoder was in its infancy and reliability was not yet real-world-confirmed.)
+        If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
+        
+    End If
+    
+    'We now have a temporary PNG file saved.  Shell DirectXTex with the proper parameters to generate a
+    ' valid DDS (at the requested filename).
+    If imgSavedOK Then ExportDDS = Plugin_DDS.ConvertStandardImageToDDS(tmpFilename, dstFile)
+    
+    'With the DDS generated, we can now erase our temporary PNG file
+    Files.FileDeleteIfExists tmpFilename
+    
+    'If the save was successful, the DDS file will exist in the target folder, but with t
+    
+    Exit Function
+    
+ExportError:
+    ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
+    ExportDDS = False
     
 End Function
 

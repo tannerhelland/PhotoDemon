@@ -77,8 +77,9 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
     ' (using the target extension).
     Dim reqExtension As String
     reqExtension = "png"
-    dstFile = Files.FileGetName(srcFile, True) & "." & reqExtension
+    dstFile = Files.FileGetPath(srcFile) & Files.FileGetName(srcFile, True) & "." & reqExtension
     
+    Debug.Print "dstfile 1", dstFile, srcFile
     'TODO: what if the destination file already exists???
     
     'Next we want to shell the plugin and wait for return.
@@ -114,11 +115,19 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
         shellCmd.Append "--format R8G8B8A8_UNORM "
     End If
     
+    'Overwriting target file is OK for this usage
+    shellCmd.Append "--overwrite "
+    
     'Tone-mapping might be appropriate for high-bit-depth images?
     'shellCmd.Append "--tonemap "
     
     'Multipage (doesn't work with PNG, could possibly try with TIFF)
     'shellCmd.Append "--wic-multiframe "
+    
+    'Force writing to the folder where the source file resides
+    shellCmd.Append "-o "
+    shellCmd.Append Files.FileGetPath(srcFile)
+    shellCmd.Append " "
     
     'Append space-safe source image
     shellCmd.Append """"
@@ -154,6 +163,7 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
             'Dim srcStdErr As String
             'srcStdErr = cShell.GetStdErrDataAsString()
             'PDDebug.LogAction "For reference, here's stderr: " & srcStdErr
+            Debug.Print "dstfile 2", dstFile
             
             'However, if the destination file exists, we can probably just load it?
             If Files.FileExists(dstFile) Then
@@ -177,6 +187,7 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
     
 End Function
 
+'Convert a "standard" image file (typically PNG) to DDS format.
 Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile As String) As Boolean
     
     Const FUNC_NAME As String = "ConvertStandardImageToDDS"
@@ -204,6 +215,13 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
     Dim shellCmd As pdString
     Set shellCmd = New pdString
     shellCmd.Append "texconv.exe "
+    
+    'Use DDS output (obviously) in whatever format the caller specified
+    shellCmd.Append "--file-type DDS "
+    shellCmd.Append "--format R8G8B8A8_UNORM "
+    
+    'Mipmaps?  Scaling?  DirectX version for header?
+    
 '
 '    'Assign encoding thread count (one per core seems reasonable for initial testing)
 '    shellCmd.Append "-j "
@@ -252,39 +270,32 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
 '    ' (NOTE: libavif hasn't always handled premultiplication correctly, so suspend this for now and revisit in future builds.)
 '    'shellCmd.Append "--premultiply "
     
+    'Overwrite destination file is OK
+    shellCmd.Append "--overwrite "
+    
     'Append properly delimited source image
     shellCmd.Append """"
     shellCmd.Append srcFile
     shellCmd.Append """ "
     
-    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
-    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
-    ' the original file remains untouched).
-    Dim tmpFilename As String
-    If Files.FileExists(dstFile) Then
-        Do
-            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
-        Loop While Files.FileExists(tmpFilename)
-    Else
-        tmpFilename = dstFile
-    End If
+    'Force writing to the same folder as the source file
+    shellCmd.Append "-o "
+    shellCmd.Append Files.FileGetPath(srcFile)
+    shellCmd.Append " "
     
-    'Append properly delimited destination image
-    shellCmd.Append """"
-    shellCmd.Append tmpFilename
-    shellCmd.Append """"
+    'DirectXTex automatically assumes destination filename for you
+    dstFile = Files.FileGetPath(srcFile) & Files.FileGetName(srcFile, True) & ".dds"
+    Files.FileDeleteIfExists dstFile
+    Debug.Print "Expected target file: " & dstFile
+    Debug.Print "source file: " & srcFile
     
     'Want to confirm the shelled command?  See it here:
-    'PDDebug.LogAction shellCmd.ToString()
-    
-    'We are guaranteed that the destination file does not exist, but in case the user somehow (miraculously?)
-    ' created a file with that name in the past 0.01 ms, guarantee non-existence.
-    Files.FileDeleteIfExists tmpFilename
+    PDDebug.LogAction "shell string: "
+    PDDebug.LogAction shellCmd.ToString()
     
     'Shell plugin and capture output for analysis
     Dim cShell As pdPipeSync
     Set cShell = New pdPipeSync
-    
     If cShell.RunAndCaptureOutput(pluginPath, shellCmd.ToString(), False) Then
         
         Dim outputString As String
@@ -292,15 +303,20 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
     
         'Shell appears successful.  The output string will have two easy-to-check flags if
         ' the conversion was successful.  Don't return success unless we find both.
-        Dim targetStringSrc As String, targetStringDst As String
-        targetStringSrc = "Successfully loaded: "
-        targetStringDst = "Wrote DDS: "
         
-        ConvertStandardImageToDDS = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
-        ConvertStandardImageToDDS = ConvertStandardImageToDDS And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
+        'TODO!
         
+'        Dim targetStringSrc As String, targetStringDst As String
+'        targetStringSrc = "Successfully loaded: "
+'        targetStringDst = "Wrote DDS: "
+'
+'        ConvertStandardImageToDDS = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
+'        ConvertStandardImageToDDS = ConvertStandardImageToDDS And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
+'
         'Want to review the output string manually?  Print it here:
-        'PDDebug.LogAction outputString
+        PDDebug.LogAction "(Output string follows:)"
+        PDDebug.LogAction outputString
+        ConvertStandardImageToDDS = Files.FileExists(dstFile)
         
         'Record full details of failures
         If ConvertStandardImageToDDS Then
@@ -312,15 +328,6 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
         
     Else
         InternalError FUNC_NAME, "shell failed"
-    End If
-    
-    'If the original file already existed, attempt to replace it now
-    If ConvertStandardImageToDDS And Strings.StringsNotEqual(dstFile, tmpFilename) Then
-        ConvertStandardImageToDDS = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
-        If (Not ConvertStandardImageToDDS) Then
-            Files.FileDelete tmpFilename
-            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
-        End If
     End If
     
 End Function
@@ -500,6 +507,16 @@ Private Function GetDDSAttributes(ByRef srcFile As String, ByRef dstAttributes A
         
     End If
     
+End Function
+
+'User-friendly names of each compression option
+Public Function GetListOfFormatNames(ByRef dstStringStack As pdStringStack) As Long
+
+End Function
+
+'Internal IDs for each compression option
+Public Function GetListOfFormatIDs(ByRef dstStringStack As pdStringStack) As Long
+
 End Function
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String)

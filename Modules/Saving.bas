@@ -376,6 +376,9 @@ Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outpu
             Case PDIF_AVIF
                 GetExportParamsFromDialog = (Dialogs.PromptAVIFSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
+            Case PDIF_DDS
+                GetExportParamsFromDialog = (Dialogs.PromptDDSSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
+            
             Case PDIF_BMP
                 GetExportParamsFromDialog = (Dialogs.PromptBMPSettings(srcImage, dstParamString, dstMetadataString) = vbOK)
             
@@ -461,6 +464,9 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         
         Case PDIF_BMP
             ExportToSpecificFormat = ImageExporter.ExportBMP(srcImage, dstPath, saveParameters, metadataParameters)
+        
+        Case PDIF_DDS
+            ExportToSpecificFormat = ImageExporter.ExportDDS(srcImage, dstPath, saveParameters, metadataParameters)
         
         Case PDIF_GIF
             If srcImage.IsAnimated Then
