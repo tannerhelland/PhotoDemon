@@ -10,6 +10,7 @@
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
+<author>Berat Tezer</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -25,27 +26,27 @@
 
 <phrase>
 <original>Paste to new image</original>
-<translation></translation>
+<translation>Yeni görüntüye yapıştır</translation>
 </phrase>
 
 <phrase>
 <original>Scan image</original>
-<translation></translation>
+<translation>Görüntü tarama</translation>
 </phrase>
 
 <phrase>
 <original>Select scanner or camera</original>
-<translation></translation>
+<translation>Tarayıcı ya da kamera seç</translation>
 </phrase>
 
 <phrase>
 <original>Internet import</original>
-<translation></translation>
+<translation>İnternetten içe aktar</translation>
 </phrase>
 
 <phrase>
 <original>Screen capture</original>
-<translation></translation>
+<translation>Ekran yakalama</translation>
 </phrase>
 
 <phrase>
@@ -65,7 +66,7 @@
 
 <phrase>
 <original>Save copy</original>
-<translation></translation>
+<translation>Kopyasını kaydet</translation>
 </phrase>
 
 <phrase>
@@ -80,22 +81,22 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>Görüntüyü dışa aktar</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Katmanları dışa aktar</translation>
 </phrase>
 
 <phrase>
 <original>Export animation</original>
-<translation></translation>
+<translation>Animasyonu dışa aktar</translation>
 </phrase>
 
 <phrase>
 <original>Export color lookup</original>
-<translation></translation>
+<translation>Renk eşlemeyi dışa aktar</translation>
 </phrase>
 
 <phrase>
@@ -105,22 +106,22 @@
 
 <phrase>
 <original>Export palette</original>
-<translation></translation>
+<translation>Paleti dışa aktar</translation>
 </phrase>
 
 <phrase>
 <original>Batch wizard</original>
-<translation></translation>
+<translation>Toplu işlem sihirbazı</translation>
 </phrase>
 
 <phrase>
 <original>Print</original>
-<translation></translation>
+<translation>Yazdır</translation>
 </phrase>
 
 <phrase>
 <original>Exit program</original>
-<translation></translation>
+<translation>Programdan çık</translation>
 </phrase>
 
 <phrase>
@@ -140,7 +141,7 @@
 
 <phrase>
 <original>Repeat last action</original>
-<translation></translation>
+<translation>Son eylemi tekrarla</translation>
 </phrase>
 
 <phrase>
@@ -155,7 +156,7 @@
 
 <phrase>
 <original>Cut merged</original>
-<translation></translation>
+<translation>Birleştirilmişi kes</translation>
 </phrase>
 
 <phrase>
@@ -175,7 +176,7 @@
 
 <phrase>
 <original>Paste to cursor</original>
-<translation></translation>
+<translation>İmlece yapıştır</translation>
 </phrase>
 
 <phrase>
@@ -195,7 +196,7 @@
 
 <phrase>
 <original>Empty clipboard</original>
-<translation></translation>
+<translation>Panoyu boşalt</translation>
 </phrase>
 
 <phrase>
@@ -205,7 +206,7 @@
 
 <phrase>
 <original>Content-aware fill</original>
-<translation></translation>
+<translation>İçerik duyarlı doldur</translation>
 </phrase>
 
 <phrase>
@@ -220,32 +221,32 @@
 
 <phrase>
 <original>Duplicate image</original>
-<translation></translation>
+<translation>Görüntüyü çoğalt</translation>
 </phrase>
 
 <phrase>
 <original>Resize image</original>
-<translation>Görüntüyü Yeniden Boyutlandır</translation>
+<translation>Görüntüyü yeniden boyutlandır</translation>
 </phrase>
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation></translation>
+<translation>İçerik duyarlı görsel yeniden boyutlandırma</translation>
 </phrase>
 
 <phrase>
 <original>Canvas size</original>
-<translation>Tuval Boyutu</translation>
+<translation>Tuval boyutu</translation>
 </phrase>
 
 <phrase>
 <original>Fit canvas to active layer</original>
-<translation></translation>
+<translation>Kanvası aktif katmana uydur</translation>
 </phrase>
 
 <phrase>
 <original>Fit canvas around all layers</original>
-<translation></translation>
+<translation>Kanvası tüm katmanlara uydur</translation>
 </phrase>
 
 <phrase>
@@ -255,32 +256,32 @@
 
 <phrase>
 <original>Trim empty image borders</original>
-<translation></translation>
+<translation>Boş görüntü kenarlarını kırp</translation>
 </phrase>
 
 <phrase>
 <original>Straighten image</original>
-<translation></translation>
+<translation>Görseli düzelt</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 clockwise</original>
-<translation></translation>
+<translation>Görseli 90 derece sağa döndür</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation></translation>
+<translation>Görseli 90 derece sola döndür</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 180</original>
-<translation></translation>
+<translation>Görseli 180 derece döndür</translation>
 </phrase>
 
 <phrase>
 <original>Arbitrary image rotation</original>
-<translation></translation>
+<translation>Detaylı döndürme</translation>
 </phrase>
 
 <phrase>
@@ -295,27 +296,27 @@
 
 <phrase>
 <original>Merge visible layers</original>
-<translation>Görünür Katmanları Birleştir</translation>
+<translation>Görünür katmanları birleştir</translation>
 </phrase>
 
 <phrase>
 <original>Flatten image</original>
-<translation>Görüntüyü Düzleştir</translation>
+<translation>Görüntüyü düzleştir</translation>
 </phrase>
 
 <phrase>
 <original>Animation options</original>
-<translation></translation>
+<translation>Animasyon ayarları</translation>
 </phrase>
 
 <phrase>
 <original>Create color lookup</original>
-<translation></translation>
+<translation>Renk eşleme oluştur</translation>
 </phrase>
 
 <phrase>
 <original>Compare similarity</original>
-<translation></translation>
+<translation>Benzerliği karşılaştır</translation>
 </phrase>
 
 <phrase>
@@ -325,7 +326,7 @@
 
 <phrase>
 <original>Remove all metadata</original>
-<translation></translation>
+<translation>Tüm metadatayı sil</translation>
 </phrase>
 
 <phrase>
@@ -335,17 +336,17 @@
 
 <phrase>
 <original>Add new layer</original>
-<translation></translation>
+<translation>Yeni katman ekle</translation>
 </phrase>
 
 <phrase>
 <original>Add blank layer</original>
-<translation></translation>
+<translation>Boş katman ekle</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate Layer</original>
-<translation>Katmanı Çoğalt</translation>
+<translation>Katmanı çoğalt</translation>
 </phrase>
 
 <phrase>
@@ -355,17 +356,17 @@
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Görünür katmanlardan yeni katman</translation>
 </phrase>
 
 <phrase>
 <original>Layer via copy</original>
-<translation></translation>
+<translation>Kopyalayarak katman oluştur</translation>
 </phrase>
 
 <phrase>
 <original>Layer via cut</original>
-<translation></translation>
+<translation>Keserek katman oluştur</translation>
 </phrase>
 
 <phrase>
@@ -375,22 +376,22 @@
 
 <phrase>
 <original>Delete hidden layers</original>
-<translation></translation>
+<translation>Gizli katmanları sil</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation></translation>
+<translation>Panodan katmanı değiştir</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from file</original>
-<translation></translation>
+<translation>Dosyadan katmanı değiştir</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation></translation>
+<translation>Görünür katmanlardan katmanı değiştir</translation>
 </phrase>
 
 <phrase>
@@ -400,132 +401,132 @@
 
 <phrase>
 <original>Merge layer down</original>
-<translation></translation>
+<translation>Katmanı yukarı birleştir</translation>
 </phrase>
 
 <phrase>
 <original>Go to top layer</original>
-<translation></translation>
+<translation>En üst katmana git</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer above</original>
-<translation></translation>
+<translation>Üst katmana git</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer below</original>
-<translation></translation>
+<translation>Alt katmana git</translation>
 </phrase>
 
 <phrase>
 <original>Go to bottom layer</original>
-<translation></translation>
+<translation>En alt katmana git</translation>
 </phrase>
 
 <phrase>
 <original>Raise layer to top</original>
-<translation>Katmanı En Üste Yükselt</translation>
+<translation>Katmanı en öne getir</translation>
 </phrase>
 
 <phrase>
 <original>Raise layer</original>
-<translation>Katmanı Yükselt</translation>
+<translation>Katmanı öne getir</translation>
 </phrase>
 
 <phrase>
 <original>Lower layer</original>
-<translation>Katmanı Alçalt</translation>
+<translation>Katmanı geri götür</translation>
 </phrase>
 
 <phrase>
 <original>Lower layer to bottom</original>
-<translation>Katmanı En Alta İndir</translation>
+<translation>Katmanı en geri götür</translation>
 </phrase>
 
 <phrase>
 <original>Reverse layer order</original>
-<translation></translation>
+<translation>Katman sırasını tersine çevir</translation>
 </phrase>
 
 <phrase>
 <original>Toggle layer visibility</original>
-<translation>Katman Görünürlüğünü Değiştir</translation>
+<translation>Katman görünürlüğünü değiştir</translation>
 </phrase>
 
 <phrase>
 <original>Show only this layer</original>
-<translation></translation>
+<translation>Yalnızca bu katmanı göster</translation>
 </phrase>
 
 <phrase>
 <original>Hide only this layer</original>
-<translation></translation>
+<translation>Yalnızca bu katmanı gizle</translation>
 </phrase>
 
 <phrase>
 <original>Show all layers</original>
-<translation></translation>
+<translation>Tüm katmanları göster</translation>
 </phrase>
 
 <phrase>
 <original>Hide all layers</original>
-<translation></translation>
+<translation>Tüm katmanları gizle</translation>
 </phrase>
 
 <phrase>
 <original>Crop layer to selection</original>
-<translation></translation>
+<translation>Katmanı seçime göre kırp</translation>
 </phrase>
 
 <phrase>
 <original>Pad layer to image size</original>
-<translation></translation>
+<translation>Katmanı görüntü boyutuna göre genişlet</translation>
 </phrase>
 
 <phrase>
 <original>Trim empty layer borders</original>
-<translation></translation>
+<translation>Boş katman kenarlarını kırp</translation>
 </phrase>
 
 <phrase>
 <original>Straighten layer</original>
-<translation></translation>
+<translation>Katmanı düzelt</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 clockwise</original>
-<translation></translation>
+<translation>Katmanı 90 derece sağa döndür</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 counter-clockwise</original>
-<translation></translation>
+<translation>Katmanı 90 derece sola döndür</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 180</original>
-<translation></translation>
+<translation>Katmanı 180 derece döndür</translation>
 </phrase>
 
 <phrase>
 <original>Arbitrary layer rotation</original>
-<translation></translation>
+<translation>Katmanı detaylı döndür</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer horizontally</original>
-<translation></translation>
+<translation>Katmanı yatay döndür</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer vertically</original>
-<translation></translation>
+<translation>Katmanı dikey döndür</translation>
 </phrase>
 
 <phrase>
 <original>Reset layer size</original>
-<translation></translation>
+<translation>Katman boyutunu sıfırla</translation>
 </phrase>
 
 <phrase>
@@ -535,32 +536,32 @@
 
 <phrase>
 <original>Content-aware layer resize</original>
-<translation></translation>
+<translation>İçerik duyarlı katman boyutlandırma</translation>
 </phrase>
 
 <phrase>
 <original>Fit layer to image</original>
-<translation></translation>
+<translation>Katmanı görüntüye uydur</translation>
 </phrase>
 
 <phrase>
 <original>Color to alpha</original>
-<translation>Renkten Alfaya</translation>
+<translation>Rengi alfaya dönüştür</translation>
 </phrase>
 
 <phrase>
 <original>Luminance to alpha</original>
-<translation></translation>
+<translation>Lüminansı alfaya dönüştür</translation>
 </phrase>
 
 <phrase>
 <original>Remove alpha channel</original>
-<translation>Alfa Kanalını Kaldır</translation>
+<translation>Alfa kanalını sil</translation>
 </phrase>
 
 <phrase>
 <original>Threshold alpha</original>
-<translation>Eşik Alfa</translation>
+<translation>Eşik alfa</translation>
 </phrase>
 
 <phrase>
@@ -570,42 +571,42 @@
 
 <phrase>
 <original>Rasterize all layers</original>
-<translation></translation>
+<translation>Katmanı rasterleştir</translation>
 </phrase>
 
 <phrase>
 <original>Split layer into image</original>
-<translation></translation>
+<translation>Katmanı görüntüye ayır</translation>
 </phrase>
 
 <phrase>
 <original>Split layers into images</original>
-<translation></translation>
+<translation>Katmanları görüntülere ayır</translation>
 </phrase>
 
 <phrase>
 <original>Split images into layers</original>
-<translation></translation>
+<translation>Görüntüleri katmanlara ayır</translation>
 </phrase>
 
 <phrase>
 <original>Select all</original>
-<translation>Tümünü Seç</translation>
+<translation>Tümünü seç</translation>
 </phrase>
 
 <phrase>
 <original>Remove selection</original>
-<translation></translation>
+<translation>Seçimi sil</translation>
 </phrase>
 
 <phrase>
 <original>Invert selection</original>
-<translation>Seçimi Tersine Çevir</translation>
+<translation>Seçimi tersine çevir</translation>
 </phrase>
 
 <phrase>
 <original>Grow selection</original>
-<translation>Seçimi Büyüt</translation>
+<translation>Seçimi büyüt</translation>
 </phrase>
 
 <phrase>
@@ -615,82 +616,82 @@
 
 <phrase>
 <original>Border selection</original>
-<translation>Kenarlık Seçimi</translation>
+<translation>Kenarlık seçimi</translation>
 </phrase>
 
 <phrase>
 <original>Feather selection</original>
-<translation>Tüylü Seçim</translation>
+<translation>Seçimi yumuşat</translation>
 </phrase>
 
 <phrase>
 <original>Sharpen selection</original>
-<translation>Seçimi Keskinleştir</translation>
+<translation>Seçimi keskinleştir</translation>
 </phrase>
 
 <phrase>
 <original>Erase selected area</original>
-<translation></translation>
+<translation>Seçili alanı sil</translation>
 </phrase>
 
 <phrase>
 <original>Fill selected area</original>
-<translation></translation>
+<translation>Seçili alanı doldur</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation></translation>
+<translation>Seçili alanı iyileştir</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation></translation>
+<translation>Seçili alanı vurgula</translation>
 </phrase>
 
 <phrase>
 <original>Load selection</original>
-<translation></translation>
+<translation>Seçimi yükle</translation>
 </phrase>
 
 <phrase>
 <original>Save selection</original>
-<translation></translation>
+<translation>Seçimi kaydet</translation>
 </phrase>
 
 <phrase>
 <original>Export selected area as image</original>
-<translation></translation>
+<translation>Seçili alanı görüntü olarak dışa aktar</translation>
 </phrase>
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation></translation>
+<translation>Seçim maskesini görüntü olarak dışa aktar</translation>
 </phrase>
 
 <phrase>
 <original>Auto correct</original>
-<translation></translation>
+<translation>Otomatik düzeltme</translation>
 </phrase>
 
 <phrase>
 <original>Auto enhance</original>
-<translation></translation>
+<translation>Otomatik iyileştirme</translation>
 </phrase>
 
 <phrase>
 <original>Black and white</original>
-<translation></translation>
+<translation>Siyah ve beyaz</translation>
 </phrase>
 
 <phrase>
 <original>Brightness and contrast</original>
-<translation></translation>
+<translation>Parlaklık ve kontrast</translation>
 </phrase>
 
 <phrase>
 <original>Color balance</original>
-<translation>Renk Dengesi</translation>
+<translation>Renk dengesi</translation>
 </phrase>
 
 <phrase>
@@ -705,67 +706,67 @@
 
 <phrase>
 <original>Shadows and highlights</original>
-<translation></translation>
+<translation>Gölgeler ve vurgular</translation>
 </phrase>
 
 <phrase>
 <original>Vibrance</original>
-<translation></translation>
+<translation>Canlılık</translation>
 </phrase>
 
 <phrase>
 <original>White balance</original>
-<translation>Beyaz Dengesi</translation>
+<translation>Beyaz dengesi</translation>
 </phrase>
 
 <phrase>
 <original>Channel mixer</original>
-<translation>Kanal Karıştırıcı</translation>
+<translation>Kanal karıştırıcı</translation>
 </phrase>
 
 <phrase>
 <original>Rechannel</original>
-<translation></translation>
+<translation>Yeniden Kanallandırma</translation>
 </phrase>
 
 <phrase>
 <original>Maximum channel</original>
-<translation></translation>
+<translation>Maksimum kanallandırma</translation>
 </phrase>
 
 <phrase>
 <original>Minimum channel</original>
-<translation></translation>
+<translation>Minimum kanallandırma</translation>
 </phrase>
 
 <phrase>
 <original>Shift colors (left)</original>
-<translation></translation>
+<translation>Renkleri kaydır (sola)</translation>
 </phrase>
 
 <phrase>
 <original>Shift colors (right)</original>
-<translation></translation>
+<translation>Renkleri kaydır (sağa)</translation>
 </phrase>
 
 <phrase>
 <original>Hue and saturation</original>
-<translation></translation>
+<translation>Renk tonu ve doygunluk</translation>
 </phrase>
 
 <phrase>
 <original>Temperature</original>
-<translation></translation>
+<translation>Sıcaklık</translation>
 </phrase>
 
 <phrase>
 <original>Tint</original>
-<translation>Renklendir</translation>
+<translation>Tonlama</translation>
 </phrase>
 
 <phrase>
 <original>Color lookup</original>
-<translation></translation>
+<translation>Renk eşleme</translation>
 </phrase>
 
 <phrase>
@@ -775,12 +776,12 @@
 
 <phrase>
 <original>Photo filter</original>
-<translation></translation>
+<translation>Fotoğraf filtresi</translation>
 </phrase>
 
 <phrase>
 <original>Replace color</original>
-<translation></translation>
+<translation>Rengi değiştir</translation>
 </phrase>
 
 <phrase>
@@ -790,37 +791,37 @@
 
 <phrase>
 <original>Split toning</original>
-<translation></translation>
+<translation>Ayrık tonlama</translation>
 </phrase>
 
 <phrase>
 <original>Equalize</original>
-<translation>Eşitle</translation>
+<translation>Dengele</translation>
 </phrase>
 
 <phrase>
 <original>Stretch histogram</original>
-<translation></translation>
+<translation>Histogramı genişlet</translation>
 </phrase>
 
 <phrase>
 <original>Film negative</original>
-<translation></translation>
+<translation>Negatif film</translation>
 </phrase>
 
 <phrase>
 <original>Invert hue</original>
-<translation></translation>
+<translation>Renk tonunu tersine çevir</translation>
 </phrase>
 
 <phrase>
 <original>Invert RGB</original>
-<translation></translation>
+<translation>RGB'yi tersine çevir</translation>
 </phrase>
 
 <phrase>
 <original>Dehaze</original>
-<translation></translation>
+<translation>Bulanıklığı gider</translation>
 </phrase>
 
 <phrase>
@@ -835,72 +836,72 @@
 
 <phrase>
 <original>HDR</original>
-<translation></translation>
+<translation>HDR</translation>
 </phrase>
 
 <phrase>
 <original>Gradient map</original>
-<translation>Gradyan Eşlemi</translation>
+<translation>Gradyan haritası</translation>
 </phrase>
 
 <phrase>
 <original>Palette map</original>
-<translation></translation>
+<translation>Palet haritası</translation>
 </phrase>
 
 <phrase>
 <original>Color to monochrome</original>
-<translation></translation>
+<translation>Rengi monokroma çevir</translation>
 </phrase>
 
 <phrase>
 <original>Monochrome to gray</original>
-<translation></translation>
+<translation>Monoktromu griye çevir</translation>
 </phrase>
 
 <phrase>
 <original>Colored pencil</original>
-<translation></translation>
+<translation>Renkli kurşun kalem</translation>
 </phrase>
 
 <phrase>
 <original>Comic book</original>
-<translation></translation>
+<translation>Çizgi roman</translation>
 </phrase>
 
 <phrase>
 <original>Figured glass</original>
-<translation></translation>
+<translation>Desenli cam</translation>
 </phrase>
 
 <phrase>
 <original>Film noir</original>
-<translation></translation>
+<translation>Sinematik siyah</translation>
 </phrase>
 
 <phrase>
 <original>Glass tiles</original>
-<translation></translation>
+<translation>Cam karoları</translation>
 </phrase>
 
 <phrase>
 <original>Kaleidoscope</original>
-<translation>Çiçek Dürbünü</translation>
+<translation>Kaleydoskop</translation>
 </phrase>
 
 <phrase>
 <original>Modern art</original>
-<translation></translation>
+<translation>Modern sanat</translation>
 </phrase>
 
 <phrase>
 <original>Oil painting</original>
-<translation></translation>
+<translation>Yağlı boya</translation>
 </phrase>
 
 <phrase>
 <original>Plastic wrap</original>
-<translation></translation>
+<translation>Plastik sargı</translation>
 </phrase>
 
 <phrase>
@@ -910,87 +911,87 @@
 
 <phrase>
 <original>Relief</original>
-<translation></translation>
+<translation>Kabartma</translation>
 </phrase>
 
 <phrase>
 <original>Stained glass</original>
-<translation></translation>
+<translation>Vitray</translation>
 </phrase>
 
 <phrase>
 <original>Box blur</original>
-<translation></translation>
+<translation>Kutu bulanıklığı</translation>
 </phrase>
 
 <phrase>
 <original>Gaussian blur</original>
-<translation>Gaussian Bulanıklığı</translation>
+<translation>Gaussian bulanıklığı</translation>
 </phrase>
 
 <phrase>
 <original>Surface blur</original>
-<translation></translation>
+<translation>Yüzey bulanıklığı</translation>
 </phrase>
 
 <phrase>
 <original>Motion blur</original>
-<translation>Hareket Bulanıklığı</translation>
+<translation>Hareket bulanıklığı</translation>
 </phrase>
 
 <phrase>
 <original>Radial blur</original>
-<translation></translation>
+<translation>Radyal bulanıklığı</translation>
 </phrase>
 
 <phrase>
 <original>Zoom blur</original>
-<translation></translation>
+<translation>Yakınlaştırma bulanıklığı</translation>
 </phrase>
 
 <phrase>
 <original>Correct lens distortion</original>
-<translation></translation>
+<translation>Lens distorsiyonunu düzelt</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
-<translation></translation>
+<translation>Yuvarla</translation>
 </phrase>
 
 <phrase>
 <original>Droste</original>
-<translation></translation>
+<translation>Droste</translation>
 </phrase>
 
 <phrase>
 <original>Apply lens distortion</original>
-<translation></translation>
+<translation>Lens distorsiyonunu uygula</translation>
 </phrase>
 
 <phrase>
 <original>Pinch and whirl</original>
-<translation></translation>
+<translation>Sıkıştır ve döndür</translation>
 </phrase>
 
 <phrase>
 <original>Poke</original>
-<translation></translation>
+<translation>Bük</translation>
 </phrase>
 
 <phrase>
 <original>Ripple</original>
-<translation>Dalgacık</translation>
+<translation>Dalgalanma</translation>
 </phrase>
 
 <phrase>
 <original>Squish</original>
-<translation></translation>
+<translation>Sıkıştır</translation>
 </phrase>
 
 <phrase>
 <original>Swirl</original>
-<translation></translation>
+<translation>Dönüş</translation>
 </phrase>
 
 <phrase>
@@ -1000,7 +1001,7 @@
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation></translation>
+<translation>Çeşitli bozulmalar</translation>
 </phrase>
 
 <phrase>
@@ -1010,72 +1011,72 @@
 
 <phrase>
 <original>Enhance edges</original>
-<translation></translation>
+<translation>Kenarları belirginleştir</translation>
 </phrase>
 
 <phrase>
 <original>Find edges</original>
-<translation></translation>
+<translation>Kenarları bul</translation>
 </phrase>
 
 <phrase>
 <original>Gradient flow</original>
-<translation></translation>
+<translation>Gradyan akışı</translation>
 </phrase>
 
 <phrase>
 <original>Range filter</original>
-<translation></translation>
+<translation>Aralık filtresi</translation>
 </phrase>
 
 <phrase>
 <original>Trace contour</original>
-<translation></translation>
+<translation>Kontur izleme</translation>
 </phrase>
 
 <phrase>
 <original>Black light</original>
-<translation></translation>
+<translation>Siyah ışık</translation>
 </phrase>
 
 <phrase>
 <original>Bump map</original>
-<translation>Derinlik Etkisi</translation>
+<translation>Yükseklik haritası</translation>
 </phrase>
 
 <phrase>
 <original>Cross-screen</original>
-<translation></translation>
+<translation>Çift ekran</translation>
 </phrase>
 
 <phrase>
 <original>Rainbow</original>
-<translation></translation>
+<translation>Gökkuşağı</translation>
 </phrase>
 
 <phrase>
 <original>Sunshine</original>
-<translation></translation>
+<translation>Güneş ışığı</translation>
 </phrase>
 
 <phrase>
 <original>Dilate (maximum rank)</original>
-<translation></translation>
+<translation>Şişir (maksimum)</translation>
 </phrase>
 
 <phrase>
 <original>Erode (minimum rank)</original>
-<translation></translation>
+<translation>Erozyon (minimum)</translation>
 </phrase>
 
 <phrase>
 <original>Atmosphere</original>
-<translation></translation>
+<translation>Atmosfer</translation>
 </phrase>
 
 <phrase>
 <original>Fog</original>
-<translation></translation>
+<translation>Sis</translation>
 </phrase>
 
 <phrase>
