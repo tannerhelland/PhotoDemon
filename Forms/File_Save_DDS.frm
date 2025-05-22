@@ -277,43 +277,25 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         If chkLivePreview.Value Then
             
             'Now perform the (ugly) dance of workingDIB > PNG > DDS > PNG > workingDIB.
-            ' (Note that the first workingDIB > PNG step was performed by UpdatePreviewSource.)
+            ' (Note that the first workingDIB > PNG step was performed by UpdatePreviewSource,
+            ' and the resulting file is stored in m_PreviewImagePath.)
             
             'Start by generating temporary filenames for intermediary files
             Dim tmpFilenameBase As String, tmpFilenameIntermediary As String, tmpFilenameDDS As String
-            tmpFilenameBase = OS.UniqueTempFilename()
-            tmpFilenameIntermediary = tmpFilenameBase & ".png"
-            tmpFilenameDDS = tmpFilenameBase & ".dds"
-            
+
             'Pull a format name from the list box
             Dim ddsFormatName As String
             If (Me.lstFormat.ListIndex >= 0) And (Not m_listOfIDs Is Nothing) Then ddsFormatName = m_listOfIDs.GetString(lstFormat.ListIndex)
             
-            'Shell directxtex, and request it to convert the preview PNG to dds
+            'Shell directxtex, and request it to convert the preview PNG to DDS
             If Plugin_DDS.ConvertStandardImageToDDS(m_PreviewImagePath, tmpFilenameDDS, ddsFormatName) Then
-                
-                Debug.Print "converted to DDS 1: " & tmpFilenameDDS
-                
-                'Because DirectXTex doesn't allow us to specify a destination file, we need to rename
-                ' this intermediary file (otherwise it will overwrite our original PNG, which we don't
-                ' want to constantly regenerate because it's time and energy intensive!).
-                Dim fileRenamed As String
-                fileRenamed = OS.UniqueTempFilename(customExtension:="dds")
-                Debug.Print "filerenamed", fileRenamed
-                If (Not Files.FileMove(tmpFilenameDDS, fileRenamed, True)) Then
-                    InternalError funcName, "couldn't rename intermediary file"
-                    fileRenamed = tmpFilenameDDS
-                End If
                 
                 'Immediately shell it again, but this time, ask it to convert the DDS it just made
                 ' back into a PNG
-                Files.FileDeleteIfExists tmpFilenameIntermediary
-                If Plugin_DDS.ConvertDDStoStandardImage(fileRenamed, tmpFilenameIntermediary, False) Then
-                    
-                    Debug.Print "converted from DDS to PNG (" & tmpFilenameIntermediary & ")"
+                If Plugin_DDS.ConvertDDStoStandardImage(tmpFilenameDDS, tmpFilenameIntermediary, False) Then
                     
                     'We are done with the DDS; kill it
-                    Files.FileDeleteIfExists fileRenamed
+                    Files.FileDeleteIfExists tmpFilenameDDS
                     
                     'Load the finished PNG *back* into a pdDIB object
                     If Loading.QuickLoadImageToDIB(tmpFilenameIntermediary, workingDIB, False, False, True) Then

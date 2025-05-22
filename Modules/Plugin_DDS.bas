@@ -34,7 +34,7 @@ Option Explicit
 
 'For verbose debug output, set this to TRUE.
 ' LEAVE AS FALSE IN PRODUCTION BUILDS.
-Private Const DDS_DEBUG_VERBOSE As Boolean = True
+Private Const DDS_DEBUG_VERBOSE As Boolean = False
 
 'Because DirectXTex ships x64 builds by default, we limit DDS support to 64-bit OS versions.
 Private m_DirectXTexAvailable As Boolean
@@ -371,10 +371,12 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
         'Shell appears successful. Ensure the destination file exists.
         ConvertStandardImageToDDS = Files.FileExists(dstFile)
         
+        'Erase the temporary source image copy and text file we generated
+        Files.FileDeleteIfExists dstTmpFilePNG
+        Files.FileDeleteIfExists tmpTxtFile
+        
         'Record full details of failures
-        If ConvertStandardImageToDDS Then
-            PDDebug.LogAction "directxtex reports success!"
-        Else
+        If (Not ConvertStandardImageToDDS) Then
             InternalError FUNC_NAME, "save failed; output follows:"
             PDDebug.LogAction outputString
         End If
