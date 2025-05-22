@@ -1350,9 +1350,13 @@ Private Function LoadDDS(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
             ' in a format we can directly process (currently PNG).
             Dim tmpFile As String
             LoadDDS = Plugin_DDS.ConvertDDStoStandardImage(srcFile, tmpFile, allowErrorPopups)
+            Debug.Print "DDS load result: " & LoadDDS
+            Debug.Print "Tmp PNG file: " & tmpFile
+            Debug.Print Files.FileExists(tmpFile)
             
             'If that worked, load the intermediary image (PNG format) using the relevant decoder
             If LoadDDS Then LoadDDS = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages, True)
+            Debug.Print "PNG load result: " & LoadDDS
             
             'Regardless of outcome, kill the temp file
             Files.FileDeleteIfExists tmpFile

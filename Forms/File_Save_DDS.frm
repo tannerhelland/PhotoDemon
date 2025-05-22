@@ -22,11 +22,21 @@ Begin VB.Form dialog_ExportDDS
    ScaleHeight     =   439
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
+   Begin PhotoDemon.pdListBox lstFormat 
+      Height          =   5055
+      Left            =   6120
+      TabIndex        =   3
+      Top             =   240
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   8916
+      Caption         =   "format"
+   End
    Begin PhotoDemon.pdCheckBox chkLivePreview 
       Height          =   375
       Left            =   6120
       TabIndex        =   2
-      Top             =   3600
+      Top             =   5400
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   661
@@ -98,6 +108,9 @@ Private m_FormatParamString As String
 'Final metadata XML packet, with all metadata settings defined as tag+value pairs
 Private m_MetadataParamString As String
 
+'DDS format names and IDs; we display names, but pass corresponding IDs to DirectXTex
+Private m_listOfNames As pdStringStack, m_listOfIDs As pdStringStack
+
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
@@ -124,6 +137,9 @@ Private Sub cmdBar_OKClick()
 
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
+    
+    'Add the selected format
+    cParams.AddParam "dds-format", m_listOfIDs.GetString(Me.lstFormat.ListIndex), True
     
     m_FormatParamString = cParams.GetParamString
     
@@ -159,6 +175,10 @@ Private Sub Form_Unload(Cancel As Integer)
     
 End Sub
 
+Private Sub lstFormat_Click()
+    UpdatePreview
+End Sub
+
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreviewSource
     UpdatePreview
@@ -173,6 +193,23 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
     Message "Waiting for user to specify export options... "
+    
+    'Populate the (rather large) list of export settings
+    lstFormat.SetAutomaticRedraws False
+    lstFormat.Clear
+    
+    Plugin_DDS.GetListOfFormatNamesAndIDs m_listOfNames, m_listOfIDs
+    
+    Dim i As Long
+    For i = 0 To m_listOfNames.GetNumOfStrings - 1
+        lstFormat.AddItem m_listOfNames.GetString(i), i
+    Next i
+
+    'TODO: see if the image was originally a DDS file; if it was, auto-supply the same format
+    ' (if possible)
+    lstFormat.ListIndex = 0
+    
+    lstFormat.SetAutomaticRedraws True, True
     
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
     ' when absolutely necessary.
@@ -248,8 +285,12 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             tmpFilenameIntermediary = tmpFilenameBase & ".png"
             tmpFilenameDDS = tmpFilenameBase & ".dds"
             
+            'Pull a format name from the list box
+            Dim ddsFormatName As String
+            If (Me.lstFormat.ListIndex >= 0) And (Not m_listOfIDs Is Nothing) Then ddsFormatName = m_listOfIDs.GetString(lstFormat.ListIndex)
+            
             'Shell directxtex, and request it to convert the preview PNG to dds
-            If Plugin_DDS.ConvertStandardImageToDDS(m_PreviewImagePath, tmpFilenameDDS) Then
+            If Plugin_DDS.ConvertStandardImageToDDS(m_PreviewImagePath, tmpFilenameDDS, ddsFormatName) Then
                 
                 Debug.Print "converted to DDS 1: " & tmpFilenameDDS
                 

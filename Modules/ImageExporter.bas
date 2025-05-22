@@ -745,6 +745,7 @@ ExportBMPError:
     
 End Function
 
+'Exporting DDS files requires DirectXTex in the plugins folder (specifically, texconv.exe)
 Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportError
@@ -752,7 +753,7 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportDDS = False
     Dim sFileType As String: sFileType = "DDS"
     
-    'If this system is not 64-bit capable, DirectXTex won't work
+    'DirectXTex requires a 64-bit OS
     If (Not OS.OSSupports64bitExe) Then GoTo ExportError
     
     'Failsafe check for plugin initialization before proceeding
@@ -768,6 +769,10 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
+    'Pull the target format from the param string
+    Dim ddsTargetFormat As String
+    ddsTargetFormat = cParams.GetString("dds-format", vbNullString, True)
+    
     'PD's DDS interface requires us to first save a PNG file; the external DDS engine
     ' will then convert this to an DDS file.
     Dim cPNG As pdPNG
@@ -779,31 +784,33 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim imgSavedOK As Boolean
     imgSavedOK = False
     
-    'Generate a temporary filename for the intermediary PNG file.
+    'Generate a temporary filename for the intermediary PNG file
+    ' (and ensure said file does not already exist in the target folder).
     Dim tmpFilename As String
-    tmpFilename = OS.UniqueTempFilename(customExtension:="png")
+    Do
+        tmpFilename = Files.FileGetPath(dstFile) & Files.FileGetName(OS.UniqueTempFilename(customExtension:="png"), False)
+    Loop While Files.FileExists(tmpFilename)
     
-    'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
-    ' and format coverage than either FreeImage or GDI+.  Use it to dump a lossless copy of the current image
-    ' to file.
+    'Dump a lossless + uncompressed (for perf reasons) copy of the current image to file in PNG format.
     If (Not imgSavedOK) Then
-        PDDebug.LogAction "Using internal PNG encoder for this operation..."
         imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, PNG_COMPRESS, vbNullString, True) < png_Failure)
-    
-        'If other mechanisms failed, attempt a failsafe export using GDI+.  (This should never trigger, but is
-        ' a holdover from when PD's PNG encoder was in its infancy and reliability was not yet real-world-confirmed.)
         If (Not imgSavedOK) Then imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
-        
     End If
     
     'We now have a temporary PNG file saved.  Shell DirectXTex with the proper parameters to generate a
     ' valid DDS (at the requested filename).
-    If imgSavedOK Then ExportDDS = Plugin_DDS.ConvertStandardImageToDDS(tmpFilename, dstFile)
+    Dim tmpDstFile As String
+    If imgSavedOK Then ExportDDS = Plugin_DDS.ConvertStandardImageToDDS(tmpFilename, tmpDstFile, ddsTargetFormat)
     
     'With the DDS generated, we can now erase our temporary PNG file
     Files.FileDeleteIfExists tmpFilename
     
-    'If the save was successful, the DDS file will exist in the target folder, but with t
+    'If the save was successful, the DDS file will exist in the target folder, but with the original PNG file's name.
+    ' (The save function automatically supplied this to us via dstFile.)
+    
+    'We need to rename that temp file with the user's specified filename.
+    ExportDDS = Files.FileCopyW(tmpDstFile, dstFile)
+    Files.FileDeleteIfExists tmpDstFile
     
     Exit Function
     
