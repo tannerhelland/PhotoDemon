@@ -635,9 +635,6 @@ Public Function GetListOfFormatNamesAndIDs(ByRef dstNames As pdStringStack, ByRe
     dstIDs.AddString "R8G8B8A8_UNORM_SRGB"
     dstNames.AddString "R8G8B8A8 (sRGB, DX 10+)"
 
-    dstIDs.AddString "R8G8B8X8_UNORM"
-    dstNames.AddString "R8G8B8X8 (Linear, X8B8G8R8)"
-
     dstIDs.AddString "B4G4R4A4_UNORM"
     dstNames.AddString "B4G4R4A4 (Linear, A4R4G4B4)"
 
@@ -660,6 +657,69 @@ Public Function GetListOfFormatNamesAndIDs(ByRef dstNames As pdStringStack, ByRe
     dstNames.AddString "R32 (Linear, Float)"
 
     GetListOfFormatNamesAndIDs = dstIDs.GetNumOfStrings()
+    
+End Function
+
+Public Function DoesFormatSupportAlpha(ByRef srcFormatID As String) As Boolean
+    
+    DoesFormatSupportAlpha = True
+    
+    Select Case srcFormatID
+        Case "BC1_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC1_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "BC2_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC2_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "BC3_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC3_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "BC4_SNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC4_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC5_SNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC5_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC6H_SF16"
+            DoesFormatSupportAlpha = False
+        Case "BC6H_UF16"
+            DoesFormatSupportAlpha = False
+        Case "BC7_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC7_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "B8G8R8A8_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "B8G8R8A8_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "B8G8R8X8_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "B8G8R8X8_UNORM_SRGB"
+            DoesFormatSupportAlpha = False
+        Case "R8G8B8A8_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "R8G8B8A8_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "B4G4R4A4_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "B5G5R5A1_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "B5G6R5_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "R8_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "R8G8_SNORM"
+            DoesFormatSupportAlpha = False
+        Case "R16_FLOAT"
+            DoesFormatSupportAlpha = False
+        Case "R32_FLOAT"
+            DoesFormatSupportAlpha = False
+    End Select
     
 End Function
 

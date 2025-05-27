@@ -111,6 +111,10 @@ Private m_MetadataParamString As String
 'DDS format names and IDs; we display names, but pass corresponding IDs to DirectXTex
 Private m_listOfNames As pdStringStack, m_listOfIDs As pdStringStack
 
+'Value of the last "is alpha supported" parameter.  When this changes, we need to generate a new
+' "before" PNG image (because it changes compositing against a solid background).
+Private m_LastAlphaState As PD_BOOL
+
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
@@ -162,6 +166,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Load()
+    m_LastAlphaState = PD_BOOL_UNKNOWN
     chkLivePreview.AssignTooltip "This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
 End Sub
 
@@ -176,7 +181,22 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub lstFormat_Click()
+    
+    If (Not m_listOfIDs Is Nothing) Then
+    
+        Dim curAlphaState As PD_BOOL
+        curAlphaState = Plugin_DDS.DoesFormatSupportAlpha(m_listOfIDs.GetString(lstFormat.ListIndex))
+        If (curAlphaState <> m_LastAlphaState) Then
+            m_LastAlphaState = curAlphaState
+            UpdatePreviewSource
+        End If
+    
+    Else
+        UpdatePreviewSource
+    End If
+    
     UpdatePreview
+    
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
@@ -245,7 +265,9 @@ Private Sub UpdatePreviewSource()
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SafeArray2D
-        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
+        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, (m_LastAlphaState = PD_BOOL_FALSE)
+        
+        If (m_LastAlphaState = PD_BOOL_FALSE) Then workingDIB.CompositeBackgroundColor 255, 255, 255
         
         If (m_PreviewImageBackup Is Nothing) Then Set m_PreviewImageBackup = New pdDIB
         m_PreviewImageBackup.CreateFromExistingDIB workingDIB
