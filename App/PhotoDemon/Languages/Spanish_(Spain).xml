@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.36</langversion>
+<langversion>9.0.37</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -2769,6 +2769,11 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 </phrase>
 
 <phrase>
+<original>MIT license</original>
+<translation>Licencia MIT</translation>
+</phrase>
+
+<phrase>
 <original>artistic license</original>
 <translation>licencia artística</translation>
 </phrase>
@@ -2784,16 +2789,11 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 </phrase>
 
 <phrase>
-<original>MIT license</original>
-<translation>Licencia MIT</translation>
-</phrase>
-
-<phrase>
 <original>LGPL license</original>
 <translation></translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 37 phrases. 29 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14761,12 +14761,14 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
+<!-- File_Save_DDS.frm contains 6 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
 <phrasecount>2792</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5929 phrases. -->
-<!-- 3137 are duplicates, so only 2792 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5937 phrases. -->
+<!-- 3145 are duplicates, so only 2792 unique phrases have been written to file. -->
 <!-- These 2792 phrases contain approximately 12108 total words. -->
 
 </pdData>
