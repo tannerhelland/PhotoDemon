@@ -77,6 +77,24 @@ Public Function PromptBMPSettings(ByRef srcImage As pdImage, ByRef dstFormatPara
     
 End Function
 
+Public Function PromptDDSSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
+    
+    Load dialog_ExportDDS
+    dialog_ExportDDS.ShowDialog srcImage
+    
+    PromptDDSSettings = dialog_ExportDDS.GetDialogResult
+    dstFormatParams = dialog_ExportDDS.GetFormatParams
+    
+    'DDS metadata isn't currently supported (via ExifTool).
+    ' If this changes, the following line can be changed to match any new metadata features
+    'dstMetadataParams = dialog_ExportDDS.GetMetadataParams
+    dstMetadataParams = vbNullString
+    
+    Unload dialog_ExportDDS
+    Set dialog_ExportDDS = Nothing
+    
+End Function
+
 Public Function PromptGIFSettings(ByRef srcImage As pdImage, ByRef dstFormatParams As String, ByRef dstMetadataParams As String) As VbMsgBoxResult
     
     Load dialog_ExportGIF

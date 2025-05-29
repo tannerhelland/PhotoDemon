@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2025 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 06/January/24
-'Last update: allow PCX export after all (Photoshop does, so we should too)
+'Last updated: 05/May/25
+'Last update: support DDS export
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -219,12 +219,13 @@ Public Sub GenerateInputFormats()
     AddInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", PDIF_BMP
     AddInputFormat "CBZ - Comic Book Archive", "*.cbz", PDIF_CBZ
     
-    If m_FreeImageEnabled Then
+    If m_FreeImageEnabled Or Plugin_DDS.IsDirectXTexAvailable() Then
         AddInputFormat "DDS - DirectDraw Surface", "*.dds", PDIF_DDS
-        AddInputFormat "DNG - Adobe Digital Negative", "*.dng", PDIF_RAW
     End If
+        
+    If m_FreeImageEnabled Then AddInputFormat "DNG - Adobe Digital Negative", "*.dng", PDIF_RAW
     
-    'EMFs are loaded via GDI+ for improved rendering and feature compatibility
+    'EMFs are handled via GDI+ for improved rendering and feature compatibility
     AddInputFormat "EMF - Enhanced Metafile", "*.emf", PDIF_EMF
     
     If m_FreeImageEnabled Then
@@ -416,6 +417,7 @@ Public Sub GenerateOutputFormats()
     If OS.OSSupports64bitExe() Then AddOutputFormat "AVIF - AV1 Image File", "avif", PDIF_AVIF
     
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
+    AddOutputFormat "DDS - DirectDraw Surface", "dds", PDIF_DDS
     AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
     If m_FreeImageEnabled Then AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
     
@@ -984,6 +986,8 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
         Case PDIF_AVIF
             IsExportDialogSupported = True
         Case PDIF_BMP
+            IsExportDialogSupported = True
+        Case PDIF_DDS
             IsExportDialogSupported = True
         Case PDIF_GIF
             IsExportDialogSupported = True

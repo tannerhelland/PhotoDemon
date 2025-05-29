@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_DDS"
 'DirectXTex (DDS) Interface
 'Copyright 2025-2025 by Tanner Helland
 'Created: 28/April/25
-'Last updated: 08/May/25
-'Last update: use texdiag.exe (from DirectXTex) to pull relevant DDS attributes prior to import
+'Last updated: 22/May/25
+'Last update: continued workarounds for lack of output file parameters in texconv
 '
 'Module for handling all DirectXTex interfacing (via texconv.exe).  This module is pointless without
 ' that exe, which needs to be placed in the App/PhotoDemon/Plugins subdirectory.
@@ -21,12 +21,20 @@ Attribute VB_Name = "Plugin_DDS"
 'DirectXTex is available under an MIT license.  Please see the App/PhotoDemon/Plugins/DirectXTex-LICENSE.txt
 ' file for questions regarding copyright or licensing.
 '
+'Thank you also to Nicholas Hayes (https://github.com/0xC0000054), author of Paint.NET's DDS plugin
+' (https://github.com/0xC0000054/pdn-ddsfiletype-plus), who first pointed me to DirectXTex and whose work
+' export dialog features I shamelessly copied when building PhotoDemon's DDS export dialog.
+'
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
 '
 '***************************************************************************
 
 Option Explicit
+
+'For verbose debug output, set this to TRUE.
+' LEAVE AS FALSE IN PRODUCTION BUILDS.
+Private Const DDS_DEBUG_VERBOSE As Boolean = False
 
 'Because DirectXTex ships x64 builds by default, we limit DDS support to 64-bit OS versions.
 Private m_DirectXTexAvailable As Boolean
@@ -39,11 +47,15 @@ Private m_LibFullPath As String, m_LibVersion As String
 Private m_pathToTexDiag As String
 
 'Convert a DDS file to some other image format.  Currently, PD converts DDS files to PNGs,
-' then imports those PNGs directly.  Theoretically, you could use other intermediary formats,
-' such as JPEG, if that's better for your usage scenario...
+' then imports those PNGs directly.
+'
+'IMPORTANT: unlike other conversion functions, this function does not accept a destination filename.
+' Instead, it *populates* that param for you.  (DirectXTex doesn't support variable output filename(s),
+' so we have to use workarounds involving a temp folder.)
 Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile As String, Optional ByVal allowErrorPopups As Boolean = False) As Boolean
     
     Const funcName As String = "ConvertDDStoStandardImage"
+    ConvertDDStoStandardImage = False
     
     'Safety checks on plugin existence
     If (Not m_DirectXTexAvailable) Then
@@ -64,7 +76,9 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
         Exit Function
     End If
     
-    'Pull basic attributes from the DDS file.
+    'Now we are (mostly) confident that we have everything we need to load the DDS file correctly.
+    
+    'Pull basic attributes from the source DDS file.
     ' (We can use these to assemble a better request for texdiag.)
     Dim cAttributes As pdDictionary, attributesExist As Boolean
     attributesExist = GetDDSAttributes(srcFile, cAttributes)
@@ -75,11 +89,52 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
     
     'Note that we *can't* define a destination file.  DirectXTex automatically generates the destination file for us
     ' (using the target extension).
+    '
+    'Further testing shows that DirectXTex doesn't accept an output folder correctly via command-line if the output
+    ' folder contains a space character.  We can't control this in PD as the user is allowed to use whatever folder
+    ' they want for temp processing.
+    '
+    'What we *can* do as a stupid workaround is to use a text file with a list of files to be processed.
+    ' Filenames inside the text file *are* processed correctly, even if they have spaces in their filenames.
+    '
+    'There is still the problem of filenames that exist as both filename.dds and filename.png *in the same folder*.
+    ' As we don't want to blindly overwrite filename.png if it exists, we instead need to make of a copy of
+    ' the source DDS file to the user's temp folder first.
+    '
+    'So the order of operations goes like this:
+    ' 1) copy the source file to the user's temp folder
+    ' 2) create a text file in the temp folder that consists of only the temporary source file copy
+    ' 3) pass that text file to DirectXTex and let it work
+    ' 4) load the PNG file from the temp folder (created by DirectXTex)
+    ' 5) clean-up all the temp files we created
+    
+    'Start with copying the source file to the user's temp folder.
+    Dim dstTmpFileDDS As String
+    dstTmpFileDDS = OS.UniqueTempFilename(customExtension:="dds")
+    If (Not Files.FileCopyW(srcFile, dstTmpFileDDS)) Then
+        InternalError funcName, "couldn't copy DDS to temp folder"
+        Exit Function
+    End If
+    
+    'Next, create a temporary text file in the temp folder, and write the name of the source DDS file to it.
+    Dim tmpTxtFile As String
+    tmpTxtFile = OS.UniqueTempFilename(customExtension:="txt")
+    If (Not Files.FileSaveAsText(dstTmpFileDDS, tmpTxtFile, True, False)) Then
+        InternalError funcName, "couldn't save input text file"
+        Exit Function
+    End If
+    
+    'We now have all the input files we need.  Next we need to figure out where DirectXTex is going
+    ' to put the converted PNG file.
     Dim reqExtension As String
     reqExtension = "png"
-    dstFile = Files.FileGetName(srcFile, True) & "." & reqExtension
-    
-    'TODO: what if the destination file already exists???
+    dstFile = Files.FileGetPath(dstTmpFileDDS) & Files.FileGetName(dstTmpFileDDS, True) & "." & reqExtension
+    If DDS_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Source DDS file: " & srcFile
+        PDDebug.LogAction "Temp DDS file (in temp folder): " & dstTmpFileDDS
+        PDDebug.LogAction "Temp txt file (for texconv input): " & tmpTxtFile
+        PDDebug.LogAction "Expected destination PNG file: " & dstFile
+    End If
     
     'Next we want to shell the plugin and wait for return.
     
@@ -114,16 +169,27 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
         shellCmd.Append "--format R8G8B8A8_UNORM "
     End If
     
+    'Overwriting target file is OK for this usage
+    shellCmd.Append "--overwrite "
+    
     'Tone-mapping might be appropriate for high-bit-depth images?
     'shellCmd.Append "--tonemap "
     
     'Multipage (doesn't work with PNG, could possibly try with TIFF)
     'shellCmd.Append "--wic-multiframe "
     
-    'Append space-safe source image
+    'Append the text file for input
+    shellCmd.Append "--file-list "
     shellCmd.Append """"
-    shellCmd.Append srcFile
+    shellCmd.Append tmpTxtFile
     shellCmd.Append """ "
+    
+    'Force writing to the temp folder, and - this is important - intentionally omit the trailing comma.
+    ' This deliberate decision is actually workaround for faulty path parsing in texconv.exe.
+    ' (If you add the trailing comma, it gets included as part of the path text!)
+    shellCmd.Append "-o """
+    shellCmd.Append Files.FileGetPath(dstTmpFileDDS)
+    'shellCmd.Append ""
     
     'Shell plugin and capture output for analysis
     Dim cShell As pdPipeSync
@@ -141,8 +207,15 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
         
         'Record full details of failures
         If ConvertDDStoStandardImage Then
-            PDDebug.LogAction "directxtex reports success; transferring image to internal parser..."
-            PDDebug.LogAction outputString
+            
+            If DDS_DEBUG_VERBOSE Then
+                PDDebug.LogAction "directxtex reports success; transferring image to internal parser..."
+                PDDebug.LogAction outputString
+            End If
+            
+            'Clean-up all the intermediary files
+            Files.FileDeleteIfExists dstTmpFileDDS
+            Files.FileDeleteIfExists tmpTxtFile
             
         'Conversion failed
         Else
@@ -177,7 +250,8 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
     
 End Function
 
-Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile As String) As Boolean
+'Convert a "standard" image file (typically PNG) to DDS format.
+Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef dxTex_FormatID As String = vbNullString) As Boolean
     
     Const FUNC_NAME As String = "ConvertStandardImageToDDS"
     
@@ -200,127 +274,117 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
         Exit Function
     End If
     
+    'Note that we *can't* define a destination file.  DirectXTex automatically generates the destination file for us
+    ' (using the target extension "DDS").
+    '
+    'Further testing shows that DirectXTex doesn't accept an output folder correctly via command-line if the output
+    ' folder contains a space character.  We can't control this in PD as the user is allowed to use whatever folder
+    ' they want for temp processing.
+    '
+    'What we *can* do as a stupid workaround is to use a text file with a list of files to be processed.
+    ' Filenames inside the text file *are* processed correctly, even if they have spaces in their filenames.
+    '
+    'There is still the problem of filenames that exist as both filename.dds and filename.png *in the same folder*.
+    ' As we don't want to blindly overwrite filename.dds if it exists, we instead need to make of a copy of
+    ' the source PNG file to the user's temp folder first.
+    '
+    'So the order of operations goes like this:
+    ' 1) copy the source PNG file to the user's temp folder
+    ' 2) create a text file in the temp folder that consists of only the temporary source file copy
+    ' 3) pass that text file to DirectXTex and let it work
+    ' 4) clean-up all the temp files we created
+    
+    'Start with copying the source PNG file to the user's temp folder.
+    Dim dstTmpFilePNG As String
+    dstTmpFilePNG = OS.UniqueTempFilename(customExtension:="png")
+    If (Not Files.FileCopyW(srcFile, dstTmpFilePNG)) Then
+        InternalError FUNC_NAME, "couldn't copy PNG to temp folder"
+        Exit Function
+    End If
+    
+    'Next, create a temporary text file in the temp folder, and write the name of the source DDS file to it.
+    Dim tmpTxtFile As String
+    tmpTxtFile = OS.UniqueTempFilename(customExtension:="txt")
+    If (Not Files.FileSaveAsText(dstTmpFilePNG, tmpTxtFile, True, False)) Then
+        InternalError FUNC_NAME, "couldn't save input text file"
+        Exit Function
+    End If
+    
+    'We now have all the input files we need.  Next we need to figure out where DirectXTex is going
+    ' to put the converted DDS file.
+    Dim reqExtension As String
+    reqExtension = "dds"
+    dstFile = Files.FileGetPath(dstTmpFilePNG) & Files.FileGetName(dstTmpFilePNG, True) & "." & reqExtension
+    If DDS_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Source PNG file: " & srcFile
+        PDDebug.LogAction "Temp PNG file (in temp folder): " & dstTmpFilePNG
+        PDDebug.LogAction "Temp txt file (for texconv input): " & tmpTxtFile
+        PDDebug.LogAction "Expected destination DDS file: " & dstFile
+    End If
+    
     'Start constructing the full shell string
     Dim shellCmd As pdString
     Set shellCmd = New pdString
     shellCmd.Append "texconv.exe "
-'
-'    'Assign encoding thread count (one per core seems reasonable for initial testing)
-'    shellCmd.Append "-j "
-'    shellCmd.Append Trim$(Str$(OS.LogicalCoreCount())) & " "
-'
-'    'Lossless encoding is its own parameter, and note that it supercedes a bunch of other parameters
-'    ' (because lossless encoding has unique constraints)
-'    Dim useLossless As Boolean
-'    useLossless = (encoderQuality = 0)
-'
-'    If useLossless Then
-'        shellCmd.Append "-l "
-'
-'    'Lossless encoding provides much more granular control over a billion different settings
-'    Else
-'
-'        'Encoder speed can now be specified; default is 6 (per ./avifenc.exe -h).  Lower = slower.
-'        ' Negative values indicate "use the current avifenc default".
-'        If (encoderSpeed >= 0) Then
-'            If (encoderSpeed > 10) Then encoderSpeed = 10
-'            shellCmd.Append "--speed " & CStr(encoderSpeed) & " "
-'        End If
-'
-'        'To simplify the UI, we don't expose min/max quality values (which are used by the encoder
-'        ' as part of a variable bit-rate approach to encoding).  Instead, we automatically generate
-'        ' a maximum quality value based on the user-supplied value (which is treated as a minimum
-'        ' target, where libavif quality=0=lossless ).  This makes the quality process somewhat more
-'        ' analogous to how otherformats (e.g. JPEG) do it.
-'        If (encoderQuality >= 0) Then
-'            If (encoderQuality > 63) Then encoderQuality = 63
-'
-'            shellCmd.Append "--min " & CStr(encoderQuality) & " "
-'
-'            'Treat 0 as lossless; anything else as variable quality
-'            Dim maxQuality As Long
-'            maxQuality = encoderQuality
-'            If (encoderQuality > 0) Then maxQuality = maxQuality + 10
-'            If (maxQuality > 63) Then maxQuality = 63
-'            shellCmd.Append "--max " & CStr(maxQuality) & " "
-'
-'        End If
-'
-'    End If
-'
-'    'PD uses premultiplied alpha internally, so signal that to the encoder as well.
-'    ' (NOTE: libavif hasn't always handled premultiplication correctly, so suspend this for now and revisit in future builds.)
-'    'shellCmd.Append "--premultiply "
     
-    'Append properly delimited source image
+    'Use DDS output (obviously) in whatever format the caller specified
+    shellCmd.Append "--file-type DDS "
+    
+    shellCmd.Append "--format "
+    If (LenB(dxTex_FormatID) > 0) Then
+        If DDS_DEBUG_VERBOSE Then PDDebug.LogAction "Using DDS format ID: " & dxTex_FormatID
+        shellCmd.Append dxTex_FormatID
+    Else
+        shellCmd.Append "R8G8B8A8_UNORM"
+    End If
+    shellCmd.Append " "
+    
+    'For sRGB output, mark the *incoming* image as also being sRGB (to prevent unwanted auto-adjustment from linear to sRGB)
+    If Strings.StringsEqualRight(dxTex_FormatID, "srgb", True) Then shellCmd.Append "--srgb-in "
+    
+    'Mipmaps?  Scaling?  DirectX version for header?
+    
+    'Overwrite destination file is OK
+    shellCmd.Append "--overwrite "
+    
+    'Append the text file for input
+    shellCmd.Append "--file-list "
     shellCmd.Append """"
-    shellCmd.Append srcFile
+    shellCmd.Append tmpTxtFile
     shellCmd.Append """ "
     
-    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
-    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
-    ' the original file remains untouched).
-    Dim tmpFilename As String
-    If Files.FileExists(dstFile) Then
-        Do
-            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
-        Loop While Files.FileExists(tmpFilename)
-    Else
-        tmpFilename = dstFile
-    End If
-    
-    'Append properly delimited destination image
-    shellCmd.Append """"
-    shellCmd.Append tmpFilename
-    shellCmd.Append """"
-    
-    'Want to confirm the shelled command?  See it here:
-    'PDDebug.LogAction shellCmd.ToString()
-    
-    'We are guaranteed that the destination file does not exist, but in case the user somehow (miraculously?)
-    ' created a file with that name in the past 0.01 ms, guarantee non-existence.
-    Files.FileDeleteIfExists tmpFilename
+    'Force writing to the temp folder, and - this is important - intentionally omit the trailing comma.
+    ' This deliberate decision is actually workaround for faulty path parsing in texconv.exe.
+    ' (If you add the trailing comma, it gets included as part of the path text!)
+    shellCmd.Append "-o """
+    shellCmd.Append Files.FileGetPath(dstTmpFilePNG)
+    'shellCmd.Append ""
     
     'Shell plugin and capture output for analysis
     Dim cShell As pdPipeSync
     Set cShell = New pdPipeSync
-    
     If cShell.RunAndCaptureOutput(pluginPath, shellCmd.ToString(), False) Then
         
         Dim outputString As String
         outputString = cShell.GetStdOutDataAsString()
     
-        'Shell appears successful.  The output string will have two easy-to-check flags if
-        ' the conversion was successful.  Don't return success unless we find both.
-        Dim targetStringSrc As String, targetStringDst As String
-        targetStringSrc = "Successfully loaded: "
-        targetStringDst = "Wrote DDS: "
+        'Shell appears successful. Ensure the destination file exists.
+        ConvertStandardImageToDDS = Files.FileExists(dstFile)
         
-        ConvertStandardImageToDDS = (Strings.StrStrBM(outputString, targetStringSrc, 1, True) > 0)
-        ConvertStandardImageToDDS = ConvertStandardImageToDDS And (Strings.StrStrBM(outputString, targetStringDst, 1, True) > 0)
-        
-        'Want to review the output string manually?  Print it here:
-        'PDDebug.LogAction outputString
+        'Erase the temporary source image copy and text file we generated
+        Files.FileDeleteIfExists dstTmpFilePNG
+        Files.FileDeleteIfExists tmpTxtFile
         
         'Record full details of failures
-        If ConvertStandardImageToDDS Then
-            PDDebug.LogAction "directxtex reports success!"
-        Else
+        If (Not ConvertStandardImageToDDS) Then
             InternalError FUNC_NAME, "save failed; output follows:"
             PDDebug.LogAction outputString
         End If
         
     Else
         InternalError FUNC_NAME, "shell failed"
-    End If
-    
-    'If the original file already existed, attempt to replace it now
-    If ConvertStandardImageToDDS And Strings.StringsNotEqual(dstFile, tmpFilename) Then
-        ConvertStandardImageToDDS = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
-        If (Not ConvertStandardImageToDDS) Then
-            Files.FileDelete tmpFilename
-            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
-        End If
+        PDDebug.LogAction "FYI, shell string follows: "
+        PDDebug.LogAction shellCmd.ToString()
     End If
     
 End Function
@@ -499,6 +563,163 @@ Private Function GetDDSAttributes(ByRef srcFile As String, ByRef dstAttributes A
         End If
         
     End If
+    
+End Function
+
+'User-friendly names and DirectXTex-specific IDs for each compression option.
+' (You can pull a full list of supported IDs by running "./texconv.exe -h";
+'  by design, PD doesn't expose all possible destination formats.)
+' Returned INT is the number of items (1-based) added to each list, and it is guaranteed identical for both lists.
+Public Function GetListOfFormatNamesAndIDs(ByRef dstNames As pdStringStack, ByRef dstIDs As pdStringStack) As Long
+
+    If (dstNames Is Nothing) Then Set dstNames = New pdStringStack Else dstNames.ResetStack
+    If (dstIDs Is Nothing) Then Set dstIDs = New pdStringStack Else dstIDs.ResetStack
+    
+    dstIDs.AddString "BC1_UNORM"
+    dstNames.AddString "BC1 (Linear, DXT1)"
+
+    dstIDs.AddString "BC1_UNORM_SRGB"
+    dstNames.AddString "BC1 (sRGB, DX 10+)"
+
+    dstIDs.AddString "BC2_UNORM"
+    dstNames.AddString "BC2 (Linear, DXT3)"
+
+    dstIDs.AddString "BC2_UNORM_SRGB"
+    dstNames.AddString "BC2 (sRGB, DX 10+)"
+
+    dstIDs.AddString "BC3_UNORM"
+    dstNames.AddString "BC3 (Linear, DXT5)"
+    
+    dstIDs.AddString "BC3_UNORM_SRGB"
+    dstNames.AddString "BC3 (sRGB, DX 10+)"
+
+    dstIDs.AddString "BC4_SNORM"
+    dstNames.AddString "BC4 (Linear, Signed)"
+
+    dstIDs.AddString "BC4_UNORM"
+    dstNames.AddString "BC4 (Linear, Unsigned)"
+    
+    dstIDs.AddString "BC5_SNORM"
+    dstNames.AddString "BC5 (Linear, Signed)"
+
+    dstIDs.AddString "BC5_UNORM"
+    dstNames.AddString "BC5 (Linear, Unsigned)"
+
+    dstIDs.AddString "BC6H_SF16"
+    dstNames.AddString "BC6H (Linear, Signed, DX 11+)"
+    
+    dstIDs.AddString "BC6H_UF16"
+    dstNames.AddString "BC6H (Linear, Unsigned, DX 11+)"
+    
+    dstIDs.AddString "BC7_UNORM"
+    dstNames.AddString "BC7 (Linear, DX 11+)"
+
+    dstIDs.AddString "BC7_UNORM_SRGB"
+    dstNames.AddString "BC7 (sRGB, DX 11+)"
+    
+    dstIDs.AddString "B8G8R8A8_UNORM"
+    dstNames.AddString "B8G8R8A8 (Linear, A8R8G8B8)"
+
+    dstIDs.AddString "B8G8R8A8_UNORM_SRGB"
+    dstNames.AddString "B8G8R8A8 (sRGB, DX 10+)"
+
+    dstIDs.AddString "B8G8R8X8_UNORM"
+    dstNames.AddString "B8G8R8X8 (Linear, X8R8G8B8)"
+
+    dstIDs.AddString "B8G8R8X8_UNORM_SRGB"
+    dstNames.AddString "B8G8R8X8 (sRGB, DX 10+)"
+    
+    dstIDs.AddString "R8G8B8A8_UNORM"
+    dstNames.AddString "R8G8B8A8 (Linear, A8B8G8R8)"
+
+    dstIDs.AddString "R8G8B8A8_UNORM_SRGB"
+    dstNames.AddString "R8G8B8A8 (sRGB, DX 10+)"
+
+    dstIDs.AddString "B4G4R4A4_UNORM"
+    dstNames.AddString "B4G4R4A4 (Linear, A4R4G4B4)"
+
+    dstIDs.AddString "B5G5R5A1_UNORM"
+    dstNames.AddString "B5G5R5A1 (Linear, A1R5G5B5)"
+
+    dstIDs.AddString "B5G6R5_UNORM"
+    dstNames.AddString "B5G6R5 (Linear, R5G6B5)"
+
+    dstIDs.AddString "R8_UNORM"
+    dstNames.AddString "R8 (Linear, Unsigned, L8)"
+    
+    dstIDs.AddString "R8G8_SNORM"
+    dstNames.AddString "R8G8 (Linear, Signed, V8U8)"
+
+    dstIDs.AddString "R16_FLOAT"
+    dstNames.AddString "R16 (Linear, Float)"
+
+    dstIDs.AddString "R32_FLOAT"
+    dstNames.AddString "R32 (Linear, Float)"
+
+    GetListOfFormatNamesAndIDs = dstIDs.GetNumOfStrings()
+    
+End Function
+
+Public Function DoesFormatSupportAlpha(ByRef srcFormatID As String) As Boolean
+    
+    DoesFormatSupportAlpha = True
+    
+    Select Case srcFormatID
+        Case "BC1_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC1_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "BC2_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC2_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "BC3_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC3_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "BC4_SNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC4_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC5_SNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC5_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "BC6H_SF16"
+            DoesFormatSupportAlpha = False
+        Case "BC6H_UF16"
+            DoesFormatSupportAlpha = False
+        Case "BC7_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "BC7_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "B8G8R8A8_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "B8G8R8A8_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "B8G8R8X8_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "B8G8R8X8_UNORM_SRGB"
+            DoesFormatSupportAlpha = False
+        Case "R8G8B8A8_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "R8G8B8A8_UNORM_SRGB"
+            DoesFormatSupportAlpha = True
+        Case "B4G4R4A4_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "B5G5R5A1_UNORM"
+            DoesFormatSupportAlpha = True
+        Case "B5G6R5_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "R8_UNORM"
+            DoesFormatSupportAlpha = False
+        Case "R8G8_SNORM"
+            DoesFormatSupportAlpha = False
+        Case "R16_FLOAT"
+            DoesFormatSupportAlpha = False
+        Case "R32_FLOAT"
+            DoesFormatSupportAlpha = False
+    End Select
     
 End Function
 
