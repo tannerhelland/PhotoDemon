@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_Heif"
 'libheif Library Interface
 'Copyright 2024-2025 by Tanner Helland
 'Created: 16/July/24
-'Last updated: 29/August/24
-'Last update: add support for exporting multi-frame images
+'Last updated: 30/May/25
+'Last update: fix filetype check potentially breaking on tiny (<128b) image files
 '
 'Per its documentation (available at https://github.com/strukturag/libheif), libheif is...
 '
@@ -513,11 +513,13 @@ Public Function IsFileHeif(ByRef srcFile As String) As Boolean
         
         If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile, optimizeAccess:=OptimizeSequentialAccess) Then
             
-            Dim ptrPeek As Long
-            ptrPeek = cStream.Peek_PointerOnly(0, 128)
+            Dim ptrPeek As Long, ptrSizeAvailable As Long
+            ptrSizeAvailable = Files.FileLenW(srcFile)
+            If (ptrSizeAvailable > 128) Then ptrSizeAvailable = 128
+            ptrPeek = cStream.Peek_PointerOnly(0, ptrSizeAvailable)
             
             Dim fType As heif_filetype_result
-            fType = CallCDeclW(heif_check_filetype, vbLong, ptrPeek, 128&)
+            fType = CallCDeclW(heif_check_filetype, vbLong, ptrPeek, ptrSizeAvailable)
             IsFileHeif = (fType = heif_filetype_yes_supported)
             
             If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "FYI: heif_check_filetype returned " & fType
