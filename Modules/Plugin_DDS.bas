@@ -251,7 +251,7 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
 End Function
 
 'Convert a "standard" image file (typically PNG) to DDS format.
-Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef dxTex_FormatID As String = vbNullString) As Boolean
+Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef dxTex_FormatID As String = vbNullString, Optional ByVal dxTex_numMipMaps As Long = 0&) As Boolean
     
     Const FUNC_NAME As String = "ConvertStandardImageToDDS"
     
@@ -338,6 +338,13 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
         shellCmd.Append "R8G8B8A8_UNORM"
     End If
     shellCmd.Append " "
+    
+    'Mipmaps default to "all" (a value of zero), but the user can also request a specific amount.
+    If (dxTex_numMipMaps <> 0) Then
+        shellCmd.Append "-m "
+        shellCmd.Append Trim$(Str$(dxTex_numMipMaps))
+        shellCmd.Append " "
+    End If
     
     'For sRGB output, mark the *incoming* image as also being sRGB (to prevent unwanted auto-adjustment from linear to sRGB)
     If Strings.StringsEqualRight(dxTex_FormatID, "srgb", True) Then shellCmd.Append "--srgb-in "
@@ -660,11 +667,11 @@ Public Function GetListOfFormatNamesAndIDs(ByRef dstNames As pdStringStack, ByRe
     
 End Function
 
-Public Function DoesFormatSupportAlpha(ByRef srcFormatID As String) As Boolean
+Public Function DoesFormatSupportAlpha(ByRef srcFormatId As String) As Boolean
     
     DoesFormatSupportAlpha = True
     
-    Select Case srcFormatID
+    Select Case srcFormatId
         Case "BC1_UNORM"
             DoesFormatSupportAlpha = True
         Case "BC1_UNORM_SRGB"

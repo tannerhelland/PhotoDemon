@@ -22,27 +22,50 @@ Begin VB.Form dialog_ExportDDS
    ScaleHeight     =   439
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
+   Begin PhotoDemon.pdSlider sldMipMaps 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   5160
+      Width           =   5775
+      _extentx        =   10186
+      _extenty        =   873
+      max             =   64
+      min             =   1
+      value           =   2
+      defaultvalue    =   2
+   End
+   Begin PhotoDemon.pdButtonStrip btsMipMaps 
+      Height          =   975
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   4080
+      Width           =   5775
+      _extentx        =   10186
+      _extenty        =   1720
+      caption         =   "mipmaps"
+   End
    Begin PhotoDemon.pdListBox lstFormat 
-      Height          =   5055
+      Height          =   3735
       Left            =   6120
       TabIndex        =   3
       Top             =   240
       Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   8916
-      Caption         =   "format"
+      _extentx        =   10186
+      _extenty        =   6588
+      caption         =   "format"
    End
    Begin PhotoDemon.pdCheckBox chkLivePreview 
       Height          =   375
-      Left            =   6120
+      Left            =   120
       TabIndex        =   2
       Top             =   5400
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   661
-      Caption         =   "preview quality changes"
-      FontSize        =   11
-      Value           =   0   'False
+      Width           =   5655
+      _extentx        =   9975
+      _extenty        =   661
+      caption         =   "preview quality changes"
+      fontsize        =   11
+      value           =   0   'False
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -51,18 +74,18 @@ Begin VB.Form dialog_ExportDDS
       TabIndex        =   0
       Top             =   5835
       Width           =   12135
-      _ExtentX        =   21405
-      _ExtentY        =   1323
-      DontAutoUnloadParent=   -1  'True
+      _extentx        =   21405
+      _extenty        =   1323
+      dontautounloadparent=   -1  'True
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   5625
+      Height          =   5145
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9075
    End
 End
 Attribute VB_Name = "dialog_ExportDDS"
@@ -128,6 +151,11 @@ Public Function GetMetadataParams() As String
     GetMetadataParams = m_MetadataParamString
 End Function
 
+Private Sub btsMipMaps_Click(ByVal buttonIndex As Long)
+    'Mipmaps don't change the generated preview
+    ReflowInterface
+End Sub
+
 Private Sub chkLivePreview_Click()
     UpdatePreview
 End Sub
@@ -145,7 +173,16 @@ Private Sub cmdBar_OKClick()
     'Add the selected format
     cParams.AddParam "dds-format", m_listOfIDs.GetString(Me.lstFormat.ListIndex), True
     
-    m_FormatParamString = cParams.GetParamString
+    'Mipmaps correspond to text values passed to texconv
+    Dim numMipMaps As Long
+    If (btsMipMaps.ListIndex = 0) Or (btsMipMaps.ListIndex = 1) Then
+        numMipMaps = btsMipMaps.ListIndex
+    Else
+        numMipMaps = sldMipMaps.Value
+    End If
+    cParams.AddParam "dds-mipmaps", numMipMaps, True, True
+    
+    m_FormatParamString = cParams.GetParamString()
     
     'If ExifTool someday supports metadata embedding for this format, you can add a metadata manager here
     m_MetadataParamString = vbNullString
@@ -166,8 +203,16 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub Form_Load()
+    
     m_LastAlphaState = PD_BOOL_UNKNOWN
+    
+    btsMipMaps.AddItem "all", 0
+    btsMipMaps.AddItem "none", 1
+    btsMipMaps.AddItem "custom", 2
+    btsMipMaps.ListIndex = 0
+    
     chkLivePreview.AssignTooltip "This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -249,6 +294,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     ApplyThemeAndTranslations Me, True, True
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "DDS")
     If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI cmdBar.hWnd
+    ReflowInterface
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -355,4 +401,8 @@ End Sub
 
 Private Sub InternalError(ByRef funcName As String, ByRef errMsg As String)
     PDDebug.LogAction "WARNING! Problem in dialog_ExportDDS." & funcName & ": " & errMsg
+End Sub
+
+Private Sub ReflowInterface()
+    sldMipMaps.Visible = (btsMipMaps.ListIndex = 2)
 End Sub

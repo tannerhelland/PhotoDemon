@@ -572,6 +572,10 @@ Public Function Log10(ByVal srcValue As Double) As Double
     Log10 = Log(srcValue) * INV_LOG_OF_10
 End Function
 
+Public Function LogBaseN(ByVal srcValue As Double, ByVal srcBase As Double) As Double
+    LogBaseN = Log(srcValue) / Log(srcBase)
+End Function
+
 'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
 Public Function LoWord(ByRef dw As Long) As Integer
    If (dw And &H8000&) Then

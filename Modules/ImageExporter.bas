@@ -769,9 +769,22 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Set cParams = New pdSerialize
     cParams.SetParamString formatParams
     
-    'Pull the target format from the param string
+    'Pull the target format and any other from the param string
     Dim ddsTargetFormat As String
     ddsTargetFormat = cParams.GetString("dds-format", vbNullString, True)
+    
+    Dim ddsMipmaps As Long
+    ddsMipmaps = cParams.GetLong("dds-mipmaps", 0&, True)
+    
+    'Mipmaps are limited to powers-of-two; exceed this, and the conversion will fail
+    Dim ddsMax As Long
+    ddsMax = PDMath.Min2Int(srcPDImage.Width, srcPDImage.Height)
+    If (ddsMax > 1) Then
+        ddsMax = Int(PDMath.LogBaseN(ddsMax, 2#) + 1)
+        If (ddsMax < 1) Then ddsMax = 1
+    End If
+    If (ddsMipmaps > ddsMax) Then ddsMipmaps = ddsMax
+    If (ddsMipmaps < 0) Then ddsMipmaps = 0
     
     'PD's DDS interface requires us to first save a PNG file; the external DDS engine
     ' will then convert this to an DDS file.
@@ -800,7 +813,7 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     'We now have a temporary PNG file saved.  Shell DirectXTex with the proper parameters to generate a
     ' valid DDS (at the requested filename).
     Dim tmpDstFile As String
-    If imgSavedOK Then ExportDDS = Plugin_DDS.ConvertStandardImageToDDS(tmpFilename, tmpDstFile, ddsTargetFormat)
+    If imgSavedOK Then ExportDDS = Plugin_DDS.ConvertStandardImageToDDS(tmpFilename, tmpDstFile, ddsTargetFormat, ddsMipmaps)
     
     'With the DDS generated, we can now erase our temporary PNG file
     Files.FileDeleteIfExists tmpFilename
