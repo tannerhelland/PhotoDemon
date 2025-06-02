@@ -773,6 +773,9 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Dim ddsTargetFormat As String
     ddsTargetFormat = cParams.GetString("dds-format", vbNullString, True)
     
+    'It's up to the caller to validate optional block compression settings
+    Dim ddsBCSettings As String
+    ddsBCSettings = cParams.GetString("dds-bc-settings", vbNullString, True)
     Dim ddsMipmaps As Long
     ddsMipmaps = cParams.GetLong("dds-mipmaps", 0&, True)
     
@@ -785,6 +788,10 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     End If
     If (ddsMipmaps > ddsMax) Then ddsMipmaps = ddsMax
     If (ddsMipmaps < 0) Then ddsMipmaps = 0
+    
+    Dim ddsMipmapsFilter As String
+    ddsMipmapsFilter = cParams.GetString("dds-mipmap-filter", vbNullString, True)
+    If (Not Strings.StringsEqualAny(ddsMipmapsFilter, True, "point", "linear", "cubic", "fant", "box", "triangle")) Then ddsMipmapsFilter = vbNullString
     
     'PD's DDS interface requires us to first save a PNG file; the external DDS engine
     ' will then convert this to an DDS file.
@@ -813,7 +820,7 @@ Public Function ExportDDS(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     'We now have a temporary PNG file saved.  Shell DirectXTex with the proper parameters to generate a
     ' valid DDS (at the requested filename).
     Dim tmpDstFile As String
-    If imgSavedOK Then ExportDDS = Plugin_DDS.ConvertStandardImageToDDS(tmpFilename, tmpDstFile, ddsTargetFormat, ddsMipmaps)
+    If imgSavedOK Then ExportDDS = Plugin_DDS.ConvertStandardImageToDDS(tmpFilename, tmpDstFile, ddsTargetFormat, ddsMipmaps, ddsMipmapsFilter, ddsBCSettings)
     
     'With the DDS generated, we can now erase our temporary PNG file
     Files.FileDeleteIfExists tmpFilename

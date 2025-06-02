@@ -22,38 +22,47 @@ Begin VB.Form dialog_ExportDDS
    ScaleHeight     =   439
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
-   Begin PhotoDemon.pdSlider sldMipMaps 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   5160
-      Width           =   5775
-      _extentx        =   10186
-      _extenty        =   873
-      max             =   64
-      min             =   1
-      value           =   2
-      defaultvalue    =   2
-   End
    Begin PhotoDemon.pdButtonStrip btsMipMaps 
       Height          =   975
       Left            =   6120
       TabIndex        =   4
-      Top             =   4080
+      Top             =   3960
       Width           =   5775
-      _extentx        =   10186
-      _extenty        =   1720
-      caption         =   "mipmaps"
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "mipmaps"
+   End
+   Begin PhotoDemon.pdDropDown ddFilter 
+      Height          =   495
+      Left            =   8880
+      TabIndex        =   6
+      Top             =   5310
+      Width           =   3015
+      _ExtentX        =   5318
+      _ExtentY        =   873
+   End
+   Begin PhotoDemon.pdSlider sldMipMaps 
+      Height          =   495
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   5280
+      Width           =   2655
+      _ExtentX        =   10186
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   64
+      Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdListBox lstFormat 
-      Height          =   3735
+      Height          =   2895
       Left            =   6120
       TabIndex        =   3
       Top             =   240
       Width           =   5775
-      _extentx        =   10186
-      _extenty        =   6588
-      caption         =   "format"
+      _ExtentX        =   10186
+      _ExtentY        =   5106
+      Caption         =   "format"
    End
    Begin PhotoDemon.pdCheckBox chkLivePreview 
       Height          =   375
@@ -61,11 +70,11 @@ Begin VB.Form dialog_ExportDDS
       TabIndex        =   2
       Top             =   5400
       Width           =   5655
-      _extentx        =   9975
-      _extenty        =   661
-      caption         =   "preview quality changes"
-      fontsize        =   11
-      value           =   0   'False
+      _ExtentX        =   9975
+      _ExtentY        =   661
+      Caption         =   "preview quality changes"
+      FontSize        =   11
+      Value           =   0   'False
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -74,9 +83,9 @@ Begin VB.Form dialog_ExportDDS
       TabIndex        =   0
       Top             =   5835
       Width           =   12135
-      _extentx        =   21405
-      _extenty        =   1323
-      dontautounloadparent=   -1  'True
+      _ExtentX        =   21405
+      _ExtentY        =   1323
+      DontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5145
@@ -84,8 +93,28 @@ Begin VB.Form dialog_ExportDDS
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9075
+      _ExtentX        =   9922
+      _ExtentY        =   9075
+   End
+   Begin PhotoDemon.pdButtonStrip btsCompression 
+      Height          =   975
+      Left            =   6120
+      TabIndex        =   8
+      Top             =   3600
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "compression"
+   End
+   Begin PhotoDemon.pdButtonStrip btsDither 
+      Height          =   975
+      Left            =   6120
+      TabIndex        =   7
+      Top             =   3360
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "dithering"
    End
 End
 Attribute VB_Name = "dialog_ExportDDS"
@@ -151,6 +180,10 @@ Public Function GetMetadataParams() As String
     GetMetadataParams = m_MetadataParamString
 End Function
 
+Private Sub btsDither_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+End Sub
+
 Private Sub btsMipMaps_Click(ByVal buttonIndex As Long)
     'Mipmaps don't change the generated preview
     ReflowInterface
@@ -173,6 +206,9 @@ Private Sub cmdBar_OKClick()
     'Add the selected format
     cParams.AddParam "dds-format", m_listOfIDs.GetString(Me.lstFormat.ListIndex), True
     
+    'Some block-compression algorithms support additional settings
+    cParams.AddParam "dds-bc-settings", GetBCSettings(), True
+    
     'Mipmaps correspond to text values passed to texconv
     Dim numMipMaps As Long
     If (btsMipMaps.ListIndex = 0) Or (btsMipMaps.ListIndex = 1) Then
@@ -181,6 +217,7 @@ Private Sub cmdBar_OKClick()
         numMipMaps = sldMipMaps.Value
     End If
     cParams.AddParam "dds-mipmaps", numMipMaps, True, True
+    If (ddFilter.ListIndex >= 0) Then cParams.AddParam "dds-mipmap-filter", ddFilter.List(ddFilter.ListIndex)
     
     m_FormatParamString = cParams.GetParamString()
     
@@ -202,14 +239,39 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
+Private Sub ddFilter_Click()
+    'Mipmap filtering doesn't affect the live preview
+End Sub
+
 Private Sub Form_Load()
     
     m_LastAlphaState = PD_BOOL_UNKNOWN
+    
+    btsDither.AddItem "none", 0
+    btsDither.AddItem "perceptual", 1
+    btsDither.AddItem "uniform", 2
+    btsDither.ListIndex = 1
+    
+    btsCompression.AddItem "fast"
+    btsCompression.AddItem "medium"
+    btsCompression.AddItem "slow"
+    btsCompression.ListIndex = 1
     
     btsMipMaps.AddItem "all", 0
     btsMipMaps.AddItem "none", 1
     btsMipMaps.AddItem "custom", 2
     btsMipMaps.ListIndex = 0
+    
+    ddFilter.SetAutomaticRedraws False
+    ddFilter.Clear
+    ddFilter.AddItem "point"
+    ddFilter.AddItem "linear"
+    ddFilter.AddItem "cubic"
+    ddFilter.AddItem "fant"
+    ddFilter.AddItem "box"
+    ddFilter.AddItem "triangle"
+    ddFilter.ListIndex = 0
+    ddFilter.SetAutomaticRedraws True, True
     
     chkLivePreview.AssignTooltip "This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews."
     
@@ -226,7 +288,9 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub lstFormat_Click()
-    
+        
+    ReflowInterface
+        
     If (Not m_listOfIDs Is Nothing) Then
     
         Dim curAlphaState As PD_BOOL
@@ -356,7 +420,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             If (Me.lstFormat.ListIndex >= 0) And (Not m_listOfIDs Is Nothing) Then ddsFormatName = m_listOfIDs.GetString(lstFormat.ListIndex)
             
             'Shell directxtex, and request it to convert the preview PNG to DDS
-            If Plugin_DDS.ConvertStandardImageToDDS(m_PreviewImagePath, tmpFilenameDDS, ddsFormatName) Then
+            If Plugin_DDS.ConvertStandardImageToDDS(m_PreviewImagePath, tmpFilenameDDS, ddsFormatName, dxTex_BC:=GetBCSettings()) Then
                 
                 'Immediately shell it again, but this time, ask it to convert the DDS it just made
                 ' back into a PNG
@@ -404,5 +468,84 @@ Private Sub InternalError(ByRef funcName As String, ByRef errMsg As String)
 End Sub
 
 Private Sub ReflowInterface()
+    
+    Dim ySpacing As Long
+    ySpacing = Interface.FixDPI(6)
+    
+    Dim yOffset As Long
+    yOffset = Me.lstFormat.GetTop + Me.lstFormat.GetHeight + ySpacing
+    
+    'Dithering is only available for BC1-3
+    btsDither.SetTop yOffset
+    btsDither.Visible = IsDitherAvailable()
+    If btsDither.Visible Then yOffset = yOffset + btsDither.GetHeight + ySpacing
+    
+    btsCompression.SetTop yOffset
+    btsCompression.Visible = IsVariableCompressionAvailable()
+    If btsCompression.Visible Then yOffset = yOffset + btsCompression.GetHeight + ySpacing
+    
+    'Mipmaps are always available
+    Me.btsMipMaps.SetTop yOffset
+    yOffset = yOffset + Me.btsMipMaps.GetHeight + ySpacing
     sldMipMaps.Visible = (btsMipMaps.ListIndex = 2)
+    ddFilter.Visible = sldMipMaps.Visible
+    
+    'Mipmaps use defaults unless "custom" is selected
+    If sldMipMaps.Visible Then sldMipMaps.SetTop yOffset
+    If ddFilter.Visible Then ddFilter.SetTop yOffset + Interface.FixDPI(2)
+    
 End Sub
+
+'Some settings are only available for certain formats
+Private Function IsDitherAvailable() As Boolean
+    IsDitherAvailable = (lstFormat.ListIndex < 6)
+End Function
+
+Private Function IsVariableCompressionAvailable() As Boolean
+    IsVariableCompressionAvailable = (lstFormat.ListIndex = 12) Or (lstFormat.ListIndex = 13)
+End Function
+
+'Some block-compression algorithms support additional features
+Private Function GetBCSettings() As String
+    
+    If IsDitherAvailable() Then
+        
+        Select Case btsDither.ListIndex
+            
+            'None
+            Case 0
+                GetBCSettings = vbNullString
+            
+            'Perceptual
+            Case 1
+                GetBCSettings = "d"
+            
+            'Uniform
+            Case 2
+                GetBCSettings = "ud"
+            
+        End Select
+    
+    ElseIf IsVariableCompressionAvailable() Then
+    
+        Select Case btsCompression.ListIndex
+            
+            'Fast
+            Case 0
+                GetBCSettings = "q"
+                
+            'Medium
+            Case 1
+                GetBCSettings = vbNullString
+                
+            'Slow
+            Case 2
+                GetBCSettings = "x"
+                
+        End Select
+    
+    Else
+        GetBCSettings = vbNullString
+    End If
+    
+End Function

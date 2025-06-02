@@ -251,7 +251,7 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
 End Function
 
 'Convert a "standard" image file (typically PNG) to DDS format.
-Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef dxTex_FormatID As String = vbNullString, Optional ByVal dxTex_numMipMaps As Long = 0&) As Boolean
+Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile As String, Optional ByRef dxTex_FormatID As String = vbNullString, Optional ByVal dxTex_numMipMaps As Long = 0&, Optional ByVal dxTex_mmFilter As String = vbNullString, Optional ByVal dxTex_BC As String = vbNullString) As Boolean
     
     Const FUNC_NAME As String = "ConvertStandardImageToDDS"
     
@@ -339,10 +339,24 @@ Public Function ConvertStandardImageToDDS(ByRef srcFile As String, ByRef dstFile
     End If
     shellCmd.Append " "
     
+    'Some block-compression algorithms support additional settings; it's up to the caller to validate these
+    If (LenB(dxTex_BC) <> 0) Then
+        shellCmd.Append "--block-compress "
+        shellCmd.Append dxTex_BC
+        shellCmd.Append " "
+    End If
+    
     'Mipmaps default to "all" (a value of zero), but the user can also request a specific amount.
     If (dxTex_numMipMaps <> 0) Then
         shellCmd.Append "-m "
         shellCmd.Append Trim$(Str$(dxTex_numMipMaps))
+        shellCmd.Append " "
+    End If
+    
+    'Filter only applies if mipmaps are being generated (e.g. if # of mipmaps > 1)
+    If (dxTex_numMipMaps <> 1) And (LenB(dxTex_mmFilter) <> 0) Then
+        shellCmd.Append "--image-filter "
+        shellCmd.Append UCase$(dxTex_mmFilter)
         shellCmd.Append " "
     End If
     

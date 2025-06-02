@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1761</langversion>
+<langversion>8.9.1762</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -14761,14 +14761,49 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<!-- File_Save_DDS.frm contains 6 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>mipmaps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fant</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 24 phrases. 17 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2792</phrasecount>
+<phrasecount>2799</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5937 phrases. -->
-<!-- 3145 are duplicates, so only 2792 unique phrases have been written to file. -->
-<!-- These 2792 phrases contain approximately 12108 total words. -->
+<!-- As of this build, PhotoDemon contains 5955 phrases. -->
+<!-- 3156 are duplicates, so only 2799 unique phrases have been written to file. -->
+<!-- These 2799 phrases contain approximately 12115 total words. -->
 
 </pdData>
