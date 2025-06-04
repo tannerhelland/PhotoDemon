@@ -2218,6 +2218,7 @@ Private Sub Form_Load()
     AddBlacklist "Reinhard"
     AddBlacklist "Drago"
     AddBlacklist "WebP"
+    AddBlacklist "fant"
     
     'Check the command line.  This project can be run in silent mode as part of my nightly build batch script.
     Dim chkCommandLine As String

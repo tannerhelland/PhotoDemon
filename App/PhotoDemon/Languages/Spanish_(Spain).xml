@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.38</langversion>
+<langversion>9.0.39</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -14791,19 +14791,14 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>fant</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 24 phrases. 17 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2799</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5955 phrases. -->
-<!-- 3156 are duplicates, so only 2799 unique phrases have been written to file. -->
-<!-- These 2799 phrases contain approximately 12115 total words. -->
+<!-- As of this build, PhotoDemon contains 5954 phrases. -->
+<!-- 3156 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12114 total words. -->
 
 </pdData>
