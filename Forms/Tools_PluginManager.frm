@@ -420,7 +420,7 @@ Private Sub Form_Load()
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
         lstPlugins.AddItem PluginManager.GetPluginName(i), i + 1
-        lstOverview.AddItem PluginManager.GetPluginName(i), i + 1
+        lstOverview.AddItem PluginManager.GetPluginName(i), i
     Next i
     
     lstOverview.SetAutomaticRedraws True, True
@@ -738,6 +738,9 @@ Private Sub LibraryChanged()
         m_IgnoreButtonStripEvents = True
         If m_LibraryEnabled(pluginIndex) Then btsDisablePlugin.ListIndex = 0 Else btsDisablePlugin.ListIndex = 1
         m_IgnoreButtonStripEvents = False
+        
+        'Mandatory libraries cannot be disabled
+        btsDisablePlugin.Enabled = (Not PluginManager.IsPluginHighPriority(pluginIndex))
         
     End If
     

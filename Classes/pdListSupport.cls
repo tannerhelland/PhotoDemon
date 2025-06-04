@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon List Box support class
 'Copyright 2015-2025 by Tanner Helland
 'Created: 22/December/15
-'Last updated: 02/August/22
-'Last update: fix PgDn keypress increment calculation
+'Last updated: 04/June/25
+'Last update: fix potential crash in .AddItem when passed an OOB initial index
 '
 'PD makes use of a lot of custom-drawn list boxes.  To simplify these, I've tried to move a bunch of list-box-agnostic
 ' code elements into this class, elements that can then be reused by individual boxes.  This can be somewhat confusing,
@@ -147,7 +147,7 @@ Friend Sub AddItem(Optional ByRef srcItemText As String = vbNullString, Optional
         Next i
         
     'If no insert index has been specified, assume the insertion happens at the end of the list
-    ElseIf (itemIndex = -1) Then
+    ElseIf (itemIndex = -1) Or (itemIndex > m_NumOfItems) Then
         itemIndex = m_NumOfItems
     End If
     
