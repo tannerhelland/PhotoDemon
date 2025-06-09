@@ -307,6 +307,15 @@ Public Function GetPreviewHeight() As Long
     GetPreviewHeight = m_PreviewAreaHeight
 End Function
 
+'Return dimensions of the source preview image
+Public Function GetSourcePreviewWidth() As Long
+    If (m_SrcImageWidth = 0) Then GetSourcePreviewWidth = 100 Else GetSourcePreviewWidth = m_SrcImageWidth
+End Function
+
+Public Function GetSourcePreviewHeight() As Long
+    If (m_SrcImageHeight = 0) Then GetSourcePreviewHeight = 100 Else GetSourcePreviewHeight = m_SrcImageHeight
+End Function
+
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If viewport scrolling is allowed, initialize it now

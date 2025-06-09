@@ -34,8 +34,10 @@ Private m_zoomCountFixed As Long
 'Number of dynamic zoom entries, currently 3 - fit width, fit height, and fit all
 Private m_zoomCountDynamic As Long
 
-'This set of functions are simply wrappers that external code can use to access individual zoom entries
-Public Function GetZoomRatioFromIndex(ByVal zoomIndex As Long) As Double
+'This set of functions are simply wrappers that external code can use to access individual zoom entries.
+' The optional image and viewport dimension parameters can be left as zero to assess the active image against
+' the main window; for e.g. previews in a tool dialog, pass your own custom values instead.
+Public Function GetZoomRatioFromIndex(ByVal zoomIndex As Long, Optional ByVal imgWidth As Double = 0#, Optional ByVal imgHeight As Double = 0#, Optional ByVal viewportWidth As Double = 0#, Optional ByVal viewportHeight As Double = 0#) As Double
     
     'If the zoom value is a fixed entry, our work is easy - simply return the fixed zoom value at that index
     If (zoomIndex <= m_zoomCountFixed) Then
@@ -48,14 +50,16 @@ Public Function GetZoomRatioFromIndex(ByVal zoomIndex As Long) As Double
         If PDImages.IsImageActive() Then
         
             'Retrieve the current image's width and height
-            Dim imgWidth As Double, imgHeight As Double
-            imgWidth = PDImages.GetActiveImage.Width
-            imgHeight = PDImages.GetActiveImage.Height
+            If (imgWidth = 0#) Or (imgHeight = 0#) Then
+                imgWidth = PDImages.GetActiveImage.Width
+                imgHeight = PDImages.GetActiveImage.Height
+            End If
             
             'Retrieve the current viewport's width and height
-            Dim viewportWidth As Double, viewportHeight As Double
-            viewportWidth = FormMain.MainCanvas(0).GetCanvasWidth
-            viewportHeight = FormMain.MainCanvas(0).GetCanvasHeight
+            If (viewportWidth = 0#) Or (viewportHeight = 0#) Then
+                viewportWidth = FormMain.MainCanvas(0).GetCanvasWidth
+                viewportHeight = FormMain.MainCanvas(0).GetCanvasHeight
+            End If
             
             'Calculate a width and height ratio in advance
             Dim horizontalRatio As Double, verticalRatio As Double
@@ -331,7 +335,7 @@ End Sub
 
 'Given a current zoom index, find the nearest relevant "zoom in" index.
 ' (This requires special handling in the case of "fit image on screen".)
-Public Function GetNearestZoomInIndex(ByVal curIndex As Long) As Long
+Public Function GetNearestZoomInIndex(ByVal curIndex As Long, Optional ByVal imgWidth As Double = 0#, Optional ByVal imgHeight As Double = 0#, Optional ByVal viewportWidth As Double = 0#, Optional ByVal viewportHeight As Double = 0#) As Long
 
     'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
     ' the nearest zoom-in index is easy.
@@ -342,14 +346,14 @@ Public Function GetNearestZoomInIndex(ByVal curIndex As Long) As Long
     'If the current zoom index is one of the "fit" options, this is more complicated.
     ' We want to set the first fixed index we find that is larger than the current dynamic value being used.
     Else
-        GetNearestZoomInIndex = GetNearestZoomInIndex_FromRatio(GetZoomRatioFromIndex(curIndex))
+        GetNearestZoomInIndex = GetNearestZoomInIndex_FromRatio(GetZoomRatioFromIndex(curIndex, imgWidth, imgHeight, viewportWidth, viewportHeight))
     End If
 
 End Function
 
 'Given a current zoom index, find the nearest relevant "zoom out" index.
 ' (This requires special handling in the case of "fit image on screen".)
-Public Function GetNearestZoomOutIndex(ByVal curIndex As Long) As Long
+Public Function GetNearestZoomOutIndex(ByVal curIndex As Long, Optional ByVal imgWidth As Double = 0#, Optional ByVal imgHeight As Double = 0#, Optional ByVal viewportWidth As Double = 0#, Optional ByVal viewportHeight As Double = 0#) As Long
 
     'This function is split into two cases.  If the current zoom index is a fixed value (e.g. "100%"), finding
     ' the nearest zoom-out index is easy.
@@ -360,7 +364,7 @@ Public Function GetNearestZoomOutIndex(ByVal curIndex As Long) As Long
     'If the current zoom index is one of the "fit" options, this is more complicated.
     ' We want to set the first fixed index we find that is smaller than the current dynamic value being used.
     Else
-        GetNearestZoomOutIndex = GetNearestZoomOutIndex_FromRatio(GetZoomRatioFromIndex(curIndex))
+        GetNearestZoomOutIndex = GetNearestZoomOutIndex_FromRatio(GetZoomRatioFromIndex(curIndex, imgWidth, imgHeight, viewportWidth, viewportHeight))
     End If
 
 End Function

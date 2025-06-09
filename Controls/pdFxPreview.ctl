@@ -22,34 +22,66 @@ Begin VB.UserControl pdFxPreviewCtl
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   384
    ToolboxBitmap   =   "pdFxPreview.ctx":0000
-   Begin PhotoDemon.pdPreview pdPreviewBox 
-      Height          =   5055
-      Left            =   0
+   Begin PhotoDemon.pdDropDown ddZoom 
+      Height          =   375
+      Left            =   3840
       TabIndex        =   2
+      Top             =   5280
+      Width           =   1455
+      _extentx        =   2566
+      _extenty        =   661
+      fontsize        =   9
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdZoom 
+      Height          =   375
+      Index           =   2
+      Left            =   5400
+      TabIndex        =   4
+      Top             =   5280
+      Width           =   375
+      _extentx        =   661
+      _extenty        =   661
+      autotoggle      =   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdZoom 
+      Height          =   375
+      Index           =   1
+      Left            =   3360
+      TabIndex        =   5
+      Top             =   5280
+      Width           =   375
+      _extentx        =   661
+      _extenty        =   661
+      autotoggle      =   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdZoom 
+      Height          =   375
+      Index           =   0
+      Left            =   2880
+      TabIndex        =   3
+      Top             =   5280
+      Width           =   375
+      _extentx        =   661
+      _extenty        =   661
+   End
+   Begin PhotoDemon.pdPreview pdPreviewBox 
+      Height          =   5175
+      Left            =   0
+      TabIndex        =   1
       Top             =   0
       Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   8916
-   End
-   Begin PhotoDemon.pdButtonStrip btsZoom 
-      Height          =   495
-      Left            =   3000
-      TabIndex        =   1
-      Top             =   5160
-      Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   873
-      FontSize        =   9
+      _extentx        =   10186
+      _extenty        =   8916
    End
    Begin PhotoDemon.pdButtonStrip btsState 
-      Height          =   495
+      Height          =   390
       Left            =   0
       TabIndex        =   0
-      Top             =   5160
+      Top             =   5265
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   873
-      FontSize        =   9
+      _extentx        =   4895
+      _extenty        =   873
+      fontsize        =   9
    End
 End
 Attribute VB_Name = "pdFxPreviewCtl"
@@ -244,8 +276,39 @@ Public Property Get SelectedColor() As Long
 End Property
 
 Public Property Get ViewportFitFullImage() As Boolean
-    ViewportFitFullImage = (btsZoom.ListIndex = 1)
+    ViewportFitFullImage = True     'TODO   '(btsZoom.ListIndex = 1)
 End Property
+
+Private Sub cmdZoom_Click(Index As Integer, ByVal Shift As ShiftConstants)
+    
+    Select Case Index
+        
+        'Fit
+        Case 0
+            ddZoom.ListIndex = Zoom.GetZoomFitAllIndex
+            
+        'Zoom out
+        Case 1
+            ddZoom.ListIndex = Zoom.GetNearestZoomInIndex(ddZoom.ListIndex)
+        
+        'Zoom in
+        Case 2
+            ddZoom.ListIndex = Zoom.GetNearestZoomOutIndex(ddZoom.ListIndex)
+        
+    End Select
+    
+End Sub
+
+Private Sub ddZoom_Click()
+
+    'Disable the zoom in/out buttons when they reach the end of the available zoom levels
+    cmdZoom(1).Enabled = (ddZoom.ListIndex <> 0)
+    cmdZoom(2).Enabled = (ddZoom.ListIndex <> Zoom.GetZoomCount)
+    
+    'Highlight the "zoom fit" button while fit mode is active
+    cmdZoom(0).Value = (ddZoom.ListIndex = Zoom.GetZoomFitAllIndex)
+    
+End Sub
 
 Private Sub pdPreviewBox_ColorSelected()
     RaiseEvent ColorSelected
@@ -347,10 +410,6 @@ Private Sub UserControl_Initialize()
     btsState.AddItem "after", 1
     btsState.ListIndex = 1
     
-    btsZoom.AddItem "1:1", 0
-    btsZoom.AddItem "fit", 1
-    btsZoom.ListIndex = 1
-            
 End Sub
 
 'Initialize our effect preview control
@@ -390,16 +449,41 @@ Private Sub UpdateControlLayout()
         pdPreviewBox.SetPositionAndSize 0, 0, newPicWidth, newPicHeight
         
         'If zoom/pan is not allowed, hide that button entirely
-        btsZoom.Visible = Me.AllowZoomPan
+        'btsZoom.Visible = Me.AllowZoomPan
+        Dim i As Long
+        For i = cmdZoom.lBound To cmdZoom.UBound
+            cmdZoom(i).Visible = Me.AllowZoomPan
+        Next i
+        ddZoom.Visible = Me.AllowZoomPan
         
         'Adjust the button strips to appear just below the preview window
         Dim newButtonTop As Long, newButtonWidth As Long
         newButtonTop = ucSupport.GetControlHeight - btsState.GetHeight
         
-        'If zoom/pan is still visible, split the horizontal difference between that button strip, and the before/after strip.
+        'If zoom/pan is visible, split the horizontal difference between the before/after strip and the strip
+        ' of zoom buttons and dropdown(s).
         If Me.AllowZoomPan Then
+            
             newButtonWidth = (newPicWidth \ 2) - Interface.FixDPI(4)
-            btsZoom.SetPositionAndSize newPicWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.GetHeight
+            
+            Dim spaceBetweenButtons As Long
+            spaceBetweenButtons = Interface.FixDPI(2)
+            
+            cmdZoom(0).SetPositionAndSize (newPicWidth - newButtonWidth), newButtonTop, cmdZoom(0).GetWidth, cmdZoom(0).GetHeight
+            
+            Dim newLeft As Long
+            newLeft = cmdZoom(0).GetLeft + cmdZoom(0).GetWidth + spaceBetweenButtons
+            cmdZoom(1).SetPositionAndSize newLeft, newButtonTop, cmdZoom(1).GetWidth, cmdZoom(1).GetHeight
+            
+            'The "+" button sits on the *opposite* side of the dropdown
+            newLeft = newPicWidth - cmdZoom(2).GetWidth
+            cmdZoom(2).SetPositionAndSize newLeft, newButtonTop, cmdZoom(2).GetWidth, cmdZoom(2).GetHeight
+            
+            'Set the dropdown between the "-" and "+" buttons
+            newLeft = cmdZoom(1).GetLeft + cmdZoom(1).GetWidth + spaceBetweenButtons
+            ddZoom.SetPositionAndSize newLeft, newButtonTop + 1, cmdZoom(2).GetLeft - (newLeft + spaceBetweenButtons * 2), ddZoom.GetHeight
+            'btsZoom.SetPositionAndSize newPicWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.GetHeight
+            'TODO
             
         'If zoom/pan is NOT visible, let the before/after button have the entire horizontal space
         Else
@@ -407,7 +491,7 @@ Private Sub UpdateControlLayout()
         End If
         
         'Move the before/after toggle into place
-        btsState.SetPositionAndSize 0, newButtonTop, newButtonWidth, btsState.GetHeight
+        btsState.SetPositionAndSize 0, newButtonTop - 1, newButtonWidth, btsState.GetHeight
     
     End If
                 
@@ -436,12 +520,36 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
+    
     If ucSupport.ThemeUpdateRequired Then
+        
         UpdateColorList
         pdPreviewBox.UpdateAgainstCurrentTheme
         btsState.UpdateAgainstCurrentTheme
-        btsZoom.UpdateAgainstCurrentTheme
+        
+        Dim buttonIconSize As Long
+        buttonIconSize = Interface.FixDPI(16)
+        
+        cmdZoom(0).AssignImage "zoom_fit", , buttonIconSize, buttonIconSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+        cmdZoom(1).AssignImage "zoom_in", , buttonIconSize, buttonIconSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+        cmdZoom(2).AssignImage "zoom_out", , buttonIconSize, buttonIconSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
+        
+        Dim i As Long
+        For i = cmdZoom.lBound To cmdZoom.UBound
+            cmdZoom(i).UpdateAgainstCurrentTheme
+        Next i
+        ddZoom.UpdateAgainstCurrentTheme
+        
+        Zoom.PopulateZoomDropdown ddZoom, Zoom.GetZoomFitAllIndex
+        
+        cmdZoom(0).AssignTooltip "Fit the image on-screen"
+        cmdZoom(1).AssignTooltip "Zoom in"
+        cmdZoom(2).AssignTooltip "Zoom out"
+        ddZoom.AssignTooltip "Change viewport zoom"
+        
         If PDMain.IsProgramRunning() Then NavKey.NotifyControlLoad Me, hostFormhWnd, False
         If PDMain.IsProgramRunning() Then ucSupport.UpdateAgainstThemeAndLanguage
+        
     End If
+    
 End Sub
