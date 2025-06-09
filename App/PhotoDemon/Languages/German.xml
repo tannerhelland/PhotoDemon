@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2024.12 Alpha - Build 387.3</langversion>
+<langversion>2025.4 Alpha - Build 21</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -55,7 +55,7 @@
 
 <phrase>
 <original>Close all</original>
-<translation>Alles schließen</translation>
+<translation>Alle schließen</translation>
 </phrase>
 
 <phrase>
@@ -590,7 +590,7 @@
 
 <phrase>
 <original>Select all</original>
-<translation>Alles auswählen</translation>
+<translation>Alle auswählen</translation>
 </phrase>
 
 <phrase>
@@ -4329,12 +4329,12 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Open location in Explorer</original>
-<translation>Ort im Explorer öffnen</translation>
+<translation>Ort in Explorer öffnen</translation>
 </phrase>
 
 <phrase>
 <original>Close all except this</original>
-<translation>Alles schließen außer dies</translation>
+<translation>Alle schließen außer dies</translation>
 </phrase>
 
 <phrase>
@@ -14763,7 +14763,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>Mip-Mapping</translation>
 </phrase>
 
 <phrase>
@@ -14773,12 +14773,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>Langsam</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>Alles</translation>
 </phrase>
 
 <phrase>
