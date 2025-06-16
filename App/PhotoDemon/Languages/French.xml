@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.658</langversion>
+<langversion>6.7.659</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -105,7 +105,7 @@
 
 <phrase>
 <original>Export palette</original>
-<translation></translation>
+<translation>Exporter la palette</translation>
 </phrase>
 
 <phrase>
@@ -2298,22 +2298,22 @@ Veuillez fermer ce fichier dans tout autre programme l'utilisant et essayez à n
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>Ce fichier a l'extension "%1", mais est actuellement en format "%2".</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>PhotoDemon doit il renommer le fichier avec une extension correcte?</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>(si vous choisissez "Oui", le fichier sera renommé en "%1")</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>Mauvaise extension de fichier</translation>
 </phrase>
 
 <phrase>
@@ -2357,7 +2357,7 @@ Veuillez utiliser un autre programme afin de sauvegarder l'image dans un format 
 
 <phrase>
 <original>Importing %1</original>
-<translation></translation>
+<translation>Import de %1</translation>
 </phrase>
 
 <phrase>
@@ -2367,7 +2367,7 @@ Veuillez utiliser un autre programme afin de sauvegarder l'image dans un format 
 
 <phrase>
 <original>A third-party library (%1) reported the following error</original>
-<translation></translation>
+<translation>Une librairie tierce (%1) a reporté l'erreur suivante</translation>
 </phrase>
 
 <phrase>
@@ -2757,12 +2757,14 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation></translation>
+<translation>Une bibliothèque tierce nécessaire (%1) est manquante ou désactivée.
+
+Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoDemon ou restaurer la bibliothèque manquante.</translation>
 </phrase>
 
 <phrase>
 <original>Error: %1</original>
-<translation></translation>
+<translation>Ereur: %1</translation>
 </phrase>
 
 <phrase>
@@ -3816,7 +3818,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
+<translation>L'usage de la mémoire semble élevé: suspendez certaines données du disque avant de continuer</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -5557,7 +5559,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>Voir le log de débug pour cette session</translation>
 </phrase>
 
 <phrase>
@@ -5652,17 +5654,17 @@ La valeur finale doit être entre  %3 and %4.</translation>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>Angle 90</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>Angle 45</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>Angle 30</translation>
 </phrase>
 
 <phrase>
@@ -6432,7 +6434,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>utiliser la moyenne de déplacement</translation>
 </phrase>
 
 <phrase>
@@ -7331,7 +7333,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>current page only</original>
-<translation></translation>
+<translation>page courante seulement</translation>
 </phrase>
 
 <phrase>
@@ -12535,37 +12537,37 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>presets</original>
-<translation></translation>
+<translation>préréglages</translation>
 </phrase>
 
 <phrase>
 <original>guides</original>
-<translation></translation>
+<translation>guides</translation>
 </phrase>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>cible</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>surligner le zone de recadrage</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>supprimer les pixels recadrés</translation>
 </phrase>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>autoriser l'élargissement</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>appliquer</translation>
 </phrase>
 
 <phrase>
@@ -12580,32 +12582,32 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>resolution (PPI)</original>
-<translation></translation>
+<translation>résolution (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>centerlines</original>
-<translation></translation>
+<translation>lignes centrales</translation>
 </phrase>
 
 <phrase>
 <original>rule of thirds</original>
-<translation></translation>
+<translation>règle des trois tiers</translation>
 </phrase>
 
 <phrase>
 <original>rule of fifths</original>
-<translation></translation>
+<translation>règle des cinq cinquièmes</translation>
 </phrase>
 
 <phrase>
 <original>golden ratio</original>
-<translation></translation>
+<translation>ratio nombre d'or</translation>
 </phrase>
 
 <phrase>
 <original>diagonals</original>
-<translation></translation>
+<translation>diagonales</translation>
 </phrase>
 
 <phrase>
@@ -12615,34 +12617,34 @@ Vous pouvez alors si besoin
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>Magnétiser largeur et hauteur</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>Autoriser le recadrage au delà de la délimitation de l'image (ce qui agrandira l'image)</translation>
 </phrase>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation></translation>
+<translation>La résolution est utilisée pour convertir les mesures réelles en pixels. C'est ignoré pour les mesures qui sont déjà en pixels.</translation>
 </phrase>
 
 <phrase>
 <original>You can use this measurement in landscape or portrait orientation.</original>
-<translation></translation>
+<translation>Vous pouvez utiliser ces mesures en orientation portrait ou paysage</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>aligner sur la grille de pixels</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>Ce paramétrage force l'alignement des tracés de peinture sur les points centraux de la grille de pixels. Ceci augmente la précision (particulièrement pour les petites tailles de brosses), mais le tracé de la brosse peut paraïtre moins naturel.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13736,7 +13738,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>Menus</translation>
 </phrase>
 
 <phrase>
@@ -13756,12 +13758,12 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>Typographies</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>Périphériques d'entrée</translation>
 </phrase>
 
 <phrase>
@@ -14060,7 +14062,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>montrer l'écran d'accueil</translation>
 </phrase>
 
 <phrase>
@@ -14095,7 +14097,7 @@ Voulez-vous vraiment continuer?</translation>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>démarrage</translation>
 </phrase>
 
 <phrase>
@@ -14322,7 +14324,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>Utiliser les profils ICC inclus, quand ils sont disponibles</translation>
 </phrase>
 
 <phrase>
@@ -14367,12 +14369,12 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>stratégie de fichiers</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>utiliser les données de gestion des couleurs spécifiquesau format, quand elles sont disponibles</translation>
 </phrase>
 
 <phrase>
@@ -14427,12 +14429,12 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>Les profils ICC améliorent la fidélité des couleurs.Même si ce paramètre est éteint, PhotoDemon peut toujours utiliser les profils ICC pour certaines tâches (tel que le tratement de données CMYK),</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>Certains formats d'image supportent à la fois les profils ICC et leur propre solution de gestion des couleurs. PhotoDemon préfère toujours les profils ICC, mais quand aucun n'est inclus, les autres solutions de gestion des couleurs peuvent ëtre essayées</translation>
 </phrase>
 
 <!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -14610,34 +14612,34 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>ajouter un autre dossier</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>dossiers de polices</translation>
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>police d'interface</translation>
 </phrase>
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>supprimer ce dossier</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>Les changements prendront effet au redemarrage de PhotoDemon.</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>comportement de la molette de souris</translation>
 </phrase>
 
 <phrase>
@@ -14647,7 +14649,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>distance du magnétisme d'angle (en degrés)</translation>
 </phrase>
 
 <phrase>
@@ -14657,7 +14659,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>parcourir</translation>
 </phrase>
 
 <phrase>
@@ -14669,7 +14671,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>montrer les clés d'accès (mnémoniques)</translation>
 </phrase>
 
 <phrase>
@@ -14689,7 +14691,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>Les clés d'accès (mnémoniques) vous permettent de naviguer dans les menus avec le clavier. En mode "auto", les langues sans clés d'accès natives seront affichées par des clés d'accès en Anglais U.S pour chaque menu.</translation>
 </phrase>
 
 <phrase>
@@ -14706,7 +14708,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>chargement</translation>
 </phrase>
 
 <phrase>
@@ -14731,7 +14733,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>sauvegarde</translation>
 </phrase>
 
 <phrase>
@@ -14773,32 +14775,32 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>mipmaps</translation>
 </phrase>
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>perceptuel</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>lent</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>tout</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>point</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>cubique</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
