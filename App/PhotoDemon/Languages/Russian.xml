@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12.391</langversion>
+<langversion>2025.4 Alpha - Build 24</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -14698,7 +14698,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>Загрузка</translation>
 </phrase>
 
 <phrase>
@@ -14723,7 +14723,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>Сохранение</translation>
 </phrase>
 
 <phrase>
@@ -14765,32 +14765,32 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>Мип-карты</translation>
 </phrase>
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>Перцептивный</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>Медленный</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>Все</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>Точка</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>Кубический</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
