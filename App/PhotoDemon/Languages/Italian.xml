@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>8.9.1673</langversion>
+<langversion>2025.4</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -1580,7 +1580,7 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 
 <phrase>
 <original>Carving image relief</original>
-<translation>Immagine in rilievo Carving</translation>
+<translation>Intaglio rilievo dell'immagine</translation>
 </phrase>
 
 <!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -1732,7 +1732,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 
 <phrase>
 <original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>L'immagine è già ritagliato.  (Non sono stati apportati cambiamenti all'immagine.)</translation>
+<translation>L'immagine è già ritagliata.  (Non sono stati apportati cambiamenti all'immagine.)</translation>
 </phrase>
 
 <phrase>
@@ -1820,7 +1820,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 
 <phrase>
 <original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
-<translation>Salvataggio di %1 fallito. Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
+<translation>Salvataggio di %1 fallito. Per favore utilizza il menù Aiuto -> Invia segnalazione di bug per segnalare questo inconveniente.</translation>
 </phrase>
 
 <!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -2298,22 +2298,22 @@ Per favore chiudi questo file in qualsiasi altro programma in esecuzione, quindi
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>Il file ha estensione "%1", ma è in realtà in formato "%2".</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>Rinominare il file nell'estensione corretta?</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>(Se si sceglie "Sì", il file sarà rinominato in "%1")</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>Estensione file errata</translation>
 </phrase>
 
 <phrase>
@@ -2356,7 +2356,7 @@ Per favore utilizza un altro programma per salvare questa immagine in un formato
 
 <phrase>
 <original>Importing %1</original>
-<translation></translation>
+<translation>Importazione di %1</translation>
 </phrase>
 
 <phrase>
@@ -2366,7 +2366,7 @@ Per favore utilizza un altro programma per salvare questa immagine in un formato
 
 <phrase>
 <original>A third-party library (%1) reported the following error</original>
-<translation></translation>
+<translation>Una libreria di terze parti (%1) ha restituito questo errore</translation>
 </phrase>
 
 <phrase>
@@ -2755,12 +2755,14 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation></translation>
+<translation>Una libreria di terze parti necessaria (%1) è mancante o disabilitata.
+
+Per abilitare questa funzionalità, scaricare una nuova copia di PhotoDemon o ripristinare la libreria mancante.</translation>
 </phrase>
 
 <phrase>
 <original>Error: %1</original>
-<translation></translation>
+<translation>Errore: %1</translation>
 </phrase>
 
 <phrase>
@@ -2813,7 +2815,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Richiesta inviata al processore sconosciuta: %1
 
-Per favore, riporta questo bug tramite il menù Guida -> Invia Rapporto sul Bug.</translation>
+Per favore, riporta questo bug tramite il menù Guida -> Invia segnalazione di bug.</translation>
 </phrase>
 
 <phrase>
@@ -3196,12 +3198,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativo.  È anche possibile portare a conoscenza degli sviluppatori di PhotoDemon questo errore tramite il menù Aiuto> Invia Rapporto sul Bug.</translation>
+Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativo.  È anche possibile portare a conoscenza degli sviluppatori di PhotoDemon questo errore tramite il menù Aiuto > Invia segnalazione di bug.</translation>
 </phrase>
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Formato d'uscita non riconosciuto.  Salvataggio interrotto.  Per favore utilizza il menù Aiuto -> Invia il Rapporto sul Bug per segnalare questo inconveniente.</translation>
+<translation>Formato d'uscita non riconosciuto.  Salvataggio interrotto.  Per favore utilizza il menù Aiuto -> Invia segnalazazione di bug per segnalare questo inconveniente.</translation>
 </phrase>
 
 <phrase>
@@ -3430,7 +3432,7 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Crop tool</original>
-<translation></translation>
+<translation>Strumento Ritaglio</translation>
 </phrase>
 
 <!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3444,7 +3446,7 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Gradient tool</original>
-<translation>Strumento sfumatura</translation>
+<translation>Strumento Sfumatura</translation>
 </phrase>
 
 <!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3816,7 +3818,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
+<translation>Utilizzo di memoria elevato; sospensione di alcuni dati sul disco prima di continuare</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -5557,7 +5559,7 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>Visualizza log di debug per questa sessione</translation>
 </phrase>
 
 <phrase>
@@ -5652,17 +5654,17 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>Angolo di 90</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>Angolo di 45</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>Angolo di 30</translation>
 </phrase>
 
 <phrase>
@@ -6432,7 +6434,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>usa media mobile</translation>
 </phrase>
 
 <phrase>
@@ -7331,7 +7333,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 
 <phrase>
 <original>current page only</original>
-<translation></translation>
+<translation>solo pagina corrente</translation>
 </phrase>
 
 <phrase>
@@ -12413,32 +12415,32 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Search tool</original>
-<translation></translation>
+<translation>Cerca</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush size</original>
-<translation></translation>
+<translation>Riduci dimensione pennello</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush size</original>
-<translation></translation>
+<translation>Aumenta dimensione pennello</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation></translation>
+<translation>Diminuisci durezza pennello</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation></translation>
+<translation>Aumenta durezza pennello</translation>
 </phrase>
 
 <phrase>
 <original>Toggle brush cursor</original>
-<translation></translation>
+<translation>Abilita/disabilita cursore pennello</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
@@ -12529,37 +12531,37 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>presets</original>
-<translation></translation>
+<translation>preset</translation>
 </phrase>
 
 <phrase>
 <original>guides</original>
-<translation></translation>
+<translation>guide</translation>
 </phrase>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>destinazione</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>evidenzia area di ritaglio</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>elimina pixel ritagliati</translation>
 </phrase>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>consenti ingrandimento</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>applica</translation>
 </phrase>
 
 <phrase>
@@ -12574,32 +12576,32 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>resolution (PPI)</original>
-<translation></translation>
+<translation>risoluzione (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>centerlines</original>
-<translation></translation>
+<translation>linee di centro</translation>
 </phrase>
 
 <phrase>
 <original>rule of thirds</original>
-<translation></translation>
+<translation>regola dei terzi</translation>
 </phrase>
 
 <phrase>
 <original>rule of fifths</original>
-<translation></translation>
+<translation>regola dei quinti</translation>
 </phrase>
 
 <phrase>
 <original>golden ratio</original>
-<translation></translation>
+<translation>rapporto aureo</translation>
 </phrase>
 
 <phrase>
 <original>diagonals</original>
-<translation></translation>
+<translation>diagonali</translation>
 </phrase>
 
 <phrase>
@@ -12609,34 +12611,34 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>Scambia larghezza e altezza</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>Consenti ritaglio oltre i confini dell'immagine (ingrandirà l'immagine).</translation>
 </phrase>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation></translation>
+<translation>La risoluzione è usata per convertire unità di misura reali in pixel.  Sarà ignorata per misurazioni già in pixel.</translation>
 </phrase>
 
 <phrase>
 <original>You can use this measurement in landscape or portrait orientation.</original>
-<translation></translation>
+<translation>È possibile utilizzare questa misura sia in orientamento orizzontale che verticale.</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>allinea a griglia pixel</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>Questa opzione allinea forzatamente i tratti di pennello ai punti centrali della griglia pixel.  Ciò migliora la precisione (soprattutto con pennelli di piccole dimensioni), ma i tratti di pennello potrebbero sembrare meno naturali.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13306,7 +13308,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Toolbox tools</original>
-<translation></translation>
+<translation>Casella degli strumenti</translation>
 </phrase>
 
 <phrase>
@@ -13730,7 +13732,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>Menu</translation>
 </phrase>
 
 <phrase>
@@ -13750,12 +13752,12 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>Caratteri</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>Dispositivi di input</translation>
 </phrase>
 
 <phrase>
@@ -14054,7 +14056,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>visualizza schermata di avvio</translation>
 </phrase>
 
 <phrase>
@@ -14089,7 +14091,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>avvio</translation>
 </phrase>
 
 <phrase>
@@ -14315,7 +14317,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>usa profili ICC incorporati, se disponibili</translation>
 </phrase>
 
 <phrase>
@@ -14360,12 +14362,12 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>politiche file</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>usa dati di gestione colore specifici del formato, se disponibili</translation>
 </phrase>
 
 <phrase>
@@ -14420,12 +14422,12 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>I profili ICC incorporati migliorano la fedeltà del colore.  Anche se questa impostazione è disabilitata, PhotoDemon potrebbe usare i profili ICC per alcune operazioni (come la gestione dei dati CMYK).</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>Alcuni formati supportano sia i profili ICC che una specifica gestione del colore.  PhotoDemon dà priorità ai profili ICC, ma se non sono incorporati è possibile provare altri approcci di gestione colore.</translation>
 </phrase>
 
 <!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -14599,34 +14601,34 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>aggiungi un'altra cartella</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>cartelle dei font</translation>
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>carattere dell'interfaccia</translation>
 </phrase>
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>rimuovi questa cartella</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>I cambiamenti avranno effetto al prossimo avvio di PhotoDemon.</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>comportamento rotellina del mouse</translation>
 </phrase>
 
 <phrase>
@@ -14636,7 +14638,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>distanza di scatto angolare (in gradi)</translation>
 </phrase>
 
 <phrase>
@@ -14646,7 +14648,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>scorrimento</translation>
 </phrase>
 
 <phrase>
@@ -14658,7 +14660,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>mostra tasti di accesso (mnemonici)</translation>
 </phrase>
 
 <phrase>
@@ -14678,7 +14680,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>I tasti di accesso permettono di navigare i menu usando la tastiera.  In modalità "auto", per le lingue senza tasti di accesso nativi saranno visualizzati i tasti inglesi per ogni menu.</translation>
 </phrase>
 
 <phrase>
@@ -14695,7 +14697,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>caricamento</translation>
 </phrase>
 
 <phrase>
@@ -14720,7 +14722,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>salvataggio</translation>
 </phrase>
 
 <phrase>
@@ -14767,27 +14769,27 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>percettivo</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>lento</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>tutto</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>punto</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>cubico</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
