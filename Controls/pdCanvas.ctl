@@ -1039,8 +1039,8 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
             
             'Crop tool handles some buttons
             Case ND_CROP
-                'TODO!
-            
+                Tools_Crop.NotifyKeyDown Shift, vkCode, markEventHandled
+                
             'Selection tools use a universal handler
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
                 SelectionUI.NotifySelectionKeyDown Me, Shift, vkCode, markEventHandled
