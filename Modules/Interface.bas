@@ -1567,7 +1567,7 @@ Public Function GetWindowCaption(ByRef srcImage As pdImage, Optional ByVal appen
         
             'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
             If appendFileFormat And (Not doNotAppendImageFormat) And (srcImage.GetOriginalFileFormat() <> PDIF_UNKNOWN) Then
-                captionBase = captionBase & " [" & UCase$(ImageFormats.GetExtensionFromPDIF(srcImage.GetOriginalFileFormat())) & "]"
+                captionBase = captionBase & " [" & UCase$(ImageFormats.GetExtensionFromPDIF(srcImage.GetCurrentFileFormat())) & "]"
             End If
         
         Else
