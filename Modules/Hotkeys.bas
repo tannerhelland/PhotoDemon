@@ -300,6 +300,8 @@ Private Sub InitializeDefaultHotkeys()
     AddHotkey vbKeyX, vbCtrlMask Or vbAltMask, "image_trim", True
     
         'Image -> Rotate submenu
+        AddHotkey VK_OEM_4, vbCtrlMask, "image_rotate270", True
+        AddHotkey VK_OEM_6, vbCtrlMask, "image_rotate90", True
         AddHotkey vbKeyR, vbCtrlMask Or vbShiftMask Or vbAltMask, "image_rotatearbitrary", True
     
     AddHotkey vbKeyE, vbCtrlMask Or vbShiftMask, "image_mergevisible", True
