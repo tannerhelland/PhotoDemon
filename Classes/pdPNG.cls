@@ -1006,20 +1006,33 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
     
     'If the PNG contained ICC profile data, retrieve it now; otherwise, assume sRGB.  (Note that a
     ' transform may be generated either way, as LittleCMS can be used for fast swizzling.)
-    Dim imgHasEmbeddedICC As Boolean
-    imgHasEmbeddedICC = (Me.GetIndexOfChunk("iCCP") >= 0) And ColorManagement.UseEmbeddedICCProfiles()
+    Dim imgHasEmbeddedICC As Boolean, iccEmbeddedV2 As Boolean, iccEmbeddedV4 As Boolean
+    If ColorManagement.UseEmbeddedICCProfiles() Then
+        iccEmbeddedV2 = (Me.GetIndexOfChunk("iCCP") >= 0)
+        iccEmbeddedV4 = (Me.GetIndexOfChunk("iCCN") >= 0)
+        imgHasEmbeddedICC = iccEmbeddedV2 Or iccEmbeddedV4
+    End If
     
     Dim srcProfile As pdLCMSProfile, dstProfile As pdLCMSProfile, dstTransform As pdLCMSTransform, srcImgProfileGood As Boolean
     
     'The PrepICCData function will mark this as TRUE if the embedded profile passes validation
     srcImgProfileGood = False
     PrepICCData srcProfile, dstProfile, dstTransform, srcImgProfileGood
+    
     If srcImgProfileGood Then
     
         'Add a copy of the profile to PD's central cache, and associate the target image with that profile
         Dim tmpProfile As pdICCProfile
         Set tmpProfile = New pdICCProfile
-        If tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().Peek_PointerOnly(0)) Then
+        
+        
+        If (Me.GetIndexOfChunk("iCCN") >= 0) Then
+            srcImgProfileGood = tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCN")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCN")).BorrowData().Peek_PointerOnly(0))
+        ElseIf (Me.GetIndexOfChunk("iCCP") >= 0) Then
+            srcImgProfileGood = tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().Peek_PointerOnly(0))
+        End If
+        
+        If srcImgProfileGood Then
             
             Dim profHash As String
             profHash = ColorManagement.AddProfileToCache(tmpProfile, True, False, False)
@@ -1558,12 +1571,17 @@ Friend Function ImportStage6_PostProcessing(ByRef srcFile As String, ByRef dstDI
         
     End If
     
+    'UPDATE AUGUST 2025
+    ' - Changed hierarchy of color tags, and expanded support for new color management tags (iCCN and cICP)
+    '
     'PNG presents a hierarchy of lighting and color adjustment chunks.  If present, they are to be dealt with
     ' in this order (and once one is dealt with, subsequent ones should be ignored, to avoid double-corrections):
     
-    '1) iCCP
-    '2) sRGB
-    '3) gAMA and/or cHRM (equal priority, and should be handled together if possible)
+    '1) cICP
+    '2) iCCN
+    '3) iCCP
+    '4) sRGB
+    '5) gAMA and/or cHRM (equal priority, and should be handled together if possible)
     
     'ICC profiles or sRGB flags, if present, are dealt with during a previous decoding step (for performance reasons).
     ' As such, we don't need to deal with them here - and in fact, we can bail if they were handled previously,
@@ -6081,27 +6099,42 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
     Dim iccRequired As Boolean: iccRequired = True
     
     'Users can set a preference for ignoring embedded profiles (this allows recovery of images with broken or faulty ICC)
-    Dim iccIndex As Long
+    Dim iccIndexV2 As Long, iccIndexV4 As Long
     If ColorManagement.UseEmbeddedICCProfiles() Then
-        iccIndex = Me.GetIndexOfChunk("iCCP")
+        iccIndexV4 = Me.GetIndexOfChunk("iCCN")
+        iccIndexV2 = Me.GetIndexOfChunk("iCCP")
     Else
-        iccIndex = -1
+        iccIndexV4 = -1
+        iccIndexV2 = -1
     End If
     
-    If (iccIndex > 0) Then
-        srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndex).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndex).BorrowData().GetStreamSize())
+    'New in 2025 is the possibility of a v4 ICC profile; check that first (it has priority per the spec)
+    If (iccIndexV4 > 0) Then
+        srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndexV4).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndexV4).BorrowData().GetStreamSize())
         
         'If the image does not contain color profile data, or if the embedded profile is invalid, assumed sRGB.
         ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
         If (Not srcImgProfileGood) Then
-            m_Warnings.AddString "WARNING!  ICC profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied!"
-            iccIndex = -1
+            m_Warnings.AddString "WARNING!  ICC v4 profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied using this profile!"
+            iccIndexV4 = -1
+        End If
+        
+    End If
+        
+    If (iccIndexV2 > 0) And (iccIndexV4 <= 0) Then
+        srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndexV2).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndexV2).BorrowData().GetStreamSize())
+        
+        'If the image does not contain color profile data, or if the embedded profile is invalid, assumed sRGB.
+        ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
+        If (Not srcImgProfileGood) Then
+            m_Warnings.AddString "WARNING!  ICC v2 profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied using this profile!"
+            iccIndexV2 = -1
         End If
         
     End If
     
     'ICC processing failed.  Create a generic source profile.
-    If (iccIndex <= 0) Then
+    If (iccIndexV4 <= 0) And (iccIndexV2 <= 0) Then
         If (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_GreyscaleAlpha) Then
             srcProfile.CreateGenericGrayscaleProfile
         Else
