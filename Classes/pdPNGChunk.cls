@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
 'Copyright 2018-2025 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 19/August/19
-'Last update: add full support for importing animated PNGs
+'Last updated:28/August/25
+'Last update: add coverage for masking high tRNS byte on non-16-bits-per-channel data (2025 spec revision; see comments)
 '
 'pdPNG leans on this class to handle storage, parsing, and creation of certain PNG chunks.
 ' This simplifies both encoding and decoding because the PNG spec requires insane things like
@@ -1224,6 +1224,28 @@ Friend Function GetChromaticityData(ByRef dstData() As Long, ByRef warningStack 
     
 End Function
 
+'cICP chunks return the pure, unadulterated cICP contents - four bytes defining standardized color data.
+'
+'The passed array will be redimmed [0, 3] and filled with embedded cICP bytes, in order.
+Friend Function GetcICPData(ByRef dstData() As Byte, ByRef warningStack As pdStringStack) As Boolean
+    
+    GetcICPData = (m_Type = "cICP")
+    If GetcICPData Then
+        
+        m_Data.SetPosition 0, FILE_BEGIN
+        ReDim dstData(0 To 3) As Byte
+        
+        Dim i As Long
+        For i = 0 To 3
+            dstData(i) = m_Data.ReadByte()
+        Next i
+        
+    Else
+        warningStack.AddString "WARNING!  You requested cICP data from a non-cICP chunk; no value was returned."
+    End If
+    
+End Function
+
 'If this chunk is a tRNS chunk, use this function to retrieve relevant transparency data.  Handling is automatic
 ' according to the header's color type.
 Friend Function GetTRNSData(ByRef dstPalette() As RGBQuad, ByRef dstTransRed As Long, ByRef dstTransGreen As Long, ByRef dstTransBlue As Long, ByRef srcHeader As PD_PNGHeader, ByRef warningStack As pdStringStack) As Boolean
@@ -1263,6 +1285,14 @@ Friend Function GetTRNSData(ByRef dstPalette() As RGBQuad, ByRef dstTransRed As 
                     GetTRNSData = True
                 Else
                     warningStack.AddString "WARNING!  pdPNGChunk.GetTRNSData found a truecolor tRNS that wasn't six bytes long (" & m_Data.GetStreamSize() & ")"
+                End If
+                
+                'Ignore high-bit if source color depth is <= 8-bpc
+                ' (added 2025 to cover this explicit revision to the spec: https://w3c.github.io/png/Implementation_Report_3e/#palette)
+                If (srcHeader.BitDepth <= 8) Then
+                    dstTransRed = dstTransRed And &HFF&
+                    dstTransGreen = dstTransGreen And &HFF&
+                    dstTransBlue = dstTransBlue And &HFF&
                 End If
             
             Case png_Indexed

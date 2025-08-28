@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon PNG Container and Parser
 'Copyright 2018-2025 by Tanner Helland
 'Created: 12/April/18
-'Last updated: 01/May/25
-'Last update: allow caller to manually disable post-processing (e.g. color-management using gamma, chromaticity, etc)
+'Last updated: 28/August/25
+'Last update: add coverage for new cICP HDR chunk (see https://w3c.github.io/png/Implementation_Report_3e/)
 '
 'I have tried - *so* hard - to make 3rd-party PNG solutions work.  But they all suck.  Every last one of them.
 ' Like most standards attempts, PNG is an overcomplicated, hackish mess, and every library that attempts to
@@ -1025,11 +1025,17 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
         Dim tmpProfile As pdICCProfile
         Set tmpProfile = New pdICCProfile
         
-        
-        If (Me.GetIndexOfChunk("iCCN") >= 0) Then
-            srcImgProfileGood = tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCN")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCN")).BorrowData().Peek_PointerOnly(0))
-        ElseIf (Me.GetIndexOfChunk("iCCP") >= 0) Then
-            srcImgProfileGood = tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().Peek_PointerOnly(0))
+        If (Me.GetIndexOfChunk("cICP") >= 0) And srcImgProfileGood Then
+            If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "Using cICP data for color management..."
+            tmpProfile.LoadICCFromLCMSProfile srcProfile
+        Else
+            If iccEmbeddedV4 Then
+                srcImgProfileGood = tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCN")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCN")).BorrowData().Peek_PointerOnly(0))
+                If PNG_DEBUG_VERBOSE And srcImgProfileGood Then PDDebug.LogAction "Using iCCN data for color management..."
+            ElseIf iccEmbeddedV2 Then
+                srcImgProfileGood = tmpProfile.LoadICCFromPtr(m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().GetStreamSize(), m_Chunks(Me.GetIndexOfChunk("iCCP")).BorrowData().Peek_PointerOnly(0))
+                If PNG_DEBUG_VERBOSE And srcImgProfileGood Then PDDebug.LogAction "Using iCCP data for color management..."
+            End If
         End If
         
         If srcImgProfileGood Then
@@ -1061,7 +1067,17 @@ Friend Function ImportStage5_ConstructImage(ByRef srcFile As String, ByRef dstDI
         ' been covered by the ConstructGrayPalette() function, above!)
         Dim trnsHandlingRequired As Boolean, trnsCheck As Long
         trnsHandlingRequired = (m_Header.ColorType = png_Truecolor) And (trnsRed >= 0) And (trnsGreen >= 0) And (trnsBlue >= 0)
-        If trnsHandlingRequired And (m_Header.BitDepth = 8) Then trnsCheck = RGB(trnsRed, trnsGreen, trnsBlue)
+        If trnsHandlingRequired And (m_Header.BitDepth = 8) Then
+            
+            'August 2025: per the latest PNG spec revision, we must explicitly handle trns values
+            ' that exceed known valid values for this color space.
+            If (trnsRed <= 255) And (trnsGreen <= 255) And (trnsBlue <= 255) Then
+                trnsCheck = RGB(trnsRed, trnsGreen, trnsBlue)
+            Else
+                trnsCheck = &HFFFFFFFF
+            End If
+            
+        End If
         
         'We now have everything we need to construct actual 32-bpp DIBs usable by PhotoDemon.
         
@@ -6093,55 +6109,73 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
     
     Set srcProfile = New pdLCMSProfile
     
-    'In most (?) cases, we want to use LittleCMS to color-manage incoming PNG data.  There are exceptions, however;
-    ' indexed images without embedded profiles don't require management, for example.  As such, we can skip specialized
-    ' ICC handling under some scenarios.
-    Dim iccRequired As Boolean: iccRequired = True
-    
-    'Users can set a preference for ignoring embedded profiles (this allows recovery of images with broken or faulty ICC)
-    Dim iccIndexV2 As Long, iccIndexV4 As Long
+    'In 2025, the PNG spec was updated with a newly defined cICP chunk which simplifies defining HDR data.
+    ' This small chunk specifies a series of hard-coded IDs for known popular HDR color formats.  Decoders can
+    ' use these chunks to handle pixel data accordingly.
+    '
+    'If a cICP chunk is present, it takes precedence over other color profile chunks.
+    Dim idxCICP As Long
     If ColorManagement.UseEmbeddedICCProfiles() Then
-        iccIndexV4 = Me.GetIndexOfChunk("iCCN")
-        iccIndexV2 = Me.GetIndexOfChunk("iCCP")
+        idxCICP = Me.GetIndexOfChunk("cICP")
     Else
-        iccIndexV4 = -1
-        iccIndexV2 = -1
+        idxCICP = -1
     End If
     
-    'New in 2025 is the possibility of a v4 ICC profile; check that first (it has priority per the spec)
-    If (iccIndexV4 > 0) Then
-        srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndexV4).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndexV4).BorrowData().GetStreamSize())
-        
-        'If the image does not contain color profile data, or if the embedded profile is invalid, assumed sRGB.
-        ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
-        If (Not srcImgProfileGood) Then
-            m_Warnings.AddString "WARNING!  ICC v4 profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied using this profile!"
-            iccIndexV4 = -1
-        End If
-        
+    Dim cICPOK As Boolean
+    If (idxCICP > 0) Then
+        cICPOK = PrepcICPData(idxCICP, srcProfile, srcImgProfileGood)
+    Else
+        cICPOK = False
     End If
+    
+    If (Not cICPOK) Then
         
-    If (iccIndexV2 > 0) And (iccIndexV4 <= 0) Then
-        srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndexV2).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndexV2).BorrowData().GetStreamSize())
-        
-        'If the image does not contain color profile data, or if the embedded profile is invalid, assumed sRGB.
-        ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
-        If (Not srcImgProfileGood) Then
-            m_Warnings.AddString "WARNING!  ICC v2 profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied using this profile!"
+        'Users can set a preference for ignoring embedded profiles (this allows recovery of images with broken or faulty ICC)
+        Dim iccIndexV2 As Long, iccIndexV4 As Long
+        If ColorManagement.UseEmbeddedICCProfiles() Then
+            iccIndexV4 = Me.GetIndexOfChunk("iCCN")
+            iccIndexV2 = Me.GetIndexOfChunk("iCCP")
+        Else
+            iccIndexV4 = -1
             iccIndexV2 = -1
         End If
         
+        'New in 2025 is the possibility of a v4 ICC profile; check that first (it has priority per the spec)
+        If (iccIndexV4 > 0) Then
+            srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndexV4).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndexV4).BorrowData().GetStreamSize())
+            
+            'If the image does not contain color profile data, or if the embedded profile is invalid, assumed sRGB.
+            ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
+            If (Not srcImgProfileGood) Then
+                m_Warnings.AddString "WARNING!  ICC v4 profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied using this profile!"
+                iccIndexV4 = -1
+            End If
+            
+        End If
+            
+        If (iccIndexV2 > 0) And (iccIndexV4 <= 0) Then
+            srcImgProfileGood = srcProfile.CreateFromPointer(m_Chunks(iccIndexV2).BorrowData().Peek_PointerOnly(0), m_Chunks(iccIndexV2).BorrowData().GetStreamSize())
+            
+            'If the image does not contain color profile data, or if the embedded profile is invalid, assumed sRGB.
+            ' (TODO: expose this to the user as a preference; untagged images may reside in a different space.)
+            If (Not srcImgProfileGood) Then
+                m_Warnings.AddString "WARNING!  ICC v2 profile found in file, but LittleCMS couldn't validate the profile.  Color management will *not* be applied using this profile!"
+                iccIndexV2 = -1
+            End If
+            
+        End If
+        
     End If
     
-    'ICC processing failed.  Create a generic source profile.
-    If (iccIndexV4 <= 0) And (iccIndexV2 <= 0) Then
+    'If ICC processing failed, create a generic source profile.
+    If (iccIndexV4 <= 0) And (iccIndexV2 <= 0) And (Not cICPOK) Then
         If (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_GreyscaleAlpha) Then
             srcProfile.CreateGenericGrayscaleProfile
         Else
             srcProfile.CreateSRGBProfile
         End If
     End If
-    
+        
     'At present, sRGB destination profiles are hard-coded; this is a work in progress for future releases
     Set dstProfile = New pdLCMSProfile
     If (m_Header.ColorType = png_Greyscale) Or (m_Header.ColorType = png_GreyscaleAlpha) Then
@@ -6149,6 +6183,11 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
     Else
         dstProfile.CreateSRGBProfile
     End If
+    
+    'In most (?) cases, we want to use LittleCMS to color-manage incoming PNG data.  There are exceptions, however;
+    ' indexed images without embedded profiles don't require management, for example.  As such, we can skip specialized
+    ' ICC handling under some scenarios.
+    Dim iccRequired As Boolean: iccRequired = True
     
     'Because LittleCMS supports fast swizzling (while VB6 does not), we use LittleCMS to accelerate certain types
     ' of pixel transformations - even if the source data isn't explicitly color-managed.
@@ -6197,7 +6236,7 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
                 dstLcmsFormat = TYPE_BGRA_8
             End If
         
-        'RGBA images can always make use of LittleCMS
+        'RGBA images can always use LittleCMS
         Case png_TruecolorAlpha
             iccRequired = True
             If (m_Header.BitDepth = 8) Then
@@ -6220,6 +6259,270 @@ Private Sub PrepICCData(ByRef srcProfile As pdLCMSProfile, ByRef dstProfile As p
     End If
 
 End Sub
+
+'Build a color profile for an embedded cICP chunk, if any.
+Private Function PrepcICPData(ByVal idxCICP As Long, ByRef srcProfile As pdLCMSProfile, ByRef srcImgProfileGood As Boolean) As Boolean
+    
+    Const FUNC_NAME As String = "PrepcICPData"
+    
+    Dim cICPBytes() As Byte
+    If m_Chunks(idxCICP).GetcICPData(cICPBytes, m_Warnings) Then
+        
+        If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "cICP chunk found: " & cICPBytes(0) & ", " & cICPBytes(1) & ", " & cICPBytes(2) & ", " & cICPBytes(3)
+        
+        'Validate that the 3rd byte is 0 (required by the spec)
+        If (cICPBytes(2) <> 0) Then
+            PrepcICPData = False
+            Exit Function
+        End If
+        
+        'Now we need to build a color profile from the hard-coded list of potential colors and primaries defined by the
+        ' list of cICP bytes.
+        Dim wpValues() As Double, rgbValues() As Double
+        ReDim wpValues(0 To 3) As Double
+        ReDim rgbValues(0 To 9) As Double
+        
+        'The right-most column of all color definitions are 1.0
+        wpValues(2) = 1#
+        rgbValues(2) = 1#
+        rgbValues(5) = 1#
+        rgbValues(8) = 1#
+        
+        'Some indices are reserved, or deliberately marked as "do not use", or are otherwise invalid.
+        Dim idxOK As Boolean
+        idxOK = False
+        
+        'All values in this table are taken from https://www.itu.int/rec/T-REC-H.273-202407-I/en (update 07/2024)
+        Select Case cICPBytes(0)
+            
+            Case 0
+                'Reserved
+            Case 1
+                'sRGB
+                idxOK = True
+                rgbValues(0) = 0.64
+                rgbValues(1) = 0.33
+                
+                rgbValues(3) = 0.3
+                rgbValues(4) = 0.6
+                
+                rgbValues(6) = 0.15
+                rgbValues(7) = 0.06
+                
+                wpValues(0) = 0.3127
+                wpValues(1) = 0.329
+            Case 2
+                'Unspecified
+            Case 3
+                'Reserved
+            Case 4
+                '1953 NTSC
+                idxOK = True
+                rgbValues(0) = 0.67
+                rgbValues(1) = 0.33
+                
+                rgbValues(3) = 0.21
+                rgbValues(4) = 0.71
+                
+                rgbValues(6) = 0.14
+                rgbValues(7) = 0.08
+                
+                wpValues(0) = 0.31
+                wpValues(1) = 0.316
+            Case 5
+                'Historical PAL/SECAM
+                idxOK = True
+                rgbValues(0) = 0.64
+                rgbValues(1) = 0.33
+                
+                rgbValues(3) = 0.29
+                rgbValues(4) = 0.6
+                
+                rgbValues(6) = 0.15
+                rgbValues(7) = 0.06
+                
+                wpValues(0) = 0.3127
+                wpValues(1) = 0.329
+            Case 6, 7
+                'NTSC, SMPTE ST240
+                idxOK = True
+                rgbValues(0) = 0.63
+                rgbValues(1) = 0.34
+                
+                rgbValues(3) = 0.31
+                rgbValues(4) = 0.595
+                
+                rgbValues(6) = 0.155
+                rgbValues(7) = 0.07
+                
+                wpValues(0) = 0.3127
+                wpValues(1) = 0.329
+            Case 8
+                'Generic film
+                idxOK = True
+                rgbValues(0) = 0.681
+                rgbValues(1) = 0.319
+                
+                rgbValues(3) = 0.243
+                rgbValues(4) = 0.692
+                
+                rgbValues(6) = 0.145
+                rgbValues(7) = 0.049
+                
+                wpValues(0) = 0.31
+                wpValues(1) = 0.316
+            Case 9
+                'Modern HDTV (Rec BT 2020-2, 2100-2)
+                idxOK = True
+                rgbValues(0) = 0.708
+                rgbValues(1) = 0.292
+                
+                rgbValues(3) = 0.17
+                rgbValues(4) = 0.797
+                
+                rgbValues(6) = 0.131
+                rgbValues(7) = 0.046
+                
+                wpValues(0) = 0.3127
+                wpValues(1) = 0.329
+            Case 10
+                'CIE 1931 XYZ (should not be used in PNG due to strict RGB requirement)
+                idxOK = True
+                rgbValues(0) = 1#
+                rgbValues(1) = 0#
+                
+                rgbValues(3) = 0#
+                rgbValues(4) = 1#
+                
+                rgbValues(6) = 0#
+                rgbValues(7) = 0#
+                
+                wpValues(0) = 0.333333333333333
+                wpValues(1) = 0.333333333333333
+            Case 11
+                'SMPTE RP 431-2
+                idxOK = True
+                rgbValues(0) = 0.68
+                rgbValues(1) = 0.32
+                
+                rgbValues(3) = 0.265
+                rgbValues(4) = 0.69
+                
+                rgbValues(6) = 0.15
+                rgbValues(7) = 0.06
+                
+                wpValues(0) = 0.314
+                wpValues(1) = 0.351
+            Case 12
+                'SMPTE RP 432-1
+                idxOK = True
+                rgbValues(0) = 0.68
+                rgbValues(1) = 0.32
+                
+                rgbValues(3) = 0.265
+                rgbValues(4) = 0.69
+                
+                rgbValues(6) = 0.15
+                rgbValues(7) = 0.06
+                
+                wpValues(0) = 0.3127
+                wpValues(1) = 0.329
+            '13-21 are all reserved
+            Case 22
+                'No corresponding spec
+                idxOK = True
+                rgbValues(0) = 0.63
+                rgbValues(1) = 0.34
+                
+                rgbValues(3) = 0.295
+                rgbValues(4) = 0.605
+                
+                rgbValues(6) = 0.155
+                rgbValues(7) = 0.077
+                
+                wpValues(0) = 0.3127
+                wpValues(1) = 0.329
+            
+        End Select
+        
+        'If the color primaries were bad, don't proceed with transfer functions
+        If (Not idxOK) Then
+            InternalError FUNC_NAME, "unknown color primaries index: " & cICPBytes(1)
+            Exit Function
+        End If
+        
+        'Transfer functions come next.
+        idxOK = False
+        
+        '10 params max for an LCMS tone curve (not all params are needed by all functions, FYI,
+        ' but there is no harm in null-entries).
+        Dim listParams() As Double
+        ReDim listParams(0 To 9) As Double
+        
+        'Technically transfer curves can vary per-channel, but in all cases we only intend to cover
+        ' the "same transfer for all channels" case.
+        Dim pTransferCurve As Long, pTransferCurve2 As Long, pTransferCurve3 As Long
+        Select Case cICPBytes(1)
+            
+            'Transfer functions rely on built-in LCMS2 handling.  I currently only cover formats found "in the wild",
+            ' as the potential list of transfer functions is huge and unwieldy, and will not be encountered in any of our lifetimes.
+            Case 1, 6, 14, 15
+                idxOK = True
+                
+                'Build a custom tone curve in LCMS format using hard-coded values from the spec
+                ' (defined by https://www.itu.int/rec/T-REC-H.273-202407-I/en).
+                listParams(0) = 1# / 0.45 'Power
+                listParams(1) = 1# / 1.099 'alpha
+                listParams(2) = 0.099 / 1.099
+                listParams(3) = 1# / 4.5
+                listParams(4) = 0.081   'beta
+                
+                pTransferCurve = LittleCMS.LCMS_GetAdvancedToneCurve(4, listParams)
+                pTransferCurve2 = pTransferCurve
+                pTransferCurve3 = pTransferCurve
+                If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "Using Rec.2020 via cICP for color management"
+                
+            'sRGB
+            Case 13
+                idxOK = True
+                
+                listParams(0) = 2.4
+                listParams(1) = 1 / 1.055
+                listParams(2) = 0.055 / 1.055
+                listParams(3) = 1# / 12.92
+                listParams(4) = 0.04045
+                
+                pTransferCurve = LittleCMS.LCMS_GetAdvancedToneCurve(4, listParams)
+                pTransferCurve2 = pTransferCurve
+                pTransferCurve3 = pTransferCurve
+                If PNG_DEBUG_VERBOSE Then PDDebug.LogAction "Using sRGB via cICP for color management"
+            
+            Case Else
+                'Any other indices are unexpected and *could* be covered in the futurs, but it's time-consuming
+                ' to implement them because I have to track down third-party specs with magic numbers... so I'm
+                ' leaving any further color spaces as "TODO if/when users complain or real-world examples appear!"
+            
+        End Select
+        
+        'If the color primaries were bad, don't proceed with transfer functions
+        If (Not idxOK) Then
+            InternalError FUNC_NAME, "unknown transfer function index: " & cICPBytes(1)
+            Exit Function
+        End If
+        
+        'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
+        ' With this, we can use our normal color-management pipeline to color-correct this DIB.
+        Set srcProfile = New pdLCMSProfile
+
+        'Make sure the chromaticity data passes internal LCMS validation
+        PrepcICPData = srcProfile.CreateCustomRGBProfile_Advanced(VarPtr(wpValues(0)), VarPtr(rgbValues(0)), pTransferCurve, pTransferCurve2, pTransferCurve3, True)
+        srcImgProfileGood = PrepcICPData
+        
+    Else
+        PrepcICPData = False
+    End If
+    
+End Function
 
 '1, 2, and 4-bit-per-pixel data must be upsampled to be easily handled in VB.  We do this prior to constructing a
 ' final image, as it allows us to use identical rendering code for 1/2/4/8-bpp indexed images.
@@ -6765,12 +7068,27 @@ Friend Function GetTransparentColor(ByRef dstColor As Long, Optional ByVal scale
             Dim tmpPal() As RGBQuad
             GetTransparentColor = m_Chunks(trnsIndex).GetTRNSData(tmpPal, trnsRed, trnsGreen, trnsBlue, m_Header, m_Warnings)
             If GetTransparentColor Then
-                If scaleTo8Bits And (m_Header.BitDepth = 16) Then
-                    trnsRed = trnsRed \ 257
-                    trnsGreen = trnsGreen \ 257
-                    trnsBlue = trnsBlue \ 257
+                If (m_Header.BitDepth = 16) Then
+                    If scaleTo8Bits Then
+                        trnsRed = trnsRed \ 257
+                        trnsGreen = trnsGreen \ 257
+                        trnsBlue = trnsBlue \ 257
+                    End If
+                
+                'We still need to check for valid 8-bit values; the 2025 PNG spec revision explicitly
+                ' tests this case.
+                Else
+                    If (trnsRed > 255) Then trnsRed = trnsRed \ 257
+                    If (trnsGreen > 255) Then trnsGreen = trnsGreen \ 257
+                    If (trnsBlue > 255) Then trnsBlue = trnsBlue \ 257
                 End If
-                dstColor = RGB(trnsRed, trnsGreen, trnsBlue)
+                
+                'Additional failsafes added 2025
+                If (trnsRed <= 255) And (trnsGreen <= 255) And (trnsBlue <= 255) And (trnsRed >= 0) And (trnsGreen >= 0) And (trnsBlue >= 0) Then
+                    dstColor = RGB(trnsRed, trnsGreen, trnsBlue)
+                Else
+                    dstColor = 0
+                End If
             End If
         End If
         
