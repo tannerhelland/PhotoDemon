@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.0</langversion>
+<langversion>1.0.1</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -1295,7 +1295,7 @@
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation>Plugin Photoshop (8bf) </translation>
+<translation>Plugin Photoshop (8bf)</translation>
 </phrase>
 
 <phrase>
@@ -1823,21 +1823,7 @@ Această imagine conține %2 culori unice + valori opacitate (RGBA)</translation
 <translation>Eșec la salvarea %1. Vă rog raportați această eroare folosind Ajutor -> Transmite raport probleme.</translation>
 </phrase>
 
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.</original>
-<translation>Plug-in-ul de interfață FreeImage (FreeImage.dll) a fost marcat ca lipsă sau dezactivat la inițializarea programului.
-
-Pentru a activa suportul pentru acest format de imagine, vă rugăm să copiați FreeImage.fișier dll (descărcabil de la http://freeimage.sourceforge.net/download.html) în directorul plugin-uri și reîncărcați programul.</translation>
-</phrase>
-
-<phrase>
-<original>Save cannot be completed without FreeImage library.</original>
-<translation>Salvarea nu poate fi terminată fără biblioteca FreeImage.</translation>
-</phrase>
-
-<!-- ImageExporter.bas contains 25 phrases. 21 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2069,6 +2055,11 @@ Pentru a activa suportul pentru acest format de imagine, vă rugăm să copiați
 </phrase>
 
 <phrase>
+<original>Replace</original>
+<translation>Înlocuiește</translation>
+</phrase>
+
+<phrase>
 <original>Inherit</original>
 <translation>Moștenește</translation>
 </phrase>
@@ -2143,7 +2134,7 @@ Pentru a activa suportul pentru acest format de imagine, vă rugăm să copiați
 <translation>Previzualizare indisponibilă</translation>
 </phrase>
 
-<!-- Interface.bas contains 84 phrases. 28 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2306,8 +2297,33 @@ Vă rog închideți acest fișier din alt program și încercați iar.</translat
 </phrase>
 
 <phrase>
+<original>This file has the extension "%1", but it is actually in "%2" format.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>May PhotoDemon rename the file with a correct extension?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(If you choose "Yes", the file will be renamed to "%1")</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Bad file extension</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Image loaded successfully.</original>
 <translation>Imagine încărcată cu succes.</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Acțiune anulată</translation>
 </phrase>
 
 <phrase>
@@ -2339,8 +2355,18 @@ Vă rog folosiți alt program pentru a salva această imagine într-un format ge
 </phrase>
 
 <phrase>
+<original>Importing %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation>Imagine %1 din %2 încărcată cu succes.</translation>
+</phrase>
+
+<phrase>
+<original>A third-party library (%1) reported the following error</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2369,7 +2395,7 @@ Vă rog verificați că imaginile există și au un format suportat (precum JPEG
 <translation>Duplicare imagine completă.</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2699,16 +2725,11 @@ Pentru a activa suportul scanerului, copiați EZTW32.fișier dll (disponibil pen
 <!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
-<original>Import via FreeImage failed (Err # %1)</original>
-<translation>Import via FreeImage eșuat (Err # %1)</translation>
-</phrase>
-
-<phrase>
 <original>Applying tone-mapping</original>
 <translation>Aplicare mapare tonuri</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -2735,8 +2756,25 @@ Pentru a activa suportul scanerului, copiați EZTW32.fișier dll (disponibil pen
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
+<original>A necessary third-party library (%1) is missing or disabled.
+
+To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Error: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>BSD license</original>
 <translation>Licență BSD</translation>
+</phrase>
+
+<phrase>
+<original>MIT license</original>
+<translation>Licență MIT</translation>
 </phrase>
 
 <phrase>
@@ -2755,21 +2793,11 @@ Pentru a activa suportul scanerului, copiați EZTW32.fișier dll (disponibil pen
 </phrase>
 
 <phrase>
-<original>MIT license</original>
-<translation>Licență MIT</translation>
-</phrase>
-
-<phrase>
 <original>LGPL license</original>
 <translation>Licență LGPL</translation>
 </phrase>
 
-<phrase>
-<original>Mozilla Public License 2.0</original>
-<translation>Licență publică Mozilla 2.0</translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 30 phrases. 23 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3107,11 +3135,6 @@ Descriere: %2
 </phrase>
 
 <phrase>
-<original>Action canceled.</original>
-<translation>Acțiune anulată</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
@@ -3125,7 +3148,7 @@ Când ați terminat, faceți clic pe butonul Submit New Issue. Mulțumim!</trans
 <translation>Instrucțiuni raportare eroare</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 70 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3305,12 +3328,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Sharpening selection</original>
-<translation>Selecție ascuțire </translation>
+<translation>Selecție ascuțire</translation>
 </phrase>
 
 <phrase>
 <original>Growing selection</original>
-<translation>Selecție creștere </translation>
+<translation>Selecție creștere</translation>
 </phrase>
 
 <phrase>
@@ -3320,7 +3343,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Shrinking selection</original>
-<translation>Selecție micșorare </translation>
+<translation>Selecție micșorare</translation>
 </phrase>
 
 <phrase>
@@ -3415,6 +3438,13 @@ Vă rog introduceți o valoare numerică.</translation>
 </phrase>
 
 <!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+
+<phrase>
+<original>Crop tool</original>
+<translation>Unealtă Decupare</translation>
+</phrase>
+
+<!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Fill tool</original>
@@ -3550,7 +3580,7 @@ Vă rog introduceți o valoare numerică.</translation>
 <translation>Pica</translation>
 </phrase>
 
-<!-- Units.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Units.bas contains 40 phrases. 27 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
@@ -3703,7 +3733,7 @@ Vă rog introduceți o valoare numerică.</translation>
 
 <phrase>
 <original>PhotoDemon lost Internet access. Please double-check your connection.</original>
-<translation>PhotoDemon a pierdut accesul Internet. Vă rog reverificați conexiunea. </translation>
+<translation>PhotoDemon a pierdut accesul Internet. Vă rog reverificați conexiunea.</translation>
 </phrase>
 
 <phrase>
@@ -3794,6 +3824,13 @@ Va trebui să descărcați manual acest fișier folosind browserul dvs. de Inter
 </phrase>
 
 <!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+
+<phrase>
+<original>Memory usage looks high; suspending some data to disk before continuing</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -4181,6 +4218,8 @@ Va trebui să descărcați manual acest fișier folosind browserul dvs. de Inter
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -5119,11 +5158,6 @@ Valoarea finală trebuie să fie între %3 și %4.</translation>
 </phrase>
 
 <phrase>
-<original>Replace</original>
-<translation>Înlocuiește</translation>
-</phrase>
-
-<phrase>
 <original>Order</original>
 <translation>Ordine</translation>
 </phrase>
@@ -5534,6 +5568,11 @@ Valoarea finală trebuie să fie între %3 și %4.</translation>
 </phrase>
 
 <phrase>
+<original>View debug log for this session</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Theme editor</original>
 <translation>Editor de temă</translation>
 </phrase>
@@ -5621,6 +5660,21 @@ Valoarea finală trebuie să fie între %3 și %4.</translation>
 <phrase>
 <original>Layers</original>
 <translation>Straturi</translation>
+</phrase>
+
+<phrase>
+<original>Angle 90</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Angle 45</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Angle 30</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5821,7 +5875,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 <translation>Limbă schimbată cu succes.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 403 phrases. 217 were duplicates of existing phrases, so only 186 new phrases were written to file. -->
+<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6062,7 +6116,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 
 <phrase>
 <original>Fastest Calculation (average value)</original>
-<translation>Cel mai rapid calcul (valoare medie) </translation>
+<translation>Cel mai rapid calcul (valoare medie)</translation>
 </phrase>
 
 <phrase>
@@ -6389,6 +6443,11 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 </phrase>
 
 <phrase>
+<original>use moving average</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>max count</original>
 <translation>Nr. maxim</translation>
 </phrase>
@@ -6398,7 +6457,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 <translation>Actualizare histogramă</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 40 phrases. 29 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 41 phrases. 29 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>radius</original>
@@ -7283,8 +7342,8 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 </phrase>
 
 <phrase>
-<original>first page only</original>
-<translation>Doar prima pagină</translation>
+<original>current page only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7342,7 +7401,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 50 phrases. 24 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -7378,7 +7437,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 
 <phrase>
 <original>dash + dot</original>
-<translation>Linie + punct </translation>
+<translation>Linie + punct</translation>
 </phrase>
 
 <phrase>
@@ -8482,7 +8541,7 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 
 <phrase>
 <original>divisor</original>
-<translationDixizor>Divizor</translation>
+<translation>Matrice de convoluție</translation>
 </phrase>
 
 <phrase>
@@ -9665,7 +9724,7 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 
 <phrase>
 <original>Rotating area</original>
-<translation>Rotire arie </translation>
+<translation>Rotire arie</translation>
 </phrase>
 
 <phrase>
@@ -10156,7 +10215,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Puteți adăuga fișiere la listă în două moduri</translation>
 </phrase>
 
-<phrase>e
+<phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
 <translation>1) Adăugând manual unul sau mai multe fișiere imagine folosind dialogul standard "Deschide o imagine"</translation>
 </phrase>
@@ -10178,7 +10237,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>PhotoDemon needs to know which format to use when saving the images in your batch list.</original>
-<translation>PhotoDemon trebuie să știe ce format să folosească când salvează imaginile din listă. </translation>
+<translation>PhotoDemon trebuie să știe ce format să folosească când salvează imaginile din listă.</translation>
 </phrase>
 
 <phrase>
@@ -10589,7 +10648,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
-<translation>Acest URL nu este valid. Asigurați-vă că URL-ul începe cu "http://" sau "ftp://". </translation>
+<translation>Acest URL nu este valid. Asigurați-vă că URL-ul începe cu "http://" sau "ftp://".</translation>
 </phrase>
 
 <phrase>
@@ -11172,7 +11231,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>single filter: sub</original>
-<translation>Filtru unic: </translation>
+<translation>Filtru unic:</translation>
 </phrase>
 
 <phrase>
@@ -12036,7 +12095,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
-<original>Version %1</original>
+<original>version %1</original>
 <translation>Versiune %1</translation>
 </phrase>
 
@@ -12307,11 +12366,6 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 </phrase>
 
 <phrase>
-<original>Crop tool</original>
-<translation>Unealtă Decupare</translation>
-</phrase>
-
-<phrase>
 <original>Rectangle selection tool</original>
 <translation>Unealtă Selecție dreptunghiulară</translation>
 </phrase>
@@ -12338,7 +12392,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>Basic text tool</original>
-<translation>Unealtă Text de bază </translation>
+<translation>Unealtă Text de bază</translation>
 </phrase>
 
 <phrase>
@@ -12401,7 +12455,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Comută cursor pensulă</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 108 phrases. 40 were duplicates of existing phrases, so only 68 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12487,7 +12541,119 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>presets</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>guides</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>target</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight crop area</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>delete cropped pixels</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>allow enlarging</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>apply</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>Poziție (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>Mărime (l, î)</translation>
+</phrase>
+
+<phrase>
+<original>resolution (PPI)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>centerlines</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rule of thirds</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rule of fifths</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>golden ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diagonals</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
+<translation>Blocați această valoare. (Doar o singură valoare poate fi blocată la un moment dat. Dacă blocați o valoare nouă  valorile blocate anterior se vor debloca.)</translation>
+</phrase>
+
+<phrase>
+<original>Swap width and height</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Allow cropping outside image boundaries (which will enlarge the image).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>You can use this measurement in landscape or portrait orientation.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<phrase>
+<original>align to pixel grid</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -12531,7 +12697,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation>Umplerea suportă multe stiluri diferite. Clic pentru a comuta între stiluri culoare solidă, model sau gradient. </translation>
+<translation>Umplerea suportă multe stiluri diferite. Clic pentru a comuta între stiluri culoare solidă, model sau gradient.</translation>
 </phrase>
 
 <phrase>
@@ -12631,11 +12797,6 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
-<original>size (w, h)</original>
-<translation>Mărime (l, î)</translation>
-</phrase>
-
-<phrase>
 <original>lock aspect ratio</original>
 <translation>Blochează proporții aspect</translation>
 </phrase>
@@ -12686,11 +12847,6 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 </phrase>
 
 <phrase>
-<original>position (x, y)</original>
-<translation>Poziție (x, y)</translation>
-</phrase>
-
-<phrase>
 <original>shear (x, y)</original>
 <translation>Deplasare (x, y)</translation>
 </phrase>
@@ -12720,11 +12876,11 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Faceți transformările stratului curent (dimensiune, unghi și forfecare) permanente. Această acțiune nu este niciodată necesară, dar dacă redarea previzualizării este lentă, poate îmbunătăți performanța.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 28 phrases. 12 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 11 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>animate</original>
@@ -12827,11 +12983,6 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 </phrase>
 
 <phrase>
-<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
-<translation>Blocați această valoare. (Doar o singură valoare poate fi blocată la un moment dat. Dacă blocați o valoare nouă  valorile blocate anterior se vor debloca.)</translation>
-</phrase>
-
-<phrase>
 <original>This option controls how smoothly selection edges blend with their surroundings.</original>
 <translation>Această opțiune controlează cât de fin se integrează marginile de selecție cu împrejurimile.</translation>
 </phrase>
@@ -12891,7 +13042,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Această opțiune controlează ce criterii folosește bagheta magică pentru a compara pixelii cu culoarea-țintă.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 75 phrases. 43 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13577,311 +13728,6 @@ Pentru a continua, vă rugăm să descărcați o copie nouă a PhotoDemon de la 
 </phrase>
 
 <phrase>
-<original>title bar text</original>
-<translation>Text bară de titlu</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent files to remember</original>
-<translation>Număr maxim de fișiere de ținut minte</translation>
-</phrase>
-
-<phrase>
-<original>recent files</original>
-<translation>Fișiere recente:</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>Fereastra principală</translation>
-</phrase>
-
-<phrase>
-<original>grid size</original>
-<translation>Mărime grilă</translation>
-</phrase>
-
-<phrase>
-<original>grid colors</original>
-<translation>Culori grilă</translation>
-</phrase>
-
-<phrase>
-<original>recent file menu text</original>
-<translation>Text meniu fișiere recente:</translation>
-</phrase>
-
-<phrase>
-<original>canvas background color</original>
-<translation>Culoare de fundal pânză</translation>
-</phrase>
-
-<phrase>
-<original>snap distance (in pixels)</original>
-<translation>Distanță magnetică (în pixeli)</translation>
-</phrase>
-
-<phrase>
-<original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>Când imaginea provine dintr-o sursă externă (precum Windows Explorer)</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>Arată opțiuni mapare tonuri când se importă imagini HDR sau RAW</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>Respectă instrucțiunile de auto-rotire din fișierele imagine</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>Imagini cu domeniu dinamic ridicat (HDR)</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>Extrage forțat tag-urile binare ca Base64 (lent)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>Estimează setările de calitate JPEG originale</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>Extrage tag-urile necunoscute</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>Ascunde automat tag-urile duplicat</translation>
-</phrase>
-
-<phrase>
-<original>app instances</original>
-<translation>Instanțe aplicații</translation>
-</phrase>
-
-<phrase>
-<original>session restore</original>
-<translation>Restaurare sesiune</translation>
-</phrase>
-
-<phrase>
-<original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>Restaurează automat sesiunile întrerupte de actualizări de sistem sau reporniri</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn about unsaved changes</original>
-<translation>Când se închid imagini, atenționează despre modificările nesalvate</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the default file format to</original>
-<translation>Când se folosește "Salvează ca", setează formatul de fișier implicit la</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>Când se folosește "Salvează"</translation>
-</phrase>
-
-<phrase>
-<original>safe saving</original>
-<translation>Salvare sigură</translation>
-</phrase>
-
-<phrase>
-<original>unsaved changes</original>
-<translation>Modificări nesalvate</translation>
-</phrase>
-
-<phrase>
-<original>default format</original>
-<translation>Format implicit</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>Prezintă PhotoDemon ca ultimul program folosit la editare</translation>
-</phrase>
-
-<phrase>
-<original>default folder</original>
-<translation>Folder implicit</translation>
-</phrase>
-
-<phrase>
-<original>when using "Save As", set the initial folder to</original>
-<translation>Când se folosește "Salvează ca", setează folder inițial ca</translation>
-</phrase>
-
-<phrase>
-<original>when "Save as" is used</original>
-<translation>Când se folosește "Salvează ca"</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>Comprimă datele Anulează/Refă la nivelul următor</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>Când se decorează elementele interfeței</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>Când se generează imaginile de straturi și miniaturi</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>Când se randează pânza imaginii</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>Interfață</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>Fără compresie (cel mai rapid)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>Compresie maximă (cel mai lent)</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>Anulează/Refă</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>Miniaturi</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>use black point compensation</original>
-<translation>Folosește compensare de punct negru</translation>
-</phrase>
-
-<phrase>
-<original>display rendering intent</original>
-<translation>Intenție randare display</translation>
-</phrase>
-
-<phrase>
-<original>available displays</original>
-<translation>Ecrane disponibile</translation>
-</phrase>
-
-<phrase>
-<original>turn off display color management</original>
-<translation>Oprește managementul culorii display-ului</translation>
-</phrase>
-
-<phrase>
-<original>use the current system profiles for each display</original>
-<translation>Folosește profilul de culoare curent pentru fiecare display</translation>
-</phrase>
-
-<phrase>
-<original>color profile for this display</original>
-<translation>Profil de culoare pentru acest display</translation>
-</phrase>
-
-<phrase>
-<original>display policies</original>
-<translation>Politici display</translation>
-</phrase>
-
-<phrase>
-<original>use custom profiles for each display</original>
-<translation>Folosire profil personalizat pentru fiecare display</translation>
-</phrase>
-
-<phrase>
-<original>high-resolution mouse input</original>
-<translation>Acțiune mouse de mare rezoluție</translation>
-</phrase>
-
-<phrase>
-<original>reset all program settings</original>
-<translation>Resetează toate configurările programului</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>Utilizarea memoriei va fi afișată aici</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>Diagnostice memorie</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Locația fișierelor temporare:</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation>Începe din nou</translation>
-</phrase>
-
-<phrase>
-<original>application settings folder</original>
-<translation>Folder configurări aplicație</translation>
-</phrase>
-
-<phrase>
-<original>generate debug logs</original>
-<translation>Generează jurnale de depanare</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>Verificare automată pentru actualizări</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>Permite actualizări din următoarele canale</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Opțiuni actualizare</translation>
-</phrase>
-
-<phrase>
-<original>notify when an update is ready</original>
-<translation>Notifică când este gata o actualizare</translation>
-</phrase>
-
-<phrase>
 <original>Saving preferences</original>
 <translation>Salvare preferințe</translation>
 </phrase>
@@ -13892,8 +13738,48 @@ Pentru a continua, vă rugăm să descărcați o copie nouă a PhotoDemon de la 
 </phrase>
 
 <phrase>
-<original>Please select a color profile</original>
-<translation>Vă rog selectați un profil de culoare</translation>
+<original>Interface</original>
+<translation>Interfață</translation>
+</phrase>
+
+<phrase>
+<original>Menus</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>Performanță</translation>
+</phrase>
+
+<phrase>
+<original>Loading</original>
+<translation>Încărcare</translation>
+</phrase>
+
+<phrase>
+<original>Color management</original>
+<translation>Management culoare</translation>
+</phrase>
+
+<phrase>
+<original>Fonts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Input devices</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>Actualizări</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Avansat</translation>
 </phrase>
 
 <phrase>
@@ -13910,378 +13796,7 @@ Ești sigur că vreți să continuați?</translation>
 <translation>Resetează PhotoDemon</translation>
 </phrase>
 
-<phrase>
-<original>Interface</original>
-<translation>Interfață</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Încărcare</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>Performanță</translation>
-</phrase>
-
-<phrase>
-<original>Color management</original>
-<translation>Management culoare</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>Actualizări</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Avansat</translation>
-</phrase>
-
-<phrase>
-<original>compact (filename only)</original>
-<translation>Compact (doar nume fișier)</translation>
-</phrase>
-
-<phrase>
-<original>verbose (filename and path)</original>
-<translation>Detaliat (nume și cale)</translation>
-</phrase>
-
-<phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>Bara de titlu a ferestrei principale PhotoDemon afișează informații despre imaginea curent încărcată. Utilizați această preferință pentru a controla cât de multe informație este afișată.</translation>
-</phrase>
-
-<phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Lățimea meniului "Fișiere recente" este limitată de Windows. Pentru a preveni revărsarea acestui meniu, PhotoDemon poate afișa doar nume de imagini în loc de locații complete ale imaginii.</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>Tonuri mijlocii</translation>
-</phrase>
-
-<phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Pentru a ajuta la identificarea pixelilor transparenți, o grilă specială apare "în spatele" lor.  Această setare modifică aspectul grilei.</translation>
-</phrase>
-
-<phrase>
-<original>small</original>
-<translation>Mic</translation>
-</phrase>
-
-<phrase>
-<original>large</original>
-<translation>Mare</translation>
-</phrase>
-
-<phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation>Imaginile HDR și RAW conțin mai multe culori decât pot afișa fizic ecranele PC   Înainte de a afișa astfel de imagini, trebuie aplicată o operație de mapare a culorilor datelor originale ale imaginii.</translation>
-</phrase>
-
-<phrase>
-<original>load into this instance</original>
-<translation>Încarcă în această instanță</translation>
-</phrase>
-
-<phrase>
-<original>load into a new PhotoDemon instance</original>
-<translation>Încarcă într-o instanță PhotoDemon nouă</translation>
-</phrase>
-
-<phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Este posibil ca camerele mai vechi și software-ul de editare foto să nu încorporeze corect metadatele, ceea ce duce la mai multe cópii de metadate într-un singur fișier.  PhotoDemon poate rezolva automat intrările duplicat pentru dvs.</translation>
-</phrase>
-
-<phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Formatul JPEG nu oferă o modalitate de a stoca setările de calitate JPEG în fișierele imagine.  PhotoDemon poate rezolva acest lucru prin deducerea setărilor de calitate din alte metadate (cum ar fi tabelele de cuantizare).</translation>
-</phrase>
-
-<phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Unii producători de camere stochează etichete de metadate proprietare în fișierele de imagine.  Aceste etichete nu sunt în general utile pentru oameni, dar PhotoDemon poate încerca să le extragă oricum.</translation>
-</phrase>
-
-<phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>În mod implicit, tag-urile binare mari (cum ar fi miniaturile imaginii) nu sunt procesate.  În schimb, PhotoDemon raportează pur și simplu dimensiunea datelor încorporate.  Dacă aveți nevoie de aceste date, PhotoDemon le poate converti manual în Base64 pentru analiză suplimentare.</translation>
-</phrase>
-
-<phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Majoritatea fotografiilor digitale includ instrucțiuni de rotație (metadate de orientare EXIF), pe care PhotoDemon le va folosi pentru a roti automat fotografiile.  Este posibil ca unele smartphone-uri și camere mai vechi să nu scrie corect aceste instrucțiuni, așa că, dacă fotografiile dvs. sunt importate lateral sau cu susul în jos, puteți încerca să dezactivați funcția de rotire automată.</translation>
-</phrase>
-
-<phrase>
-<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>Dacă PC-ul repornește în timp ce PhotoDemon rulează, PhotoDemon vă poate restabili automat sesiunea anterioară.</translation>
-</phrase>
-
-<phrase>
-<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Implicit, PhotoDemon vă va atenționa când încercați să închideți o imagine cu modificările nesalvate.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's folder</original>
-<translation>Folderul imaginii curente</translation>
-</phrase>
-
-<phrase>
-<original>the last-used folder</original>
-<translation>Ultimul folder folosit</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>Majoritatea editorilor de fotografii sunt implicite în folderul imaginii curente.  Pentru fluxurile de lucru care implică încărcarea imaginilor dintr-un folder, dar salvarea într-un folder nou, utilizați ultimul folder utilizat pentru a economisi timp.</translation>
-</phrase>
-
-<phrase>
-<original>the current image's format</original>
-<translation>Formatul imaginii curente</translation>
-</phrase>
-
-<phrase>
-<original>the last-used format</original>
-<translation>Ultimul format folosit</translation>
-</phrase>
-
-<phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>Majoritatea editorilor de fotografii sunt implicite pentru formatul imaginii curente.  Pentru fluxurile de lucru care implică încărcarea imaginilor într-un singur format (de exemplu, RAW), dar salvarea într-un format nou (de exemplu, JPEG), utilizați ultimul format utilizat pentru a economisi timp.</translation>
-</phrase>
-
-<phrase>
-<original>overwrite the current file (standard behavior)</original>
-<translation>Suprascrie fișierul curent (comportament standard)</translation>
-</phrase>
-
-<phrase>
-<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>Salvează o copie nouă, de ex. "filename (2).jpg" (comportament sigur)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>În majoritatea editorilor de fotografii, comanda" Salvare" salvează imaginea peste versiunea sa originală, ștergând acea copie pentru totdeauna.  PhotoDemon oferă o opțiune" mai sigură", în care fiecare salvare are ca rezultat o nouă copie a fișierului.</translation>
-</phrase>
-
-<phrase>
-<original>suggest the current filename (standard behavior)</original>
-<translation>Sugerează numele fișierului curent (comportament standard)</translation>
-</phrase>
-
-<phrase>
-<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>Sugerează o copie nouă, de ex. "filename (2).jpg" (comportament sigur)</translation>
-</phrase>
-
-<phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>În majoritatea editorilor de fotografii, comanda "Salvează ca" este implicită la numele fișierului curent.  PhotoDemon oferă, de asemenea, o opțiune "mai sigură", unde "Salvează ca" va incrementa automat numele fișierelor pentru dvs.</translation>
-</phrase>
-
-<phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>Specificația EXIF cere programelor să se identifice corect ca programul de origine atunci când exportă fișiere imagine. Pentru o confidențialitate sporită, puteți suspenda acest comportament.</translation>
-</phrase>
-
-<phrase>
-<original>maximize quality</original>
-<translation>Maximizează calitatea</translation>
-</phrase>
-
-<phrase>
-<original>balance performance and quality</original>
-<translation>Balansează performanța și calitatea</translation>
-</phrase>
-
-<phrase>
-<original>maximize performance</original>
-<translation>Maximizează performanța</translation>
-</phrase>
-
-<phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
-<translation>Unele elemente de interfață primesc decorațiuni personalizate (cum ar fi umbrele).  Pe PC-urile mai vechi, aceste decorațiuni pot fi suspendate pentru un mic impuls de performanță.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon generează multe imagini miniatură, mai ales când imaginile conțin multiple straturi. Calitatea miniaturilor poate fi scăzută pentru a îmbunătăți performanța.</translation>
-</phrase>
-
-<phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>Randarea pânzei de imagine primare este un blocaj comun pentru performanța PhotoDemon.  Setarea automată este recomandată, dar pentru computerele mai vechi, puteți selecta manual opțiunea Maximizare performanță pentru a sacrifica calitatea pentru performanța brută.</translation>
-</phrase>
-
-<phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Setările de compresie scăzute necesită mai mult spațiu pe disc, dar operațiile de Anulare/Refacere vor fi mai rapide.  Setările de compresie ridicate necesită mai puțin spațiu pe disc, dar operațiile de Anulare/Refacere vor fi mai lente.  Anularea datelor este ștearsă când imaginile sunt închise, astfel încât această setare afectează spațiul pe disc numai în timp ce imaginile sunt editate activ.</translation>
-</phrase>
-
-<phrase>
-<original>Primary display</original>
-<translation>Display primar</translation>
-</phrase>
-
-<phrase>
-<original>Secondary display</original>
-<translation>Display secundar</translation>
-</phrase>
-
-<phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>Dezactivarea gestionării culorilor afișajului poate oferi un mic impuls de performanță.  Dacă afișajul dvs. nu este configurat în prezent pentru gestionarea culorilor, utilizați această setare.</translation>
-</phrase>
-
-<phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Această setare este cea mai bună alegere pentru majoritatea utilizatorilor.  Dacă nu aveți idee ce este gestionarea culorilor, utilizați această setare. Dacă ați configurat corect un profil de afișare prin Panoul de Control Windows, utilizați și această setare.</translation>
-</phrase>
-
-<phrase>
-<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Pentru a configura profiluri de culoare personalizate pe monitor, vă rog utilizați aceste setări</translation>
-</phrase>
-
-<phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Vă rog specificați un profil de culoare pentru fiecare monitor atașat la sistem. Notă: textul din paranteze reprezintă driver-ul monitorului respectiv.</translation>
-</phrase>
-
-<phrase>
-<original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Click acest buton pentru a lansa un dialog "Căutați un profil de culoare"</translation>
-</phrase>
-
-<phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Dacă nu știți ce controlează această setare, setați-o la "Perceptual".  Intenția de randare perceptuală este cea mai bună alegere pentru majoritatea utilizatorilor.</translation>
-</phrase>
-
-<phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC este relevant În principal în intențiile de randare colorimetrică, unde ajută la păstrarea detaliilor în regiunile întunecate (umbră) ale imaginilor.  Pentru majoritatea fluxurilor de lucru, BPC ar trebui să fie activat.</translation>
-</phrase>
-
-<phrase>
-<original>each session</original>
-<translation>Fiecare sesiune</translation>
-</phrase>
-
-<phrase>
-<original>weekly</original>
-<translation>Săptămânal</translation>
-</phrase>
-
-<phrase>
-<original>monthly</original>
-<translation>Lunar</translation>
-</phrase>
-
-<phrase>
-<original>never (not recommended)</original>
-<translation>Niciodată (nerecomandat)</translation>
-</phrase>
-
-<phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>Deoarece PhotoDemon este o aplicație portabilă, poate verifica actualizările numai atunci când programul rulează.  În mod implicit, PhotoDemon va verifica actualizările ori de câte ori programul este lansat, dar puteți reduce această frecvență, dacă doriți.</translation>
-</phrase>
-
-<phrase>
-<original>stable releases</original>
-<translation>Versiuni stabile</translation>
-</phrase>
-
-<phrase>
-<original>stable and beta releases</original>
-<translation>Versiuni stabile și beta</translation>
-</phrase>
-
-<phrase>
-<original>stable, beta, and developer releases</original>
-<translation>Versiuni stabile, beta și de dezvoltare</translation>
-</phrase>
-
-<phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Una dintre cele mai bune modalități de a sprijini PhotoDemon este de a ajuta la testarea noilor versiuni.  În mod implicit, PhotoDemon va sugera atât versiuni stabile, cât și versiuni beta, dar cei cu adevărat aventuroși pot încerca și versiuni pentru dezvoltatori.  (Lansările pentru dezvoltatori vă oferă acces imediat la cele mai recente îmbunătățiri ale programului, dar s-ar putea să întâmpinați unele erori.)</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation>PhotoDemon vă poate anunța când este gata să aplice o actualizare.  Acest lucru vă permite să utilizați imediat versiunea actualizată.</translation>
-</phrase>
-
-<phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
-
-(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>Ați plasat PhotoDemon într-un folder de sistem restricționat.  Măsurile de securitate împiedică PhotoDemon să modifice acest folder, astfel încât actualizările automate sunt acum dezactivate.  Pentru a le restaura, trebuie să mutați PhotoDemon într-un folder non-admin, cum ar fi Desktop, Documente sau Descărcări.</translation>
-</phrase>
-
-<phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
-
-If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Dezvoltatorii PhotoDemon iau confidențialitatea foarte în serios, astfel încât nicio informație - statistică sau de altă natură - nu este încărcată în timpul procesului de actualizare.  Actualizările implică pur și simplu descărcarea mai multor fișiere XML mici din photodemon.org. Aceste fișiere conțin cele mai recente numere de versiune software, plugin și limbă. Dacă se găsesc versiuni actualizate și preferințele utilizatorului permit acest lucru, fișierele actualizate sunt apoi descărcate și corectate automat.
-
-Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați photodemon.org din când în când pentru a verifica pentru versiuni noi.</translation>
-</phrase>
-
-<phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>În versiunile pentru dezvoltatori, datele de depanare sunt înregistrate automat în folderul \Data\Debug al programului. Dacă întâmpinați erori într-o versiune stabilă, vă rugăm să activați manual această setare.  Acest lucru va ajuta dezvoltatorii să vă rezolve problema.</translation>
-</phrase>
-
-<phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Când utilizați Desktop la distanță sau o VM (mașină virtuală), este posibil ca intrarea de înaltă rezoluție a mouse-ului să nu funcționeze corect.  Acesta este un bug Windows vechi.  În aceste situații, puteți utiliza această setare pentru a restabili comportamentul corect al mouse-ului.</translation>
-</phrase>
-
-<phrase>
-<original>current PhotoDemon memory usage</original>
-<translation>Consumul curent de memorie PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>max PhotoDemon memory usage this session</original>
-<translation>Consumul maxim de memorie PhotoDemon din sesiunea curentă</translation>
-</phrase>
-
-<phrase>
-<original>Click to select a new temporary folder.</original>
-<translation>Clic pentru a selecta un nou folder imaginar.</translation>
-</phrase>
-
-<phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Acest buton resetează toate setările PhotoDemon.  Dacă programul se comportă în mod neașteptat, acest lucru poate rezolva problema.</translation>
-</phrase>
-
-<phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>ATENȚIE: acest dosar este invalid (accesul este interzis).  Vă rugăm să furnizați un dosar valid.  Dacă nu este furnizat un folder nou, PhotoDemon va utiliza folderul temp al sistemului.</translation>
-</phrase>
-
-<phrase>
-<original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation>Acest folder temporar nou nu va avea efect până când nu reporniți programul.</translation>
-</phrase>
-
-<!-- Tools_Options.frm contains 195 phrases. 55 were duplicates of existing phrases, so only 140 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -14489,12 +14004,812 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
+<phrase>
+<original>title bar text</original>
+<translation>Text bară de titlu</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>Fereastra principală</translation>
+</phrase>
+
+<phrase>
+<original>grid size</original>
+<translation>Mărime grilă</translation>
+</phrase>
+
+<phrase>
+<original>grid colors</original>
+<translation>Culori grilă</translation>
+</phrase>
+
+<phrase>
+<original>canvas background color</original>
+<translation>Culoare de fundal pânză</translation>
+</phrase>
+
+<phrase>
+<original>compact (filename only)</original>
+<translation>Compact (doar nume fișier)</translation>
+</phrase>
+
+<phrase>
+<original>verbose (filename and path)</original>
+<translation>Detaliat (nume și cale)</translation>
+</phrase>
+
+<phrase>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation>Bara de titlu a ferestrei principale PhotoDemon afișează informații despre imaginea curent încărcată. Utilizați această preferință pentru a controla cât de multe informație este afișată.</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>Tonuri mijlocii</translation>
+</phrase>
+
+<phrase>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<translation>Pentru a ajuta la identificarea pixelilor transparenți, o grilă specială apare "în spatele" lor.  Această setare modifică aspectul grilei.</translation>
+</phrase>
+
+<phrase>
+<original>small</original>
+<translation>Mic</translation>
+</phrase>
+
+<phrase>
+<original>large</original>
+<translation>Mare</translation>
+</phrase>
+
+<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+
+<phrase>
+<original>display splash screen</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when images arrive from an external source (like Windows Explorer)</original>
+<translation>Când imaginea provine dintr-o sursă externă (precum Windows Explorer)</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>Arată opțiuni mapare tonuri când se importă imagini HDR sau RAW</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>Imagini cu domeniu dinamic ridicat (HDR)</translation>
+</phrase>
+
+<phrase>
+<original>app instances</original>
+<translation>Instanțe aplicații</translation>
+</phrase>
+
+<phrase>
+<original>session restore</original>
+<translation>Restaurare sesiune</translation>
+</phrase>
+
+<phrase>
+<original>automatically restore sessions interrupted by system updates or reboots</original>
+<translation>Restaurează automat sesiunile întrerupte de actualizări de sistem sau reporniri</translation>
+</phrase>
+
+<phrase>
+<original>startup</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>load into this instance</original>
+<translation>Încarcă în această instanță</translation>
+</phrase>
+
+<phrase>
+<original>load into a new PhotoDemon instance</original>
+<translation>Încarcă într-o instanță PhotoDemon nouă</translation>
+</phrase>
+
+<phrase>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>Imaginile HDR și RAW conțin mai multe culori decât pot afișa fizic ecranele PC   Înainte de a afișa astfel de imagini, trebuie aplicată o operație de mapare a culorilor datelor originale ale imaginii.</translation>
+</phrase>
+
+<phrase>
+<original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
+<translation>Dacă PC-ul repornește în timp ce PhotoDemon rulează, PhotoDemon vă poate restabili automat sesiunea anterioară.</translation>
+</phrase>
+
+<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+
+<phrase>
+<original>when closing images, warn about unsaved changes</original>
+<translation>Când se închid imagini, atenționează despre modificările nesalvate</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the default file format to</original>
+<translation>Când se folosește "Salvează ca", setează formatul de fișier implicit la</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>Când se folosește "Salvează"</translation>
+</phrase>
+
+<phrase>
+<original>safe saving</original>
+<translation>Salvare sigură</translation>
+</phrase>
+
+<phrase>
+<original>unsaved changes</original>
+<translation>Modificări nesalvate</translation>
+</phrase>
+
+<phrase>
+<original>default format</original>
+<translation>Format implicit</translation>
+</phrase>
+
+<phrase>
+<original>default folder</original>
+<translation>Folder implicit</translation>
+</phrase>
+
+<phrase>
+<original>when using "Save As", set the initial folder to</original>
+<translation>Când se folosește "Salvează ca", setează folder inițial ca</translation>
+</phrase>
+
+<phrase>
+<original>when "Save as" is used</original>
+<translation>Când se folosește "Salvează ca"</translation>
+</phrase>
+
+<phrase>
+<original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
+<translation>Implicit, PhotoDemon vă va atenționa când încercați să închideți o imagine cu modificările nesalvate.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's folder</original>
+<translation>Folderul imaginii curente</translation>
+</phrase>
+
+<phrase>
+<original>the last-used folder</original>
+<translation>Ultimul folder folosit</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<translation>Majoritatea editorilor de fotografii sunt implicite în folderul imaginii curente.  Pentru fluxurile de lucru care implică încărcarea imaginilor dintr-un folder, dar salvarea într-un folder nou, utilizați ultimul folder utilizat pentru a economisi timp.</translation>
+</phrase>
+
+<phrase>
+<original>the current image's format</original>
+<translation>Formatul imaginii curente</translation>
+</phrase>
+
+<phrase>
+<original>the last-used format</original>
+<translation>Ultimul format folosit</translation>
+</phrase>
+
+<phrase>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<translation>Majoritatea editorilor de fotografii sunt implicite pentru formatul imaginii curente.  Pentru fluxurile de lucru care implică încărcarea imaginilor într-un singur format (de exemplu, RAW), dar salvarea într-un format nou (de exemplu, JPEG), utilizați ultimul format utilizat pentru a economisi timp.</translation>
+</phrase>
+
+<phrase>
+<original>overwrite the current file (standard behavior)</original>
+<translation>Suprascrie fișierul curent (comportament standard)</translation>
+</phrase>
+
+<phrase>
+<original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>Salvează o copie nouă, de ex. "filename (2).jpg" (comportament sigur)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<translation>În majoritatea editorilor de fotografii, comanda" Salvare" salvează imaginea peste versiunea sa originală, ștergând acea copie pentru totdeauna.  PhotoDemon oferă o opțiune" mai sigură", în care fiecare salvare are ca rezultat o nouă copie a fișierului.</translation>
+</phrase>
+
+<phrase>
+<original>suggest the current filename (standard behavior)</original>
+<translation>Sugerează numele fișierului curent (comportament standard)</translation>
+</phrase>
+
+<phrase>
+<original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
+<translation>Sugerează o copie nouă, de ex. "filename (2).jpg" (comportament sigur)</translation>
+</phrase>
+
+<phrase>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<translation>În majoritatea editorilor de fotografii, comanda "Salvează ca" este implicită la numele fișierului curent.  PhotoDemon oferă, de asemenea, o opțiune "mai sigură", unde "Salvează ca" va incrementa automat numele fișierelor pentru dvs.</translation>
+</phrase>
+
+<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>Comprimă datele Anulează/Refă la nivelul următor</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>Când se decorează elementele interfeței</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>Când se generează imaginile de straturi și miniaturi</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>Când se randează pânza imaginii</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>Interfață</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>Fără compresie (cel mai rapid)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>Compresie maximă (cel mai lent)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>Anulează/Refă</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>Miniaturi</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximize quality</original>
+<translation>Maximizează calitatea</translation>
+</phrase>
+
+<phrase>
+<original>balance performance and quality</original>
+<translation>Balansează performanța și calitatea</translation>
+</phrase>
+
+<phrase>
+<original>maximize performance</original>
+<translation>Maximizează performanța</translation>
+</phrase>
+
+<phrase>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<translation>Unele elemente de interfață primesc decorațiuni personalizate (cum ar fi umbrele).  Pe PC-urile mai vechi, aceste decorațiuni pot fi suspendate pentru un mic impuls de performanță.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<translation>PhotoDemon generează multe imagini miniatură, mai ales când imaginile conțin multiple straturi. Calitatea miniaturilor poate fi scăzută pentru a îmbunătăți performanța.</translation>
+</phrase>
+
+<phrase>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<translation>Randarea pânzei de imagine primare este un blocaj comun pentru performanța PhotoDemon.  Setarea automată este recomandată, dar pentru computerele mai vechi, puteți selecta manual opțiunea Maximizare performanță pentru a sacrifica calitatea pentru performanța brută.</translation>
+</phrase>
+
+<phrase>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<translation>Setările de compresie scăzute necesită mai mult spațiu pe disc, dar operațiile de Anulare/Refacere vor fi mai rapide.  Setările de compresie ridicate necesită mai puțin spațiu pe disc, dar operațiile de Anulare/Refacere vor fi mai lente.  Anularea datelor este ștearsă când imaginile sunt închise, astfel încât această setare afectează spațiul pe disc numai în timp ce imaginile sunt editate activ.</translation>
+</phrase>
+
+<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+
+<phrase>
+<original>use embedded ICC profiles, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use black point compensation</original>
+<translation>Folosește compensare de punct negru</translation>
+</phrase>
+
+<phrase>
+<original>display rendering intent</original>
+<translation>Intenție randare display</translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation>Ecrane disponibile</translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation>Oprește managementul culorii display-ului</translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation>Folosește profilul de culoare curent pentru fiecare display</translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation>Profil de culoare pentru acest display</translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation>Politici display</translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation>Folosire profil personalizat pentru fiecare display</translation>
+</phrase>
+
+<phrase>
+<original>file policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use format-specific color management data, when available</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>Vă rog selectați un profil de culoare</translation>
+</phrase>
+
+<phrase>
+<original>Primary display</original>
+<translation>Display primar</translation>
+</phrase>
+
+<phrase>
+<original>Secondary display</original>
+<translation>Display secundar</translation>
+</phrase>
+
+<phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation>Dezactivarea gestionării culorilor afișajului poate oferi un mic impuls de performanță.  Dacă afișajul dvs. nu este configurat în prezent pentru gestionarea culorilor, utilizați această setare.</translation>
+</phrase>
+
+<phrase>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<translation>Această setare este cea mai bună alegere pentru majoritatea utilizatorilor.  Dacă nu aveți idee ce este gestionarea culorilor, utilizați această setare. Dacă ați configurat corect un profil de afișare prin Panoul de Control Windows, utilizați și această setare.</translation>
+</phrase>
+
+<phrase>
+<original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
+<translation>Pentru a configura profiluri de culoare personalizate pe monitor, vă rog utilizați aceste setări</translation>
+</phrase>
+
+<phrase>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<translation>Vă rog specificați un profil de culoare pentru fiecare monitor atașat la sistem. Notă: textul din paranteze reprezintă driver-ul monitorului respectiv.</translation>
+</phrase>
+
+<phrase>
+<original>Click this button to bring up a "browse for color profile" dialog.</original>
+<translation>Click acest buton pentru a lansa un dialog "Căutați un profil de culoare"</translation>
+</phrase>
+
+<phrase>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation>Dacă nu știți ce controlează această setare, setați-o la "Perceptual".  Intenția de randare perceptuală este cea mai bună alegere pentru majoritatea utilizatorilor.</translation>
+</phrase>
+
+<phrase>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<translation>BPC este relevant În principal în intențiile de randare colorimetrică, unde ajută la păstrarea detaliilor în regiunile întunecate (umbră) ale imaginilor.  Pentru majoritatea fluxurilor de lucru, BPC ar trebui să fie activat.</translation>
+</phrase>
+
+<phrase>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>Verificare automată pentru actualizări</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>Permite actualizări din următoarele canale</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Opțiuni actualizare</translation>
+</phrase>
+
+<phrase>
+<original>notify when an update is ready</original>
+<translation>Notifică când este gata o actualizare</translation>
+</phrase>
+
+<phrase>
+<original>each session</original>
+<translation>Fiecare sesiune</translation>
+</phrase>
+
+<phrase>
+<original>weekly</original>
+<translation>Săptămânal</translation>
+</phrase>
+
+<phrase>
+<original>monthly</original>
+<translation>Lunar</translation>
+</phrase>
+
+<phrase>
+<original>never (not recommended)</original>
+<translation>Niciodată (nerecomandat)</translation>
+</phrase>
+
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>Deoarece PhotoDemon este o aplicație portabilă, poate verifica actualizările numai atunci când programul rulează.  În mod implicit, PhotoDemon va verifica actualizările ori de câte ori programul este lansat, dar puteți reduce această frecvență, dacă doriți.</translation>
+</phrase>
+
+<phrase>
+<original>stable releases</original>
+<translation>Versiuni stabile</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>Versiuni stabile și beta</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>Versiuni stabile, beta și de dezvoltare</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>Una dintre cele mai bune modalități de a sprijini PhotoDemon este de a ajuta la testarea noilor versiuni.  În mod implicit, PhotoDemon va sugera atât versiuni stabile, cât și versiuni beta, dar cei cu adevărat aventuroși pot încerca și versiuni pentru dezvoltatori.  (Lansările pentru dezvoltatori vă oferă acces imediat la cele mai recente îmbunătățiri ale programului, dar s-ar putea să întâmpinați unele erori.)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>PhotoDemon vă poate anunța când este gata să aplice o actualizare.  Acest lucru vă permite să utilizați imediat versiunea actualizată.</translation>
+</phrase>
+
+<phrase>
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+
+(If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
+<translation>Ați plasat PhotoDemon într-un folder de sistem restricționat.  Măsurile de securitate împiedică PhotoDemon să modifice acest folder, astfel încât actualizările automate sunt acum dezactivate.  Pentru a le restaura, trebuie să mutați PhotoDemon într-un folder non-admin, cum ar fi Desktop, Documente sau Descărcări.</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>Dezvoltatorii PhotoDemon iau confidențialitatea foarte în serios, astfel încât nicio informație - statistică sau de altă natură - nu este încărcată în timpul procesului de actualizare.  Actualizările implică pur și simplu descărcarea mai multor fișiere XML mici din photodemon.org. Aceste fișiere conțin cele mai recente numere de versiune software, plugin și limbă. Dacă se găsesc versiuni actualizate și preferințele utilizatorului permit acest lucru, fișierele actualizate sunt apoi descărcate și corectate automat.
+
+Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați photodemon.org din când în când pentru a verifica pentru versiuni noi.</translation>
+</phrase>
+
+<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<phrase>
+<original>reset all program settings</original>
+<translation>Resetează toate configurările programului</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>Utilizarea memoriei va fi afișată aici</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>Diagnostice memorie</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Locația fișierelor temporare:</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation>Începe din nou</translation>
+</phrase>
+
+<phrase>
+<original>application settings folder</original>
+<translation>Folder configurări aplicație</translation>
+</phrase>
+
+<phrase>
+<original>generate debug logs</original>
+<translation>Generează jurnale de depanare</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<translation>ATENȚIE: acest dosar este invalid (accesul este interzis).  Vă rugăm să furnizați un dosar valid.  Dacă nu este furnizat un folder nou, PhotoDemon va utiliza folderul temp al sistemului.</translation>
+</phrase>
+
+<phrase>
+<original>This new temporary folder location will not take effect until you restart the program.</original>
+<translation>Acest folder temporar nou nu va avea efect până când nu reporniți programul.</translation>
+</phrase>
+
+<phrase>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<translation>În versiunile pentru dezvoltatori, datele de depanare sunt înregistrate automat în folderul \Data\Debug al programului. Dacă întâmpinați erori într-o versiune stabilă, vă rugăm să activați manual această setare.  Acest lucru va ajuta dezvoltatorii să vă rezolve problema.</translation>
+</phrase>
+
+<phrase>
+<original>current PhotoDemon memory usage</original>
+<translation>Consumul curent de memorie PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>max PhotoDemon memory usage this session</original>
+<translation>Consumul maxim de memorie PhotoDemon din sesiunea curentă</translation>
+</phrase>
+
+<phrase>
+<original>Click to select a new temporary folder.</original>
+<translation>Clic pentru a selecta un nou folder imaginar.</translation>
+</phrase>
+
+<phrase>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<translation>Acest buton resetează toate setările PhotoDemon.  Dacă programul se comportă în mod neașteptat, acest lucru poate rezolva problema.</translation>
+</phrase>
+
+<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>add another folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font folders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface font</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove this folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Changes will take effect the next time you start PhotoDemon.</original>
+<translation></translation>
+</phrase>
+
+<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+
+<phrase>
+<original>mouse wheel behavior</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>snap distance (in pixels)</original>
+<translation>Distanță magnetică (în pixeli)</translation>
+</phrase>
+
+<phrase>
+<original>angle snap distance (in degrees)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>high-resolution mouse input</original>
+<translation>Acțiune mouse de mare rezoluție</translation>
+</phrase>
+
+<phrase>
+<original>scroll</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<translation>Când utilizați Desktop la distanță sau o VM (mașină virtuală), este posibil ca intrarea de înaltă rezoluție a mouse-ului să nu funcționeze corect.  Acesta este un bug Windows vechi.  În aceste situații, puteți utiliza această setare pentru a restabili comportamentul corect al mouse-ului.</translation>
+</phrase>
+
+<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>display access keys (mnemonics)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent files to remember</original>
+<translation>Număr maxim de fișiere de ținut minte</translation>
+</phrase>
+
+<phrase>
+<original>recent files</original>
+<translation>Fișiere recente:</translation>
+</phrase>
+
+<phrase>
+<original>recent file menu text</original>
+<translation>Text meniu fișiere recente:</translation>
+</phrase>
+
+<phrase>
+<original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<translation>Lățimea meniului "Fișiere recente" este limitată de Windows. Pentru a preveni revărsarea acestui meniu, PhotoDemon poate afișa doar nume de imagini în loc de locații complete ale imaginii.</translation>
+</phrase>
+
+<!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>Respectă instrucțiunile de auto-rotire din fișierele imagine</translation>
+</phrase>
+
+<phrase>
+<original>loading</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>Extrage forțat tag-urile binare ca Base64 (lent)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>Estimează setările de calitate JPEG originale</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>Extrage tag-urile necunoscute</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>Ascunde automat tag-urile duplicat</translation>
+</phrase>
+
+<phrase>
+<original>saving</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>Prezintă PhotoDemon ca ultimul program folosit la editare</translation>
+</phrase>
+
+<phrase>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<translation>Este posibil ca camerele mai vechi și software-ul de editare foto să nu încorporeze corect metadatele, ceea ce duce la mai multe cópii de metadate într-un singur fișier.  PhotoDemon poate rezolva automat intrările duplicat pentru dvs.</translation>
+</phrase>
+
+<phrase>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<translation>Formatul JPEG nu oferă o modalitate de a stoca setările de calitate JPEG în fișierele imagine.  PhotoDemon poate rezolva acest lucru prin deducerea setărilor de calitate din alte metadate (cum ar fi tabelele de cuantizare).</translation>
+</phrase>
+
+<phrase>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<translation>Unii producători de camere stochează etichete de metadate proprietare în fișierele de imagine.  Aceste etichete nu sunt în general utile pentru oameni, dar PhotoDemon poate încerca să le extragă oricum.</translation>
+</phrase>
+
+<phrase>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<translation>În mod implicit, tag-urile binare mari (cum ar fi miniaturile imaginii) nu sunt procesate.  În schimb, PhotoDemon raportează pur și simplu dimensiunea datelor încorporate.  Dacă aveți nevoie de aceste date, PhotoDemon le poate converti manual în Base64 pentru analiză suplimentare.</translation>
+</phrase>
+
+<phrase>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<translation>Majoritatea fotografiilor digitale includ instrucțiuni de rotație (metadate de orientare EXIF), pe care PhotoDemon le va folosi pentru a roti automat fotografiile.  Este posibil ca unele smartphone-uri și camere mai vechi să nu scrie corect aceste instrucțiuni, așa că, dacă fotografiile dvs. sunt importate lateral sau cu susul în jos, puteți încerca să dezactivați funcția de rotire automată.</translation>
+</phrase>
+
+<phrase>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<translation>Specificația EXIF cere programelor să se identifice corect ca programul de origine atunci când exportă fișiere imagine. Pentru o confidențialitate sporită, puteți suspenda acest comportament.</translation>
+</phrase>
+
+<!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
+
+<phrase>
+<original>mipmaps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2741</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5794 phrases. -->
-<!-- 3053 are duplicates, so only 2741 unique phrases have been written to file. -->
-<!-- These 2741 phrases contain approximately 11834 total words. -->
+<!-- As of this build, PhotoDemon contains 5954 phrases. -->
+<!-- 3156 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12114 total words. -->
 
 </pdData>
