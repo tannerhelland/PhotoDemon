@@ -121,7 +121,8 @@ Public Sub ShowDialog(ByVal typeOfDialog As PD_SelectionDialog)
     
     End Select
     
-    Me.Caption = " " & titleText
+    'Use Unicode-aware form captions
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, titleText
     sltSelValue.Caption = sliderText
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)

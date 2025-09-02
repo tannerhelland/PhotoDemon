@@ -390,10 +390,10 @@ Private Sub Form_Load()
     Select Case m_RotateTarget
         
         Case pdat_Image
-            Me.Caption = g_Language.TranslateMessage("Rotate image")
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Rotate image")
         
         Case pdat_SingleLayer
-            Me.Caption = g_Language.TranslateMessage("Rotate layer")
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Rotate layer")
         
     End Select
     

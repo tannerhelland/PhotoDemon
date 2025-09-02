@@ -178,10 +178,10 @@ Private Sub Form_Activate()
     Select Case m_ResizeTarget
         
         Case pdat_Image
-            Me.Caption = g_Language.TranslateMessage("Content-aware image resize")
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Content-aware image resize")
         
         Case pdat_SingleLayer
-            Me.Caption = g_Language.TranslateMessage("Content-aware layer resize")
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Content-aware layer resize")
         
     End Select
 
