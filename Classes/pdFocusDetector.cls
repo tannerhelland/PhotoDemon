@@ -29,10 +29,14 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This class raises correct Got/LostFocus events for any window, by subclassing both WM_NCACTIVATE (generally not needed,
-' except for top-level windows) and WM_SETFOCUS/WM_KILLFOCUS.
+'This class raises correct Got/LostFocus events for any window.
+' These two events mirror subclassed WM_SETFOCUS/WM_KILLFOCUS messages.
 Public Event GotFocusReliable()
 Public Event LostFocusReliable()
+
+'...while these two reflect WM_NCACTIVATE (generally not needed, except for top-level windows)
+Public Event AppGotFocusReliable()
+Public Event AppLostFocusReliable()
 
 'Various subclassing constants
 Private Const WM_ACTIVATE As Long = &H6&
@@ -176,13 +180,17 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     ElseIf (uiMsg = WM_NCACTIVATE) Then
         
         If (wParam = 1) Then
-            m_HasFocus = True
-            UserControls.PDControlReceivedFocus m_hWnd
-            RaiseEvent GotFocusReliable
+            If (Not m_HasFocus) Then
+                m_HasFocus = True
+                UserControls.PDControlReceivedFocus m_hWnd
+            End If
+            RaiseEvent AppGotFocusReliable
         ElseIf (wParam = 0) Then
-            m_HasFocus = False
-            UserControls.PDControlLostFocus m_hWnd
-            RaiseEvent LostFocusReliable
+            If m_HasFocus Then
+                m_HasFocus = False
+                UserControls.PDControlLostFocus m_hWnd
+            End If
+            RaiseEvent AppLostFocusReliable
         End If
 
         'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms632633)...

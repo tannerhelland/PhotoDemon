@@ -2585,6 +2585,38 @@ Public Sub StartMetadataTimer()
     
 End Sub
 
+Private Sub m_FocusDetector_AppGotFocusReliable()
+
+    'Ignore focus changes at shutdown time
+    If (Not g_ProgramShuttingDown) Then
+        
+        'Restore any relevant UI animations
+        If Selections.SelectionsAllowed(False) Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
+                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed SelectionUI.GetUISetting_Animate()
+            End If
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub m_FocusDetector_AppLostFocusReliable()
+
+    'Ignore focus changes at shutdown time
+    If (Not g_ProgramShuttingDown) Then
+        
+        'Turn off selection animations in the main window
+        If Selections.SelectionsAllowed(False) Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
+                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed False
+            End If
+        End If
+        
+    End If
+    
+End Sub
+
 'This metadata timer is a final failsafe for images with huge metadata collections that take a long time
 ' to parse.  If an image has successfully loaded but its metadata parsing is still in-progress, PD's image
 ' load function will activate this timer.  The timer will wait (asynchronously) for metadata parsing to finish,
@@ -2634,13 +2666,6 @@ Private Sub m_FocusDetector_GotFocusReliable()
         'Re-start hotkey tracking
         HotkeyManager.RecaptureKeyStates
         
-        'Restore any relevant UI animations
-        If Selections.SelectionsAllowed(False) Then
-            If PDImages.GetActiveImage.IsSelectionActive() Then
-                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed SelectionUI.GetUISetting_Animate()
-            End If
-        End If
-        
     End If
     
 End Sub
@@ -2652,13 +2677,6 @@ Private Sub m_FocusDetector_LostFocusReliable()
         
         'Turn off hotkey tracking
         HotkeyManager.ResetKeyStates
-        
-        'Turn off selection animations in the main window
-        If Selections.SelectionsAllowed(False) Then
-            If PDImages.GetActiveImage.IsSelectionActive() Then
-                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed False
-            End If
-        End If
         
     End If
     
