@@ -2182,7 +2182,12 @@ Private Sub Form_Load()
         If (PDImages.GetNumOpenImages > 0) Then
             FormMain.MainCanvas(0).SetFocusToCanvasView
         Else
-            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI FormMain.hWnd
+            
+            m_FocusDetector.SetFocusManually
+            
+            'Focus is weird in the IDE; activate it manually to work around issues under *some* versions of Windows
+            If (Not OS.IsProgramCompiled()) Then m_FocusDetector.ActivateManually
+            
         End If
         
         Exit Sub
@@ -2619,14 +2624,44 @@ Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
     Actions.LaunchAction_ByName Hotkeys.GetHotKeyAction(hotkeyID), pdas_Hotkey
 End Sub
 
-'When PD's main window gains or loses focus, the hotkey manager needs to be notified so it can
-' de/activate accordingly.
+'When PD's main window gains or loses focus (i.e. when the user switches to other software), some UI and hook elements
+' either *need* to be disabled (hotkey hooking) or *can* be disabled (selection outline "ant" animations).
 Private Sub m_FocusDetector_GotFocusReliable()
-    If (Not g_ProgramShuttingDown) Then HotkeyManager.RecaptureKeyStates
+    
+    'Ignore focus changes at shutdown time
+    If (Not g_ProgramShuttingDown) Then
+        
+        'Re-start hotkey tracking
+        HotkeyManager.RecaptureKeyStates
+        
+        'Restore any relevant UI animations
+        If Selections.SelectionsAllowed(False) Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
+                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed SelectionUI.GetUISetting_Animate()
+            End If
+        End If
+        
+    End If
+    
 End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
-    If (Not g_ProgramShuttingDown) Then HotkeyManager.ResetKeyStates
+    
+    'Ignore focus changes at shutdown time
+    If (Not g_ProgramShuttingDown) Then
+        
+        'Turn off hotkey tracking
+        HotkeyManager.ResetKeyStates
+        
+        'Turn off selection animations in the main window
+        If Selections.SelectionsAllowed(False) Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
+                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed False
+            End If
+        End If
+        
+    End If
+    
 End Sub
 
 'This listener will raise events when PD is in single-session mode and another session is initiated.
