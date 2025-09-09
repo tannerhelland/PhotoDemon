@@ -2656,32 +2656,6 @@ Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
     Actions.LaunchAction_ByName Hotkeys.GetHotKeyAction(hotkeyID), pdas_Hotkey
 End Sub
 
-'When PD's main window gains or loses focus (i.e. when the user switches to other software), some UI and hook elements
-' either *need* to be disabled (hotkey hooking) or *can* be disabled (selection outline "ant" animations).
-Private Sub m_FocusDetector_GotFocusReliable()
-    
-    'Ignore focus changes at shutdown time
-    If (Not g_ProgramShuttingDown) Then
-        
-        'Re-start hotkey tracking
-        HotkeyManager.RecaptureKeyStates
-        
-    End If
-    
-End Sub
-
-Private Sub m_FocusDetector_LostFocusReliable()
-    
-    'Ignore focus changes at shutdown time
-    If (Not g_ProgramShuttingDown) Then
-        
-        'Turn off hotkey tracking
-        HotkeyManager.ResetKeyStates
-        
-    End If
-    
-End Sub
-
 'This listener will raise events when PD is in single-session mode and another session is initiated.
 ' The other session will forward any "open this image" requests passed on its command line.
 Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)

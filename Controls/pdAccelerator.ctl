@@ -312,17 +312,10 @@ End Sub
 'When PD gains focus, call this function to update all key state tracking.  (This addresses the rare case
 ' where the user is *already* holding a key down when PD is activated - we can then use that down key as
 ' part of a subsequent hotkey combo.)
-Public Sub RecaptureKeyStates()
+Private Sub RecaptureKeyStates()
     m_CtrlDown = IsVirtualKeyDown(VK_CONTROL)
     m_AltDown = IsVirtualKeyDown(VK_ALT)
     m_ShiftDown = IsVirtualKeyDown(VK_SHIFT)
-End Sub
-
-'When PD loses focus, call this function to reset all key state tracking
-Public Sub ResetKeyStates()
-    m_CtrlDown = False
-    m_AltDown = False
-    m_ShiftDown = False
 End Sub
 
 'With some keys (e.g. ALT), PD's main canvas sometimes has to "eat" a keypress to prevent the system
@@ -418,6 +411,8 @@ Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long,
     If (Not Me.Enabled) Then Exit Function
     
     'Translate modifier states (shift, control, alt/menu) to their masked VB equivalent
+    RecaptureKeyStates
+    
     Dim retShiftConstants As ShiftConstants
     If m_CtrlDown Then retShiftConstants = retShiftConstants Or vbCtrlMask
     If m_AltDown Then retShiftConstants = retShiftConstants Or vbAltMask
