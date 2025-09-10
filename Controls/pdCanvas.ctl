@@ -1123,7 +1123,7 @@ Private Sub CanvasView_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
 End Sub
 
 Private Sub cmdCenter_Click(ByVal Shift As ShiftConstants)
-    CanvasManager.CenterOnScreen
+    Actions.LaunchAction_ByName "view_center_on_screen", pdas_Menu
 End Sub
 
 Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
@@ -2206,11 +2206,15 @@ End Sub
 ' This allows it to cache relevant values, then manage them independent of the preferences engine for the
 ' duration of a session.
 Public Sub ReadUserPreferences()
+    
     ImageStrip.ReadUserPreferences
+    
     m_RulersVisible = UserPrefs.GetPref_Boolean("Toolbox", "RulersVisible", True)
-    FormMain.MnuView(6).Checked = m_RulersVisible
+    Menus.SetMenuChecked "view_rulers", m_RulersVisible
+    
     m_StatusBarVisible = UserPrefs.GetPref_Boolean("Toolbox", "StatusBarVisible", True)
-    FormMain.MnuView(7).Checked = m_StatusBarVisible
+    Menus.SetMenuChecked "view_statusbar", m_StatusBarVisible
+    
 End Sub
 
 Public Sub WriteUserPreferences()
@@ -2733,7 +2737,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0, Op
         'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
         btnImageSize = Interface.FixDPI(15)
         cmdCenter.AssignImage "zoom_center", Nothing, btnImageSize, btnImageSize, usePDResamplerInstead:=IIf(OS.IsProgramCompiled(), rf_Box, rf_Automatic)
-        cmdCenter.AssignTooltip "Center the image inside the viewport"
+        cmdCenter.AssignTooltip "Center image in viewport"
         cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)
         cmdCenter.UpdateAgainstCurrentTheme
         

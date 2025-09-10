@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.27</langversion>
+<langversion>1.0.28</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -4507,9 +4507,8 @@ Tento soubor budete muset stáhnout ručně pomocí vašeho internetového prohl
 </phrase>
 
 <phrase>
-<original>Center the image inside the viewport</original>
-<translation>Vycentrujte snímek uvnitř výřezu
-</translation>
+<original>Center image in viewport</original>
+<translation></translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -5088,8 +5087,8 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Přizpůsobte obraz na obrazovce
+<original>Fit image on screen</original>
+<translation>Přizpůsobit obraz na obrazovku
 </translation>
 </phrase>
 
@@ -5811,12 +5810,6 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
-<original>Fit image on screen</original>
-<translation>Přizpůsobit obraz na obrazovku
-</translation>
-</phrase>
-
-<phrase>
 <original>Zoom to value</original>
 <translation>Přiblížit na hodnotu
 </translation>
@@ -6119,7 +6112,7 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 </translation>
 </phrase>
 
-<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -15436,10 +15429,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2797</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5954 phrases. -->
-<!-- 3156 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12114 total words. -->
+<!-- As of this build, PhotoDemon contains 5955 phrases. -->
+<!-- 3158 are duplicates, so only 2797 unique phrases have been written to file. -->
+<!-- These 2797 phrases contain approximately 12108 total words. -->
 
 </pdData>

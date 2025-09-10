@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.30</langversion>
+<langversion>1.0.31</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -4336,8 +4336,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>Center the image inside the viewport</original>
-<translation>Відцентрувати зображення всередині області перегляду</translation>
+<original>Center image in viewport</original>
+<translation></translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -4885,8 +4885,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Вписати зображення в екран</translation>
+<original>Fit image on screen</original>
+<translation>Вмістити зображення на екран</translation>
 </phrase>
 
 <phrase>
@@ -5587,11 +5587,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit image on screen</original>
-<translation>Вмістити зображення на екран</translation>
-</phrase>
-
-<phrase>
 <original>Zoom to value</original>
 <translation>Збільшити до значення</translation>
 </phrase>
@@ -5864,7 +5859,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Мова змінилася успішно.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14795,10 +14790,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2797</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5954 phrases. -->
-<!-- 3156 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12114 total words. -->
+<!-- As of this build, PhotoDemon contains 5955 phrases. -->
+<!-- 3158 are duplicates, so only 2797 unique phrases have been written to file. -->
+<!-- These 2797 phrases contain approximately 12108 total words. -->
 
 </pdData>

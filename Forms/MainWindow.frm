@@ -1678,20 +1678,24 @@ Begin VB.Form FormMain
          Index           =   0
       End
       Begin VB.Menu MnuView 
-         Caption         =   "-"
+         Caption         =   "Center image in viewport"
          Index           =   1
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom in"
+         Caption         =   "-"
          Index           =   2
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom out"
+         Caption         =   "Zoom in"
          Index           =   3
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom to value"
+         Caption         =   "Zoom out"
          Index           =   4
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Zoom to value"
+         Index           =   5
          Begin VB.Menu MnuSpecificZoom 
             Caption         =   "16:1 (1600%)"
             Index           =   0
@@ -1731,19 +1735,19 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuView 
          Caption         =   "-"
-         Index           =   5
-      End
-      Begin VB.Menu MnuView 
-         Caption         =   "Show rulers"
          Index           =   6
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Show status bar"
+         Caption         =   "Show rulers"
          Index           =   7
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Show extras"
+         Caption         =   "Show status bar"
          Index           =   8
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Show extras"
+         Index           =   9
          Begin VB.Menu MnuShow 
             Caption         =   "Layer edges"
             Index           =   0
@@ -1755,15 +1759,15 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuView 
          Caption         =   "-"
-         Index           =   9
-      End
-      Begin VB.Menu MnuView 
-         Caption         =   "Snap"
          Index           =   10
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Snap to"
+         Caption         =   "Snap"
          Index           =   11
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap to"
+         Index           =   12
          Begin VB.Menu MnuSnap 
             Caption         =   "Canvas edges"
             Index           =   0
@@ -3951,26 +3955,28 @@ Private Sub MnuView_Click(Index As Integer)
         Case 0
             Actions.LaunchAction_ByName "view_fit"
         Case 1
-            '(separator)
+            Actions.LaunchAction_ByName "view_center_on_screen"
         Case 2
-            Actions.LaunchAction_ByName "view_zoomin"
+            '(separator)
         Case 3
-            Actions.LaunchAction_ByName "view_zoomout"
+            Actions.LaunchAction_ByName "view_zoomin"
         Case 4
-            'zoom-to-value top-level
+            Actions.LaunchAction_ByName "view_zoomout"
         Case 5
-            '(separator)
+            'zoom-to-value top-level
         Case 6
-            Actions.LaunchAction_ByName "view_rulers"
-        Case 7
-            Actions.LaunchAction_ByName "view_statusbar"
-        Case 8
-            'show extras top-level
-        Case 9
             '(separator)
+        Case 7
+            Actions.LaunchAction_ByName "view_rulers"
+        Case 8
+            Actions.LaunchAction_ByName "view_statusbar"
+        Case 9
+            'show extras top-level
         Case 10
-            Actions.LaunchAction_ByName "snap_global"
+            '(separator)
         Case 11
+            Actions.LaunchAction_ByName "snap_global"
+        Case 12
             'snap-to top-level
     End Select
 End Sub

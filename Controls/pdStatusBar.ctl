@@ -891,7 +891,7 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal hostFormhWnd As Long = 0)
         cmbZoom.SetWidthAutomatically
         cmbSizeUnit.SetWidthAutomatically
         
-        cmdZoomFit.AssignTooltip "Fit the image on-screen"
+        cmdZoomFit.AssignTooltip "Fit image on screen"
         cmdZoomIn.AssignTooltip "Zoom in"
         cmdZoomOut.AssignTooltip "Zoom out"
         cmdImgSize.AssignTooltip "Resize image"

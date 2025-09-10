@@ -360,6 +360,7 @@ Private Sub InitializeDefaultHotkeys()
     
     'View menu
     AddHotkey vbKey0, vbCtrlMask, "view_fit", True
+    AddHotkey vbKeyJ, vbShiftMask, "view_center_on_screen", True
     AddHotkey vbKeyAdd, vbCtrlMask, "view_zoomin", True
     AddHotkey vbKeySubtract, vbCtrlMask, "view_zoomout", True
     AddHotkey vbKey5, vbCtrlMask, "zoom_16_1", True
