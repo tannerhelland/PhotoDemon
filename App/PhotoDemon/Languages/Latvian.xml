@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).34</langversion>
+<langversion>2028.8 Alfa (Build 25).36</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -2237,11 +2237,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>Nākotnē automātiski rasterizēt bez uzaicinājuma man</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>Krāsas slānis</translation>
 </phrase>
@@ -2251,7 +2246,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>Rāmis %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -13987,6 +13982,11 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>virsraksta joslas teksts</translation>
 </phrase>
@@ -14009,6 +14009,11 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <phrase>
 <original>canvas background color</original>
 <translation>audekla fona krāsa</translation>
+</phrase>
+
+<phrase>
+<original>remember my choice</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14046,7 +14051,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <translation>liels</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14790,10 +14795,10 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2797</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5955 phrases. -->
-<!-- 3158 are duplicates, so only 2797 unique phrases have been written to file. -->
-<!-- These 2797 phrases contain approximately 12108 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.1</langversion>
+<langversion>2025.4.3</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -2237,11 +2237,6 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>In futuro, rasterizza automaticamente senza che mi venga chiesto</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>Livello di puttura</translation>
 </phrase>
@@ -2251,7 +2246,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 <translation>Fotogramma %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -13988,6 +13983,11 @@ Sei sicuro di voler continuare?</translation>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>testo della barra del titolo</translation>
 </phrase>
@@ -14010,6 +14010,11 @@ Sei sicuro di voler continuare?</translation>
 <phrase>
 <original>canvas background color</original>
 <translation>colore di sfondo della tela</translation>
+</phrase>
+
+<phrase>
+<original>remember my choice</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14047,7 +14052,7 @@ Sei sicuro di voler continuare?</translation>
 <translation>grande</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14791,10 +14796,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2797</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5955 phrases. -->
-<!-- 3158 are duplicates, so only 2797 unique phrases have been written to file. -->
-<!-- These 2797 phrases contain approximately 12108 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>

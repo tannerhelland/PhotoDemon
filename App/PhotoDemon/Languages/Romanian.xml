@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.2</langversion>
+<langversion>1.0.4</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -2237,11 +2237,6 @@ Această imagine conține %2 culori unice + valori opacitate (RGBA)</translation
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>Pe viitor, rasterizează automat fără să-mi mai spui</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>Strat pictură</translation>
 </phrase>
@@ -2251,7 +2246,7 @@ Această imagine conține %2 culori unice + valori opacitate (RGBA)</translation
 <translation>Cadru %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -14000,6 +13995,11 @@ Ești sigur că vreți să continuați?</translation>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>Text bară de titlu</translation>
 </phrase>
@@ -14022,6 +14022,11 @@ Ești sigur că vreți să continuați?</translation>
 <phrase>
 <original>canvas background color</original>
 <translation>Culoare de fundal pânză</translation>
+</phrase>
+
+<phrase>
+<original>remember my choice</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14059,7 +14064,7 @@ Ești sigur că vreți să continuați?</translation>
 <translation>Mare</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14801,10 +14806,10 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2797</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5955 phrases. -->
-<!-- 3158 are duplicates, so only 2797 unique phrases have been written to file. -->
-<!-- These 2797 phrases contain approximately 12108 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>

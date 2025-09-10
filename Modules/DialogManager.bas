@@ -413,17 +413,19 @@ Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef sr
 End Function
 
 'Present a generic binary choice dialog (typically Yes/No/Cancel) with an option to remember the current setting.
-' Once the option to remember has been set, it cannot be unset short of using the Reset button in the Tools > Options panel.
+' Once the option to remember has been set, it can only be unset by:
+' 1) Tools > Options > Interface > Reset all "remember my choice" decisions
+' 2) Tools > Options > Advanced > Reset all preferences
 '
-'The caller must supply a unique "questionID" string.  This is the string used to identify this dialog in the XML file;
-' it will be forced to an XML-safe equivalent.  As such, do not do something stupid like having two IDs that are so similar,
-' their XML-safe variants become identical.
+'The caller must supply a unique "questionID" string.  This is the string used to identify this dialog in the XML file.
+' This value will be forced to an XML-safe equivalent.  As such, do not do something stupid like having two IDs that vary
+' only by whitespace (so their XML-safe variants would be identical).
 '
 'Prompt text, "yes button" text, "no button" text, "cancel button" text, "remember this decision" text, and icon
 ' (message box style) must be passed.
 '
-'If the user has previously ticked the "remember my decision" box, this function should still be called, but it will simply
-' retrieve the previous choice and silently return it.
+'If the user has previously ticked the "remember my decision" box, this function should still be called,
+' but it will simply query the previously remembered choice and silently return value.
 '
 'Returns a VbMsgBoxResult constant, with YES, NO, or CANCEL specified.
 Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByRef questionText As String, ByRef yesButtonText As String, ByRef noButtonText As String, ByRef cancelButtonText As String, ByRef rememberCheckBoxText As String, ByRef dialogTitleText As String, Optional ByVal sysIcon As SystemIconConstants = 0, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False, Optional ByVal resNameYesImg As String = "generic_ok", Optional ByVal resNameNoImg As String = "generic_cancel", Optional ByVal resNameCancelImg As String = vbNullString) As VbMsgBoxResult
@@ -457,9 +459,11 @@ Public Function PromptGenericYesNoDialog(ByVal questionID As String, ByRef quest
 
 End Function
 
-'Identical to promptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome can be remembered.
-' This is relevant for Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.  If we allowed
-' those values to be stored, the user could never proceed with an operation in the future!
+'Identical to PromptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome (typically YES)
+' is allowed to be remembered.
+'
+'This is relevant for Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.
+' If we allowed No/Cancel values to be stored, the user could never proceed with an operation in the future!
 Public Function PromptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByRef questionText As String, ByRef yesButtonText As String, ByRef noButtonText As String, ByRef cancelButtonText As String, ByRef rememberCheckBoxText As String, ByRef dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal useIcon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent

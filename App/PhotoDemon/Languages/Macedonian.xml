@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1764</langversion>
+<langversion>8.9.1766</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2234,11 +2234,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>Во иднина, автоматски rasterize без да ме прашува</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation></translation>
 </phrase>
@@ -2248,7 +2243,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>Рамка %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -13975,6 +13970,11 @@ Are you sure you want to continue?</original>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation></translation>
 </phrase>
@@ -13996,6 +13996,11 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>canvas background color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remember my choice</original>
 <translation></translation>
 </phrase>
 
@@ -14034,7 +14039,7 @@ Are you sure you want to continue?</original>
 <translation>големи</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14776,10 +14781,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2797</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5955 phrases. -->
-<!-- 3158 are duplicates, so only 2797 unique phrases have been written to file. -->
-<!-- These 2797 phrases contain approximately 12108 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>

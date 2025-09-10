@@ -30,10 +30,20 @@ Begin VB.Form options_Interface
    ScaleWidth      =   553
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButton cmdResetRemember 
+      Height          =   735
+      Left            =   240
+      TabIndex        =   6
+      Top             =   2520
+      Width           =   7695
+      _ExtentX        =   13573
+      _ExtentY        =   1296
+      Caption         =   "reset all ""remember my choice"" decisions"
+   End
    Begin PhotoDemon.pdPictureBox picGrid 
       Height          =   735
       Left            =   150
-      Top             =   2520
+      Top             =   3960
       Width           =   735
       _ExtentX        =   1296
       _ExtentY        =   1296
@@ -60,7 +70,7 @@ Begin VB.Form options_Interface
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   14
+      Index           =   0
       Left            =   0
       Top             =   0
       Width           =   8100
@@ -74,7 +84,7 @@ Begin VB.Form options_Interface
       Height          =   810
       Left            =   1080
       TabIndex        =   2
-      Top             =   2460
+      Top             =   3900
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1429
@@ -85,7 +95,7 @@ Begin VB.Form options_Interface
       Height          =   795
       Left            =   4140
       TabIndex        =   3
-      Top             =   2460
+      Top             =   3900
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1402
@@ -96,7 +106,7 @@ Begin VB.Form options_Interface
       Height          =   690
       Left            =   7260
       TabIndex        =   4
-      Top             =   2520
+      Top             =   3960
       Width           =   465
       _ExtentX        =   820
       _ExtentY        =   1217
@@ -106,7 +116,7 @@ Begin VB.Form options_Interface
       Height          =   690
       Left            =   7770
       TabIndex        =   5
-      Top             =   2520
+      Top             =   3960
       Width           =   465
       _ExtentX        =   820
       _ExtentY        =   1217
@@ -116,7 +126,7 @@ Begin VB.Form options_Interface
       Height          =   285
       Index           =   2
       Left            =   0
-      Top             =   2040
+      Top             =   3480
       Width           =   8205
       _ExtentX        =   14473
       _ExtentY        =   503
@@ -134,6 +144,18 @@ Begin VB.Form options_Interface
       Caption         =   "canvas background color:"
       ForeColor       =   4210752
       Layout          =   2
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   1
+      Left            =   0
+      Top             =   2040
+      Width           =   8205
+      _ExtentX        =   14473
+      _ExtentY        =   503
+      Caption         =   "remember my choice"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "options_Interface"
@@ -240,6 +262,32 @@ End Sub
 
 Private Sub cboAlphaCheckSize_Click()
     picGrid.RequestRedraw True
+End Sub
+
+Private Sub cmdResetRemember_Click()
+    
+    'Before resetting any previous "remember my choice" choices, warn the user.
+    ' (NOTE: this text is identical to the "reset all settings" confirmation prompt.
+    '        This is by design, to reduce translation burden.)
+    Dim promptTitle As String
+    promptTitle = g_Language.TranslateMessage(Strings.StringRemap("reset all ""remember my choice"" decisions", sr_Titlecase))
+    
+    Dim confirmReset As VbMsgBoxResult
+    confirmReset = PDMsgBox("All settings will be restored to their default values.  This action cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbExclamation Or vbYesNo, promptTitle)
+    
+    If (confirmReset = vbYes) Then
+        
+        'Erase any values previously stored in the "Dialogs" preference section
+        UserPrefs.WritePreference vbNullString, "Dialogs", vbCrLf
+        
+        'Manually reset the tone-mapping dialog "remember" decision (that dialog has a complex UI
+        ' and uses its own "remember" setting)
+        UserPrefs.WritePreference "Loading", "ToneMappingPrompt", True
+        
+    End If
+    
+    FormOptions.RestoreActivePanelBehavior
+    
 End Sub
 
 'When new transparency checkerboard colors are selected, change the corresponding list box to match
