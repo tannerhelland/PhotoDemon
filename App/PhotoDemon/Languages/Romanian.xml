@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.4</langversion>
+<langversion>1.0.2</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -2293,22 +2293,22 @@ Vă rog închideți acest fișier din alt program și încercați iar.</translat
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>Acest fișier are extensia "%1", dar de fapt e în format "%2".</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>PhotoDemon poate redenumi fișierul cu o extensie corectă?</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>(Dacă alegeți "Da", fișierul va fi redenumit ca "%1")</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>Extensie fișier greșită</translation>
 </phrase>
 
 <phrase>
@@ -2351,7 +2351,7 @@ Vă rog folosiți alt program pentru a salva această imagine într-un format ge
 
 <phrase>
 <original>Importing %1</original>
-<translation></translation>
+<translation>Importare %1</translation>
 </phrase>
 
 <phrase>
@@ -2361,7 +2361,7 @@ Vă rog folosiți alt program pentru a salva această imagine într-un format ge
 
 <phrase>
 <original>A third-party library (%1) reported the following error</original>
-<translation></translation>
+<translation>O bibliotecă terță parte (%1) a raportat următoarea eroare</translation>
 </phrase>
 
 <phrase>
@@ -2754,12 +2754,14 @@ Pentru a activa suportul scanerului, copiați EZTW32.fișier dll (disponibil pen
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation></translation>
+<translation>O bibliotecă terță parte necesară (%1) lipsește sau este dezactivată.
+
+Pentru a activa această funcționalitate, vă rog descărcați o copie nouă a PhotoDemon sau reactivați biblioteca lipsă.</translation>
 </phrase>
 
 <phrase>
 <original>Error: %1</original>
-<translation></translation>
+<translation>Eroare: %1</translation>
 </phrase>
 
 <phrase>
@@ -3822,7 +3824,7 @@ Va trebui să descărcați manual acest fișier folosind browserul dvs. de Inter
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
+<translation>Utilizarea memoriei pare ridicată;suspend unele date pe disc înainte de a continua</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -5564,7 +5566,7 @@ Valoarea finală trebuie să fie între %3 și %4.</translation>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>Vezi jurnalul de depanare pentru această sesiune</translation>
 </phrase>
 
 <phrase>
@@ -5654,17 +5656,17 @@ Valoarea finală trebuie să fie între %3 și %4.</translation>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>Unghi 90°</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>Unghi 45°</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>Unghi 30°</translation>
 </phrase>
 
 <phrase>
@@ -6434,7 +6436,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>Folosește mutarea medie</translation>
 </phrase>
 
 <phrase>
@@ -7333,7 +7335,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 
 <phrase>
 <original>current page only</original>
-<translation></translation>
+<translation>Doar pagina curentă</translation>
 </phrase>
 
 <phrase>
@@ -12533,37 +12535,37 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>presets</original>
-<translation></translation>
+<translation>Presetări</translation>
 </phrase>
 
 <phrase>
 <original>guides</original>
-<translation></translation>
+<translation>Ghiduri</translation>
 </phrase>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>Țintă</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>Evidențiază zona decupării</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>Șterge pixelii decupați</translation>
 </phrase>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>Permite lărgirea</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>Aplică</translation>
 </phrase>
 
 <phrase>
@@ -12578,32 +12580,32 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>resolution (PPI)</original>
-<translation></translation>
+<translation>Rezoluție (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>centerlines</original>
-<translation></translation>
+<translation>Linni centru</translation>
 </phrase>
 
 <phrase>
 <original>rule of thirds</original>
-<translation></translation>
+<translation>Regula treimii</translation>
 </phrase>
 
 <phrase>
 <original>rule of fifths</original>
-<translation></translation>
+<translation>Regula cincimii</translation>
 </phrase>
 
 <phrase>
 <original>golden ratio</original>
-<translation></translation>
+<translation>Raportul de aur</translation>
 </phrase>
 
 <phrase>
 <original>diagonals</original>
-<translation></translation>
+<translation>Diagonale</translation>
 </phrase>
 
 <phrase>
@@ -12613,34 +12615,34 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>Interschimbă lățimea și înălțimea</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>Permite decuparea în afara marginilor imaginii (ceea ce va lărgi imaginea).</translation>
 </phrase>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation></translation>
+<translation>Rezoluția este folosită pentru a converti măsurătorile din lumea reală în pixeli. Este ignorată pentru măsurătorile deja în pixeli.</translation>
 </phrase>
 
 <phrase>
 <original>You can use this measurement in landscape or portrait orientation.</original>
-<translation></translation>
+<translation>Puteți folosi această măsurătoare în orientare peisaj sau portret.</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>Aliniază la gridul de pixeli</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>Această setare aliniază forțat trăsăturile de desen la punctele de centru ale gridului de pixeli. Aceasta îmbunătățește precizia (mai ales la mărimi mici ale penelului), dar trăsăturile de penel pot părea mai puțin naturale.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12682,7 +12684,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 
 <phrase>
 <original>contiguous</original>
-<translation></translation>
+<translation>Adiacent</translation>
 </phrase>
 
 <phrase>
@@ -13734,7 +13736,7 @@ Pentru a continua, vă rugăm să descărcați o copie nouă a PhotoDemon de la 
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>Meniuri</translation>
 </phrase>
 
 <phrase>
@@ -13754,12 +13756,12 @@ Pentru a continua, vă rugăm să descărcați o copie nouă a PhotoDemon de la 
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>Fonturi</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>Dispozitive de intrare</translation>
 </phrase>
 
 <phrase>
@@ -14068,7 +14070,7 @@ Ești sigur că vreți să continuați?</translation>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>Arată ecran de pornire</translation>
 </phrase>
 
 <phrase>
@@ -14103,7 +14105,7 @@ Ești sigur că vreți să continuați?</translation>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>Startare</translation>
 </phrase>
 
 <phrase>
@@ -14287,7 +14289,7 @@ Ești sigur că vreți să continuați?</translation>
 
 <phrase>
 <original>viewport</original>
-<translation></translation>
+<translation>Vizualizare</translation>
 </phrase>
 
 <phrase>
@@ -14329,7 +14331,7 @@ Ești sigur că vreți să continuați?</translation>
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>Folosește profile ICC înglobate, când sunt disponibile</translation>
 </phrase>
 
 <phrase>
@@ -14374,12 +14376,12 @@ Ești sigur că vreți să continuați?</translation>
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>Politici fișier</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>Folosiți date de management al culorii specifice formatului, când sunt disponibile</translation>
 </phrase>
 
 <phrase>
@@ -14434,19 +14436,19 @@ Ești sigur că vreți să continuați?</translation>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>Profilurile ICC încorporate îmbunătățesc fidelitatea culorii.  Chiar dacă această setare este dezactivată, PhotoDemon poate utiliza în continuare profiluri ICC pentru unele sarcini (cum ar fi manipularea datelor CMYK).</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>Unele formate de imagine acceptă atât profilurile ICC, cât și propriile soluții de gestionare a culorilor. PhotoDemon preferă întotdeauna profilurile ICC, dar atunci când nici unul nu este încorporat, pot fi încercate alte abordări de gestionare a culorilor.</translation>
 </phrase>
 
 <!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>(disclaimer populated at run-time)</original>
-<translation></translation>
+<translation>(avertisment populat în timpul rulării)</translation>
 </phrase>
 
 <phrase>
@@ -14611,34 +14613,34 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>Adaugă alt folder</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>Foldere fonturi</translation>
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>Font interfață</translation>
 </phrase>
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>Șterge acest folder</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>Schimbările vor avea efect la următoarea pornire a PhotoDemon.</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>Comportament rotiță mouse</translation>
 </phrase>
 
 <phrase>
@@ -14648,7 +14650,7 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>Unghi distanță magnetică (în grade)</translation>
 </phrase>
 
 <phrase>
@@ -14658,7 +14660,7 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>Derulare</translation>
 </phrase>
 
 <phrase>
@@ -14670,7 +14672,7 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>Chei acces display (mnemonice)</translation>
 </phrase>
 
 <phrase>
@@ -14690,7 +14692,7 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>Tastele de acces (mnemonice) vă permit să navigați prin meniuri folosind tastatura.  În modul" auto", limbile fără chei de acces native vor afișa cheia de acces engleză din SUA pentru fiecare meniu.</translation>
 </phrase>
 
 <phrase>
@@ -14707,7 +14709,7 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>Încărcare</translation>
 </phrase>
 
 <phrase>
@@ -14732,7 +14734,7 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>Salvare</translation>
 </phrase>
 
 <phrase>
@@ -14774,32 +14776,32 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>Hărți mip</translation>
 </phrase>
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>Perceptual</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>Lent</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>Toate</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>Punct</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>Cubic</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->

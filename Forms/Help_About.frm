@@ -384,6 +384,7 @@ Private Sub Form_Load()
     GenerateContributor "Leonid Blyakher"
     GenerateContributor "libavif Project", "https://github.com/AOMediaCodec/libavif"
     GenerateContributor "libwebp Project", "https://developers.google.com/speed/webp"
+    GenerateContributor "Liviu Ivanov"
     GenerateContributor "LsGeorge", "https://github.com/LsGeorge"
     GenerateContributor "Manfredi Marceca"
     GenerateContributor "Manuel Augusto Santos", "https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303"

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2025.4 Alpha - Build 57.1</langversion>
+<langversion>2025.4 Alpha - Build 63</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -13983,7 +13983,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>reset all "remember my choice" decisions</original>
-<translation></translation>
+<translation>Alle Entscheidungen unter "Meine Wahl merken" zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -14013,7 +14013,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>remember my choice</original>
-<translation></translation>
+<translation>Meine Wahl merken</translation>
 </phrase>
 
 <phrase>
