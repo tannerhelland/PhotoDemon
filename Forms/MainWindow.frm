@@ -1678,20 +1678,24 @@ Begin VB.Form FormMain
          Index           =   0
       End
       Begin VB.Menu MnuView 
-         Caption         =   "-"
+         Caption         =   "Center image in viewport"
          Index           =   1
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom in"
+         Caption         =   "-"
          Index           =   2
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom out"
+         Caption         =   "Zoom in"
          Index           =   3
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Zoom to value"
+         Caption         =   "Zoom out"
          Index           =   4
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Zoom to value"
+         Index           =   5
          Begin VB.Menu MnuSpecificZoom 
             Caption         =   "16:1 (1600%)"
             Index           =   0
@@ -1731,19 +1735,19 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuView 
          Caption         =   "-"
-         Index           =   5
-      End
-      Begin VB.Menu MnuView 
-         Caption         =   "Show rulers"
          Index           =   6
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Show status bar"
+         Caption         =   "Show rulers"
          Index           =   7
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Show extras"
+         Caption         =   "Show status bar"
          Index           =   8
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Show extras"
+         Index           =   9
          Begin VB.Menu MnuShow 
             Caption         =   "Layer edges"
             Index           =   0
@@ -1755,15 +1759,15 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuView 
          Caption         =   "-"
-         Index           =   9
-      End
-      Begin VB.Menu MnuView 
-         Caption         =   "Snap"
          Index           =   10
       End
       Begin VB.Menu MnuView 
-         Caption         =   "Snap to"
+         Caption         =   "Snap"
          Index           =   11
+      End
+      Begin VB.Menu MnuView 
+         Caption         =   "Snap to"
+         Index           =   12
          Begin VB.Menu MnuSnap 
             Caption         =   "Canvas edges"
             Index           =   0
@@ -2182,7 +2186,12 @@ Private Sub Form_Load()
         If (PDImages.GetNumOpenImages > 0) Then
             FormMain.MainCanvas(0).SetFocusToCanvasView
         Else
-            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetFocusAPI FormMain.hWnd
+            
+            m_FocusDetector.SetFocusManually
+            
+            'Focus is weird in the IDE; activate it manually to work around issues under *some* versions of Windows
+            If (Not OS.IsProgramCompiled()) Then m_FocusDetector.ActivateManually
+            
         End If
         
         Exit Sub
@@ -2580,6 +2589,38 @@ Public Sub StartMetadataTimer()
     
 End Sub
 
+Private Sub m_FocusDetector_AppGotFocusReliable()
+
+    'Ignore focus changes at shutdown time
+    If (Not g_ProgramShuttingDown) Then
+        
+        'Restore any relevant UI animations
+        If Selections.SelectionsAllowed(False) Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
+                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed SelectionUI.GetUISetting_Animate()
+            End If
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub m_FocusDetector_AppLostFocusReliable()
+
+    'Ignore focus changes at shutdown time
+    If (Not g_ProgramShuttingDown) Then
+        
+        'Turn off selection animations in the main window
+        If Selections.SelectionsAllowed(False) Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
+                PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed False
+            End If
+        End If
+        
+    End If
+    
+End Sub
+
 'This metadata timer is a final failsafe for images with huge metadata collections that take a long time
 ' to parse.  If an image has successfully loaded but its metadata parsing is still in-progress, PD's image
 ' load function will activate this timer.  The timer will wait (asynchronously) for metadata parsing to finish,
@@ -2617,16 +2658,6 @@ End Sub
 ' (The new action processor handles all validation and routing duties.)
 Private Sub HotkeyManager_HotkeyPressed(ByVal hotkeyID As Long)
     Actions.LaunchAction_ByName Hotkeys.GetHotKeyAction(hotkeyID), pdas_Hotkey
-End Sub
-
-'When PD's main window gains or loses focus, the hotkey manager needs to be notified so it can
-' de/activate accordingly.
-Private Sub m_FocusDetector_GotFocusReliable()
-    If (Not g_ProgramShuttingDown) Then HotkeyManager.RecaptureKeyStates
-End Sub
-
-Private Sub m_FocusDetector_LostFocusReliable()
-    If (Not g_ProgramShuttingDown) Then HotkeyManager.ResetKeyStates
 End Sub
 
 'This listener will raise events when PD is in single-session mode and another session is initiated.
@@ -3924,26 +3955,28 @@ Private Sub MnuView_Click(Index As Integer)
         Case 0
             Actions.LaunchAction_ByName "view_fit"
         Case 1
-            '(separator)
+            Actions.LaunchAction_ByName "view_center_on_screen"
         Case 2
-            Actions.LaunchAction_ByName "view_zoomin"
+            '(separator)
         Case 3
-            Actions.LaunchAction_ByName "view_zoomout"
+            Actions.LaunchAction_ByName "view_zoomin"
         Case 4
-            'zoom-to-value top-level
+            Actions.LaunchAction_ByName "view_zoomout"
         Case 5
-            '(separator)
+            'zoom-to-value top-level
         Case 6
-            Actions.LaunchAction_ByName "view_rulers"
-        Case 7
-            Actions.LaunchAction_ByName "view_statusbar"
-        Case 8
-            'show extras top-level
-        Case 9
             '(separator)
+        Case 7
+            Actions.LaunchAction_ByName "view_rulers"
+        Case 8
+            Actions.LaunchAction_ByName "view_statusbar"
+        Case 9
+            'show extras top-level
         Case 10
-            Actions.LaunchAction_ByName "snap_global"
+            '(separator)
         Case 11
+            Actions.LaunchAction_ByName "snap_global"
+        Case 12
             'snap-to top-level
     End Select
 End Sub

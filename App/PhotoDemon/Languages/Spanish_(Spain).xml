@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.39</langversion>
+<langversion>9.0.42</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -2237,11 +2237,6 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA)</translatio
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>En el futuro, rasterizar de forma automática sin preguntarme</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>Capa de pintura</translation>
 </phrase>
@@ -2251,7 +2246,7 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA)</translatio
 <translation>Marco %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -4337,8 +4332,8 @@ Tendrá que descargar manualmente este archivo utilizando su navegador de Intern
 </phrase>
 
 <phrase>
-<original>Center the image inside the viewport</original>
-<translation>Centrar la imagen en el área de edición</translation>
+<original>Center image in viewport</original>
+<translation></translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -4885,8 +4880,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Ajustar imagen a la pantalla</translation>
+<original>Fit image on screen</original>
+<translation>Adaptar imagen a la pantalla</translation>
 </phrase>
 
 <phrase>
@@ -5587,11 +5582,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit image on screen</original>
-<translation>Adaptar imagen a la pantalla</translation>
-</phrase>
-
-<phrase>
 <original>Zoom to value</original>
 <translation>Zoom al valor</translation>
 </phrase>
@@ -5864,7 +5854,7 @@ La actualización se está procesando automáticamente en segundo plano. Recibir
 <translation>El idioma se cambió correctamente.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13992,6 +13982,11 @@ Are you sure you want to continue?</original>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>texto de la barra de título</translation>
 </phrase>
@@ -14014,6 +14009,11 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>canvas background color</original>
 <translation>color de fondo del lienzo</translation>
+</phrase>
+
+<phrase>
+<original>remember my choice</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14051,7 +14051,7 @@ Are you sure you want to continue?</original>
 <translation>grande</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14797,8 +14797,8 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5954 phrases. -->
-<!-- 3156 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12114 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>

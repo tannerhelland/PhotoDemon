@@ -29,10 +29,14 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This class raises correct Got/LostFocus events for any window, by subclassing both WM_NCACTIVATE (generally not needed,
-' except for top-level windows) and WM_SETFOCUS/WM_KILLFOCUS.
+'This class raises correct Got/LostFocus events for any window.
+' These two events mirror subclassed WM_SETFOCUS/WM_KILLFOCUS messages.
 Public Event GotFocusReliable()
 Public Event LostFocusReliable()
+
+'...while these two reflect WM_NCACTIVATE (generally not needed, except for top-level windows)
+Public Event AppGotFocusReliable()
+Public Event AppLostFocusReliable()
 
 'Various subclassing constants
 Private Const WM_ACTIVATE As Long = &H6&
@@ -41,6 +45,8 @@ Private Const WA_INACTIVE As Long = &H0&
 
 Private Const WM_SETFOCUS As Long = &H7&
 Private Const WM_KILLFOCUS As Long = &H8&
+
+Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 
 'The window being subclassed
 Private m_hWnd As Long
@@ -77,6 +83,40 @@ Friend Sub StartFocusTracking(ByVal srcHWnd As Long)
         'Subclass all necessary messages for proper focus detection
         m_hWnd = srcHWnd
         If (m_hWnd <> 0) Then VBHacks.StartSubclassing m_hWnd, Me
+        
+        'Query initial focus state
+        If (Not g_WindowManager Is Nothing) Then
+            
+            'Query active focus
+            Dim hWndFocus As Long
+            hWndFocus = g_WindowManager.GetFocusAPI()
+            m_HasFocus = (hWndFocus = srcHWnd)
+            
+            'If we don't have focus, it's possible one of our child windows does
+            If (Not m_HasFocus) Then
+                
+                'Retrieve the parent (if any) of the window with focus
+                Dim nextParent As Long, ctlIsParent As Boolean
+                ctlIsParent = False
+                nextParent = GetParent(hWndFocus)
+                
+                'Compare that parent to our currently subclassed window and continue iterating until we reach the
+                ' desktop window (GetParent = 0)
+                Do While (nextParent <> 0)
+                    If (nextParent = srcHWnd) Then
+                        m_HasFocus = True
+                        Exit Do
+                    Else
+                        hWndFocus = nextParent
+                        nextParent = GetParent(hWndFocus)
+                    End If
+                Loop
+                
+            End If
+            
+            'm_hasFocus now correctly reflects initial focus state of the subclassed control
+                
+        End If
         
     End If
     
@@ -115,7 +155,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
         'Window is losing focus
         If (GetLoWord(wParam) = WA_INACTIVE) Then
-
+            
             If m_HasFocus Then
                 m_HasFocus = False
                 UserControls.PDControlLostFocus m_hWnd
@@ -124,7 +164,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
         'Window is gaining focus
         Else
-
+            
             If (Not m_HasFocus) Then
                 m_HasFocus = True
                 UserControls.PDControlReceivedFocus m_hWnd
@@ -138,11 +178,19 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
     'This message doesn't really apply to most uses of this class, but we cover it for completeness' sake
     ElseIf (uiMsg = WM_NCACTIVATE) Then
-
-        If (Not m_HasFocus) And (wParam <> 0) Then
-            m_HasFocus = True
-            UserControls.PDControlReceivedFocus m_hWnd
-            RaiseEvent GotFocusReliable
+        
+        If (wParam = 1) Then
+            If (Not m_HasFocus) Then
+                m_HasFocus = True
+                UserControls.PDControlReceivedFocus m_hWnd
+            End If
+            RaiseEvent AppGotFocusReliable
+        ElseIf (wParam = 0) Then
+            If m_HasFocus Then
+                m_HasFocus = False
+                UserControls.PDControlLostFocus m_hWnd
+            End If
+            RaiseEvent AppLostFocusReliable
         End If
 
         'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms632633)...
@@ -156,7 +204,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 
     'Window is losing focus
     ElseIf (uiMsg = WM_KILLFOCUS) Then
-            
+        
         If m_HasFocus Then
             m_HasFocus = False
             UserControls.PDControlLostFocus m_hWnd
@@ -167,7 +215,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
     'Window is gaining focus
     ElseIf (uiMsg = WM_SETFOCUS) Then
-            
+        
         If (Not m_HasFocus) Then
             m_HasFocus = True
             UserControls.PDControlReceivedFocus m_hWnd

@@ -1162,8 +1162,8 @@ Private Sub cmdProcess_Click()
     
     Dim dbFilePath As String
     dbFilePath = m_VBPPath & "App\PhotoDemon\Languages\Master\Phrases.db"
+    Files.FileDeleteIfExists dbFilePath
     
-    'Deletion of existing files isn't necessary; the file will be auto-trimmed at the end
     If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dbFilePath) Then
         
         'Write the number of phrases, then all phrases in sequence

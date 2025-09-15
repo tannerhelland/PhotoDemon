@@ -219,7 +219,7 @@ Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     cmdAnswer(1).Caption = noButtonText
     cmdAnswer(2).Caption = cancelButtonText
     chkRemember.Caption = rememberCheckBoxText
-    Me.Caption = dialogTitleText
+    If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, dialogTitleText
     
     'The caller can specify whether "remember my choice" is checked by default
     chkRemember.Value = defaultRemember

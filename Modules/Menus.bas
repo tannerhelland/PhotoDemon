@@ -585,35 +585,36 @@ Public Sub InitializeMenus()
     'View Menu
     AddMenuItem "View", "view_top", 8
     AddMenuItem "Fit image on screen", "view_fit", 8, 0, , "zoom_fit"
-    AddMenuItem "-", "-", 8, 1
-    AddMenuItem "Zoom in", "view_zoomin", 8, 2, , "zoom_in"
-    AddMenuItem "Zoom out", "view_zoomout", 8, 3, , "zoom_out"
-    AddMenuItem "Zoom to value", "view_zoomtop", 8, 4
-        AddMenuItem "16:1 (1600%)", "zoom_16_1", 8, 4, 0
-        AddMenuItem "8:1 (800%)", "zoom_8_1", 8, 4, 1
-        AddMenuItem "4:1 (400%)", "zoom_4_1", 8, 4, 2
-        AddMenuItem "2:1 (200%)", "zoom_2_1", 8, 4, 3
-        AddMenuItem "1:1 (actual size, 100%)", "zoom_actual", 8, 4, 4, "zoom_actual"
-        AddMenuItem "1:2 (50%)", "zoom_1_2", 8, 4, 5
-        AddMenuItem "1:4 (25%)", "zoom_1_4", 8, 4, 6
-        AddMenuItem "1:8 (12.5%)", "zoom_1_8", 8, 4, 7
-        AddMenuItem "1:16 (6.25%)", "zoom_1_16", 8, 4, 8
-    AddMenuItem "-", "-", 8, 5
-    AddMenuItem "Show rulers", "view_rulers", 8, 6
-    AddMenuItem "Show status bar", "view_statusbar", 8, 7
-    AddMenuItem "Show extras", "show_extrastop", 8, 8, allowInSearches:=False
-    AddMenuItem "Layer edges", "show_layeredges", 8, 8, 0
-    AddMenuItem "Smart guides", "show_smartguides", 8, 8, 1
-    AddMenuItem "-", "-", 8, 9
-    AddMenuItem "Snap", "snap_global", 8, 10
-    AddMenuItem "Snap to", "snap_top", 8, 11, allowInSearches:=False
-    AddMenuItem "Canvas edges", "snap_canvasedge", 8, 11, 0
-    AddMenuItem "Centerlines", "snap_centerline", 8, 11, 1
-    AddMenuItem "Layers", "snap_layer", 8, 11, 2
-    AddMenuItem "-", "-", 8, 11, 3
-    AddMenuItem "Angle 90", "snap_angle_90", 8, 11, 4
-    AddMenuItem "Angle 45", "snap_angle_45", 8, 11, 5
-    AddMenuItem "Angle 30", "snap_angle_30", 8, 11, 6
+    AddMenuItem "Center image in viewport", "view_center_on_screen", 8, 1, , "zoom_center"
+    AddMenuItem "-", "-", 8, 2
+    AddMenuItem "Zoom in", "view_zoomin", 8, 3, , "zoom_in"
+    AddMenuItem "Zoom out", "view_zoomout", 8, 4, , "zoom_out"
+    AddMenuItem "Zoom to value", "view_zoomtop", 8, 5
+        AddMenuItem "16:1 (1600%)", "zoom_16_1", 8, 5, 0
+        AddMenuItem "8:1 (800%)", "zoom_8_1", 8, 5, 1
+        AddMenuItem "4:1 (400%)", "zoom_4_1", 8, 5, 2
+        AddMenuItem "2:1 (200%)", "zoom_2_1", 8, 5, 3
+        AddMenuItem "1:1 (actual size, 100%)", "zoom_actual", 8, 5, 4, "zoom_actual"
+        AddMenuItem "1:2 (50%)", "zoom_1_2", 8, 5, 5
+        AddMenuItem "1:4 (25%)", "zoom_1_4", 8, 5, 6
+        AddMenuItem "1:8 (12.5%)", "zoom_1_8", 8, 5, 7
+        AddMenuItem "1:16 (6.25%)", "zoom_1_16", 8, 5, 8
+    AddMenuItem "-", "-", 8, 6
+    AddMenuItem "Show rulers", "view_rulers", 8, 7
+    AddMenuItem "Show status bar", "view_statusbar", 8, 8
+    AddMenuItem "Show extras", "show_extrastop", 8, 9, allowInSearches:=False
+    AddMenuItem "Layer edges", "show_layeredges", 8, 9, 0
+    AddMenuItem "Smart guides", "show_smartguides", 8, 9, 1
+    AddMenuItem "-", "-", 8, 10
+    AddMenuItem "Snap", "snap_global", 8, 11
+    AddMenuItem "Snap to", "snap_top", 8, 12, allowInSearches:=False
+    AddMenuItem "Canvas edges", "snap_canvasedge", 8, 12, 0
+    AddMenuItem "Centerlines", "snap_centerline", 8, 12, 1
+    AddMenuItem "Layers", "snap_layer", 8, 12, 2
+    AddMenuItem "-", "-", 8, 12, 3
+    AddMenuItem "Angle 90", "snap_angle_90", 8, 12, 4
+    AddMenuItem "Angle 45", "snap_angle_45", 8, 12, 5
+    AddMenuItem "Angle 30", "snap_angle_30", 8, 12, 6
     
     'Window Menu
     AddMenuItem "Window", "window_top", 9

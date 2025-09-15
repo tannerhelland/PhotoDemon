@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.27</langversion>
+<langversion>1.0.30</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -2263,11 +2263,6 @@ Tento obrázek obsahuje %2 jedinečných hodnot barev + krytí (RGBA).</translat
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>V budoucnu automaticky rastrovat bez vyzvání</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>Vrstva malby</translation>
 </phrase>
@@ -2277,7 +2272,7 @@ Tento obrázek obsahuje %2 jedinečných hodnot barev + krytí (RGBA).</translat
 <translation>Snímek %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -4507,9 +4502,8 @@ Tento soubor budete muset stáhnout ručně pomocí vašeho internetového prohl
 </phrase>
 
 <phrase>
-<original>Center the image inside the viewport</original>
-<translation>Vycentrujte snímek uvnitř výřezu
-</translation>
+<original>Center image in viewport</original>
+<translation></translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -5088,8 +5082,8 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Přizpůsobte obraz na obrazovce
+<original>Fit image on screen</original>
+<translation>Přizpůsobit obraz na obrazovku
 </translation>
 </phrase>
 
@@ -5811,12 +5805,6 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
-<original>Fit image on screen</original>
-<translation>Přizpůsobit obraz na obrazovku
-</translation>
-</phrase>
-
-<phrase>
 <original>Zoom to value</original>
 <translation>Přiblížit na hodnotu
 </translation>
@@ -6119,7 +6107,7 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 </translation>
 </phrase>
 
-<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14623,6 +14611,11 @@ Opravdu chcete pokračovat?</translation>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>text titulkového pruhu</translation>
 </phrase>
@@ -14645,6 +14638,11 @@ Opravdu chcete pokračovat?</translation>
 <phrase>
 <original>canvas background color</original>
 <translation>barva pozadí plátna</translation>
+</phrase>
+
+<phrase>
+<original>remember my choice</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14682,7 +14680,7 @@ Opravdu chcete pokračovat?</translation>
 <translation>velký</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -15438,8 +15436,8 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5954 phrases. -->
-<!-- 3156 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12114 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>

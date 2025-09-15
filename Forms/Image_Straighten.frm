@@ -373,10 +373,10 @@ Private Sub Form_Load()
     Select Case m_StraightenTarget
         
         Case pdat_Image
-            Me.Caption = g_Language.TranslateMessage("Straighten image")
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Straighten image")
         
         Case pdat_SingleLayer
-            Me.Caption = g_Language.TranslateMessage("Straighten layer")
+            If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Straighten layer")
         
     End Select
     

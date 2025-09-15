@@ -160,6 +160,8 @@ Public Sub ShowDialog()
     lblWarning(1).Caption = strDialog(1)
     lblWarning(2).Caption = strDialog(2)
     lblWarning(3).Caption = strDialog(3)
+    
+    'It's okay to use a non-Unicode-safe assignment here, because this warning is intentionally non-translated
     Me.Caption = strDialog(4)
     
     Dim buttonIconSize As Long

@@ -3,8 +3,8 @@ Attribute VB_Name = "Zoom"
 'PhotoDemon Zoom Handler - calculates and tracks zoom values for a given image
 'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 28/August/17
-'Last update: code clean-up and minor optimizations
+'Last updated: 11/September/25
+'Last update: add 150% zoom as a preset value (see https://github.com/tannerhelland/PhotoDemon/issues/666)
 '
 'The main user of this class is the Viewport_Handler module.  Look there for relevant implementation details.
 '
@@ -168,7 +168,7 @@ Public Sub InitializeZoomEngine()
     
     'Total number of fixed zoom values.  Some legacy PD functions (like the old Fit to Screen code) require this so
     ' they can iterate all fixed zoom values, and find an appropriate one for their purpose.
-    m_zoomCountFixed = 25
+    m_zoomCountFixed = 26
     
     'Total number of dynamic zoom values, e.g. values dynamically calculated on a per-image basis.  At present these include:
     ' fit width, fit height, and fit all
@@ -224,80 +224,84 @@ Public Sub InitializeZoomEngine()
         m_zoomValues(10) = 2
         m_zoomOffsetFactors(10) = 2
         
-    m_zoomStrings(11) = "100%"
-        m_zoomValues(11) = 1
-        m_zoomOffsetFactors(11) = 1
+    m_zoomStrings(11) = "150%"
+        m_zoomValues(11) = 1.5
+        m_zoomOffsetFactors(11) = 1.5
         
-    m_zoomStrings(12) = "75%"
-        m_zoomValues(12) = 3# / 4#
-        m_zoomOffsetFactors(12) = 4# / 3#
+    m_zoomStrings(12) = "100%"
+        m_zoomValues(12) = 1
+        m_zoomOffsetFactors(12) = 1
         
-    m_zoomStrings(13) = "67%"
-        m_zoomValues(13) = 2# / 3#
-        m_zoomOffsetFactors(13) = 3# / 2#
+    m_zoomStrings(13) = "75%"
+        m_zoomValues(13) = 3# / 4#
+        m_zoomOffsetFactors(13) = 4# / 3#
         
-    m_zoomStrings(14) = "50%"
-        m_zoomValues(14) = 0.5
-        m_zoomOffsetFactors(14) = 2#
+    m_zoomStrings(14) = "67%"
+        m_zoomValues(14) = 2# / 3#
+        m_zoomOffsetFactors(14) = 3# / 2#
         
-    m_zoomStrings(15) = "33%"
-        m_zoomValues(15) = 1# / 3#
-        m_zoomOffsetFactors(15) = 3
+    m_zoomStrings(15) = "50%"
+        m_zoomValues(15) = 0.5
+        m_zoomOffsetFactors(15) = 2#
         
-    m_zoomStrings(16) = "25%"
-        m_zoomValues(16) = 0.25
-        m_zoomOffsetFactors(16) = 4
+    m_zoomStrings(16) = "33%"
+        m_zoomValues(16) = 1# / 3#
+        m_zoomOffsetFactors(16) = 3
         
-    m_zoomStrings(17) = "20%"
-        m_zoomValues(17) = 0.2
-        m_zoomOffsetFactors(17) = 5
+    m_zoomStrings(17) = "25%"
+        m_zoomValues(17) = 0.25
+        m_zoomOffsetFactors(17) = 4
         
-    m_zoomStrings(18) = "16%"
-        m_zoomValues(18) = 0.16
-        m_zoomOffsetFactors(18) = 100# / 16#
+    m_zoomStrings(18) = "20%"
+        m_zoomValues(18) = 0.2
+        m_zoomOffsetFactors(18) = 5
         
-    m_zoomStrings(19) = "12%"
-        m_zoomValues(19) = 0.12
-        m_zoomOffsetFactors(19) = 100# / 12#
+    m_zoomStrings(19) = "16%"
+        m_zoomValues(19) = 0.16
+        m_zoomOffsetFactors(19) = 100# / 16#
         
-    m_zoomStrings(20) = "8%"
-        m_zoomValues(20) = 0.08
-        m_zoomOffsetFactors(20) = 100# / 8#
+    m_zoomStrings(20) = "12%"
+        m_zoomValues(20) = 0.12
+        m_zoomOffsetFactors(20) = 100# / 12#
         
-    m_zoomStrings(21) = "6%"
-        m_zoomValues(21) = 0.06
-        m_zoomOffsetFactors(21) = 100# / 6#
+    m_zoomStrings(21) = "8%"
+        m_zoomValues(21) = 0.08
+        m_zoomOffsetFactors(21) = 100# / 8#
         
-    m_zoomStrings(22) = "4%"
-        m_zoomValues(22) = 0.04
-        m_zoomOffsetFactors(22) = 25
+    m_zoomStrings(22) = "6%"
+        m_zoomValues(22) = 0.06
+        m_zoomOffsetFactors(22) = 100# / 6#
         
-    m_zoomStrings(23) = "3%"
-        m_zoomValues(23) = 0.03
-        m_zoomOffsetFactors(23) = 100# / 0.03
+    m_zoomStrings(23) = "4%"
+        m_zoomValues(23) = 0.04
+        m_zoomOffsetFactors(23) = 25
         
-    m_zoomStrings(24) = "2%"
-        m_zoomValues(24) = 0.02
-        m_zoomOffsetFactors(24) = 50
+    m_zoomStrings(24) = "3%"
+        m_zoomValues(24) = 0.03
+        m_zoomOffsetFactors(24) = 100# / 0.03
         
-    m_zoomStrings(25) = "1%"
-        m_zoomValues(25) = 0.01
-        m_zoomOffsetFactors(25) = 100
+    m_zoomStrings(25) = "2%"
+        m_zoomValues(25) = 0.02
+        m_zoomOffsetFactors(25) = 50
+        
+    m_zoomStrings(26) = "1%"
+        m_zoomValues(26) = 0.01
+        m_zoomOffsetFactors(26) = 100
     
-    m_zoomStrings(26) = g_Language.TranslateMessage("Fit width")
-        m_zoomValues(26) = 0
-        m_zoomOffsetFactors(26) = 0
-    
-    m_zoomStrings(27) = g_Language.TranslateMessage("Fit height")
+    m_zoomStrings(27) = g_Language.TranslateMessage("Fit width")
         m_zoomValues(27) = 0
         m_zoomOffsetFactors(27) = 0
-        
-    m_zoomStrings(28) = g_Language.TranslateMessage("Fit image")
+    
+    m_zoomStrings(28) = g_Language.TranslateMessage("Fit height")
         m_zoomValues(28) = 0
         m_zoomOffsetFactors(28) = 0
+        
+    m_zoomStrings(29) = g_Language.TranslateMessage("Fit image")
+        m_zoomValues(29) = 0
+        m_zoomOffsetFactors(29) = 0
     
     'Note which index corresponds to 100%
-    ZOOM_100_PERCENT = 11
+    ZOOM_100_PERCENT = 12
     
 End Sub
 
@@ -313,7 +317,7 @@ Public Sub PopulateZoomDropdown(ByRef dstDropDown As pdDropDown, Optional ByVal 
         
         Select Case i
         
-            Case 10, 11, 25
+            Case 11, 12, 26
                 dstDropDown.AddItem m_zoomStrings(i), i, True
                 
             Case Else

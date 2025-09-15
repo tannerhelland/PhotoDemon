@@ -788,6 +788,20 @@ Public Sub NotifyDoubleClick(ByVal Button As PDMouseButtonConstants, ByVal Shift
     
 End Sub
 
+Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
+    
+    If (vkCode = VK_ESCAPE) Then
+        Tools_Crop.RemoveCurrentCrop
+        markEventHandled = True
+    ElseIf (vkCode = VK_RETURN) Then
+        If Tools_Crop.IsValidCropActive() Then
+            Tools_Crop.CommitCurrentCrop
+            markEventHandled = True
+        End If
+    End If
+    
+End Sub
+
 Public Sub NotifyMouseDown(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Single, ByVal canvasY As Single)
     
     'As a failsafe only, reset the "in the midst of a double-click" flag.

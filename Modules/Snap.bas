@@ -694,7 +694,7 @@ Public Sub SnapRectByMoving(ByRef srcRectF As RectF, ByRef dstRectF As RectF)
         
         'Construct a final smart guideline for the viewport renderer (and append all four rect points,
         ' in case they also lie on this line
-        BuildSmartGuideLine_Y ySnaps, numYSnaps, idxSmallestY, dstRectF.Left, dstRectF.Top
+        BuildSmartGuideLine_X xSnaps, numXSnaps, idxSmallestX, dstRectF.Left, dstRectF.Top
         AppendPointToSmartGuideLine_X dstRectF.Left + dstRectF.Width, dstRectF.Top
         AppendPointToSmartGuideLine_X dstRectF.Left, dstRectF.Top + dstRectF.Height
         AppendPointToSmartGuideLine_X dstRectF.Left + dstRectF.Width, dstRectF.Top + dstRectF.Height

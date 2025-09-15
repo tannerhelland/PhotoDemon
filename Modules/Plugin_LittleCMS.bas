@@ -3,8 +3,8 @@ Attribute VB_Name = "LittleCMS"
 'LittleCMS Interface
 'Copyright 2016-2025 by Tanner Helland
 'Created: 21/April/16
-'Last updated: 29/January/19
-'Last update: minor updates to assist with PSD parsing
+'Last updated: 28/August/25
+'Last update: add wrapper for creating custom RGB profiles via custom tone curves
 '
 'Module for handling all LittleCMS interfacing.  This module is pointless without the accompanying
 ' LittleCMS plugin, which will be in the App/PhotoDemon/Plugins subdirectory as "lcms2.dll".
@@ -444,7 +444,7 @@ Private Declare Function cmsGetColorSpace Lib "lcms2" (ByVal hProfile As Long) A
 Private Declare Sub cmsSetProfileVersion Lib "lcms2" (ByVal hProfile As Long, ByVal newVersion As Double)
  
 'Tone curve creation/destruction.  (Not all are used right now.)
-'Private Declare Function cmsBuildParametricToneCurve Lib "lcms2" (ByVal contextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
+Private Declare Function cmsBuildParametricToneCurve Lib "lcms2" (ByVal contextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
 Private Declare Function cmsBuildGamma Lib "lcms2" (ByVal contextID As Long, ByVal gammaValue As Double) As Long
 Private Declare Sub cmsFreeToneCurve Lib "lcms2" (ByVal srcToneCurve As Long)
 
@@ -735,6 +735,32 @@ Public Function LCMS_LoadCustomRGBProfile(ByVal ptrToWhitePointxyY As Long, ByVa
     
 End Function
 
+'Create a custom RGB profile on-the-fly, using the specified white point and primaries.  No validation is
+' performed on input values (except for the minimal validation applied automatically by LittleCMS), so please
+' ensure that values are correct *before* calling this function.
+'
+'This "advanced" variant allows you to pass your own tone curves for each channel
+Public Function LCMS_LoadCustomRGBProfile_Advanced(ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, ByVal pSrcToneCurveR As Long, ByVal pSrcToneCurveG As Long, ByVal pSrcToneCurveB As Long, Optional ByVal freeCurvesForMe As Boolean = True) As Long
+
+    'Use the supplied gamma value to generate LCMS-specific tone curves
+    Dim rgbToneCurves() As Long
+    ReDim rgbToneCurves(0 To 2) As Long
+    rgbToneCurves(0) = pSrcToneCurveR
+    rgbToneCurves(1) = pSrcToneCurveG
+    rgbToneCurves(2) = pSrcToneCurveB
+    
+    LCMS_LoadCustomRGBProfile_Advanced = cmsCreateRGBProfile(ptrToWhitePointxyY, ptrTo3xyYPrimaries, VarPtr(rgbToneCurves(0)))
+    
+    'Free the source curve object if the user requests it (PD always frees a curve
+    ' after it's been attached to a new profile)
+    If freeCurvesForMe Then
+        If (pSrcToneCurveB <> pSrcToneCurveG) And (pSrcToneCurveB <> pSrcToneCurveR) Then LCMS_FreeToneCurve pSrcToneCurveB
+        If (pSrcToneCurveG <> pSrcToneCurveR) Then LCMS_FreeToneCurve pSrcToneCurveG
+        LCMS_FreeToneCurve pSrcToneCurveR
+    End If
+    
+End Function
+
 Public Function LCMS_LoadStockGrayProfile(Optional ByVal useGamma As Double = 1#) As Long
     Dim tmpToneCurve As Long
     tmpToneCurve = LCMS_GetBasicToneCurve(useGamma)
@@ -809,6 +835,12 @@ End Function
 
 Private Function LCMS_GetBasicToneCurve(Optional ByVal srcGamma As Double = 1#) As Long
     LCMS_GetBasicToneCurve = cmsBuildGamma(0&, srcGamma)
+End Function
+
+'paramValues *must* be an initialized and properly filled array sized to the relevant size for
+' the passed curve type, or this function will crash.
+Public Function LCMS_GetAdvancedToneCurve(ByVal curveType As Long, ByRef paramValues() As Double) As Long
+    LCMS_GetAdvancedToneCurve = cmsBuildParametricToneCurve(0&, curveType, VarPtr(paramValues(0)))
 End Function
 
 Public Function LCMS_FreeToneCurve(ByRef hCurve As Long) As Boolean

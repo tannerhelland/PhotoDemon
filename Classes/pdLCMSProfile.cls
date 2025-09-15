@@ -74,6 +74,12 @@ Friend Function CreateCustomRGBProfile(ByVal ptrToWhitePointxyY As Long, ByVal p
     CreateCustomRGBProfile = (m_ProfileHandle <> 0)
 End Function
 
+Friend Function CreateCustomRGBProfile_Advanced(ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, ByVal pSrcToneCurveR As Long, ByVal pSrcToneCurveG As Long, ByVal pSrcToneCurveB As Long, Optional ByVal freeCurveForMe As Boolean = True) As Boolean
+    If (m_ProfileHandle <> 0) Then ReleaseProfile
+    m_ProfileHandle = LittleCMS.LCMS_LoadCustomRGBProfile_Advanced(ptrToWhitePointxyY, ptrTo3xyYPrimaries, pSrcToneCurveR, pSrcToneCurveG, pSrcToneCurveB, freeCurveForMe)
+    CreateCustomRGBProfile_Advanced = (m_ProfileHandle <> 0)
+End Function
+
 Friend Function CreateLinearRGBProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadLinearRGBProfile()

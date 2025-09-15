@@ -154,17 +154,17 @@ Public Sub ShowClipboardDialog(ByVal opMode As PD_ClipboardOp)
     m_OpMode = opMode
     
     If (opMode = co_Cut) Then
-        Me.Caption = g_Language.TranslateMessage("Cut special")
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Cut special")
         ListSupportedFormats
         lstFormats.ListIndex = 0
         
     ElseIf (opMode = co_Copy) Then
-        Me.Caption = g_Language.TranslateMessage("Copy special")
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Copy special")
         ListSupportedFormats
         lstFormats.ListIndex = 0
         
     Else
-        Me.Caption = g_Language.TranslateMessage("Paste special")
+        If (Not g_WindowManager Is Nothing) Then g_WindowManager.SetWindowCaptionW Me.hWnd, g_Language.TranslateMessage("Paste special")
         
     End If
     

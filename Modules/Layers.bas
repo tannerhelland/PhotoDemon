@@ -2197,7 +2197,7 @@ Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As PD_Laye
                 noText = g_Language.TranslateMessage("No.  Leave this text layer as it is.")
             
             Case Else
-                Debug.Print "WARNING!  Unknown or invalid layer type passed to askIfOkayToRasterizeLayer!"
+                PDDebug.LogAction "WARNING!  Unknown or invalid layer type passed to Layers.AskIfOkayToRasterizeLayer!"
     
         End Select
     
@@ -2205,7 +2205,7 @@ Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As PD_Laye
     
     'Cancel text, "remember in the future" check box text, and dialog title are universal
     cancelText = g_Language.TranslateMessage("I can't decide.  Cancel this action.")
-    rememberText = g_Language.TranslateMessage("In the future, automatically rasterize without prompting me")
+    rememberText = g_Language.TranslateMessage("in the future, do this without asking me")
     dialogTitle = "Rasterization required"
     
     'Display the dialog and return the result

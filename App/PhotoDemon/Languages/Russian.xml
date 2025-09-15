@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2024.12.391</langversion>
+<langversion>2025.4 Alpha - Build 24.3</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -2237,11 +2237,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>Автоматически растрировать без подтверждения</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>Слой краски</translation>
 </phrase>
@@ -2251,7 +2246,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>Кадр %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -4338,8 +4333,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>Center the image inside the viewport</original>
-<translation>Центрировать изображение в окне просмотра</translation>
+<original>Center image in viewport</original>
+<translation></translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -4887,8 +4882,8 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
-<translation>Подогнать изображение по окну</translation>
+<original>Fit image on screen</original>
+<translation>Подогнать изображение к экрану</translation>
 </phrase>
 
 <phrase>
@@ -5589,11 +5584,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Fit image on screen</original>
-<translation>Подогнать изображение к экрану</translation>
-</phrase>
-
-<phrase>
 <original>Zoom to value</original>
 <translation>Фиксированный масштаб</translation>
 </phrase>
@@ -5866,7 +5856,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Язык успешно изменён.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 407 phrases. 218 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -13994,6 +13984,11 @@ Are you sure you want to continue?</original>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>Текст заголовка</translation>
 </phrase>
@@ -14016,6 +14011,11 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>canvas background color</original>
 <translation>Цвет фона холста</translation>
+</phrase>
+
+<phrase>
+<original>remember my choice</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14053,7 +14053,7 @@ Are you sure you want to continue?</original>
 <translation>Крупный</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14698,7 +14698,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>Загрузка</translation>
 </phrase>
 
 <phrase>
@@ -14723,7 +14723,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>Сохранение</translation>
 </phrase>
 
 <phrase>
@@ -14765,32 +14765,32 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>Мип-карты</translation>
 </phrase>
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>Перцептивный</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>Медленный</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>Все</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>Точка</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>Кубический</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14799,8 +14799,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5954 phrases. -->
-<!-- 3156 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12114 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>

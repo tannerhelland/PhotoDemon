@@ -194,11 +194,11 @@ End Sub
 
 'The VB-specific "Form.Caption = <string>" statement isn't Unicode-compatible.  It also has the quirk of causing a docked child form
 ' to un-dock.  Thus, all caption requests must be passed through the window manager, who will then use the API to change caption text.
-Friend Sub SetWindowCaptionW(ByRef targetHWnd As Long, ByRef newCaption As String)
+Friend Sub SetWindowCaptionW(ByVal targetHWnd As Long, ByRef newCaption As String)
     DefWindowProcW targetHWnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
 End Sub
 
-Friend Function GetWindowCaptionW(ByRef targetHWnd As Long) As String
+Friend Function GetWindowCaptionW(ByVal targetHWnd As Long) As String
     
     'Note that we can't use GetWindowTextW directly, because VB will intercept the message and return an
     ' ANSI-ified string.  Instead, we have to go directly to the default wndProc handler.
