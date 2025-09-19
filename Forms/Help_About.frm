@@ -396,6 +396,7 @@ Private Sub Form_Load()
     GenerateContributor "Nguyen Van Hung", "https://github.com/vhreal1302"
     GenerateContributor "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/"
     GenerateContributor "Old Abiquiu Photographic"
+    GenerateContributor "OpenJPEG", "https://www.openjpeg.org/"
     GenerateContributor "Paul Bourke", "http://paulbourke.net/miscellaneous/"
     GenerateContributor "Peter Burn"
     GenerateContributor "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/"
