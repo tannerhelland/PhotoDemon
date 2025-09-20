@@ -1095,6 +1095,17 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'FreeImage claims to work with JPEG-2000, but its support is nearly a decade out-of-date
+    ' and it fails to cover many edge-cases correctly.
+    ' In v2025.9+, I added support for direct integration with OpenJPEG.
+    If (Not CascadeLoadGenericImage) And Plugin_OpenJPEG.IsOpenJPEGEnabled() Then
+        CascadeLoadGenericImage = LoadJPEG2000(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_OpenJPEG
+            dstImage.SetOriginalFileFormat PDIF_J2K
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1462,6 +1473,35 @@ Private Function LoadJLS(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalColorDepth 32       'TODO: retrieve this from file?
         dstImage.SetOriginalGrayscale False     'Same here?
         dstImage.SetOriginalAlpha True          'Same here?
+    End If
+    
+End Function
+
+Private Function LoadJPEG2000(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadJPEG2000 = False
+    
+    'OpenJPEG handles all the dirty work for us
+    If (Not Plugin_OpenJPEG.IsFileJ2K(srcFile)) Then Exit Function
+    
+    'If validation passes, attempt a full load
+    LoadJPEG2000 = Plugin_OpenJPEG.LoadJ2K(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadJPEG2000 Then
+        
+        dstImage.SetOriginalFileFormat PDIF_J2K
+        dstImage.NotifyImageChanged UNDO_Everything
+        dstImage.SetOriginalColorDepth 32
+        dstImage.SetOriginalGrayscale False
+        dstImage.SetOriginalAlpha True
+        
+        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
+        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        dstDIB.CreateBlank 16, 16, 32, 0
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
     End If
     
 End Function

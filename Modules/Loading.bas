@@ -1042,6 +1042,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "libheif"
         Case id_DirectXTex
             GetDecoderName = "DirectXTex"
+        Case id_OpenJPEG
+            GetDecoderName = "OpenJPEG"
         Case Else
             GetDecoderName = "unknown?!"
     End Select
