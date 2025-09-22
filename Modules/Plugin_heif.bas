@@ -355,7 +355,6 @@ End Enum
 
 'Some libheif functions return a custom 12-byte type.  This cannot be easily handled via DispCallFunc,
 ' so I've written an interop DLL that marshals the cdecl return for me.
-Private m_hHelper As Long
 Private Declare Function PD_heif_init Lib "PDHelper_win32" () As heif_error
 Private Declare Sub PD_heif_deinit Lib "PDHelper_win32" ()
 Private Declare Function PD_heif_context_read_from_file Lib "PDHelper_win32" (ByVal heif_context As Long, ByVal pCharFilename As Long, ByVal pHeifReadingOptions As Long) As heif_error
@@ -463,12 +462,8 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
         ReDim m_vPtr(0 To MAX_PARAM_COUNT - 1) As Long
         
-        'Now attempt to initialize the helper library
-        strLibPath = pathToDLLFolder & "PDHelper_win32.dll"
-        m_hHelper = VBHacks.LoadLib(strLibPath)
-        InitializeEngine = (m_hHelper <> 0)
-        
-        If InitializeEngine Then
+        'HEIF support also requires some helper functions in a twinBasic-built external library; check that next
+        If (InitializeEngine And PluginManager.IsPluginCurrentlyEnabled(CCP_PDHelper)) Then
             
             Dim initError As heif_error
             initError = PD_heif_init()
@@ -1420,10 +1415,8 @@ End Function
 Public Sub ReleaseEngine()
     
     'For extra safety, free in reverse order from loading
-    If (m_hHelper <> 0) Then
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_PDHelper) Then
         PD_heif_deinit  'Start by calling the internal ref-counted deinitialize function
-        VBHacks.FreeLib m_hHelper
-        m_hHelper = 0
     End If
     If (m_hLibHeif <> 0) Then
         VBHacks.FreeLib m_hLibHeif
