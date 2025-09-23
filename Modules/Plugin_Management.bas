@@ -113,7 +113,7 @@ Private m_PluginPath As String
 Private m_ErrSrc As pdStringStack, m_ErrMsg As pdStringStack, m_ErrRelevantFile As pdStringStack
 
 'PD's internal library helper DLL exposes a few helper functions
-Private Declare Function GetLibraryVersion Lib "PDHelper_win32.dll" () As String
+Private Declare Sub GetLibraryVersion Lib "PDHelper_win32.dll" (ByRef dstMajor As Long, ByRef dstMinor As Long, ByRef dstBuild As Long)
 
 Public Function GetPluginPath() As String
     If (LenB(m_PluginPath) <> 0) Then
@@ -381,7 +381,9 @@ Public Function GetPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
                 GetPluginVersion = Plugin_PDF.GetVersion()
                 
             Case CCP_PDHelper
-                GetPluginVersion = GetLibraryVersion()
+                Dim lMajor As Long, lMinor As Long, lBuild As Long
+                GetLibraryVersion lMajor, lMinor, lBuild
+                GetPluginVersion = CStr(lMajor) & "." & CStr(lMinor) & "." & CStr(lBuild) & ".0"
                 
             Case CCP_pspiHost
                 GetPluginVersion = Plugin_8bf.GetPspiVersion()

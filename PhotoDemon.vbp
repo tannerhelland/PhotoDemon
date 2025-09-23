@@ -536,8 +536,8 @@ Form=Forms\Options\Options_Menus.frm
 Form=Forms\Options\Options_Metadata.frm
 Module=Plugin_DDS; Modules\Plugin_DDS.bas
 Form=Forms\File_Save_DDS.frm
-ResFile32="Resources\PD_icons.RES"
 Module=Plugin_OpenJPEG; Modules\Plugin_OpenJPEG.bas
+ResFile32="Resources\PD_icons.RES"
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
@@ -551,7 +551,7 @@ Description="PhotoDemon Photo Editor"
 CompatibleMode="0"
 MajorVer=2025
 MinorVer=4
-RevisionVer=68
+RevisionVer=78
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Copyright 2000-2025 Tanner Helland - photodemon.org"
@@ -594,5 +594,3 @@ ReplaceIcon=0
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=0
-
-
