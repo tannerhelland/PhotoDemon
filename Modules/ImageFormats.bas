@@ -247,10 +247,15 @@ Public Sub GenerateInputFormats()
     
     If m_FreeImageEnabled Then AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
     
+    'Lossless JPEG requires the 3rd-party CharLS library
     If PluginManager.IsPluginCurrentlyEnabled(CCP_CharLS) Then AddInputFormat "JLS - JPEG-LS", "*.jls", PDIF_JLS
     
-    If m_FreeImageEnabled Then
-        AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
+    If m_FreeImageEnabled Then AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
+    
+    'OpenJPEG is preferred for JPEG-2000 handling, but we can fall back to FreeImage as a worst-case option
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_OpenJPEG) Then
+        AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpt;*.j2c;*.jpc;*.jpx;*.jpf;*.jph;*.jpc", PDIF_JP2
+    ElseIf m_FreeImageEnabled Then
         AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", PDIF_JP2
     End If
     

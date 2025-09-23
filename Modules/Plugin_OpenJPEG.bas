@@ -39,7 +39,7 @@ Private m_LibHandle As Long, m_LibAvailable As Boolean
 '#define OPJ_PATH_LEN 4096 /**< Maximum allowed size for filenames */
 Private Const OPJ_PATH_LEN As Long = 4096
 
-Private Enum OPJ_CODEC_FORMAT
+Public Enum OPJ_CODEC_FORMAT
     OPJ_CODEC_UNKNOWN = -1  '/**< place-holder */
     OPJ_CODEC_J2K = 0       '/**< JPEG-2000 codestream : read/write */
     OPJ_CODEC_JPT = 1       '/**< JPT-stream (JPEG 2000, JPIP) : read only */
@@ -255,12 +255,24 @@ End Sub
 '**********************************************
 
 'Verify J2K file signature.  Doesn't require OpenJPEG.
-Public Function IsFileJ2K(ByRef srcFile As String) As Boolean
+Public Function IsFileJ2K(ByRef srcFile As String, Optional ByRef outCodecFormat As OPJ_CODEC_FORMAT) As Boolean
 
     Const FUNC_NAME As String = "IsFileJ2K"
     IsFileJ2K = False
     
     If Files.FileExists(srcFile) Then
+        
+        'Some format variations can be determined by extension only; this logic is taken from
+        ' the OpenJPEG project's official implementation: https://github.com/uclouvain/openjpeg/blob/41c25e3827c68a39b9e20c1625a0b96e49955445/src/bin/jp2/opj_decompress.c
+        Dim srcExtension As String
+        srcExtension = Files.FileGetExtension(srcFile)
+        
+        If Strings.StringsEqual(srcExtension, "jpt", True) Then
+            outCodecFormat = OPJ_CODEC_JPT
+            IsFileJ2K = True
+            If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is JPT stream"
+            Exit Function
+        End If
         
         'Pull the first 12 bytes only
         Dim cStream As pdStream
@@ -282,6 +294,7 @@ Public Function IsFileJ2K(ByRef srcFile As String) As Boolean
                 If VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(JP2_RFC3745_MAGIC_1), 4) Then
                     If VBHacks.MemCmp(VarPtr(bFirst12(4)), VarPtr(JP2_RFC3745_MAGIC_2), 4) Then
                         IsFileJ2K = VBHacks.MemCmp(VarPtr(bFirst12(8)), VarPtr(JP2_RFC3745_MAGIC_3), 4)
+                        outCodecFormat = OPJ_CODEC_JP2
                         If IsFileJ2K And J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is JP2_RFC3745"
                     End If
                 End If
@@ -292,9 +305,11 @@ Public Function IsFileJ2K(ByRef srcFile As String) As Boolean
                     Const J2K_CODESTREAM_MAGIC As Long = &H51FF4FFF
                     
                     IsFileJ2K = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(JP2_MAGIC), 4)
+                    outCodecFormat = OPJ_CODEC_JP2
                     If IsFileJ2K And J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is JP2 stream"
                     If (Not IsFileJ2K) Then
                         IsFileJ2K = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(J2K_CODESTREAM_MAGIC), 4)
+                        outCodecFormat = OPJ_CODEC_J2K
                         If IsFileJ2K And J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is J2K stream"
                     End If
                     
@@ -319,7 +334,8 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     If (Not Plugin_OpenJPEG.IsOpenJPEGEnabled()) Then Exit Function
     
     'Failsafe check; validate file signature (hopefully the caller did this, but you never know)
-    If (Not Plugin_OpenJPEG.IsFileJ2K(srcFile)) Then Exit Function
+    Dim srcCodec As OPJ_CODEC_FORMAT
+    If (Not Plugin_OpenJPEG.IsFileJ2K(srcFile, srcCodec)) Then Exit Function
     
     'Still here?  This file passed basic validation.
     
@@ -333,7 +349,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Initialize a default decoder
     Dim pDecoder As Long
-    pDecoder = opj_create_decompress(OPJ_CODEC_JP2)
+    pDecoder = opj_create_decompress(srcCodec)
     If (pDecoder = 0) Then
         InternalError FUNC_NAME, "opj_create_Decompress failed"
         Exit Function
@@ -403,7 +419,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     PDDebug.LogAction "read header successfully"
     VBHacks.CopyMemoryStrict VarPtr(m_j2kImage), pImage, LenB(m_j2kImage)
     PDDebug.LogAction "copied header successfully"
-    PDDebug.LogAction m_j2kImage.x0 & ", " & m_j2kImage.y0 & ", " & m_j2kImage.x1 & ", " & m_j2kImage.y1 & ", " & m_j2kImage.numcomps
+    PDDebug.LogAction m_j2kImage.x0 & ", " & m_j2kImage.y0 & ", " & m_j2kImage.x1 & ", " & m_j2kImage.y1 & ", " & m_j2kImage.numcomps & ", " & m_j2kImage.color_space
     
     'Finish decoding the rest of the image
     If (opj_decode(pDecoder, pStream, pImage) <> 1&) Then
