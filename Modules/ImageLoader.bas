@@ -1498,9 +1498,9 @@ Private Function LoadJPEG2000(ByRef srcFile As String, ByRef dstImage As pdImage
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-        dstDIB.CreateBlank 16, 16, 32, 0
-        dstDIB.SetColorManagementState cms_ProfileConverted
+        'If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        'dstDIB.CreateBlank 16, 16, 32, 0
+        'dstDIB.SetColorManagementState cms_ProfileConverted
         
     End If
     

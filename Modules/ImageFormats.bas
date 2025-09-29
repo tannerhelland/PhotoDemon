@@ -657,14 +657,12 @@ Public Function IsExtensionOkayForPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT, ByRef s
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "ico", "cur")
         Case PDIF_IFF
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "iff", "lbm")
-        Case PDIF_J2K
-            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "j2k", "j2c")
+        Case PDIF_J2K, PDIF_JP2
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jp2", "j2k", "jpt", "j2c", "jpc", "jpx", "jpf", "jph", "jpc")
         Case PDIF_JLS
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jls")
         Case PDIF_JNG
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jng")
-        Case PDIF_JP2
-            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jp2", "j2k", "jpc", "jpx", "jpf")
         Case PDIF_JPEG
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jpg", "jpeg", "jpe", "jfif", "jif")
         Case PDIF_JXL

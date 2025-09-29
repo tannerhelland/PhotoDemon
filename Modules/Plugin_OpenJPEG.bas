@@ -154,6 +154,7 @@ Private Type opj_image_comp
     p_data As Long
     '/** alpha channel */
     Alpha As Integer
+    'safe_padding As Integer
 End Type
 
 
@@ -205,6 +206,23 @@ Private Declare Function opj_end_decompress Lib "openjp2" Alias "_opj_end_decomp
 
 'Current image, if any
 Private m_j2kImage As opj_image
+
+'What follows are PD-specific structs for importing J2K data
+Private Type PD_OpjNotes
+    finalWidth As Long
+    finalHeight As Long
+    numComponents As Long
+    imgHasAlpha As Boolean
+    idxAlphaChannel As Integer
+    isNot8Bit As Boolean
+    hasSubsampling As Boolean
+    isChannelSubsampled() As Boolean
+End Type
+
+'PD-specific details re: the current image.  J2K images have a lot of storage details that are complicated for
+' PD to handle (like different subsampling on each channel).  Passing those details between functions is made
+' easier by module-level storage.
+Private m_OpjNotes As PD_OpjNotes
     
 'Forcibly disable CharLS interactions at run-time (if newState is FALSE).
 ' Setting newState to TRUE is not advised; this module will handle state internally based
@@ -365,7 +383,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     opj_set_warning_handler pDecoder, hWarning, 0&
     opj_set_error_handler pDecoder, hError, 0&
     
-    'Set param settings here?
+    'If you want to set decoding parameters, this is the place.
     
     If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing decoder against params..."
     
@@ -408,18 +426,14 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Reading header..."
     
     Dim pImage As Long
-'    Dim firstImageComp As opj_image_comp
-'    m_j2kImage.p
-'    pImage = VarPtr(m_j2kImage)
     If (opj_read_header(pStream, pDecoder, VarPtr(pImage)) <> 1&) Then
         InternalError FUNC_NAME, "failed to read header"
         GoTo SafeCleanup
     End If
     
-    PDDebug.LogAction "read header successfully"
+    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Header read successfully"
     VBHacks.CopyMemoryStrict VarPtr(m_j2kImage), pImage, LenB(m_j2kImage)
-    PDDebug.LogAction "copied header successfully"
-    PDDebug.LogAction m_j2kImage.x0 & ", " & m_j2kImage.y0 & ", " & m_j2kImage.x1 & ", " & m_j2kImage.y1 & ", " & m_j2kImage.numcomps & ", " & m_j2kImage.color_space
+    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction m_j2kImage.x0 & ", " & m_j2kImage.y0 & ", " & m_j2kImage.x1 & ", " & m_j2kImage.y1 & ", " & m_j2kImage.numcomps & " " & GetNameOfOpjColorSpace(m_j2kImage.color_space) & " components"
     
     'Finish decoding the rest of the image
     If (opj_decode(pDecoder, pStream, pImage) <> 1&) Then
@@ -427,7 +441,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         GoTo SafeCleanup
     End If
     
-    PDDebug.LogAction "decoded full image successfully"
+    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Decoded full image successfully"
     
     'Read to the end of the file to pull any other useful info (e.g. metadata)
     If (opj_end_decompress(pDecoder, pStream) <> 1&) Then
@@ -435,20 +449,20 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         'Attempt to load image anyway
     End If
     
-    PDDebug.LogAction "read to EOF successfully"
+    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Reached EOF successfully"
     
     'We can now pull channel data from the supplied image pointer.
     
-    Dim NumChannels As Long
-    NumChannels = m_j2kImage.numcomps
+    Dim numComponents As Long
+    numComponents = m_j2kImage.numcomps
     
-    If (NumChannels <= 0) Then
-        PDDebug.LogAction "Invalid channel count: " & NumChannels
+    If (numComponents <= 0) Then
+        PDDebug.LogAction "Invalid channel count: " & numComponents
         GoTo SafeCleanup
     End If
     
     Dim imgChannels() As opj_image_comp
-    ReDim imgChannels(0 To NumChannels - 1) As opj_image_comp
+    ReDim imgChannels(0 To numComponents - 1) As opj_image_comp
     
     Dim sizeOfChannel As Long, sizeOfChannelAligned As Long
     sizeOfChannelAligned = LenB(imgChannels(0))
@@ -457,10 +471,10 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'To simplify reading data from an arbitrary pointer, construct a pdStream object against it.
     Dim cStream As pdStream
     Set cStream = New pdStream
-    If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * NumChannels, baseFilePointerOffset:=m_j2kImage.pComps, optimizeAccess:=OptimizeSequentialAccess) Then
+    If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * numComponents, baseFilePointerOffset:=m_j2kImage.pComps, optimizeAccess:=OptimizeSequentialAccess) Then
         
         Dim i As Long
-        For i = 0 To NumChannels - 1
+        For i = 0 To numComponents - 1
             cStream.SetPosition i * sizeOfChannelAligned, FILE_BEGIN
             VBHacks.CopyMemoryStrict VarPtr(imgChannels(i)), cStream.ReadBytes_PointerOnly(sizeOfChannel), sizeOfChannel
             
@@ -468,6 +482,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                 PDDebug.LogAction "Channel #" & CStr(i + 1) & " info: "
                 With imgChannels(i)
                     PDDebug.LogAction .x0 & ", " & .y0 & ", " & .w & ", " & .h & ", " & .prec & ", " & .Alpha
+                    PDDebug.LogAction .p_data & ", " & .dx & ", " & .dy & ", " & .factor & ", " & .sgnd
                 End With
             End If
         
@@ -478,7 +493,124 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         GoTo SafeCleanup
     End If
     
-    'm_j2kImage
+    'We are done with our stream object
+    cStream.StopStream True
+    
+    'With channel headers assembled, we now need to iterate channels and copy their contents into a dedicated pdDIB object.
+    
+    'Prep the target object.  For size, we ideally want to use the size in the header, which may not match the
+    ' size of all/any individual components.  (J2K images are challenging this way.)
+    '
+    'For this initial draft, we are going to do a few different validations.
+    '
+    'First, we're going to figure out what color space to use for the embedded data.
+    Dim targetColorSpace As OPJ_COLOR_SPACE
+    targetColorSpace = DetermineColorHandling(m_j2kImage.color_space, numComponents, imgChannels)
+    If (targetColorSpace <> OPJ_CLRSPC_GRAY) And (targetColorSpace <> OPJ_CLRSPC_SRGB) Then
+        PDDebug.LogAction "Unknown color space or component count.  Abandoning load."
+        GoTo SafeCleanup
+    End If
+    
+    'TODO: handle YCC variations; they're valid and not too bad to handle (theoretically)
+    
+    If m_OpjNotes.hasSubsampling Then
+        PDDebug.LogAction "NOTE: this image uses subsampling; PD can't load it (yet)."
+        GoTo SafeCleanup
+    End If
+    
+    'Non-8-bpp color depth handling is TODO
+    If m_OpjNotes.isNot8Bit Then
+        PDDebug.LogAction "Only 8-bit-per-channel J2K images are currently supported"
+        GoTo SafeCleanup
+    End If
+    
+    'With channels and color space successfully flagged, we can now load the image.
+    
+    'Prep the destination image
+    Set dstDIB = New pdDIB
+    dstDIB.CreateBlank m_OpjNotes.finalWidth, m_OpjNotes.finalHeight, 32, RGB(255, 255, 255), 255
+    
+    'Load pixel data, with handling separated by color type
+    If (targetColorSpace = OPJ_CLRSPC_GRAY) Then
+    
+    ElseIf (targetColorSpace = OPJ_CLRSPC_SRGB) Then
+        
+        Dim targetWidth As Long, targetHeight As Long
+        Dim channelSizeEstimate As Long
+        Dim srcRs() As Long, srcGs() As Long, srcBs() As Long, srcAs() As Long
+        Dim srcRSA As SafeArray1D, srcGSA As SafeArray1D, srcBSA As SafeArray1D, srcASA As SafeArray1D
+        Dim copyAlpha As Boolean
+                
+        Dim x As Long, y As Long
+        Dim dstPixels() As Byte, dstSA As SafeArray1D
+        Dim saOffset As Long
+        
+        If (imgChannels(0).prec = 8) Then
+            
+            'Size estimate obviously needs to change by bit-depth TODO
+            targetWidth = m_OpjNotes.finalWidth
+            targetHeight = m_OpjNotes.finalHeight
+            
+            channelSizeEstimate = targetWidth * targetHeight * 4
+            
+            VBHacks.WrapArrayAroundPtr_Long srcRs, srcRSA, imgChannels(0).p_data, channelSizeEstimate
+            VBHacks.WrapArrayAroundPtr_Long srcGs, srcGSA, imgChannels(1).p_data, channelSizeEstimate
+            VBHacks.WrapArrayAroundPtr_Long srcBs, srcBSA, imgChannels(2).p_data, channelSizeEstimate
+            
+            copyAlpha = m_OpjNotes.imgHasAlpha
+            If copyAlpha Then VBHacks.WrapArrayAroundPtr_Long srcAs, srcASA, imgChannels(3).p_data, channelSizeEstimate
+            Debug.Print targetWidth, targetHeight, channelSizeEstimate
+            For y = 0 To targetHeight - 1
+                dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
+                saOffset = y * targetWidth '* 4
+                'Debug.Print saOffset
+            For x = 0 To targetWidth - 1
+                dstPixels(x * 4) = srcBs(saOffset + x)
+                dstPixels(x * 4 + 1) = srcGs(saOffset + x)
+                dstPixels(x * 4 + 2) = srcRs(saOffset + x)
+                If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+            Next x
+            Next y
+            
+        ElseIf (imgChannels(0).prec = 16) Then
+        
+            'Size estimate obviously needs to change by bit-depth TODO
+            targetWidth = m_OpjNotes.finalWidth
+            targetHeight = m_OpjNotes.finalHeight
+            
+            channelSizeEstimate = targetWidth * targetHeight * 4
+            
+            VBHacks.WrapArrayAroundPtr_Long srcRs, srcRSA, imgChannels(0).p_data, channelSizeEstimate
+            VBHacks.WrapArrayAroundPtr_Long srcGs, srcGSA, imgChannels(1).p_data, channelSizeEstimate
+            VBHacks.WrapArrayAroundPtr_Long srcBs, srcBSA, imgChannels(2).p_data, channelSizeEstimate
+            
+            copyAlpha = m_OpjNotes.imgHasAlpha
+            If copyAlpha Then VBHacks.WrapArrayAroundPtr_Long srcAs, srcASA, imgChannels(3).p_data, channelSizeEstimate
+            
+            For y = 0 To targetHeight - 1
+                dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
+                saOffset = y * targetWidth
+            For x = 0 To targetWidth - 1
+                dstPixels(x * 4) = srcBs(saOffset + x) \ 256
+                dstPixels(x * 4 + 1) = srcGs(saOffset + x) \ 256
+                dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
+                If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
+            Next x
+            Next y
+            
+        End If
+        
+        'Unwrap all temporary arrays before exiting
+        VBHacks.UnwrapArrayFromPtr_Long srcRs
+        VBHacks.UnwrapArrayFromPtr_Long srcGs
+        VBHacks.UnwrapArrayFromPtr_Long srcBs
+        If copyAlpha Then VBHacks.UnwrapArrayFromPtr_Long srcAs
+        dstDIB.UnwrapArrayFromDIB dstPixels
+        dstDIB.SetAlphaPremultiplication True
+        
+        LoadJ2K = True
+        
+    End If
     
     'For now cleanup and exit
     GoTo SafeCleanup
@@ -490,6 +622,146 @@ SafeCleanup:
     If (pImage <> 0) Then opj_image_destroy pImage
     If (pStream <> 0) Then opj_stream_destroy pStream
     If (pDecoder <> 0) Then opj_destroy_codec pDecoder
+    
+End Function
+
+'Figure out how to handle the source color data.  JPEG-2000 streams are extremely flexible in terms of color components
+' (e.g. "undefined" color spaces and infinite color component counts are allowed, each with different dimensions).
+' I don't currently intend to cover every possible combination of file attributes.  Instead, I want PD to make intelligent
+' inferences about unknown data (e.g. three undefined channels are likely RGB - this is how other software handles it).
+'
+'If an obvious correlation with a known color space cannot be made, PD will treat the image data as grayscale and load
+' the first channel only.
+Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE, ByVal numComponents As Long, ByRef imgChannels() As opj_image_comp) As OPJ_COLOR_SPACE
+    
+    'An "unknown" color space notifies the caller that PD is unequipped to handle this image's data.
+    DetermineColorHandling = OPJ_CLRSPC_UNKNOWN
+    
+    'Failsafe check for component count
+    If (numComponents <= 0) Then Exit Function
+    
+    'Check the size of the first component.  We will only deal with subsequent components if their size matches these.
+    Dim targetWidth As Long, targetHeight As Long
+    targetWidth = imgChannels(0).w
+    targetHeight = imgChannels(0).h
+    
+    'Failsafe check for component dimensions
+    If (targetWidth <= 0) Or (targetHeight <= 0) Then Exit Function
+    
+    'Reset the module-level property tracker
+    With m_OpjNotes
+        .finalWidth = targetWidth
+        .finalHeight = targetHeight
+        .hasSubsampling = False
+        .imgHasAlpha = False
+        .isNot8Bit = False
+        ReDim .isChannelSubsampled(0 To numComponents) As Boolean
+        .idxAlphaChannel = -1
+    End With
+    
+    'If there is only one channel in the image, color space doesn't matter - treat it as grayscale.
+    If (numComponents = 1) Then
+        DetermineColorHandling = OPJ_CLRSPC_GRAY
+        With m_OpjNotes
+            .hasSubsampling = False
+            .imgHasAlpha = False
+            .idxAlphaChannel = -1
+            .isChannelSubsampled(0) = False
+            .isNot8Bit = (imgChannels(0).prec <> 8)
+        End With
+        Exit Function
+    End If
+    
+    'If we're still here, this image has multiple channels.  Iterate up to 4 channels and count how many
+    ' have dimensions matching the first component.  (Subsampling in J2K files means each channel can have its
+    ' own independent dimensions, and the caller is expected to scale all components to match in the file image.
+    ' I don't currently have a straightforward way to do that, so I'm going to follow the example of most other
+    ' software and simply not deal with it.)
+    '
+    '(TODO in the future, perhaps: add support for handling subsampled channels.)
+    Dim searchDepth As Long
+    searchDepth = PDMath.Min2Int(numComponents, 4)
+    
+    Dim i As Long
+    For i = 1 To searchDepth - 1
+        
+        'For now, stop if we meet a subsampled channel
+        If (imgChannels(i).w <> targetWidth) Or (imgChannels(i).h <> targetHeight) Then
+            m_OpjNotes.hasSubsampling = True
+            Exit For
+        End If
+        
+        'Note the alpha channel index, if any
+        If (imgChannels(i).Alpha <> 0) Then m_OpjNotes.idxAlphaChannel = i
+        
+        'If (i = 3) Then m_OpjNotes.idxAlphaChannel = i
+        
+    Next i
+    
+    numComponents = i
+    If (numComponents < 3) Then numComponents = 1
+    
+    'Assign a correct color space based on channel count
+    If (numComponents > 0) And (numComponents < 3) Then
+        DetermineColorHandling = OPJ_CLRSPC_GRAY
+        m_OpjNotes.imgHasAlpha = (m_OpjNotes.idxAlphaChannel >= 0)
+        If (Not m_OpjNotes.imgHasAlpha) Then m_OpjNotes.numComponents = 1
+    ElseIf (numComponents > 3) Then
+        DetermineColorHandling = OPJ_CLRSPC_SRGB
+        m_OpjNotes.imgHasAlpha = (m_OpjNotes.idxAlphaChannel >= 0)
+        If m_OpjNotes.imgHasAlpha Then
+            numComponents = 4
+        Else
+            numComponents = 3
+        End If
+    Else
+        
+        If (fileColorSpace = OPJ_CLRSPC_EYCC) Then
+            DetermineColorHandling = OPJ_CLRSPC_EYCC
+        ElseIf (fileColorSpace = OPJ_CLRSPC_SYCC) Then
+            DetermineColorHandling = OPJ_CLRSPC_SYCC
+        Else
+            DetermineColorHandling = OPJ_CLRSPC_SRGB
+        End If
+        
+        'Alpha handling is handled identically here; basically, we only mark an image as having alpha
+        ' if a channel is *specifically* flagged as an alpha channel (and is one of the first 4 channels).
+        m_OpjNotes.imgHasAlpha = (m_OpjNotes.idxAlphaChannel >= 0)
+        If m_OpjNotes.imgHasAlpha Then
+            numComponents = 4
+        Else
+            numComponents = 3
+        End If
+        
+    End If
+    
+    'TODO: identify subsampling and flag channels accordingly.
+    
+End Function
+
+Private Function GetNameOfOpjColorSpace(ByVal srcSpace As OPJ_COLOR_SPACE) As String
+    
+    Select Case srcSpace
+        
+        '/**< not supported by the library */
+        Case OPJ_CLRSPC_UNKNOWN
+            GetNameOfOpjColorSpace = "unknown"
+        '/**< not specified in the codestream */
+        Case OPJ_CLRSPC_UNSPECIFIED
+            GetNameOfOpjColorSpace = "unspecified"
+        '/**< sRGB */
+        Case OPJ_CLRSPC_SRGB
+            GetNameOfOpjColorSpace = "sRGB"
+        '/**< grayscale */
+        Case OPJ_CLRSPC_GRAY
+            GetNameOfOpjColorSpace = "grayscale"
+        '/**< YUV */
+        Case OPJ_CLRSPC_SYCC
+            GetNameOfOpjColorSpace = "YUV"
+        '/**< e-YCC */
+        Case OPJ_CLRSPC_EYCC
+            GetNameOfOpjColorSpace = "e-YCC"
+    End Select
     
 End Function
 
