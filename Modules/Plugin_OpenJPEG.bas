@@ -506,7 +506,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'First, we're going to figure out what color space to use for the embedded data.
     Dim targetColorSpace As OPJ_COLOR_SPACE
     targetColorSpace = DetermineColorHandling(m_j2kImage.color_space, numComponents, imgChannels)
-    If (targetColorSpace <> OPJ_CLRSPC_GRAY) And (targetColorSpace <> OPJ_CLRSPC_SRGB) Then
+    If (targetColorSpace <> OPJ_CLRSPC_GRAY) And (targetColorSpace <> OPJ_CLRSPC_SRGB) And (targetColorSpace <> OPJ_CLRSPC_SYCC) Then
         PDDebug.LogAction "Unknown color space or component count.  Abandoning load."
         GoTo SafeCleanup
     End If
@@ -533,7 +533,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Load pixel data, with handling separated by color type
     If (targetColorSpace = OPJ_CLRSPC_GRAY) Then
     
-    ElseIf (targetColorSpace = OPJ_CLRSPC_SRGB) Then
+    ElseIf (targetColorSpace = OPJ_CLRSPC_SRGB) Or (targetColorSpace = OPJ_CLRSPC_SYCC) Then
         
         Dim targetWidth As Long, targetHeight As Long
         Dim channelSizeEstimate As Long
@@ -541,6 +541,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         Dim srcRSA As SafeArray1D, srcGSA As SafeArray1D, srcBSA As SafeArray1D, srcASA As SafeArray1D
         Dim copyAlpha As Boolean
                 
+        Dim r As Long, g As Long, b As Long, yccY As Long, yccB As Long, yccR As Long
         Dim x As Long, y As Long
         Dim dstPixels() As Byte, dstSA As SafeArray1D
         Dim saOffset As Long
@@ -564,12 +565,35 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                 dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
                 saOffset = y * targetWidth '* 4
                 'Debug.Print saOffset
-            For x = 0 To targetWidth - 1
-                dstPixels(x * 4) = srcBs(saOffset + x)
-                dstPixels(x * 4 + 1) = srcGs(saOffset + x)
-                dstPixels(x * 4 + 2) = srcRs(saOffset + x)
-                If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
-            Next x
+            If (targetColorSpace = OPJ_CLRSPC_SRGB) Then
+                For x = 0 To targetWidth - 1
+                    dstPixels(x * 4) = srcBs(saOffset + x)
+                    dstPixels(x * 4 + 1) = srcGs(saOffset + x)
+                    dstPixels(x * 4 + 2) = srcRs(saOffset + x)
+                    If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                Next x
+            
+            'YCC to RGB conversion taken from OpenJPEG itself: https://github.com/uclouvain/openjpeg/blob/e7453e398b110891778d8da19209792c69ca7169/src/bin/common/color.c#L74
+            ElseIf (targetColorSpace = OPJ_CLRSPC_SYCC) Then
+                For x = 0 To targetWidth - 1
+                    yccY = srcRs(saOffset + x)
+                    yccB = srcGs(saOffset + x) - 127
+                    yccR = srcBs(saOffset + x) - 127
+                    r = yccY + 1.402 * yccR
+                    If (r < 0) Then r = 0
+                    If (r > 255) Then r = 255
+                    g = yccY - (0.344 * yccB + 0.714 * yccR)
+                    If (g < 0) Then g = 0
+                    If (g > 255) Then g = 255
+                    b = yccY + (1.772 * yccB)
+                    If (b < 0) Then b = 0
+                    If (b > 255) Then b = 255
+                    dstPixels(x * 4) = b
+                    dstPixels(x * 4 + 1) = g
+                    dstPixels(x * 4 + 2) = r
+                    If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                Next x
+            End If
             Next y
             
         ElseIf (imgChannels(0).prec = 16) Then
@@ -691,10 +715,16 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
             Exit For
         End If
         
-        'Note the alpha channel index, if any
-        If (imgChannels(i).Alpha <> 0) Then m_OpjNotes.idxAlphaChannel = i
-        
-        'If (i = 3) Then m_OpjNotes.idxAlphaChannel = i
+        'Note the alpha channel index, if any.
+        ' (NOTE: this implementation is poorly tested; what if a non-3rd channel is marked as alpha?
+        '        is this even possible or handle-able reliably?)
+        If (imgChannels(i).Alpha <> 0) Then
+            m_OpjNotes.idxAlphaChannel = i
+            m_OpjNotes.imgHasAlpha = True
+        ElseIf (i = 3) And (m_OpjNotes.idxAlphaChannel < 0) Then
+            m_OpjNotes.idxAlphaChannel = i
+            m_OpjNotes.imgHasAlpha = True
+        End If
         
     Next i
     
