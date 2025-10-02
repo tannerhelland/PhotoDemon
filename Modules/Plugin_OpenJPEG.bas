@@ -204,6 +204,87 @@ Private Declare Sub opj_image_destroy Lib "openjp2" Alias "_opj_image_destroy@4"
 Private Declare Function opj_decode Lib "openjp2" Alias "_opj_decode@12" (ByVal p_decompressor As Long, ByVal p_stream As Long, ByVal p_image As Long) As Long
 Private Declare Function opj_end_decompress Lib "openjp2" Alias "_opj_end_decompress@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
 
+/**
+ * Creates an abstract stream. This function does nothing except allocating memory and initializing the abstract stream.
+ *
+ * @param   p_is_input      if set to true then the stream will be an input stream, an output stream else.
+ *
+ * @return  a stream object.
+*/
+OPJ_API opj_stream_t* OPJ_CALLCONV opj_stream_default_create(
+    OPJ_BOOL p_is_input);
+
+/**
+ * Creates an abstract stream. This function does nothing except allocating memory and initializing the abstract stream.
+ *
+ * @param   p_buffer_size  FIXME DOC
+ * @param   p_is_input      if set to true then the stream will be an input stream, an output stream else.
+ *
+ * @return  a stream object.
+*/
+OPJ_API opj_stream_t* OPJ_CALLCONV opj_stream_create(OPJ_SIZE_T p_buffer_size,
+        OPJ_BOOL p_is_input);
+
+/**
+ * Destroys a stream created by opj_create_stream. This function does NOT close the abstract stream. If needed the user must
+ * close its own implementation of the stream.
+ *
+ * @param   p_stream    the stream to destroy.
+ */
+OPJ_API void OPJ_CALLCONV opj_stream_destroy(opj_stream_t* p_stream);
+
+/**
+ * Sets the given function to be used as a read function.
+ * @param       p_stream    the stream to modify
+ * @param       p_function  the function to use a read function.
+*/
+OPJ_API void OPJ_CALLCONV opj_stream_set_read_function(opj_stream_t* p_stream,
+        opj_stream_read_fn p_function);
+
+/**
+ * Sets the given function to be used as a write function.
+ * @param       p_stream    the stream to modify
+ * @param       p_function  the function to use a write function.
+*/
+OPJ_API void OPJ_CALLCONV opj_stream_set_write_function(opj_stream_t* p_stream,
+        opj_stream_write_fn p_function);
+
+/**
+ * Sets the given function to be used as a skip function.
+ * @param       p_stream    the stream to modify
+ * @param       p_function  the function to use a skip function.
+*/
+OPJ_API void OPJ_CALLCONV opj_stream_set_skip_function(opj_stream_t* p_stream,
+        opj_stream_skip_fn p_function);
+
+/**
+ * Sets the given function to be used as a seek function, the stream is then seekable,
+ * using SEEK_SET behavior.
+ * @param       p_stream    the stream to modify
+ * @param       p_function  the function to use a skip function.
+*/
+OPJ_API void OPJ_CALLCONV opj_stream_set_seek_function(opj_stream_t* p_stream,
+        opj_stream_seek_fn p_function);
+
+/**
+ * Sets the given data to be used as a user data for the stream.
+ * @param       p_stream    the stream to modify
+ * @param       p_data      the data to set.
+ * @param       p_function  the function to free p_data when opj_stream_destroy() is called.
+*/
+OPJ_API void OPJ_CALLCONV opj_stream_set_user_data(opj_stream_t* p_stream,
+        void * p_data, opj_stream_free_user_data_fn p_function);
+
+/**
+ * Sets the length of the user data for the stream.
+ *
+ * @param p_stream    the stream to modify
+ * @param data_length length of the user_data.
+*/
+OPJ_API void OPJ_CALLCONV opj_stream_set_user_data_length(
+    opj_stream_t* p_stream, OPJ_UINT64 data_length);
+
+
 'Current image, if any
 Private m_j2kImage As opj_image
 
@@ -357,15 +438,8 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Still here?  This file passed basic validation.
     
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder params..."
-    
-    'Populate a basic decoder struct
-    Dim dParams As opj_dparameters
-    opj_set_default_decoder_parameters VarPtr(dParams)
-    
+    'Initialize a default J2K decoder
     If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder itself..."
-    
-    'Initialize a default decoder
     Dim pDecoder As Long
     pDecoder = opj_create_decompress(srcCodec)
     If (pDecoder = 0) Then
@@ -373,9 +447,10 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         Exit Function
     End If
     
+    'Initialize function wrappers for our constructed decoder.
+    ' (We do this via a twinBasic-built helper library, which allows for CDecl callbacks
+    '  without needing embedded assembly shenanigans.)
     If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing callbacks..."
-    
-    'Initialize function wrappers.  (We do this via a twinBasic-built helper library.)
     Dim hInfo As Long, hWarning As Long, hError As Long
     PD_GetAddrJP2KCallbacks AddressOf HandlerInfo, AddressOf HandlerWarning, AddressOf HandlerError, hInfo, hWarning, hError
     
@@ -383,11 +458,17 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     opj_set_warning_handler pDecoder, hWarning, 0&
     opj_set_error_handler pDecoder, hError, 0&
     
-    'If you want to set decoding parameters, this is the place.
+    'Decoders support variable behavior via a "decoder parameter" struct.
+    ' Populate a parameter struct with default values.
+    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder params..."
+    Dim dParams As opj_dparameters
+    opj_set_default_decoder_parameters VarPtr(dParams)
     
+    'If you want to set custom decoding parameters, do it here.
+    ' (For now, PD uses default decoding params.)
+    
+    'Load our decoder with whatever decoding parameters we've decided on
     If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing decoder against params..."
-    
-    'Initialize the decoder with our param object
     Dim retOJ As Long
     retOJ = opj_setup_decoder(pDecoder, VarPtr(dParams))
     If (retOJ = 0) Then
@@ -395,27 +476,32 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         GoTo SafeCleanup
     End If
     
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "setting strict mode..."
-    
-    'Strict mode is TBD
+    'Decoders can use a "strict" mode, where incomplete streams are disallowed.
+    ' (Non-strict mode tells the decoder to simply decode as much as they can, and stop when they
+    '  run out of room - this may allow *some* files to be partially recovered.)
+    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "setting strict mode to OFF..."
     If (opj_decoder_set_strict_mode(pDecoder, 0&) <> 1&) Then
-        InternalError FUNC_NAME, "failed to set strict mode"
+        InternalError FUNC_NAME, "failed to set strictness mode"
         GoTo SafeCleanup
     End If
     
+    'Allow the decoder to use as many logical threads as it wants
     If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "allowing multithreaded decode..."
-    
-    'Allow the decoder to use as many threads as it wants
-    If (opj_codec_set_threads(pDecoder, OS.LogicalCoreCount()) <> 1&) Then
+    If (opj_codec_set_threads(pDecoder, OS.LogicalCoreCount()) = 1&) Then
+        If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Allowing J2K decoder to use " & OS.LogicalCoreCount() & " cores"
+    Else
         InternalError FUNC_NAME, "couldn't set thread count; single-thread mode will be used"
     End If
     
+    'Prep a generic reader against the target file.
+    ' (Note that the decoder parameters struct has a place for filename, but that is only used
+    '  *internally* by the library and is of no use here.)
     If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Creating default file stream..."
     
-    'Prep a generic reader on the target file
+    'Convert the source filename to UTF-8 before assigning
     Dim utf8Filename() As Byte
     Strings.UTF8FromString srcFile, utf8Filename, 0&
-    'dParams.p_infile = VarPtr(utf8Filename(0))
+    
     Dim pStream As Long
     pStream = opj_stream_create_default_file_stream(VarPtr(utf8Filename(0)), 1&)
     If (pStream = 0&) Then
