@@ -663,6 +663,22 @@ Public Sub UnwrapArrayFromPtr_Byte(ByRef dstBytes() As Byte)
     PutMem4 VarPtrArray(dstBytes), 0&
 End Sub
 
+Public Sub WrapArrayAroundPtr_Int(ByRef dstInts() As Integer, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
+    With dstSA1D
+        .cbElements = 2
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcLenInBytes \ 2
+        .pvData = srcPtr
+    End With
+    PutMem4 VarPtrArray(dstInts()), VarPtr(dstSA1D)
+End Sub
+
+Public Sub UnwrapArrayFromPtr_Int(ByRef dstInts() As Integer)
+    PutMem4 VarPtrArray(dstInts), 0&
+End Sub
+
 Public Sub WrapArrayAroundPtr_Long(ByRef dstLongs() As Long, ByRef dstSA1D As SafeArray1D, ByVal srcPtr As Long, ByVal srcLenInBytes As Long)
     With dstSA1D
         .cbElements = 4

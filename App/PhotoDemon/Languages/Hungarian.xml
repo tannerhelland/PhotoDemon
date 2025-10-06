@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>2025.4</langversion>
+<langversion>2025.4.1</langversion>
 <langstatus>complete</langstatus>
 
 <author>István Bánszki</author>
@@ -375,7 +375,7 @@
 
 <phrase>
 <original>Delete hidden layers</original>
-<translation>Nem látható rétegek törlése </translation>
+<translation>Nem látható rétegek törlése</translation>
 </phrase>
 
 <phrase>
@@ -1315,7 +1315,7 @@
 
 <phrase>
 <original>Checking for software updates</original>
-<translation>Programfrissítések keresése </translation>
+<translation>Programfrissítések keresése</translation>
 </phrase>
 
 <phrase>
@@ -1330,7 +1330,7 @@
 
 <phrase>
 <original>Clear recent image list</original>
-<translation>Nemrég megnyitott lista törlése </translation>
+<translation>Nemrég megnyitott lista törlése</translation>
 </phrase>
 
 <!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
@@ -1344,7 +1344,7 @@
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>%1 helyreállítása automatikus mentésből befejeződött </translation>
+<translation>%1 helyreállítása automatikus mentésből befejeződött</translation>
 </phrase>
 
 <phrase>
@@ -2237,11 +2237,6 @@ Ez a kép %2 egyedi szín + átlátszósági értéket (RGBA) tartalmaz.</transl
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>A jövőben automatikusan raszterizáljon anélkül, hogy megkérdezne engem.</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>Festőréteg</translation>
 </phrase>
@@ -2251,7 +2246,7 @@ Ez a kép %2 egyedi szín + átlátszósági értéket (RGBA) tartalmaz.</transl
 <translation>Képkocka %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 35 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -2772,6 +2767,11 @@ A funkció engedélyezéséhez kérem, töltsön le egy friss PhotoDemon példá
 </phrase>
 
 <phrase>
+<original>MIT license</original>
+<translation>MIT licenc</translation>
+</phrase>
+
+<phrase>
 <original>artistic license</original>
 <translation>Artistic licenc</translation>
 </phrase>
@@ -2787,16 +2787,11 @@ A funkció engedélyezéséhez kérem, töltsön le egy friss PhotoDemon példá
 </phrase>
 
 <phrase>
-<original>MIT license</original>
-<translation>MIT licenc</translation>
-</phrase>
-
-<phrase>
 <original>LGPL license</original>
 <translation>LGPL licenc</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 37 phrases. 29 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -2820,17 +2815,17 @@ Kérem, jelentse ezt a hibát a Súgó -> Hibajelentés küldése menüpont seg�
 </phrase>
 
 <phrase>
-<original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
+<original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Nincs elegendő memória a művelet folytatásához. Kérem, szabadítson fel rendszermemóriát (RAM) a felesleges programok bezárásával – különösen a webböngészőjét, ha nyitva van –, majd próbálja meg újra a műveletet.</translation>
 </phrase>
 
 <phrase>
-<original>Out of memory.  Function canceled.</original>
+<original>Out of memory.  Function canceled.</original>
 <translation>Memóriahiány. A funkció megszakítva.</translation>
 </phrase>
 
 <phrase>
-<original>The specified file could not be located. If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive. If the file is not located on portable media, make sure that:
+<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
 <translation>A megadott fájl nem található. Ha cserélhető adathordozón volt, kérem, helyezze vissza a megfelelő floppy lemezt, CD-t vagy hordozható meghajtót. Ha a fájl nem hordozható adathordozón található, győződjön meg arról, hogy:
@@ -2839,9 +2834,9 @@ Kérem, jelentse ezt a hibát a Súgó -> Hibajelentés küldése menüpont seg�
 </phrase>
 
 <phrase>
-<original>PhotoDemon cannot locate additional information for this error. That probably means this error is a bug, and it needs to be fixed!
+<original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
-Would you like to submit a bug report? (It takes less than one minute, and it helps everyone who uses the software.)</original>
+Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
 <translation>A PhotoDemon nem talál további információt ehhez a hibához. Ez valószínűleg azt jelenti, hogy ez a hiba egy szoftverhiba, és javítani kell!
 
 Szeretne hibajelentést küldeni? (Kevesebb mint egy percet vesz igénybe, és minden szoftverhasználónak segít.)</translation>
@@ -2853,7 +2848,7 @@ Szeretne hibajelentést küldeni? (Kevesebb mint egy percet vesz igénybe, és m
 </phrase>
 
 <phrase>
-<original>PhotoDemon has experienced an error. Details on the problem include:
+<original>PhotoDemon has experienced an error.  Details on the problem include:
 
 Error number %1
 Description: %2
@@ -3006,6 +3001,7 @@ Leírás: %2
 <original>vertical alignment</original>
 <translation>függőleges igazítás</translation>
 </phrase>
+
 <phrase>
 <original>antialiased</original>
 <translation>élsimított</translation>
@@ -3035,6 +3031,7 @@ Leírás: %2
 <original>fill</original>
 <translation>kitöltés</translation>
 </phrase>
+
 <phrase>
 <original>fill style</original>
 <translation>kitöltési stílus</translation>
@@ -3126,9 +3123,9 @@ Leírás: %2
 </phrase>
 
 <phrase>
-<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
+<original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
-When finished, click the Submit New Issue button.  Thank you!</original>
+When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>A PhotoDemon automatikusan megnyitotta a hibajelentő weboldalt. Kérem, kattintson az „Új probléma” (New Issue) gombra, majd válassza a „Hiba jelentése” (Bug Report) opciót. Válaszoljon a kérdésekre a legjobb tudása szerint, és feltétlenül tüntesse fel a következő hibakódot a jelentésben: %1
 
 Ha elkészült, kattintson az „Új probléma beküldése” (Submit New Issue) gombra. Köszönöm!</translation>
@@ -3138,6 +3135,8 @@ Ha elkészült, kattintson az „Új probléma beküldése” (Submit New Issue)
 <original>Bug report instructions</original>
 <translation>Hibajelentési útmutató</translation>
 </phrase>
+
+<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3184,12 +3183,14 @@ Ha elkészült, kattintson az „Új probléma beküldése” (Submit New Issue)
 <translation>köbös konvolúció</translation>
 </phrase>
 
+<!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
 <phrase>
-<original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
+<original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
 
 %1
 
-In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
+In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
 <translation>Hiba történt a kép mentése során. A FreeImage bővítmény a következő hibaüzenetet küldte:
 
 %1
@@ -3198,7 +3199,7 @@ Kérem, próbálja meg a képet egy alternatív formátumba menteni. Tájékozta
 </phrase>
 
 <phrase>
-<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
+<original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
 <translation>A kimeneti formátum nem ismert. A mentés megszakítva. Kérem, használja a Súgó -> Hiba jelentése menüpontot az eset bejelentésére.</translation>
 </phrase>
 
@@ -3244,8 +3245,10 @@ Kérem, próbálja meg a képet egy alternatív formátumba menteni. Tájékozta
 <translation>Képernyőfelvétel beállításai</translation>
 </phrase>
 
+<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
 <phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
+<original>This action requires an active selection.  Please create a selection before continuing.</original>
 <translation>Ehhez a művelethez aktív kijelölés szükséges. Kérem, hozzon létre egy kijelölést a folytatás előtt.</translation>
 </phrase>
 
@@ -3265,7 +3268,7 @@ Kérem, próbálja meg a képet egy alternatív formátumba menteni. Tájékozta
 </phrase>
 
 <phrase>
-<original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
+<original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
 <translation>Hiba történt %1 betöltése közben. Kérem, ellenőrizze, hogy a fájl érvényes PhotoDemon kijelölés fájl-e.</translation>
 </phrase>
 
@@ -3290,7 +3293,7 @@ Kérem, próbálja meg a képet egy alternatív formátumba menteni. Tájékozta
 </phrase>
 
 <phrase>
-<original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
+<original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
 <translation>Ismeretlen hiba történt. A kijelölés nem menthető. Kérem, próbálja újra.</translation>
 </phrase>
 
@@ -3591,14 +3594,14 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 <original>alpha</original>
 <translation>alfa</translation>
 </phrase>
-<phrase>
+
 <phrase>
 <original>beta</original>
 <translation>béta</translation>
 </phrase>
 
 <phrase>
-<original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
+<original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
 <translation>Ez a művelet egy külső bővítményre (%1) támaszkodik. Elérhető a bővítmény frissített verziója.</translation>
 </phrase>
 
@@ -3623,7 +3626,7 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 </phrase>
 
 <phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
+<original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
 <translation>A PhotoDemont korlátozott rendszermappába helyezte. Mivel a PhotoDemon nem rendelkezik rendszergazdai hozzáféréssel, nem tud letölteni fájlokat. Kérem, helyezze át a PhotoDemont egy nem korlátozott mappába, majd próbálja újra.</translation>
 </phrase>
 
@@ -3635,7 +3638,7 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 </phrase>
 
 <phrase>
-<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
+<original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
 <translation>Az előzőleg elmentett előbeállítások itt választhatók ki. Az aktuális beállításokat új előbeállításként mentheti a jobb oldalon található „Előbeállítás mentése” gombra kattintva.</translation>
 </phrase>
 
@@ -3670,7 +3673,7 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 </phrase>
 
 <phrase>
-<original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
+<original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
 <translation>Az eszköztár paneljei automatikusan bezáródnak, de rögzíthet egyet, hogy nyitva maradjon. (A rögzített panel is bezáródik eszközváltáskor vagy új panel megnyitásakor.)</translation>
 </phrase>
 
@@ -3678,6 +3681,8 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 <original>Generate a new random number seed.</original>
 <translation>Új véletlenszám-mag generálása.</translation>
 </phrase>
+
+<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -3695,7 +3700,7 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
+<original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
 <translation>A PhotoDemon nem éri el az Internetet. Kérem, ellenőrizze újra a kapcsolatot, és próbálkozzon ismét.</translation>
 </phrase>
 
@@ -3705,7 +3710,7 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
+<original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
 <translation>A PhotoDemon nem érte el a cél URL-t (%1). Ha a probléma továbbra is fennáll, kérem, próbálja meg letölteni a fájlt manuálisan, az internetböngésző segítségével.</translation>
 </phrase>
 
@@ -3730,7 +3735,7 @@ Kérem, adjon meg egy numerikus értéket.</translation>
 </phrase>
 
 <phrase>
-<original>Download canceled.  (Remote server denied access.)</original>
+<original>Download canceled.  (Remote server denied access.)</original>
 <translation>Letöltés megszakítva. (A távoli kiszolgáló megtagadta a hozzáférést.)</translation>
 </phrase>
 
@@ -3742,6 +3747,8 @@ You will need to manually download this file using your Internet browser.</origi
 
 Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségével.</translation>
 </phrase>
+
+<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fit width</original>
@@ -3770,7 +3777,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 <!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
 <translation>A vágólap üres, vagy nem tartalmaz érvényes képformátumot. Kérem, másoljon egy érvényes képet a vágólapra, és próbálkozzon ismét.</translation>
 </phrase>
 
@@ -3785,7 +3792,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 </phrase>
 
 <phrase>
-<original>Image URL found.  Attempting to download</original>
+<original>Image URL found.  Attempting to download</original>
 <translation>Kép URL-je megtalálva. Letöltés megkísérlése</translation>
 </phrase>
 
@@ -3795,7 +3802,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 </phrase>
 
 <phrase>
-<original>Image download failed.  Please copy a valid image URL and try again.</original>
+<original>Image download failed.  Please copy a valid image URL and try again.</original>
 <translation>Kép letöltése sikertelen. Kérem, másoljon egy érvényes kép URL-t, és próbálkozzon ismét.</translation>
 </phrase>
 
@@ -3890,7 +3897,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 <!-- pdMBM.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
-<original>ExifTool plugin missing.  Metadata import abandoned.</original>
+<original>ExifTool plugin missing.  Metadata import abandoned.</original>
 <translation>Hiányzik az ExifTool beépülő modul. A metaadatok importálása megszakítva.</translation>
 </phrase>
 
@@ -4182,7 +4189,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 <!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
+<original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
 <translation>Sajnos a kiválasztott képek száma meghaladja azt a mennyiséget, amelyet a Windows egyetlen betöltési műveletben engedélyez. Kérem, próbálja újra egy kisebb képcsoporttal.</translation>
 </phrase>
 
@@ -4197,6 +4204,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 <original>palette exported by PhotoDemon %1</original>
 <translation>a PhotoDemon %1 által exportált paletta</translation>
 </phrase>
+
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
@@ -4266,7 +4274,6 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 <translation>szakadt</translation>
 </phrase>
 
-
 <!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- pdWebP.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
@@ -4307,7 +4314,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 </phrase>
 
 <phrase>
-<original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
+<original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Egérgörgő = FÜGGŐLEGES GÖRGETÉS, Shift + Görgő = VÍZSZINTES GÖRGETÉS, Ctrl + Görgő = NAGYÍTÁS</translation>
 </phrase>
 
@@ -4327,8 +4334,8 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 </phrase>
 
 <phrase>
-<original>Center the image inside the viewport</original>
-<translation>Kép középre igazítása a nézetben</translation>
+<original>Center image in viewport</original>
+<translation></translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -4454,9 +4461,9 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 
 <!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-phrase>
+<phrase>
 <original>Current color</original>
-<translation>Aktuális szín</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4554,7 +4561,7 @@ phrase>
 </phrase>
 
 <phrase>
-<original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
+<original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
 <translation>Ez a gomb megnyit egy új problémajelentő oldalt a webböngészőjében. A folytatáshoz GitHub-fiókra lesz szüksége.</translation>
 </phrase>
 
@@ -4654,7 +4661,7 @@ phrase>
 
 <phrase>
 <original>erase tags that might be personal (including GPS and location)</original>
-<translation>személyes jellegű címkék törlése(beleértve a GPS és a helyadatokat) </translation>
+<translation>személyes jellegű címkék törlése(beleértve a GPS és a helyadatokat)</translation>
 </phrase>
 
 <phrase>
@@ -4712,8 +4719,9 @@ phrase>
 
 <!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
+<phrase>
 <original>resolution</original>
-<translation>felbontás</translation>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4737,7 +4745,7 @@ phrase>
 </phrase>
 
 <phrase>
-<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
+<original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
 <translation>Képarány megtartása (más néven Arányok kényszerítése). Ezzel a beállítással átméretezheti a képet úgy, hogy a szélesség és a magasság szinkronban maradjon.</translation>
 </phrase>
 
@@ -4867,13 +4875,15 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 <translation>A PhotoDemon nem érti a kifejezést: %1</translation>
 </phrase>
 
+<!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
 <phrase>
 <original>size</original>
 <translation>méret</translation>
 </phrase>
 
 <phrase>
-<original>Fit the image on-screen</original>
+<original>Fit image on screen</original>
 <translation>Kép illesztése a képernyőre</translation>
 </phrase>
 
@@ -5410,8 +5420,8 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 </phrase>
 
 <phrase>
-<original>Dilate</translation>
-<translation>Tágítás</translation>
+<original>Dilate</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5575,11 +5585,6 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 </phrase>
 
 <phrase>
-<original>Fit image on screen</original>
-<translation>Kép illesztése a képernyőre</translation>
-</phrase>
-
-<phrase>
 <original>Zoom to value</original>
 <translation>Nagyítás értékre</translation>
 </phrase>
@@ -5610,8 +5615,8 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 </phrase>
 
 <phrase>
-<original>Smart guides</translation>
-<translation>Intelligens segédvonalak</translation>
+<original>Smart guides</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5790,14 +5795,14 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 </phrase>
 
 <phrase>
-<original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
+<original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
 <translation>Elérhető a PhotoDemon új verziója. A frissítés automatikusan feldolgozás alatt áll a háttérben</translation>
 </phrase>
 
 <phrase>
 <original>A new version of PhotoDemon is available!
 
-The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
+The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
 <translation>Elérhető a PhotoDemon új verziója!
 
 A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értesítést fog kapni, amint elkészül.</translation>
@@ -5852,6 +5857,8 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 <translation>Nyelv sikeresen megváltoztatva.</translation>
 </phrase>
 
+<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+
 <phrase>
 <original>Monochrome Conversion</original>
 <translation>Monokróm konverzió</translation>
@@ -5901,6 +5908,8 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 <original>Converting image to two colors</original>
 <translation>Kép konvertálása két színre</translation>
 </phrase>
+
+<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>model</original>
@@ -6429,6 +6438,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 <original>Updating histogram</original>
 <translation>Hisztogram frissítése</translation>
 </phrase>
+
 <!-- Adjustments_Histogram_DisplayHistogram.frm contains 41 phrases. 29 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
@@ -6594,7 +6604,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image. You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this. (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
+<original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
 <translation>Mint minden monokróm-szürkeárnyalatos konvertáló eszköz, ez is életlen képet eredményez. Ezt az Effektek -> Élesítés -> Életlen maszkolás eszközzel korrigálhatja. (A legjobb eredmény érdekében használjon az Életlen maszkolásnál legalább akkora sugarat, mint ez a sugár.)</translation>
 </phrase>
 
@@ -6776,17 +6786,17 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>Autosave data found. Would you like to restore it?</original>
+<original>Autosave data found.  Would you like to restore it?</original>
 <translation>Automatikus mentés adatai találhatók. Szeretné őket visszaállítani?</translation>
 </phrase>
 
 <phrase>
-<original>A previous PhotoDemon session terminated unexpectedly. Would you like to automatically recover the following autosaved images?</original>
+<original>A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?</original>
 <translation>Egy korábbi PhotoDemon munkamenet váratlanul leállt. Szeretné automatikusan helyreállítani a következő automatikusan mentett képeket?</translation>
 </phrase>
 
 <phrase>
-<original>If you exit now, this autosave data will be lost forever. Are you sure you want to exit?</original>
+<original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
 <translation>Ha most lép ki, az automatikus mentés adatai végleg elvesznek. Biztosan ki szeretne lépni?</translation>
 </phrase>
 
@@ -6867,7 +6877,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>A preset with this name already exists. Do you want to overwrite it?</original>
+<original>A preset with this name already exists.  Do you want to overwrite it?</original>
 <translation>Már létezik ilyen nevű beállítás. Felül szeretné írni?</translation>
 </phrase>
 
@@ -6949,8 +6959,8 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>rectangle</translation>
-<translation>téglalap</translation>
+<original>rectangle</original>
+<translation></translation>
 </phrase>
 
 <!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -7100,7 +7110,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>A gradient with the name "%1" already exists in your collection. Would you like to overwrite it?</original>
+<original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
 <translation>Már létezik "%1" nevű gradiens az Ön gyűjteményében. Felül szeretné írni?</translation>
 </phrase>
 
@@ -7110,7 +7120,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>This gradient doesn't have a name. Please give it a name before adding it to your collection.</original>
+<original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
 <translation>Ennek a gradiensnek nincs neve. Kérem, nevezze el, mielőtt hozzáadja a gyűjteményéhez.</translation>
 </phrase>
 
@@ -7160,7 +7170,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>Left-click to add new nodes or edit existing nodes. Right-click a node to remove it.</original>
+<original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation>Kattintson bal egérgombbal új csomópont hozzáadásához vagy a meglévők szerkesztéséhez. Kattintson jobb egérgombbal egy csomópontra az eltávolításához.</translation>
 </phrase>
 
@@ -7349,7 +7359,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>page size: %1</original>
+<original>page size:  %1</original>
 <translation>oldalméret: %1</translation>
 </phrase>
 
@@ -7398,8 +7408,8 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>dashes</translation>
-<translation>szaggatott vonal</translation>
+<original>dashes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -7482,7 +7492,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 </phrase>
 
 <phrase>
-<original>This image contains more than 16 million colors. Before it can be displayed on your screen, it must be converted to a simpler format. This process is called tone mapping.</original>
+<original>This image contains more than 16 million colors.  Before it can be displayed on your screen, it must be converted to a simpler format.  This process is called tone mapping.</original>
 <translation>Ez a kép több mint 16 millió színt tartalmaz. Mielőtt megjeleníthető lenne a képernyőn, egyszerűbb formátumra kell konvertálni. Ezt a folyamatot tónusleképezésnek nevezik.</translation>
 </phrase>
 
@@ -7665,7 +7675,7 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 </phrase>
 
 <phrase>
-<original>%1 has unsaved changes.  What would you like to do?</original>
+<original>%1 has unsaved changes.  What would you like to do?</original>
 <translation>%1 mentetlen módosításokat tartalmaz. Mit szeretne tenni?</translation>
 </phrase>
 
@@ -7678,6 +7688,8 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 <original>Repeat this action for both unsaved images</original>
 <translation>Ismételje meg ezt a műveletet mindkét mentetlen képnél</translation>
 </phrase>
+
+<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -7710,7 +7722,7 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 </phrase>
 
 <phrase>
-<original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
+<original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
 <translation>Elérhető a PhotoDemon új verziója. Kérem, indítsa újra a programot a frissítési folyamat befejezéséhez.</translation>
 </phrase>
 
@@ -7725,7 +7737,7 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 </phrase>
 
 <phrase>
-<original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
+<original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
 <translation>Ha éppen dolgozik valamin, nyugodtan folytassa a munkát. A frissítési folyamat automatikusan befejeződik a program következő használatakor.</translation>
 </phrase>
 
@@ -7906,6 +7918,8 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 <translation>kijelölés alakjának megjelenítése</translation>
 </phrase>
 
+<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
 <phrase>
 <original>scan for new plugins</original>
 <translation>új bővítmények keresése</translation>
@@ -7972,17 +7986,17 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 </phrase>
 
 <phrase>
-<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
+<original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
 <translation>A Photoshop (8bf) bővítmények „8bf” kiterjesztésű fájlok. Ezek a bővítmények új képeffekteket biztosítanak. Több ezer 8bf bővítmény érhető el online.</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
+<original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
 <translation>A PhotoDemon nem tartalmaz beépített 8bf bővítményeket, de ha Ön talál online, letöltheti és hozzáadhatja azokat a PhotoDemonhoz. (A PhotoDemon a legtöbb 32 bites 8bf bővítményt támogatja. A 64 bites bővítmények nem támogatottak.)</translation>
 </phrase>
 
 <phrase>
-<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
+<original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
 <translation>Egy vagy több 8bf fájl letöltése után használja a (fent található) beállítások gombot, hogy megmondja a PhotoDemonnak, hol találhatók. Ezután a PhotoDemon hozzáadja azokat az Effektek gyűjteményéhez.</translation>
 </phrase>
 
@@ -8149,8 +8163,8 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 </phrase>
 
 <phrase>
-<original>highlight cut-off</translation>
-<translation>csúcsfény levágás</translation>
+<original>highlight cut-off</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -9042,6 +9056,8 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 <translation>Kép lángra lobbantása</translation>
 </phrase>
 
+<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
 <phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Képzeletbeli vulkán felrobbantása</translation>
@@ -9330,6 +9346,7 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 <original>generator</original>
 <translation>generátor</translation>
 </phrase>
+
 <phrase>
 <original>Rendering clouds</original>
 <translation>Felhők renderelése</translation>
@@ -9512,9 +9529,10 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 </phrase>
 
 <phrase>
-<original>WARNING! Palette file invalid.</original>
+<original>WARNING!  Palette file invalid.</original>
 <translation>FIGYELEM! Érvénytelen palettafájl.</translation>
 </phrase>
+
 <!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
@@ -9798,14 +9816,14 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 </phrase>
 
 <phrase>
-<original>Repairs complete. %1 files repaired.</original>
+<original>Repairs complete.  %1 files repaired.</original>
 <translation>A javítás befejeződött. %1 fájl megjavítva.</translation>
 </phrase>
 
 <phrase>
 <original>%1 files(s) repaired.
 
-Repaired files have been saved to the destination folder. Unrepaired files remain in their original locations.</original>
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
 <translation>%1 fájl megjavítva.
 
 A javított fájlok mentésre kerültek a célmappába. A javítatlan fájlok az eredeti helyükön maradtak.</translation>
@@ -9817,7 +9835,7 @@ A javított fájlok mentésre kerültek a célmappába. A javítatlan fájlok az
 </phrase>
 
 <phrase>
-<original>The source folder does not contain any files. Please try another folder.</original>
+<original>The source folder does not contain any files.  Please try another folder.</original>
 <translation>A forrásmappa nem tartalmaz fájlokat. Kérem, próbáljon másik mappát.</translation>
 </phrase>
 
@@ -10059,7 +10077,7 @@ A javított fájlok mentésre kerültek a célmappába. A javítatlan fájlok az
 </phrase>
 
 <phrase>
-<original>If you exit now, your batch list (the list of images to be processed) will be lost. By saving your list, you can easily resume this batch operation at a later date.
+<original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
 <translation>Ha most kilép, a kötegelt listája (a feldolgozandó képek listája) elvész. A lista mentésével később könnyedén folytathatja ezt a kötegelt műveletet.
@@ -10078,7 +10096,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>You have already created a list of images for processing. The list of images inside this file will be appended to the bottom of your current list.</original>
+<original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
 <translation>Már létrehozott egy feldolgozandó képlistát. Az ebben a fájlban lévő képlista a jelenlegi lista végéhez lesz hozzáfűzve.</translation>
 </phrase>
 
@@ -10103,7 +10121,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>You have requested that a macro be applied to each image, but no macro file has been selected. Please select a valid macro file.</original>
+<original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
 <translation>Azt kérte, hogy egy makró alkalmazásra kerüljön minden képen, de nem választott ki makrófájlt. Kérem, válasszon egy érvényes makrófájlt.</translation>
 </phrase>
 
@@ -10113,7 +10131,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>You have not selected any images to process! Please add one or more images to the batch list.</original>
+<original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
 <translation>Nem választott ki egyetlen feldolgozandó képet sem! Kérem, adjon hozzá egy vagy több képet a kötegelt listához.</translation>
 </phrase>
 
@@ -10133,7 +10151,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon cannot access the requested output folder. Please select a non-system, unrestricted folder for the batch process.</original>
+<original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
 <translation>A PhotoDemon nem tudja elérni a kért kimeneti mappát. Kérem, válasszon nem rendszermappát, korlátozásoktól mentes mappát a kötegelt feldolgozáshoz.</translation>
 </phrase>
 
@@ -10148,17 +10166,17 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Welcome to PhotoDemon's batch wizard. This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
+<original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
 <translation>Üdvözöljük a PhotoDemon kötegelt varázslójában. Ez az eszköz több kép egyszerre történő szerkesztésére használható, úgynevezett „kötegelt feldolgozással”.</translation>
 </phrase>
 
 <phrase>
-<original>Start by selecting the photo editing action(s) you want to apply. If multiple actions are selected, they will be applied in the order they appear on this page.</original>
+<original>Start by selecting the photo editing action(s) you want to apply.  If multiple actions are selected, they will be applied in the order they appear on this page.</original>
 <translation>Kezdje azzal, hogy kiválasztja az alkalmazni kívánt képszerkesztési művelet(ek)et. Ha több műveletet választ ki, azok az oldalon megjelenő sorrendben lesznek alkalmazva.</translation>
 </phrase>
 
 <phrase>
-<original>Note: a "macro" is simply a list of photo editing actions. It can include any adjustment, filter, or effect in the main program. You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
+<original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
 <translation>Megjegyzés: a „makró” egyszerűen a képszerkesztési műveletek listája. Tartalmazhat bármilyen beállítást, szűrőt vagy effektust a fő programból. Új makrót a PhotoDemon főablakában lévő „Eszközök -> Makrók -> Új makró rögzítése” menüponttal hozhat létre.</translation>
 </phrase>
 
@@ -10183,7 +10201,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>2) By adding entire folders at once. Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
+<original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
 <translation>2) Egész mappák egyszerre történő hozzáadásával. A mappában (vagy az almappákban, ha ki vannak választva) lévő képfájlok automatikusan azonosítva lesznek.</translation>
 </phrase>
 
@@ -10203,12 +10221,12 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format. If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
+<original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
 <translation>Ha a „képek megtartása eredeti formátumukban” van kiválasztva, a PhotoDemon megpróbálja az egyes képeket eredeti formátumukban menteni. Ha az eredeti formátum nem támogatott, akkor egy szabványos formátumot (JPEG vagy PNG, a színmélységtől függően) fog használni.</translation>
 </phrase>
 
 <phrase>
-<original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list. (For example, images with transparency should be saved to a format that supports transparency!)</original>
+<original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
 <translation>Ha úgy dönt, hogy a képeket új formátumba menti, kérem, győződjön meg róla, hogy a kiválasztott formátum megfelelő-e a listában lévő összes képhez. (Például az átlátszatlansággal rendelkező képeket olyan formátumba kell menteni, amely támogatja az átlátszatlanságot!)</translation>
 </phrase>
 
@@ -10228,7 +10246,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>For your convenience, a number of standard renaming options are also provided. Note that all items under "additional rename options" are optional.</original>
+<original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
 <translation>Az Ön kényelme érdekében számos szabványos átnevezési opció is rendelkezésre áll. Megjegyzés: a „további átnevezési opciók” alatt található összes elem opcionális.</translation>
 </phrase>
 
@@ -10253,7 +10271,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner. If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
+<original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
 <translation>Bármikor megszakíthatja a kötegelt feldolgozást a jobb alsó sarokban lévő „Mégsem” gomb megnyomásával. Ha úgy dönt, hogy megszakítja, a már feldolgozott képek továbbra is ott lesznek a kimeneti mappában, ezért lehet, hogy manuálisan kell eltávolítania őket.</translation>
 </phrase>
 
@@ -10263,7 +10281,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>You haven't selected any image files. Please add one or more files to the batch list before saving.</original>
+<original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
 <translation>Nem választott ki egyetlen képfájlt sem. Kérem, adjon hozzá egy vagy több fájlt a kötegelt listához mentés előtt.</translation>
 </phrase>
 
@@ -10353,7 +10371,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Batch conversion canceled. %1 image(s) were processed before cancelation. Last processed image was "%2".</original>
+<original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
 <translation>A kötegelt konverzió megszakítva. %1 kép volt feldolgozva a megszakítás előtt. Az utoljára feldolgozott kép: „%2”.</translation>
 </phrase>
 
@@ -10415,7 +10433,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This button only affects the preview above. The repeat setting on the right is what will be used by the exported image file.</original>
+<original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
 <translation>Ez a gomb csak a fenti előnézetet befolyásolja. A jobboldali ismétlési beállítás kerül felhasználásra az exportált képfájlban.</translation>
 </phrase>
 
@@ -10445,7 +10463,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 
 <!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<<phrase>
+<phrase>
 <original>compression</original>
 <translation>tömörítés</translation>
 </phrase>
@@ -10582,7 +10600,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file. If you select the "append" option, PhotoDemon will add this palette to your existing ASE file. Any palettes already inside the file will not be modified.</original>
+<original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
 <translation>Az Adobe Swatch Exchange (ASE) fájlok több palettát is tárolhatnak egyetlen fájlban. Ha a „hozzáfűzés” opciót választja, a PhotoDemon hozzáadja ezt a palettát a meglévő ASE fájlhoz. A fájlban már meglévő paletták nem módosulnak.</translation>
 </phrase>
 
@@ -10609,7 +10627,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This URL is not valid. Please make sure the URL begins with "http://" or "ftp://".</original>
+<original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 <translation>Ez az URL nem érvényes. Kérem, győződjön meg arról, hogy az URL „http://” vagy „ftp://” karakterekkel kezdődik.</translation>
 </phrase>
 
@@ -10619,7 +10637,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Please be respectful of copyrights when downloading images. Thanks!</original>
+<original>Please be respectful of copyrights when downloading images.  Thanks!</original>
 <translation>Kérem, tartsa tiszteletben a szerzői jogokat képek letöltésekor. Köszönjük!</translation>
 </phrase>
 
@@ -10671,12 +10689,12 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This program is currently minimized. Restore it to normal size for best results.</original>
+<original>This program is currently minimized.  Restore it to normal size for best results.</original>
 <translation>Ez a program jelenleg minimalizálva van. Kérem, állítsa vissza normál méretre a legjobb eredmény érdekében.</translation>
 </phrase>
 
 <phrase>
-<original>Some programs (including Windows Store apps) do not allow direct screen captures. If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
+<original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
 <translation>Néhány program (beleértve a Windows Áruház alkalmazásokat) nem engedélyezi a közvetlen képernyőfelvételt. Ha az alkalmazás előnézete fekete négyzetként jelenik meg, teljes asztali képernyőfelvételt kell készítenie, majd manuálisan ki kell vágnia a kívánt ablakrégiót.</translation>
 </phrase>
 
@@ -10735,7 +10753,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>%1 was unable to print the image. Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
+<original>%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.</original>
 <translation>A(z) %1 nem tudta kinyomtatni a képet. Kérem, győződjön meg róla, hogy a megadott nyomtató (%2) be van kapcsolva és készen áll a nyomtatásra.</translation>
 </phrase>
 
@@ -10777,7 +10795,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This image format is very computationally intensive. On older or slower PCs, you may want to disable live previews.</original>
+<original>This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
 <translation>Ez a képformátum nagyon számításigényes. Régebbi vagy lassabb számítógépeken érdemes lehet kikapcsolni az élő előnézetet.</translation>
 </phrase>
 
@@ -11212,7 +11230,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>PNG files support different compression strategies (called "filters"). Smart filter selection produces better compression. Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
+<original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
 <translation>A PNG fájlok különböző tömörítési stratégiákat (ún. „szűrőket”) támogatnak. Egy jól megválasztott szűrő jobb tömörítést eredményez. Használja az automatikus beállítást, hogy a PhotoDemon több stratégiát is teszteljen, és automatikusan kiválassza azt, amelyik a legjobb tömörítést adja.</translation>
 </phrase>
 
@@ -11347,7 +11365,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>(You can become a patron, too! Click here to learn more.)</original>
+<original>(You can become a patron, too!  Click here to learn more.)</original>
 <translation>(Ön is lehet pártfogó! Kattintson ide a további információkért.)</translation>
 </phrase>
 
@@ -11589,22 +11607,22 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>"System" tags are provided by the operating system. They are not embedded as traditional metadata.</original>
+<original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
 <translation>A „Rendszer” címkéket az operációs rendszer biztosítja. Ezek nincsenek hagyományos metaadatként beágyazva.</translation>
 </phrase>
 
 <phrase>
-<original>"File" tags are required by this image format. They are not embedded as traditional metadata.</original>
+<original>"File" tags are required by this image format.  They are not embedded as traditional metadata.</original>
 <translation>A „Fájl” címkék szükségesek ehhez a képformátumhoz. Ezek nincsenek hagyományos metaadatként beágyazva.</translation>
 </phrase>
 
 <phrase>
-<original>ICC profiles are handled automatically by PhotoDemon. They are not embedded as traditional metadata.</original>
+<original>ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.</original>
 <translation>Az ICC profilokat a PhotoDemon automatikusan kezeli. Ezek nincsenek hagyományos metaadatként beágyazva.</translation>
 </phrase>
 
 <phrase>
-<original>"Inferred" tags are hypothetical values inferred from other metadata. They are not embedded as traditional metadata.</original>
+<original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
 <translation>A „Következtetett” címkék más metaadatokból származtatott hipotetikus értékek. Ezek nincsenek hagyományos metaadatként beágyazva.</translation>
 </phrase>
 
@@ -11614,12 +11632,12 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This is a protected tag. Edits are allowed, but they may be overwritten to produce a valid image file.</original>
+<original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
 <translation>Ez egy védett címke. A szerkesztések engedélyezettek, de felülíródhatnak egy érvényes képfájl előállításához.</translation>
 </phrase>
 
 <phrase>
-<original>This tag is restricted. It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
+<original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
 <translation>Ez a címke korlátozott. Nem szerkeszthető, az eltávolítási kérelmek figyelmen kívül maradnak, ha érvénytelen fájlt eredményeznek.</translation>
 </phrase>
 
@@ -11721,7 +11739,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>stretching to new size (default)</original>
+<original>stretching to new size  (default)</original>
 <translation>nyújtás új méretre (alapértelmezett)</translation>
 </phrase>
 
@@ -11736,17 +11754,17 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Some image resampling filters support approximate calculations. These improve performance at a minor penalty to quality.</original>
+<original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
 <translation>Néhány képmintavételező szűrő támogatja a közelítő számításokat. Ezek javítják a teljesítményt, csekély minőségromlás árán.</translation>
 </phrase>
 
 <phrase>
-<original>Resampling affects the quality of a resized image. For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
+<original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
 <translation>A mintavételezés befolyásolja az átméretezett kép minőségét. A mintavételezési technikák jó összefoglalásához látogasson el a Képmintavételezés cikkre a Wikipédián.</translation>
 </phrase>
 
 <phrase>
-<original>When changing an image's aspect ratio, undesirable stretching may occur. PhotoDemon can avoid this by using empty borders or cropping instead.</original>
+<original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>Kép képarányának megváltoztatásakor nem kívánt nyújtás fordulhat elő. Ezt a PhotoDemon elkerülheti üres keretek vagy vágás használatával.</translation>
 </phrase>
 
@@ -12143,7 +12161,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This option will create a blank image. Other ways to create new images can be found in the File -> Import menu.</original>
+<original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
 <translation>Ez az opció üres képet hoz létre. Új képek létrehozásának egyéb módjai megtalálhatók a Fájl -> Importálás menüben.</translation>
 </phrase>
 
@@ -12178,7 +12196,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>WARNING: this will overwrite the current image file. To save to a different file, use the "Save As" button.</original>
+<original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
 <translation>FIGYELMEZTETÉS: ez felülírja az aktuális képfájlt. Másik fájlba mentéshez használja a „Mentés másként” gombot.</translation>
 </phrase>
 
@@ -12193,7 +12211,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Use this to quickly save a lossless copy of the current image. The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
+<original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
 <translation>Ezzel gyorsan menthet egy veszteségmentes másolatot az aktuális képről. A veszteségmentes másolat PDI formátumban lesz elmentve, a kép aktuális mappájában, az aktuális fájlnévvel (plusz szükség esetén egy automatikusan növekvő számmal).</translation>
 </phrase>
 
@@ -12579,7 +12597,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Lock this value. (Only one value can be locked at a time. If you lock a new value, previously locked values will unlock.)</original>
+<original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
 <translation>Érték zárolása. (Egyszerre csak egy érték zárolható. Ha új értéket zárol, a korábban zárolt értékek feloldódnak.)</translation>
 </phrase>
 
@@ -12594,7 +12612,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Resolution is used to convert real-world measurements to pixels. It is ignored for measurements already in pixels.</original>
+<original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
 <translation>A felbontás a valós méretek pixelekké alakítására szolgál. Azoknál a méreteknél, amelyek már pixelekben vannak, figyelmen kívül marad.</translation>
 </phrase>
 
@@ -12611,7 +12629,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This setting forcibly aligns paint strokes to pixel grid centerpoints. This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
+<original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
 <translation>Ez a beállítás a pixelrács középpontjaihoz kényszeríti az ecsetvonásokat. Ez javítja a pontosságot (különösen kis ecsetméreteknél), de az ecsetvonások kevésbé tűnhetnek természetesnek.</translation>
 </phrase>
 
@@ -12658,7 +12676,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Fills support many different styles. Click to switch between solid color, pattern, and gradient styles.</original>
+<original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
 <translation>A kitöltések sokféle stílust támogatnak. Kattintson ide az egyszínű, mintás és átmenetes stílusok közötti váltáshoz.</translation>
 </phrase>
 
@@ -12668,12 +12686,12 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Normally, fill operations analyze the entire image. You can also analyze just the active layer.</original>
+<original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
 <translation>A kitöltési műveletek általában a teljes képet elemzik. Választhatja azt is, hogy csak az aktív réteget elemezzék.</translation>
 </phrase>
 
 <phrase>
-<original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes. You can alternatively set it to analyze the entire image, without regard for continuity.</original>
+<original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
 <translation>A kitöltések normál esetben a célpixeltől indulva terjednek szét, és hozzáadják a szomszédos pixeleket. Alternatív megoldásként beállíthatja, hogy a teljes képet elemezze, a folytonosság figyelmen kívül hagyásával.</translation>
 </phrase>
 
@@ -12747,8 +12765,8 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>straighten layer</translation>
-<translation>réteg egyenesítése</translation>
+<original>straighten layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12834,7 +12852,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Make current layer transforms (size, angle, and shear) permanent. This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
+<original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
 <translation>Az aktuális réteg átalakításainak (méret, szög és nyírás) véglegesítése. Ez a művelet soha nem kötelező, de ha a nézet renderelése lassú, javíthatja a teljesítményt.</translation>
 </phrase>
 
@@ -12950,7 +12968,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Selections normally select the area inside their boundaries, but you can modify this behavior here. (For advanced selection area adjustments, use the Select menu.)</original>
+<original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
 <translation>A kijelölések normál esetben a határaikon belüli területet választják ki, de ezt a viselkedést itt módosíthatja. (Fejlettebb kijelölési terület beállításokhoz használja a Kijelölés menüt.)</translation>
 </phrase>
 
@@ -12960,7 +12978,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This feathering slider allows for immediate feathering adjustments. For performance reasons, it is limited to small radii. For larger feathering radii, use the Select -> Feathering menu.</original>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
 <translation>Ez a lágyító csúszka azonnali lágyítási beállításokat tesz lehetővé. Teljesítmény okokból kis sugarakra korlátozódik. Nagyobb lágyítási sugarakhoz használja a Kijelölés -> Lágyítás menüt.</translation>
 </phrase>
 
@@ -12970,7 +12988,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This panel can automatically open when you edit or create a selection. On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
+<original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
 <translation>Ez a panel automatikusan megnyílhat, ha kijelölést szerkeszt vagy hoz létre. Kisebb képernyőkön ez nem biztos, hogy hasznos, ha túl sokat takar ki a vászonból, ezért itt letilthatja ezt a viselkedést.</translation>
 </phrase>
 
@@ -12995,7 +13013,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes. Alternatively, you can have it search the entire image, without regards for continuity.</original>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity.</original>
 <translation>A varázspálca normál esetben a célpixeltől indulva terjed szét, és hozzáadja a szomszédos pixeleket a kijelöléshez. Alternatív megoldásként beállíthatja, hogy a teljes képet keresse, a folytonosság figyelmen kívül hagyásával.</translation>
 </phrase>
 
@@ -13042,7 +13060,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This is an advanced text layer. To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<original>This is an advanced text layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
 <translation>Ez egy haladó szövegréteg. Az egyszerű szövegeszközzel való szerkesztéshez először át kell alakítania egyszerű szövegréteggé.</translation>
 </phrase>
 
@@ -13174,7 +13192,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This is a basic text layer. To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
+<original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
 <translation>Ez egy egyszerű szövegréteg. A haladó szövegeszközzel való szerkesztéshez először át kell alakítania haladó szövegréteggé.</translation>
 </phrase>
 
@@ -13311,7 +13329,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>This will overwrite any hotkey edits. Are you sure you want to continue?</original>
+<original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
 <translation>Ez felülírja a gyorsbillentyű-módosításokat. Biztosan folytatni szeretné?</translation>
 </phrase>
 
@@ -13463,7 +13481,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>These optional settings can accelerate the translation process. They are not saved to the language file.</original>
+<original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
 <translation>Ezek az opcionális beállítások felgyorsíthatják a fordítási folyamatot. A nyelvi fájlba nem kerülnek mentésre.</translation>
 </phrase>
 
@@ -13498,7 +13516,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Are you sure you want to delete %1? (This action cannot be undone.)</original>
+<original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
 <translation>Biztosan törölni szeretné a(z) %1 fájlt? (Ez a művelet nem vonható vissza.)</translation>
 </phrase>
 
@@ -13508,7 +13526,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>You do not have access to this folder. Please log in as an administrator and try again.</original>
+<original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
 <translation>Nincs hozzáférése ehhez a mappához. Kérjem, jelentkezzen be rendszergazdaként, és próbálja újra.</translation>
 </phrase>
 
@@ -13528,14 +13546,14 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC. This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
+<original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Sajnos a PhotoDemon en-US nyelvi fájlja nem található ezen a számítógépen. Ez a fájl benne van a PhotoDemon hivatalos kiadásában, de lehet, hogy nincs benne a fejlesztői vagy béta verziókban. Új fordítás elindításához kérjük, töltsön le egy friss PhotoDemon példányt a photodemon.org webhelyről.</translation>
 </phrase>
 
 <phrase>
-<original>Unfortunately, this language file could not be loaded. It's possible the copy on this PC is out-of-date.
+<original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Sajnos ez a nyelvi fájl nem tölthető be. Lehetséges, hogy a számítógépen lévő másolat elavult. A folytatáshoz kérjük, töltsön le egy friss PhotoDemon példányt a photodemon.org webhelyről.</translation>
@@ -13659,7 +13677,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>WARNING: this is not a valid macro. You must include at least one action that modifies the image.</original>
+<original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
 <translation>FIGYELMEZTETÉS: Ez nem érvényes makró. Legalább egy, a képet módosító műveletet tartalmaznia kell.</translation>
 </phrase>
 
@@ -13669,7 +13687,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>WARNING: this is not a valid macro. The last action cannot occur after the first action.</original>
+<original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
 <translation>FIGYELMEZTETÉS: Ez nem érvényes makró. Az utolsó művelet nem következhet az első művelet után.</translation>
 </phrase>
 
@@ -13741,7 +13759,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>All settings will be restored to their default values. This action cannot be undone.
+<original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
 <translation>Minden beállítás vissza lesz állítva az alapértelmezett értékére. Ez a művelet nem vonható vissza.
@@ -13963,6 +13981,11 @@ Biztosan folytatni szeretné?</translation>
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
+<original>reset all "remember my choice" decisions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>title bar text</original>
 <translation>címsor szövege</translation>
 </phrase>
@@ -13988,6 +14011,11 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
+<original>remember my choice</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compact (filename only)</original>
 <translation>kompakt (csak fájlnév)</translation>
 </phrase>
@@ -13998,7 +14026,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>A PhotoDemon főablakának címsora információt jelenít meg az aktuálisan betöltött képről. Ezzel a beállítással szabályozhatja, mennyi információ jelenjen meg.</translation>
 </phrase>
 
@@ -14008,7 +14036,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
+<original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
 <translation>Az áttetsző képpontok azonosításának megkönnyítésére egy speciális rács jelenik meg „mögöttük”. Ez a beállítás módosítja a rács megjelenését.</translation>
 </phrase>
 
@@ -14022,7 +14050,7 @@ Biztosan folytatni szeretné?</translation>
 <translation>nagy</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14075,7 +14103,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
 <translation>A HDR és RAW képek több színt tartalmaznak, mint amennyit a PC-képernyők fizikailag meg tudnak jeleníteni. Ezen képek megjelenítése előtt tónusleképezési műveletet kell alkalmazni az eredeti képadatokra.</translation>
 </phrase>
 
@@ -14147,7 +14175,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
+<original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
 <translation>A legtöbb képszerkesztő program alapértelmezésben az aktuális kép mappáját használja mentésre. Ha egy ettől eltérő mappába kíván menteni, válassza az utoljára használt mappát az időmegtakarítás érdekében.</translation>
 </phrase>
 
@@ -14162,7 +14190,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
+<original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
 <translation>A legtöbb képszerkesztő program alapértelmezésben az aktuális kép formátumát használja. Ha egy ettől eltérő formátumban (pl. RAW helyett JPEG) kíván menteni , válassza az utoljára használt formátumot az időmegtakarítás érdekében.</translation>
 </phrase>
 
@@ -14177,7 +14205,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
+<original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
 <translation>A legtöbb képszerkesztőben a „Mentés” parancs felülírja a kép eredeti, ill. utoljára mentett verzióját, azaz véglegesen törli azt. A PhotoDemon „biztonságosabb” opciót is kínál, ahol minden mentés a fájl új, módosított példányát eredményezi.</translation>
 </phrase>
 
@@ -14192,7 +14220,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
+<original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
 <translation>A legtöbb képszerkesztőben a „Mentés másként” parancs alapértelmezésben az aktuális fájlnevet javasolja. A PhotoDemon „biztonságosabb” opciót is kínál, ahol a Mentés másként automatikusan sorszámozza a fájlneveket Ön helyett.</translation>
 </phrase>
 
@@ -14264,22 +14292,22 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
+<original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Néhány interfész elem egyedi díszítéseket (például árnyékokat) kap. Régebbi számítógépeken ezek a díszítések felfüggeszthetők egy kisebb teljesítménynövelés érdekében.</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
+<original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
 <translation>A PhotoDemon sok előnézeti képet generál, különösen, ha a képek több réteget tartalmaznak. Az előnézetek minősége csökkenthető a teljesítmény növelése érdekében.</translation>
 </phrase>
 
 <phrase>
-<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
+<original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
 <translation>Az elsődleges képvászon renderelése a PhotoDemon teljesítményének gyakori szűk keresztmetszete. Az automatikus beállítás ajánlott, de régebbi számítógépeken manuálisan is választhatja a Teljesítmény maximalizálása opciót, feláldozva a minőséget a nyers teljesítményért.</translation>
 </phrase>
 
 <phrase>
-<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
+<original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
 <translation>Az alacsony tömörítési beállítások több lemezterületet igényelnek, de a visszavonási/újra műveletek gyorsabbak lesznek. A magas tömörítési beállítások kevesebb lemezterületet igényelnek, de a visszavonási/újra műveletek lassabbak lesznek. A visszavonási adatok törlődnek a képek bezárásakor, így ez a beállítás csak addig van hatással a lemezterületre, amíg a képeket aktívan szerkeszti.</translation>
 </phrase>
 
@@ -14356,12 +14384,12 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
 <translation>A kijelző színkezelésének kikapcsolása enyhe teljesítménynövekedést eredményezhet. Ha a kijelzője nincs beállítva színkezelésre, használja ezt a beállítást.</translation>
 </phrase>
 
 <phrase>
-<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
+<original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Ez a beállítás a legjobb választás a legtöbb felhasználó számára. Ha nincs elképzelése arról, mi a színkezelés, használja ezt a beállítást. Ha helyesen konfigurált egy kijelzőprofilt a Windows Vezérlőpulton keresztül, használja szintén ezt a beállítást.</translation>
 </phrase>
 
@@ -14371,7 +14399,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
+<original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
 <translation>Kérem, adja meg a színprofilt a rendszerhez jelenleg csatlakoztatott minden monitorhoz. Vegye figyelembe, hogy a zárójelben lévő szöveg az a kijelzőadapter, amely az adott monitort vezérli.</translation>
 </phrase>
 
@@ -14381,24 +14409,26 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
 <translation>Ha nem tudja, mit szabályoz ez a beállítás, állítsa „Perceptuális”-ra. A perceptuális renderelési szándék a legjobb választás a legtöbb felhasználó számára.</translation>
 </phrase>
 
 <phrase>
-<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
+<original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
 <translation>A Fekete Pont Kompenzáció (BPC) elsősorban a kolorimetriai renderelési szándékoknál releváns, ahol segít megőrizni a részleteket a képek sötét (árnyékos) területein. A legtöbb munkafolyamatnál a BPC-t BE kell kapcsolni.</translation>
 </phrase>
 
 <phrase>
-<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
+<original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
 <translation>A beágyazott ICC profilok javítják a színpontosságot. Még ha ez a beállítás ki is van kapcsolva, a PhotoDemon bizonyos feladatokhoz (például CMYK adatok kezeléséhez) továbbra is használhat ICC profilokat.</translation>
 </phrase>
 
 <phrase>
-<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
+<original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
 <translation>Néhány képformátum támogatja az ICC profilokat és a saját színkezelési megoldásaikat is. A PhotoDemon mindig előnyben részesíti az ICC profilokat, de ha nincs beágyazva, más színkezelési megközelítések is szóba jöhetnek.</translation>
 </phrase>
+
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>(disclaimer populated at run-time)</original>
@@ -14446,7 +14476,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
 <translation>Mivel a PhotoDemon hordozható alkalmazás, csak akkor tudja ellenőrizni a frissítéseket, ha a program fut. Alapértelmezés szerint a program indításakor minden alkalommal, de ez a gyakoriság csökkenthető.</translation>
 </phrase>
 
@@ -14466,17 +14496,17 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
 <translation>A PhotoDemon támogatásának egyik legjobb módja az új kiadások tesztelésében való segítség. Alapértelmezés szerint a PhotoDemon stabil és béta kiadásokat is javasol, de az igazán kalandvágyók a fejlesztői kiadásokat is kipróbálhatják. (A fejlesztői kiadások azonnali hozzáférést biztosítanak a legújabb funkciókhoz, de előfordulhatnak hibák.)</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
 <translation>A PhotoDemon értesítheti Önt, amikor készen áll a frissítés telepítésére. Ez lehetővé teszi, hogy azonnal használhassa a frissített verziót.</translation>
 </phrase>
 
 <phrase>
-<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
+<original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
 <translation>A PhotoDemon programot korlátozott rendszermappába helyezte. A biztonsági óvintézkedések megakadályozzák, hogy a PhotoDemon módosítsa ezt a mappát, így az automatikus frissítések le vannak tiltva. Ezek visszaállításához át kell helyeznie a PhotoDemon programot egy nem rendszergazdai mappába, mint például az Asztal, Dokumentumok vagy Letöltések.
@@ -14485,7 +14515,7 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
-<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
 <translation>A PhotoDemon fejlesztői nagyon komolyan veszik az adatvédelmet, így a frissítési folyamat során semmilyen információ – statisztikai vagy egyéb – nem kerül feltöltésre. A frissítések egyszerűen néhány kis XML fájl letöltését jelentik a photodemon.org webhelyről. Ezek a fájlok tartalmazzák a legújabb szoftver, beépülő modul és nyelvi verziószámokat. Ha frissített verziók találhatók, és a felhasználói beállítások ezt lehetővé teszik, a frissített fájlok automatikusan letöltődnek és telepítésre kerülnek.
@@ -14531,7 +14561,7 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 </phrase>
 
 <phrase>
-<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
+<original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>FIGYELEM: Ez a mappa érvénytelen (hozzáférés megtiltva). Kérem, adjon meg egy érvényes mappát. Ha nem ad meg új mappát, a PhotoDemon a rendszer ideiglenes mappáját fogja használni.</translation>
 </phrase>
 
@@ -14541,7 +14571,7 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 </phrase>
 
 <phrase>
-<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
+<original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
 <translation>Fejlesztői buildekben a hibakeresési adatok automatikusan naplózódnak a program \Data\Debug mappájába. Ha hibákat tapasztal stabil kiadásban, kérem, manuálisan aktiválja ezt a beállítást. Ez segíti a fejlesztőket a probléma megoldásában.</translation>
 </phrase>
 
@@ -14561,7 +14591,7 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 </phrase>
 
 <phrase>
-<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
+<original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
 <translation>Ez a gomb visszaállítja a PhotoDemon összes beállítását. Ha a program a várttól eltérően működik, ez megoldhatja a problémát.</translation>
 </phrase>
 
@@ -14620,7 +14650,7 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 </phrase>
 
 <phrase>
-<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
+<original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
 <translation>Távoli asztal vagy virtuális gép (VM) használatakor előfordulhat, hogy a nagy felbontású egérbevitel nem működik megfelelően. Ez egy régóta fennálló Windows hiba. Ezekben a helyzetekben használhatja ezt a beállítást a helyes egérviselkedés visszaállítására.</translation>
 </phrase>
 
@@ -14647,12 +14677,12 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 </phrase>
 
 <phrase>
-<original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
+<original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
 <translation>A menü hívó billentyűk (gyorsbillentyűk) lehetővé teszik a menük billentyűzettel történő navigálását. „Automatikus” módban, az anyanyelvi gyorsbillentyűkkel nem rendelkező nyelvek az egyes menükhöz az USA angol gyorsbillentyűit jelenítik meg.</translation>
 </phrase>
 
 <phrase>
-<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
+<original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
 <translation>Az „Utoljára használt fájlok” menü szélességét a Windows korlátozza. Annak érdekében, hogy ez a menü ne fusson túl a határokon, a PhotoDemon a teljes képútvonal helyett csak a képek nevét tudja megjeleníteni.</translation>
 </phrase>
 
@@ -14699,43 +14729,75 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 </phrase>
 
 <phrase>
-<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
+<original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
 <translation>Előfordulhat, hogy a régebbi fényképezőgépek és képszerkesztő programok nem megfelelően ágyazzák be a metaadatokat, ami egyetlen fájlon belül több metaadat-másolatot eredményez. A PhotoDemon automatikusan fel tudja oldani az ismétlődő bejegyzéseket.</translation>
 </phrase>
 
 <phrase>
-<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
+<original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
 <translation>A JPEG formátum nem teszi lehetővé a JPEG minőségi beállítások képfájlokon belüli tárolását. A PhotoDemon ezt meg tudja kerülni a minőségi beállítások más metaadatokból (például kvantálási táblázatokból) történő kikövetkeztetésével.</translation>
 </phrase>
 
 <phrase>
-<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
+<original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
 <translation>Néhány kameragyártó saját metaadat-címkéket tárol a képfájlokban. Ezek a címkék általában nem hasznosak a felhasználók számára, de a PhotoDemon megpróbálhatja azokat kibontani.</translation>
 </phrase>
 
 <phrase>
-<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
+<original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
 <translation>Alapértelmezés szerint a nagyméretű bináris címkék (például a képminiatűrök) nincsenek feldolgozva. Ehelyett a PhotoDemon egyszerűen megjeleníti a beágyazott adatok méretét. Ha szüksége van ezekre az adatokra, a PhotoDemon manuálisan Base64-é alakíthatja azokat további elemzés céljából.</translation>
 </phrase>
 
 <phrase>
-<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
+<original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
 <translation>A legtöbb digitális fénykép tartalmaz elforgatási utasításokat (EXIF tájolási metaadatok), amelyeket a PhotoDemon automatikusan használ a fényképek elforgatásához. Előfordulhat, hogy néhány régebbi okostelefon és fényképezőgép nem írja be helyesen ezeket az utasításokat, ezért ha a fotói oldalra vagy fejjel lefelé importálódnak, megpróbálhatja letiltani az automatikus elforgatás funkciót.</translation>
 </phrase>
 
 <phrase>
-<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
+<original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
 <translation>Az EXIF specifikáció előírja, hogy a programok helyesen azonosítsák magukat forrásszoftverként a képfájlok exportálásakor. A megnövelt adatvédelem érdekében ezt a viselkedést felfüggesztheti.</translation>
 </phrase>
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
+<phrase>
+<original>mipmaps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation></translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2792</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5929 phrases. -->
-<!-- 3137 are duplicates, so only 2792 unique phrases have been written to file. -->
-<!-- These 2792 phrases contain approximately 12108 total words. -->
+<!-- As of this build, PhotoDemon contains 5958 phrases. -->
+<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 </pdData>
