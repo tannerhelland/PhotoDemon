@@ -342,6 +342,29 @@ Public Function BytesToHex_FromPtr(ByVal srcPtr As Long, ByVal srcLen As Long, B
     
 End Function
 
+'Count how many times [srcChar] appears in [srcString].  [srcString] should not be null,
+' and [srcChar] needs to be a single character.
+Public Function CountCharOccurrences(ByRef srcString As String, ByRef srcChar As String) As Long
+    
+    'Don't pass null strings or non-single-length source characters
+    If (Len(srcString) < 1) Or (Len(srcChar) <> 1) Then Exit Function
+    CountCharOccurrences = 0
+    
+    Dim iTarget As Integer
+    iTarget = AscW(srcChar)
+    
+    Dim srcAsShorts() As Integer, srcSA As SafeArray1D
+    VBHacks.WrapArrayAroundPtr_Int srcAsShorts, srcSA, StrPtr(srcString), LenB(srcString)
+    
+    Dim i As Long
+    For i = 0 To UBound(srcAsShorts)
+        If (srcAsShorts(i) = iTarget) Then CountCharOccurrences = CountCharOccurrences + 1
+    Next i
+    
+    VBHacks.UnwrapArrayFromPtr_Int srcAsShorts
+    
+End Function
+
 'XML escaping is easier than HTML escaping, as only five chars must be handled ("'<>&).  While these five
 ' chars don't *always* need to be escaped (and in fact, they specifically shouldn't be escaped in comments),
 ' this function *always* escapes the chars, if found.  For a more comprehensive solution, use MSXML.
