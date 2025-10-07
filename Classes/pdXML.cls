@@ -464,8 +464,28 @@ Private Sub SplitStringIn2(ByRef srcString As String, ByVal splitPosition As Lon
     dstSecondHalf = Right$(srcString, Len(srcString) - splitPosition)
 End Sub
 
-'Once a valid XML file has been loaded, we need to see if it contains valid XML data for the current operation.  The client can
-' do this by scanning for any number of tags it expects to find in the XML file.  If all are found, return TRUE.
+'Count left (<) and right (>) angle brackets and return TRUE if both counts match.
+' Note that this doesn't do anything more than count occurrences, so it may return FALSE in situations
+' where tag contents contain a bracket.  (PD is lax about allowing this - translation files, for example,
+' allow this behavior to make life easier for translators.)
+'
+'Because of this, do *not* use this function unless you are *certain* that the XML file can't/won't
+' contain brackets within tag contents.  Otherwise, you may reject perfectly valid settings files.
+'
+'(Currently, PD only uses this for the primary settings file.)
+Friend Function BasicXMLValidation() As Boolean
+    
+    Dim numLeftBrackets As Long, numRightBrackets As Long
+    numLeftBrackets = Strings.CountCharOccurrences(m_xmlContents, "<")
+    numRightBrackets = Strings.CountCharOccurrences(m_xmlContents, ">")
+    
+    BasicXMLValidation = (numLeftBrackets = numRightBrackets)
+    
+End Function
+
+'Once a valid XML file has been loaded, we need to see if it contains valid XML data for the current operation.
+' The client can do this by scanning for any number of tags it expects to find in the XML file.
+' If all are found, return TRUE.
 Friend Function ValidateLoadedXMLData(ParamArray expectedTags() As Variant) As Boolean
 
     'Start by looking for the <pdData> tags that surround all PhotoDemon-specific XML files

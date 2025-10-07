@@ -3,9 +3,9 @@ Attribute VB_Name = "UserPrefs"
 'PhotoDemon User Preferences Manager
 'Copyright 2012-2025 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 21/February/22
-'Last update: revert nightly builds to default to "nightly build" update track (I've gotten much better
-'             at disciplined nightly build development, and they are far more stable than they used to be).
+'Last updated: 06/October/25
+'Last update: perform additional validation when loading the user preferences file (count for matched tags),
+'             and if validation fails, do a hard reset on the pref file.  (See https://github.com/tannerhelland/PhotoDemon/issues/700)
 '
 'This is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all
 ' persistent user settings.
@@ -573,8 +573,8 @@ Private Sub PerformPathCleanup()
     ' This spares me from maintaining duplicate copies, and it ensures that the actual README used
     ' on GitHub is identical to the one downloaded from photodemon.org.
     
-    'To prevent duplicate copies, check for any leftover.txt instances and remove them.  (Note that we explicitly check
-    ' file size to avoid removing files that are not ours.)
+    'To prevent duplicate copies, check for any leftover.txt instances and remove them.
+    ' (Note that we explicitly check file size to avoid removing files that are not ours.)
     Dim targetFilename As String, replaceFilename As String
     targetFilename = UserPrefs.GetProgramPath & "README.txt"
     replaceFilename = UserPrefs.GetProgramPath & "README.md"
@@ -598,16 +598,17 @@ End Sub
 'Load all user settings from file
 Public Sub LoadUserSettings()
     
-    'If no preferences file exists, construct a default one
-    If (Not Files.FileExists(m_PreferencesPath)) Then
-        PDDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
-        CreateNewPreferencesFile
-    End If
-    
-    If m_XMLEngine.LoadXMLFile(m_PreferencesPath) And m_XMLEngine.IsPDDataType("User Preferences") Then
-    
-        'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
-        ' the system temp path.)
+    'Ensure the preferences file...
+    ' 1) exists (it will be created as necessary), and...
+    ' 2) has a valid header, and...
+    ' 3) is explicitly tagged as a PD settings file, and...
+    ' 4) looks to have "mostly" valid XML syntax (PD wants left/right angle bracket count to match)
+    If LoadAndValidatePrefFile() Then
+        
+        'The user preferences file loaded and validated OK.
+        
+        'Pull the temp file path from the preferences file and make sure it exists.
+        ' (If it doesn't, transparently set it to the system temp path.)
         m_TempPath = GetPref_String("Paths", "TempFiles", vbNullString)
         If (Not Files.PathExists(m_TempPath)) Then
             m_TempPath = OS.SystemTempPath()
@@ -630,8 +631,8 @@ Public Sub LoadUserSettings()
         g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)    'Default to "All compatible images"
         g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", PD_USER_PREF_UNKNOWN)
         
-        'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
-        ' every time they're needed.)
+        'For performance reasons, cache any performance-related settings.
+        ' (This is much faster than reading preferences from file every time they're needed.)
         g_InterfacePerformance = UserPrefs.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
         UserPrefs.SetThumbnailPerformancePref UserPrefs.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
         g_ViewportPerformance = UserPrefs.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
@@ -655,15 +656,101 @@ Public Sub LoadUserSettings()
         
         m_ZoomWithWheel = UserPrefs.GetPref_Boolean("Interface", "wheel-zoom", False)
         
-        'Users can supply a (secret!) "UIFont" setting in the "Interface" segment if they
-        ' want to override PD's default font object.
         m_UIFontName = UserPrefs.GetPref_String("Interface", "UIFont", vbNullString, False)
         
     Else
-        PDDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed to validate the user's pref file.  Using default settings..."
+        PDDebug.LogAction "WARNING! UserPrefs.LoadUserSettings() failed.  This session is unrecoverable."
     End If
                 
 End Sub
+
+'Load the user's preference file, then perform a few basic validations on it.
+'
+'*IF* the current preference file fails validations, this function will forcibly re-create it from scratch
+' (if it can) then attempt to re-validate the fresh copy.
+'
+'If this function returns FALSE, the preference file is not just messed up - re-creating it also failed,
+' which points to system-level problems.  Sessions with failed preference loading are likely to experience
+' instability and/or outright crashes.
+Private Function LoadAndValidatePrefFile() As Boolean
+    
+    LoadAndValidatePrefFile = False
+    
+    'If no preferences file exists, construct a default one
+    If (Not Files.FileExists(m_PreferencesPath)) Then
+        PDDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings couldn't find a pref file.  Creating a new one now..."
+        CreateNewPreferencesFile
+    End If
+    
+    'Load the file (requires read access only)
+    Dim prefFileOK As Boolean
+    prefFileOK = m_XMLEngine.LoadXMLFile(m_PreferencesPath)
+    If prefFileOK Then
+        
+        'Check the XML type and ensure it is "user preferences"
+        prefFileOK = m_XMLEngine.IsPDDataType("User Preferences")
+    
+    'If the file couldn't be loaded, it's probably an access issue (which we can't resolve programmatically).
+    Else
+        
+        'Attempt to create the file one last time
+        PDDebug.LogAction "WARNING!  UserPrefs.LoadUserSettings *still* couldn't find a pref file.  Attempting to re-create..."
+        CreateNewPreferencesFile
+        prefFileOK = m_XMLEngine.LoadXMLFile(m_PreferencesPath)
+        If (Not prefFileOK) Then
+            PDDebug.LogAction "Re-creating pref file failed.  Session borked."
+            Exit Function
+        Else
+            prefFileOK = m_XMLEngine.IsPDDataType("User Preferences")
+        End If
+        
+    End If
+    
+    'If the preferences file exists *and* has a correct header and data type, perform basic XML validation.
+    If prefFileOK Then
+    
+        'Perform a secondary check for mismatched left/right tag counts.
+        ' (User-edited files may contain errors, and errors in parsing the settings file
+        '  can break PD in unpredictable ways.)
+        prefFileOK = m_XMLEngine.BasicXMLValidation()
+        If prefFileOK Then
+            
+            'Success!  Settings look good - proceed normally.
+            LoadAndValidatePrefFile = True
+            Exit Function
+        
+        'If the pref file has unclosed tags, reset it to allow this session to load at all,
+        ' then repeat all previous safety checks.
+        Else
+            
+            PDDebug.LogAction "WARNING: pref file reported mismatched tag counts; resetting for safety..."
+            CreateNewPreferencesFile
+            
+            prefFileOK = m_XMLEngine.LoadXMLFile(m_PreferencesPath) And m_XMLEngine.IsPDDataType("User Preferences")
+            If prefFileOK Then
+                PDDebug.LogAction "Resetting seemed to work OK.  Continuing with load..."
+            Else
+                PDDebug.LogAction "WARNING: reset still produced an invalid file.  Session borked."
+            End If
+            
+            If prefFileOK Then
+                prefFileOK = m_XMLEngine.BasicXMLValidation()
+                If prefFileOK Then
+                    PDDebug.LogAction "Fresh reset passed validation.  Session should proceed normally."
+                    LoadAndValidatePrefFile = True
+                    Exit Function
+                Else
+                    PDDebug.LogAction "WARNING: pref file *still* has 1+ unclosed tags.  Session borked."
+                End If
+            End If
+            
+        End If
+        
+    Else
+        PDDebug.LogAction "WARNING: pref file (still) doesn't exist or has wrong PD data type; session borked."
+    End If
+    
+End Function
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Public Sub ResetPreferences()
@@ -872,8 +959,8 @@ Private Sub CreateNewPreferencesFile()
         
     End With
     
-    'With all tags successfully written, forcibly write the result out to file (so we have a "clean" file copy that
-    ' mirrors our current settings, just like a normal session).
+    'With all tags successfully written, forcibly write the result out to file
+    ' (so we have a "clean" file copy that mirrors our current settings, just like a normal session).
     ForceWriteToFile
     
 End Sub

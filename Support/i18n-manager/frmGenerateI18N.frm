@@ -934,14 +934,19 @@ Private Sub cmdMergeAll_Click()
                         ' I probably just tweaked something in the source code, and we should just use the existing
                         ' translation as-is.  (Note that we do not try to propagate the case change to the translated
                         ' text because the rules for this vary by language and it might affect meaning in unintended ways!)
-                        If (distMin = 0) Then
+                        '
+                        'Similarly, if the score is 1, it often just means that a space was added somewhere to
+                        ' the original text.  (This is common if the translator used an automated tool.)
+                        ' Single-character differences shouldn't trigger any meaningful problems, so retain this
+                        ' translation and replace the offending text with the expected one.
+                        If (distMin = 0) Or (distMin = 1) Then
                         
                             findText = XML_ORIGINAL_OPEN & untranslatedPhrases(i) & ORIG_TAG_CLOSE
                             replaceText = XML_ORIGINAL_OPEN & untranslatedPhrases(i) & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
                             m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
                             numRescuedPhrases = numRescuedPhrases + 1
-                            
-                        'If the score is *not* 0, it means a translation exists for a similar - but *not* identical -
+                        
+                        'If the score is *not* 0 or 1, it means a translation exists for a similar - but *not* identical -
                         ' en-US phrase.  These cases require manual review because it's not always obvious whether the
                         ' two phrases are close enough to matter.
                         Else

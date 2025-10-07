@@ -342,6 +342,29 @@ Public Function BytesToHex_FromPtr(ByVal srcPtr As Long, ByVal srcLen As Long, B
     
 End Function
 
+'Count how many times [srcChar] appears in [srcString].  [srcString] should not be null,
+' and [srcChar] needs to be a single character.
+Public Function CountCharOccurrences(ByRef srcString As String, ByRef srcChar As String) As Long
+    
+    'Don't pass null strings or non-single-length source characters
+    If (Len(srcString) < 1) Or (Len(srcChar) <> 1) Then Exit Function
+    CountCharOccurrences = 0
+    
+    Dim iTarget As Integer
+    iTarget = AscW(srcChar)
+    
+    Dim srcAsShorts() As Integer, srcSA As SafeArray1D
+    VBHacks.WrapArrayAroundPtr_Int srcAsShorts, srcSA, StrPtr(srcString), LenB(srcString)
+    
+    Dim i As Long
+    For i = 0 To UBound(srcAsShorts)
+        If (srcAsShorts(i) = iTarget) Then CountCharOccurrences = CountCharOccurrences + 1
+    Next i
+    
+    VBHacks.UnwrapArrayFromPtr_Int srcAsShorts
+    
+End Function
+
 'XML escaping is easier than HTML escaping, as only five chars must be handled ("'<>&).  While these five
 ' chars don't *always* need to be escaped (and in fact, they specifically shouldn't be escaped in comments),
 ' this function *always* escapes the chars, if found.  For a more comprehensive solution, use MSXML.
@@ -579,6 +602,14 @@ Public Function StringDistance(ByRef baseString As String, ByRef compareString A
     ' (PD does this in its pixel dithering code, for example - it's messy but works OK, even with compile-time
     '  optimizations enabled.)
     
+End Function
+
+'Convert a base-64 encoded string into a wchar string, using standard Windows libraries.
+' (PD uses this to workaround windows-1252 encoding restrictions in PD source code.)
+' Returns TRUE if successful; FALSE otherwise.
+Public Function StringFromUtf8Base64(ByRef srcBase64 As String) As String
+    Dim utf8byte() As Byte
+    If BytesFromBase64(utf8byte, srcBase64) Then StringFromUtf8Base64 = Strings.StringFromUTF8Ptr(VarPtr(utf8byte(0)), UBound(utf8byte) + 1)
 End Function
 
 'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
