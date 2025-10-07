@@ -367,6 +367,10 @@ Public Function FileLenW(ByRef srcPath As String) As Long
     If InitializeFSO Then FileLenW = m_FSO.FileLenW(srcPath)
 End Function
 
+Public Function FileLenLargeW(ByRef srcPath As String) As Currency
+    If InitializeFSO Then FileLenLargeW = m_FSO.FileLenW_Large(srcPath)
+End Function
+
 Public Function FileLoadAsByteArray(ByRef srcFile As String, ByRef dstArray() As Byte) As Boolean
     If InitializeFSO Then FileLoadAsByteArray = m_FSO.FileLoadAsByteArray(srcFile, dstArray)
 End Function

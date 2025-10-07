@@ -1102,7 +1102,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         CascadeLoadGenericImage = LoadJPEG2000(srcFile, dstImage, dstDIB)
         If CascadeLoadGenericImage Then
             decoderUsed = id_OpenJPEG
-            dstImage.SetOriginalFileFormat PDIF_J2K
+            dstImage.SetOriginalFileFormat PDIF_JP2
         End If
     End If
     
@@ -1482,15 +1482,15 @@ Private Function LoadJPEG2000(ByRef srcFile As String, ByRef dstImage As pdImage
     LoadJPEG2000 = False
     
     'OpenJPEG handles all the dirty work for us
-    If (Not Plugin_OpenJPEG.IsFileJ2K(srcFile)) Then Exit Function
+    If (Not Plugin_OpenJPEG.IsFileJP2(srcFile)) Then Exit Function
     
     'If validation passes, attempt a full load
-    LoadJPEG2000 = Plugin_OpenJPEG.LoadJ2K(srcFile, dstImage, dstDIB)
+    LoadJPEG2000 = Plugin_OpenJPEG.LoadJP2(srcFile, dstImage, dstDIB)
     
     'Perform some PD-specific object initialization before exiting
     If LoadJPEG2000 Then
         
-        dstImage.SetOriginalFileFormat PDIF_J2K
+        dstImage.SetOriginalFileFormat PDIF_JP2
         dstImage.NotifyImageChanged UNDO_Everything
         dstImage.SetOriginalColorDepth 32
         dstImage.SetOriginalGrayscale False

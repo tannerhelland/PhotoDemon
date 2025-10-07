@@ -30,7 +30,7 @@ Attribute VB_Name = "Plugin_OpenJPEG"
 Option Explicit
 
 'Enable at DEBUG-TIME for verbose logging
-Private Const J2K_DEBUG_VERBOSE As Boolean = True
+Private Const JP2_DEBUG_VERBOSE As Boolean = True
 
 'Library handle will be non-zero if CharLS is available; you can also forcibly override the
 ' "availability" state by setting m_LibAvailable to FALSE
@@ -185,6 +185,7 @@ End Type
 'OpenJPEG supports callbacks for messages, warnings, and errors, but these require cdecl functions.
 ' I use a twinbasic-built wrapper with delegates to handle these.
 Private Declare Sub PD_GetAddrJP2KCallbacks Lib "PDHelper_win32" (ByVal dstInfoCallbackIn As Long, ByVal dstWarnCallbackIn As Long, ByVal dstErrCallbackIn As Long, ByRef dstInfoCallback As Long, ByRef dstWarnCallback As Long, ByRef dstErrCallback As Long)
+Private Declare Sub PD_GetAddrJP2FileCallbacks Lib "PDHelper_win32" (ByVal dstCbRead As Long, ByVal dstCbWrite As Long, ByRef dstCbSeek As Long, ByVal dstCbSkip As Long, ByRef outCbRead As Long, ByRef outCbWrite As Long, ByRef outCbSeek As Long, ByRef outCbSkip As Long)
 
 'Official OpenJPEG builds use stdcall
 Private Declare Function opj_version Lib "openjp2" Alias "_opj_version@0" () As Long
@@ -197,98 +198,27 @@ Private Declare Sub opj_set_error_handler Lib "openjp2" Alias "_opj_set_error_ha
 Private Declare Function opj_decoder_set_strict_mode Lib "openjp2" Alias "_opj_decoder_set_strict_mode@8" (ByVal p_codec As Long, ByVal strict As Long) As Long
 Private Declare Sub opj_destroy_codec Lib "openjp2" Alias "_opj_destroy_codec@4" (ByVal p_codec As Long)
 Private Declare Function opj_codec_set_threads Lib "openjp2" Alias "_opj_codec_set_threads@8" (ByVal p_codec As Long, ByVal num_threads As Long) As Long
-Private Declare Function opj_stream_create_default_file_stream Lib "openjp2" Alias "_opj_stream_create_default_file_stream@8" (ByVal p_fname As Long, ByVal p_is_read_stream As Long) As Long
-Private Declare Sub opj_stream_destroy Lib "openjp2" Alias "_opj_stream_destroy@4" (ByVal p_stream As Long)
 Private Declare Function opj_read_header Lib "openjp2" Alias "_opj_read_header@12" (ByVal p_stream As Long, ByVal p_codec As Long, ByVal pp_image As Long) As Long
 Private Declare Sub opj_image_destroy Lib "openjp2" Alias "_opj_image_destroy@4" (ByVal p_image As Long)
 Private Declare Function opj_decode Lib "openjp2" Alias "_opj_decode@12" (ByVal p_decompressor As Long, ByVal p_stream As Long, ByVal p_image As Long) As Long
 Private Declare Function opj_end_decompress Lib "openjp2" Alias "_opj_end_decompress@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
 
-/**
- * Creates an abstract stream. This function does nothing except allocating memory and initializing the abstract stream.
- *
- * @param   p_is_input      if set to true then the stream will be an input stream, an output stream else.
- *
- * @return  a stream object.
-*/
-OPJ_API opj_stream_t* OPJ_CALLCONV opj_stream_default_create(
-    OPJ_BOOL p_is_input);
+Private Declare Function opj_stream_create_default_file_stream Lib "openjp2" Alias "_opj_stream_create_default_file_stream@8" (ByVal p_fname As Long, ByVal p_is_read_stream As Long) As Long
+Private Declare Function opj_stream_default_create Lib "openjp2" Alias "_opj_stream_default_create@4" (ByVal bool_p_is_input As Long) As Long
+Private Declare Function opj_stream_create Lib "openjp2" Alias "_opj_stream_create@8" (ByVal p_buffer_size As Long, ByVal bool_p_is_input As Long) As Long
+Private Declare Sub opj_stream_destroy Lib "openjp2" Alias "_opj_stream_destroy@4" (ByVal p_stream As Long)
 
-/**
- * Creates an abstract stream. This function does nothing except allocating memory and initializing the abstract stream.
- *
- * @param   p_buffer_size  FIXME DOC
- * @param   p_is_input      if set to true then the stream will be an input stream, an output stream else.
- *
- * @return  a stream object.
-*/
-OPJ_API opj_stream_t* OPJ_CALLCONV opj_stream_create(OPJ_SIZE_T p_buffer_size,
-        OPJ_BOOL p_is_input);
-
-/**
- * Destroys a stream created by opj_create_stream. This function does NOT close the abstract stream. If needed the user must
- * close its own implementation of the stream.
- *
- * @param   p_stream    the stream to destroy.
- */
-OPJ_API void OPJ_CALLCONV opj_stream_destroy(opj_stream_t* p_stream);
-
-/**
- * Sets the given function to be used as a read function.
- * @param       p_stream    the stream to modify
- * @param       p_function  the function to use a read function.
-*/
-OPJ_API void OPJ_CALLCONV opj_stream_set_read_function(opj_stream_t* p_stream,
-        opj_stream_read_fn p_function);
-
-/**
- * Sets the given function to be used as a write function.
- * @param       p_stream    the stream to modify
- * @param       p_function  the function to use a write function.
-*/
-OPJ_API void OPJ_CALLCONV opj_stream_set_write_function(opj_stream_t* p_stream,
-        opj_stream_write_fn p_function);
-
-/**
- * Sets the given function to be used as a skip function.
- * @param       p_stream    the stream to modify
- * @param       p_function  the function to use a skip function.
-*/
-OPJ_API void OPJ_CALLCONV opj_stream_set_skip_function(opj_stream_t* p_stream,
-        opj_stream_skip_fn p_function);
-
-/**
- * Sets the given function to be used as a seek function, the stream is then seekable,
- * using SEEK_SET behavior.
- * @param       p_stream    the stream to modify
- * @param       p_function  the function to use a skip function.
-*/
-OPJ_API void OPJ_CALLCONV opj_stream_set_seek_function(opj_stream_t* p_stream,
-        opj_stream_seek_fn p_function);
-
-/**
- * Sets the given data to be used as a user data for the stream.
- * @param       p_stream    the stream to modify
- * @param       p_data      the data to set.
- * @param       p_function  the function to free p_data when opj_stream_destroy() is called.
-*/
-OPJ_API void OPJ_CALLCONV opj_stream_set_user_data(opj_stream_t* p_stream,
-        void * p_data, opj_stream_free_user_data_fn p_function);
-
-/**
- * Sets the length of the user data for the stream.
- *
- * @param p_stream    the stream to modify
- * @param data_length length of the user_data.
-*/
-OPJ_API void OPJ_CALLCONV opj_stream_set_user_data_length(
-    opj_stream_t* p_stream, OPJ_UINT64 data_length);
-
+Private Declare Sub opj_stream_set_read_function Lib "openjp2" Alias "_opj_stream_set_read_function@8" (ByVal p_stream As Long, ByVal p_function As Long)
+Private Declare Sub opj_stream_set_write_function Lib "openjp2" Alias "_opj_stream_set_write_function@8" (ByVal p_stream As Long, ByVal p_function As Long)
+Private Declare Sub opj_stream_set_skip_function Lib "openjp2" Alias "_opj_stream_set_skip_function@8" (ByVal p_stream As Long, ByVal p_function As Long)
+Private Declare Sub opj_stream_set_seek_function Lib "openjp2" Alias "_opj_stream_set_seek_function@8" (ByVal p_stream As Long, ByVal p_function As Long)
+Private Declare Sub opj_stream_set_user_data Lib "openjp2" Alias "_opj_stream_set_user_data@12" (ByVal p_stream As Long, ByVal p_data As Long, ByVal p_function As Long)
+Private Declare Sub opj_stream_set_user_data_length Lib "openjp2" Alias "_opj_stream_set_user_data_length@12" (ByVal p_stream As Long, ByVal data_length As Currency)
 
 'Current image, if any
-Private m_j2kImage As opj_image
+Private m_jp2Image As opj_image
 
-'What follows are PD-specific structs for importing J2K data
+'What follows are PD-specific structs for importing JP2 data
 Private Type PD_OpjNotes
     finalWidth As Long
     finalHeight As Long
@@ -300,10 +230,13 @@ Private Type PD_OpjNotes
     isChannelSubsampled() As Boolean
 End Type
 
-'PD-specific details re: the current image.  J2K images have a lot of storage details that are complicated for
+'PD-specific details re: the current image.  JP2 images have a lot of storage details that are complicated for
 ' PD to handle (like different subsampling on each channel).  Passing those details between functions is made
 ' easier by module-level storage.
 Private m_OpjNotes As PD_OpjNotes
+
+'This stream reads/write the actual JP2 data
+Private m_Stream As pdStream
     
 'Forcibly disable CharLS interactions at run-time (if newState is FALSE).
 ' Setting newState to TRUE is not advised; this module will handle state internally based
@@ -353,11 +286,11 @@ End Sub
 ' / END GENERIC 3RD-PARTY LIBRARY BOILERPLATE
 '**********************************************
 
-'Verify J2K file signature.  Doesn't require OpenJPEG.
-Public Function IsFileJ2K(ByRef srcFile As String, Optional ByRef outCodecFormat As OPJ_CODEC_FORMAT) As Boolean
+'Verify JPEG-2000 file signature.  Doesn't require OpenJPEG.
+Public Function IsFileJP2(ByRef srcFile As String, Optional ByRef outCodecFormat As OPJ_CODEC_FORMAT) As Boolean
 
-    Const FUNC_NAME As String = "IsFileJ2K"
-    IsFileJ2K = False
+    Const FUNC_NAME As String = "IsFileJP2"
+    IsFileJP2 = False
     
     If Files.FileExists(srcFile) Then
         
@@ -368,8 +301,8 @@ Public Function IsFileJ2K(ByRef srcFile As String, Optional ByRef outCodecFormat
         
         If Strings.StringsEqual(srcExtension, "jpt", True) Then
             outCodecFormat = OPJ_CODEC_JPT
-            IsFileJ2K = True
-            If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is JPT stream"
+            IsFileJP2 = True
+            If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "File is JPT stream"
             Exit Function
         End If
         
@@ -392,24 +325,24 @@ Public Function IsFileJ2K(ByRef srcFile As String, Optional ByRef outCodecFormat
                  
                 If VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(JP2_RFC3745_MAGIC_1), 4) Then
                     If VBHacks.MemCmp(VarPtr(bFirst12(4)), VarPtr(JP2_RFC3745_MAGIC_2), 4) Then
-                        IsFileJ2K = VBHacks.MemCmp(VarPtr(bFirst12(8)), VarPtr(JP2_RFC3745_MAGIC_3), 4)
+                        IsFileJP2 = VBHacks.MemCmp(VarPtr(bFirst12(8)), VarPtr(JP2_RFC3745_MAGIC_3), 4)
                         outCodecFormat = OPJ_CODEC_JP2
-                        If IsFileJ2K And J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is JP2_RFC3745"
+                        If IsFileJP2 And JP2_DEBUG_VERBOSE Then PDDebug.LogAction "File is JP2_RFC3745"
                     End If
                 End If
                 
-                If (Not IsFileJ2K) Then
+                If (Not IsFileJP2) Then
                     
                     Const JP2_MAGIC As Long = &HA870A0D
                     Const J2K_CODESTREAM_MAGIC As Long = &H51FF4FFF
                     
-                    IsFileJ2K = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(JP2_MAGIC), 4)
+                    IsFileJP2 = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(JP2_MAGIC), 4)
                     outCodecFormat = OPJ_CODEC_JP2
-                    If IsFileJ2K And J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is JP2 stream"
-                    If (Not IsFileJ2K) Then
-                        IsFileJ2K = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(J2K_CODESTREAM_MAGIC), 4)
+                    If IsFileJP2 And JP2_DEBUG_VERBOSE Then PDDebug.LogAction "File is JP2 stream"
+                    If (Not IsFileJP2) Then
+                        IsFileJP2 = VBHacks.MemCmp(VarPtr(bFirst12(0)), VarPtr(J2K_CODESTREAM_MAGIC), 4)
                         outCodecFormat = OPJ_CODEC_J2K
-                        If IsFileJ2K And J2K_DEBUG_VERBOSE Then PDDebug.LogAction "File is J2K stream"
+                        If IsFileJP2 And JP2_DEBUG_VERBOSE Then PDDebug.LogAction "File is J2K stream"
                     End If
                     
                 End If
@@ -423,23 +356,23 @@ Public Function IsFileJ2K(ByRef srcFile As String, Optional ByRef outCodecFormat
     
 End Function
 
-'Load a J2K image.  Will validate the file prior to loading.  Requires OpenJPEG.
-Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+'Load a JPEG-2000 image.  Will validate the file prior to loading.  Requires OpenJPEG.
+Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
 
-    Const FUNC_NAME As String = "LoadJ2K"
-    LoadJ2K = False
+    Const FUNC_NAME As String = "LoadJP2"
+    LoadJP2 = False
     
     'Failsafe check; this function is pointless if OpenJPEG doesn't exist
     If (Not Plugin_OpenJPEG.IsOpenJPEGEnabled()) Then Exit Function
     
     'Failsafe check; validate file signature (hopefully the caller did this, but you never know)
     Dim srcCodec As OPJ_CODEC_FORMAT
-    If (Not Plugin_OpenJPEG.IsFileJ2K(srcFile, srcCodec)) Then Exit Function
+    If (Not Plugin_OpenJPEG.IsFileJP2(srcFile, srcCodec)) Then Exit Function
     
     'Still here?  This file passed basic validation.
     
-    'Initialize a default J2K decoder
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder itself..."
+    'Initialize a default JPEG-2000 decoder
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder itself..."
     Dim pDecoder As Long
     pDecoder = opj_create_decompress(srcCodec)
     If (pDecoder = 0) Then
@@ -450,7 +383,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Initialize function wrappers for our constructed decoder.
     ' (We do this via a twinBasic-built helper library, which allows for CDecl callbacks
     '  without needing embedded assembly shenanigans.)
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing callbacks..."
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing callbacks..."
     Dim hInfo As Long, hWarning As Long, hError As Long
     PD_GetAddrJP2KCallbacks AddressOf HandlerInfo, AddressOf HandlerWarning, AddressOf HandlerError, hInfo, hWarning, hError
     
@@ -460,7 +393,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Decoders support variable behavior via a "decoder parameter" struct.
     ' Populate a parameter struct with default values.
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder params..."
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder params..."
     Dim dParams As opj_dparameters
     opj_set_default_decoder_parameters VarPtr(dParams)
     
@@ -468,7 +401,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     ' (For now, PD uses default decoding params.)
     
     'Load our decoder with whatever decoding parameters we've decided on
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing decoder against params..."
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing decoder against params..."
     Dim retOJ As Long
     retOJ = opj_setup_decoder(pDecoder, VarPtr(dParams))
     If (retOJ = 0) Then
@@ -479,16 +412,16 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Decoders can use a "strict" mode, where incomplete streams are disallowed.
     ' (Non-strict mode tells the decoder to simply decode as much as they can, and stop when they
     '  run out of room - this may allow *some* files to be partially recovered.)
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "setting strict mode to OFF..."
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "setting strict mode to OFF..."
     If (opj_decoder_set_strict_mode(pDecoder, 0&) <> 1&) Then
         InternalError FUNC_NAME, "failed to set strictness mode"
         GoTo SafeCleanup
     End If
     
     'Allow the decoder to use as many logical threads as it wants
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "allowing multithreaded decode..."
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "allowing multithreaded decode..."
     If (opj_codec_set_threads(pDecoder, OS.LogicalCoreCount()) = 1&) Then
-        If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Allowing J2K decoder to use " & OS.LogicalCoreCount() & " cores"
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Allowing OpenJPEG to use " & OS.LogicalCoreCount() & " cores"
     Else
         InternalError FUNC_NAME, "couldn't set thread count; single-thread mode will be used"
     End If
@@ -496,20 +429,50 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Prep a generic reader against the target file.
     ' (Note that the decoder parameters struct has a place for filename, but that is only used
     '  *internally* by the library and is of no use here.)
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Creating default file stream..."
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Creating default file stream..."
     
-    'Convert the source filename to UTF-8 before assigning
-    Dim utf8Filename() As Byte
-    Strings.UTF8FromString srcFile, utf8Filename, 0&
-    
-    Dim pStream As Long
-    pStream = opj_stream_create_default_file_stream(VarPtr(utf8Filename(0)), 1&)
-    If (pStream = 0&) Then
-        InternalError FUNC_NAME, "couldn't create stream on target file; load abandoned"
+    'TODO: use our I/O functions instead of OpenJPEG's (because theirs don't support Unicode on Windows)
+    Set m_Stream = New pdStream
+    If Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
+        InternalError FUNC_NAME, "couldn't start pdStream"
         GoTo SafeCleanup
     End If
     
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Reading header..."
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "pdStream initialized OK..."
+    
+    Dim pStream As Long
+    pStream = opj_stream_default_create(1)
+    If (pStream = 0&) Then
+        InternalError FUNC_NAME, "couldn't start jp2 stream"
+        GoTo SafeCleanup
+    End If
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Blank jp2 stream initialized OK..."
+    
+    Dim hRead As Long, hWrite As Long, hSkip As Long, hSeek As Long
+    PD_GetAddrJP2FileCallbacks AddressOf JP2_ReadProcDelegate, AddressOf JP2_WriteProcDelegate, AddressOf JP2_SkipProcDelegate, AddressOf JP2_SeekProcDelegate, hRead, hWrite, hSeek, hSkip
+    
+    opj_stream_set_user_data pStream, 0&, 0&
+    opj_stream_set_user_data_length pStream, Files.FileLenW(srcFile) \ 10000
+    opj_stream_set_read_function pStream, hRead
+    opj_stream_set_write_function pStream, hWrite
+    opj_stream_set_skip_function pStream, hSkip
+    opj_stream_set_seek_function pStream, hSeek
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Callbacks assigned OK..."
+'
+'    'Convert the source filename to UTF-8 before assigning
+'    Dim utf8Filename() As Byte
+'    Strings.UTF8FromString srcFile, utf8Filename, 0&
+'
+'    Dim pStream As Long
+'    pStream = opj_stream_create_default_file_stream(VarPtr(utf8Filename(0)), 1&)
+'    If (pStream = 0&) Then
+'        InternalError FUNC_NAME, "couldn't create stream on target file; load abandoned"
+'        GoTo SafeCleanup
+'    End If
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Reading header..."
     
     Dim pImage As Long
     If (opj_read_header(pStream, pDecoder, VarPtr(pImage)) <> 1&) Then
@@ -517,9 +480,9 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         GoTo SafeCleanup
     End If
     
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Header read successfully"
-    VBHacks.CopyMemoryStrict VarPtr(m_j2kImage), pImage, LenB(m_j2kImage)
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction m_j2kImage.x0 & ", " & m_j2kImage.y0 & ", " & m_j2kImage.x1 & ", " & m_j2kImage.y1 & ", " & m_j2kImage.numcomps & " " & GetNameOfOpjColorSpace(m_j2kImage.color_space) & " components"
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Header read successfully"
+    VBHacks.CopyMemoryStrict VarPtr(m_jp2Image), pImage, LenB(m_jp2Image)
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction m_jp2Image.x0 & ", " & m_jp2Image.y0 & ", " & m_jp2Image.x1 & ", " & m_jp2Image.y1 & ", " & m_jp2Image.numcomps & " " & GetNameOfOpjColorSpace(m_jp2Image.color_space) & " components"
     
     'Finish decoding the rest of the image
     If (opj_decode(pDecoder, pStream, pImage) <> 1&) Then
@@ -527,7 +490,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         GoTo SafeCleanup
     End If
     
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Decoded full image successfully"
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Decoded full image successfully"
     
     'Read to the end of the file to pull any other useful info (e.g. metadata)
     If (opj_end_decompress(pDecoder, pStream) <> 1&) Then
@@ -535,12 +498,12 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         'Attempt to load image anyway
     End If
     
-    If J2K_DEBUG_VERBOSE Then PDDebug.LogAction "Reached EOF successfully"
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Reached EOF successfully"
     
     'We can now pull channel data from the supplied image pointer.
     
     Dim numComponents As Long
-    numComponents = m_j2kImage.numcomps
+    numComponents = m_jp2Image.numcomps
     
     If (numComponents <= 0) Then
         PDDebug.LogAction "Invalid channel count: " & numComponents
@@ -557,14 +520,14 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'To simplify reading data from an arbitrary pointer, construct a pdStream object against it.
     Dim cStream As pdStream
     Set cStream = New pdStream
-    If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * numComponents, baseFilePointerOffset:=m_j2kImage.pComps, optimizeAccess:=OptimizeSequentialAccess) Then
+    If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * numComponents, baseFilePointerOffset:=m_jp2Image.pComps, optimizeAccess:=OptimizeSequentialAccess) Then
         
         Dim i As Long
         For i = 0 To numComponents - 1
             cStream.SetPosition i * sizeOfChannelAligned, FILE_BEGIN
             VBHacks.CopyMemoryStrict VarPtr(imgChannels(i)), cStream.ReadBytes_PointerOnly(sizeOfChannel), sizeOfChannel
             
-            If J2K_DEBUG_VERBOSE Then
+            If JP2_DEBUG_VERBOSE Then
                 PDDebug.LogAction "Channel #" & CStr(i + 1) & " info: "
                 With imgChannels(i)
                     PDDebug.LogAction .x0 & ", " & .y0 & ", " & .w & ", " & .h & ", " & .prec & ", " & .Alpha
@@ -585,13 +548,13 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'With channel headers assembled, we now need to iterate channels and copy their contents into a dedicated pdDIB object.
     
     'Prep the target object.  For size, we ideally want to use the size in the header, which may not match the
-    ' size of all/any individual components.  (J2K images are challenging this way.)
+    ' size of all/any individual components.  (JPEG-2000 images are challenging this way.)
     '
     'For this initial draft, we are going to do a few different validations.
     '
     'First, we're going to figure out what color space to use for the embedded data.
     Dim targetColorSpace As OPJ_COLOR_SPACE
-    targetColorSpace = DetermineColorHandling(m_j2kImage.color_space, numComponents, imgChannels)
+    targetColorSpace = DetermineColorHandling(m_jp2Image.color_space, numComponents, imgChannels)
     If (targetColorSpace <> OPJ_CLRSPC_GRAY) And (targetColorSpace <> OPJ_CLRSPC_SRGB) And (targetColorSpace <> OPJ_CLRSPC_SYCC) Then
         PDDebug.LogAction "Unknown color space or component count.  Abandoning load."
         GoTo SafeCleanup
@@ -606,7 +569,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Non-8-bpp color depth handling is TODO
     If m_OpjNotes.isNot8Bit Then
-        PDDebug.LogAction "Only 8-bit-per-channel J2K images are currently supported"
+        PDDebug.LogAction "Only 8-bit-per-channel JP2 images are currently supported"
         GoTo SafeCleanup
     End If
     
@@ -718,7 +681,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         dstDIB.UnwrapArrayFromDIB dstPixels
         dstDIB.SetAlphaPremultiplication True
         
-        LoadJ2K = True
+        LoadJP2 = True
         
     End If
     
@@ -728,6 +691,7 @@ Public Function LoadJ2K(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     Exit Function
     
 SafeCleanup:
+    Set m_Stream = Nothing
     If (Not cStream Is Nothing) Then cStream.StopStream True
     If (pImage <> 0) Then opj_image_destroy pImage
     If (pStream <> 0) Then opj_stream_destroy pStream
@@ -783,7 +747,7 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
     End If
     
     'If we're still here, this image has multiple channels.  Iterate up to 4 channels and count how many
-    ' have dimensions matching the first component.  (Subsampling in J2K files means each channel can have its
+    ' have dimensions matching the first component.  (Subsampling in JP2 files means each channel can have its
     ' own independent dimensions, and the caller is expected to scale all components to match in the file image.
     ' I don't currently have a straightforward way to do that, so I'm going to follow the example of most other
     ' software and simply not deal with it.)
@@ -893,3 +857,41 @@ Private Sub HandlerError(ByVal pMsg As Long, ByVal pUserData As Long)
     PDDebug.LogAction "openJPEG Error: " & Strings.StringFromCharPtr(pMsg, False), PDM_External_Lib
 End Sub
 
+Private Function JP2_ReadProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes As Long, ByVal p_user_data As Long) As Long
+    'Debug.Print "JP2_ReadProcDelegate", p_nb_bytes
+    If (Not m_Stream Is Nothing) Then
+        If (m_Stream.GetPosition() = m_Stream.GetStreamSize()) Then
+            JP2_ReadProcDelegate = -1
+        Else
+            JP2_ReadProcDelegate = m_Stream.ReadBytesToBarePointer(p_buffer, p_nb_bytes)
+            If (JP2_ReadProcDelegate = 0) Then JP2_ReadProcDelegate = -1
+        End If
+    End If
+End Function
+
+Private Function JP2_WriteProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes As Long, ByVal p_user_data As Long) As Long
+    'Debug.Print "JP2_WriteProcDelegate", p_nb_bytes
+    'TBD!
+End Function
+
+Private Function JP2_SkipProcDelegate(ByVal p_nb_bytes As Currency, ByVal p_user_data As Long) As Currency
+    'Debug.Print "JP2_SkipProcDelegate", p_nb_bytes
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.SetPosition(p_nb_bytes \ 10000, FILE_CURRENT) Then
+            JP2_SkipProcDelegate = p_nb_bytes
+        Else
+            JP2_SkipProcDelegate = -1
+        End If
+    End If
+End Function
+
+Private Function JP2_SeekProcDelegate(ByVal p_nb_bytes As Currency, ByVal p_user_data As Long) As Long
+    'Debug.Print "JP2_SeekProcDelegate", p_nb_bytes
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.SetPosition(p_nb_bytes \ 10000, FILE_BEGIN) Then
+            JP2_SeekProcDelegate = 1
+        Else
+            JP2_SeekProcDelegate = 0
+        End If
+    End If
+End Function
