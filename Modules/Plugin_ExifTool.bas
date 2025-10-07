@@ -362,7 +362,7 @@ Private Sub StopVerificationMode()
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
         If Files.FileDeleteIfExists(m_tmpMetadataFilePath) Then
-            PDDebug.LogAction "Metadata embedding finished; temp file deleted: " & m_tmpMetadataFilePath
+            PDDebug.LogAction "Metadata embedding finished."
         Else
             PDDebug.LogAction "WARNING: metadata embedding finished, but temp file remains: " & m_tmpMetadataFilePath
         End If
@@ -969,7 +969,7 @@ Public Function WriteMetadata(ByRef srcMetadataFile As String, ByRef dstImageFil
     
     If (outputMetadataFormat = PDMF_NONE) Then
         PDDebug.LogAction "This file format does not support metadata.  Metadata processing skipped."
-        Files.FileDeleteIfExists srcMetadataFile
+        If (LenB(srcMetadataFile) <> 0) Then Files.FileDeleteIfExists srcMetadataFile
         WriteMetadata = True
         Exit Function
     End If
