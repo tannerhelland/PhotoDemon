@@ -50,6 +50,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Andrew Yeoman
 * [Ari Sohandri Putra](https://github.com/arisohandriputra)
 * [Avery](https://github.com/Planet-Source-Code/avery-use-gdi-aka-gdiplus-with-vb6-and-win98__1-37541)
+* Bánszki István
 * [Boban Gjerasimoski](https://www.behance.net/Boban_Gjerasimoski)
 * [Bonnie West](https://github.com/Planet-Source-Code/bonnie-west-the-optimum-fileexists-function__1-74264)
 * [Carles P.V.](https://github.com/Planet-Source-Code/carles-p-v-ibmp-1-2__1-42376)

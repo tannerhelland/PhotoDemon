@@ -604,6 +604,14 @@ Public Function StringDistance(ByRef baseString As String, ByRef compareString A
     
 End Function
 
+'Convert a base-64 encoded string into a wchar string, using standard Windows libraries.
+' (PD uses this to workaround windows-1252 encoding restrictions in PD source code.)
+' Returns TRUE if successful; FALSE otherwise.
+Public Function StringFromUtf8Base64(ByRef srcBase64 As String) As String
+    Dim utf8byte() As Byte
+    If BytesFromBase64(utf8byte, srcBase64) Then StringFromUtf8Base64 = Strings.StringFromUTF8Ptr(VarPtr(utf8byte(0)), UBound(utf8byte) + 1)
+End Function
+
 'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
 ' into a VB string.
 '

@@ -334,6 +334,7 @@ Private Sub Form_Load()
     GenerateContributor "Alric Rahl", "https://t.me/Alricrahl"
     GenerateContributor "Andrew Yeoman"
     GenerateContributor "Ari Sohandri Putra", "https://github.com/arisohandriputra"
+    GenerateContributor Strings.StringFromUtf8Base64("QsOhbnN6a2kgSXN0dsOhbg==")
     GenerateContributor "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html"
     GenerateContributor "Boban Gjerasimoski", "https://www.behance.net/Boban_Gjerasimoski"
     GenerateContributor "Bonnie West", "https://github.com/Planet-Source-Code/bonnie-west-the-optimum-fileexists-function__1-74264"
