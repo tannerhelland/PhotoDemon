@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_OpenJPEG"
 'OpenJPEG (JPEG-2000) Library Interface
 'Copyright 2025-2025 by Tanner Helland
 'Created: 19/September/25
-'Last updated: 19/September/25
-'Last update: initial build
+'Last updated: 09/October/25
+'Last update: implement subsampling support
 '
 'Per its documentation (available at https://www.openjpeg.org/), OpenJPEG is...
 '
@@ -228,6 +228,8 @@ Private Type PD_OpjNotes
     isNot8Bit As Boolean
     hasSubsampling As Boolean
     isChannelSubsampled() As Boolean
+    channelSsWidth() As Long        'Subsampled width/height, in pixels, of channel at index [n]
+    channelSsHeight() As Long
 End Type
 
 'PD-specific details re: the current image.  JP2 images have a lot of storage details that are complicated for
@@ -460,19 +462,6 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     opj_stream_set_seek_function pStream, hSeek
     
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Callbacks assigned OK..."
-'
-'    'Convert the source filename to UTF-8 before assigning
-'    Dim utf8Filename() As Byte
-'    Strings.UTF8FromString srcFile, utf8Filename, 0&
-'
-'    Dim pStream As Long
-'    pStream = opj_stream_create_default_file_stream(VarPtr(utf8Filename(0)), 1&)
-'    If (pStream = 0&) Then
-'        InternalError FUNC_NAME, "couldn't create stream on target file; load abandoned"
-'        GoTo SafeCleanup
-'    End If
-    
-    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Reading header..."
     
     Dim pImage As Long
     If (opj_read_header(pStream, pDecoder, VarPtr(pImage)) <> 1&) Then
@@ -560,11 +549,36 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         GoTo SafeCleanup
     End If
     
-    'TODO: handle YCC variations; they're valid and not too bad to handle (theoretically)
+    'Subsampling requires us to use custom indices for each channel, based on its subsampling factor
+    Dim subSamplingActive As Boolean
+    subSamplingActive = m_OpjNotes.hasSubsampling
     
-    If m_OpjNotes.hasSubsampling Then
-        PDDebug.LogAction "NOTE: this image uses subsampling; PD can't load it (yet)."
-        GoTo SafeCleanup
+    Dim gSSfactorX As Single, bSSfactorX As Single, aSSfactorX As Single
+    Dim gSSfactorY As Single, bSSfactorY As Single, aSSfactorY As Single
+    Dim gWidth As Long, bWidth As Long, aWidth As Long
+    
+    If subSamplingActive And (numComponents > 1) Then
+        
+        'Calculate indices into each color channel.  (Note that we use RGBA indices, but channels may represent
+        ' other color data - that's okay.)
+        If (numComponents >= 2) Then
+            gSSfactorX = CDbl(m_OpjNotes.channelSsWidth(1)) / CDbl(m_OpjNotes.finalWidth)
+            gSSfactorY = CDbl(m_OpjNotes.channelSsHeight(1)) / CDbl(m_OpjNotes.finalHeight)
+            gWidth = m_OpjNotes.channelSsWidth(1)
+        End If
+        
+        If (numComponents >= 3) Then
+            bSSfactorX = CDbl(m_OpjNotes.channelSsWidth(2)) / CDbl(m_OpjNotes.finalWidth)
+            bSSfactorY = CDbl(m_OpjNotes.channelSsHeight(2)) / CDbl(m_OpjNotes.finalHeight)
+            bWidth = m_OpjNotes.channelSsWidth(2)
+        End If
+        
+        If (numComponents >= 4) Then
+            aSSfactorX = CDbl(m_OpjNotes.channelSsWidth(3)) / CDbl(m_OpjNotes.finalWidth)
+            aSSfactorY = CDbl(m_OpjNotes.channelSsHeight(3)) / CDbl(m_OpjNotes.finalHeight)
+            aWidth = m_OpjNotes.channelSsWidth(3)
+        End If
+        
     End If
     
     'Non-8-bpp color depth handling is TODO
@@ -593,7 +607,7 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         Dim r As Long, g As Long, b As Long, yccY As Long, yccB As Long, yccR As Long
         Dim x As Long, y As Long
         Dim dstPixels() As Byte, dstSA As SafeArray1D
-        Dim saOffset As Long
+        Dim saOffset As Long, xOffset As Long
         
         If (imgChannels(0).prec = 8) Then
             
@@ -609,25 +623,47 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             
             copyAlpha = m_OpjNotes.imgHasAlpha
             If copyAlpha Then VBHacks.WrapArrayAroundPtr_Long srcAs, srcASA, imgChannels(3).p_data, channelSizeEstimate
+            
             Debug.Print targetWidth, targetHeight, channelSizeEstimate
+            
             For y = 0 To targetHeight - 1
                 dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
-                saOffset = y * targetWidth '* 4
-                'Debug.Print saOffset
+                saOffset = y * targetWidth
             If (targetColorSpace = OPJ_CLRSPC_SRGB) Then
-                For x = 0 To targetWidth - 1
-                    dstPixels(x * 4) = srcBs(saOffset + x)
-                    dstPixels(x * 4 + 1) = srcGs(saOffset + x)
-                    dstPixels(x * 4 + 2) = srcRs(saOffset + x)
-                    If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
-                Next x
+                
+                If subSamplingActive Then
+                    For x = 0 To targetWidth - 1
+                        dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX))
+                        dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX))
+                        dstPixels(x * 4 + 2) = srcRs(saOffset + x)
+                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
+                    Next x
+                Else
+                    For x = 0 To targetWidth - 1
+                        dstPixels(x * 4) = srcBs(saOffset + x)
+                        dstPixels(x * 4 + 1) = srcGs(saOffset + x)
+                        dstPixels(x * 4 + 2) = srcRs(saOffset + x)
+                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                    Next x
+                End If
             
             'YCC to RGB conversion taken from OpenJPEG itself: https://github.com/uclouvain/openjpeg/blob/e7453e398b110891778d8da19209792c69ca7169/src/bin/common/color.c#L74
             ElseIf (targetColorSpace = OPJ_CLRSPC_SYCC) Then
+                
                 For x = 0 To targetWidth - 1
-                    yccY = srcRs(saOffset + x)
-                    yccB = srcGs(saOffset + x) - 127
-                    yccR = srcBs(saOffset + x) - 127
+                    
+                    If subSamplingActive Then
+                        yccY = srcRs(saOffset + x)
+                        yccB = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) - 127
+                        yccR = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) - 127
+                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
+                    Else
+                        yccY = srcRs(saOffset + x)
+                        yccB = srcGs(saOffset + x) - 127
+                        yccR = srcBs(saOffset + x) - 127
+                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                    End If
+                    
                     r = yccY + 1.402 * yccR
                     If (r < 0) Then r = 0
                     If (r > 255) Then r = 255
@@ -640,17 +676,18 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                     dstPixels(x * 4) = b
                     dstPixels(x * 4 + 1) = g
                     dstPixels(x * 4 + 2) = r
-                    If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                    
                 Next x
+                
             End If
             Next y
             
         ElseIf (imgChannels(0).prec = 16) Then
-        
-            'Size estimate obviously needs to change by bit-depth TODO
+            
+            'TODO: split by color model
+            
             targetWidth = m_OpjNotes.finalWidth
             targetHeight = m_OpjNotes.finalHeight
-            
             channelSizeEstimate = targetWidth * targetHeight * 4
             
             VBHacks.WrapArrayAroundPtr_Long srcRs, srcRSA, imgChannels(0).p_data, channelSizeEstimate
@@ -661,14 +698,30 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             If copyAlpha Then VBHacks.WrapArrayAroundPtr_Long srcAs, srcASA, imgChannels(3).p_data, channelSizeEstimate
             
             For y = 0 To targetHeight - 1
+            
                 dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
                 saOffset = y * targetWidth
-            For x = 0 To targetWidth - 1
-                dstPixels(x * 4) = srcBs(saOffset + x) \ 256
-                dstPixels(x * 4 + 1) = srcGs(saOffset + x) \ 256
-                dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
-                If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
-            Next x
+                
+                If subSamplingActive Then
+                        
+                    For x = 0 To targetWidth - 1
+                        dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) \ 256
+                        dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) \ 256
+                        dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
+                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) \ 256
+                    Next x
+                    
+                Else
+                
+                    For x = 0 To targetWidth - 1
+                        dstPixels(x * 4) = srcBs(saOffset + x) \ 256
+                        dstPixels(x * 4 + 1) = srcGs(saOffset + x) \ 256
+                        dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
+                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
+                    Next x
+                    
+                End If
+                
             Next y
             
         End If
@@ -730,6 +783,8 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
         .imgHasAlpha = False
         .isNot8Bit = False
         ReDim .isChannelSubsampled(0 To numComponents) As Boolean
+        ReDim .channelSsWidth(0 To numComponents) As Long
+        ReDim .channelSsHeight(0 To numComponents) As Long
         .idxAlphaChannel = -1
     End With
     
@@ -748,11 +803,7 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
     
     'If we're still here, this image has multiple channels.  Iterate up to 4 channels and count how many
     ' have dimensions matching the first component.  (Subsampling in JP2 files means each channel can have its
-    ' own independent dimensions, and the caller is expected to scale all components to match in the file image.
-    ' I don't currently have a straightforward way to do that, so I'm going to follow the example of most other
-    ' software and simply not deal with it.)
-    '
-    '(TODO in the future, perhaps: add support for handling subsampled channels.)
+    ' own independent dimensions, and the caller is expected to scale all components to match in the file image.)
     Dim searchDepth As Long
     searchDepth = PDMath.Min2Int(numComponents, 4)
     
@@ -762,7 +813,9 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
         'For now, stop if we meet a subsampled channel
         If (imgChannels(i).w <> targetWidth) Or (imgChannels(i).h <> targetHeight) Then
             m_OpjNotes.hasSubsampling = True
-            Exit For
+            m_OpjNotes.isChannelSubsampled(i) = True
+            m_OpjNotes.channelSsWidth(i) = imgChannels(i).w
+            m_OpjNotes.channelSsHeight(i) = imgChannels(i).h
         End If
         
         'Note the alpha channel index, if any.
@@ -815,8 +868,6 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
         
     End If
     
-    'TODO: identify subsampling and flag channels accordingly.
-    
 End Function
 
 Private Function GetNameOfOpjColorSpace(ByVal srcSpace As OPJ_COLOR_SPACE) As String
@@ -858,15 +909,31 @@ Private Sub HandlerError(ByVal pMsg As Long, ByVal pUserData As Long)
 End Sub
 
 Private Function JP2_ReadProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes As Long, ByVal p_user_data As Long) As Long
-    'Debug.Print "JP2_ReadProcDelegate", p_nb_bytes
+    
     If (Not m_Stream Is Nothing) Then
+    
+        'Return -1 when EOF is reached
         If (m_Stream.GetPosition() = m_Stream.GetStreamSize()) Then
             JP2_ReadProcDelegate = -1
+        
+        'Otherwise, read as many bytes as we can
         Else
-            JP2_ReadProcDelegate = m_Stream.ReadBytesToBarePointer(p_buffer, p_nb_bytes)
+            
+            Dim numBytesToRead As Long, numBytesLeft As Long
+            numBytesToRead = p_nb_bytes
+            
+            numBytesLeft = m_Stream.GetStreamSize() - m_Stream.GetPosition()
+            If (numBytesLeft < numBytesToRead) Then numBytesToRead = numBytesLeft
+            
+            JP2_ReadProcDelegate = m_Stream.ReadBytesToBarePointer(p_buffer, numBytesToRead)
+            
+            'Once again, return -1 for the special case of reaching EOF (should have been caught above; this is just a failsafe)
             If (JP2_ReadProcDelegate = 0) Then JP2_ReadProcDelegate = -1
+            
         End If
+        
     End If
+    
 End Function
 
 Private Function JP2_WriteProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes As Long, ByVal p_user_data As Long) As Long

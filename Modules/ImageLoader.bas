@@ -1149,7 +1149,22 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         'For other formats, let FreeImage have a go at it, and we'll try GDI+ if it fails
         Else
             freeImage_Return = PD_FAILURE_GENERIC
-            If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then
+                
+                'Disallow some formats where FreeImage has known bugs.
+                Dim doNotAllowFI As Boolean
+                doNotAllowFI = False
+                
+                'JPEG-2000 files crash FreeImage with some regularity
+                If (Not doNotAllowFI) Then doNotAllowFI = Plugin_OpenJPEG.IsFileJP2(srcFile)
+                
+                'Some PCX and DCX images crash FreeImage too
+                If (Not doNotAllowFI) Then doNotAllowFI = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "pcx", "dcx")
+                
+                'If this file looks safe, allow FreeImage to try it
+                If (Not doNotAllowFI) Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+                
+            End If
             If (Not CascadeLoadGenericImage) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters)
         End If
         
