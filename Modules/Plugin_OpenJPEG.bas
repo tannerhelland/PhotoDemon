@@ -592,31 +592,35 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Prep the destination image
     Set dstDIB = New pdDIB
     dstDIB.CreateBlank m_OpjNotes.finalWidth, m_OpjNotes.finalHeight, 32, RGB(255, 255, 255), 255
+
+    Dim targetWidth As Long, targetHeight As Long
+    Dim channelSizeEstimate As Long
+    Dim srcRs() As Long, srcGs() As Long, srcBs() As Long, srcAs() As Long
+    Dim srcRSA As SafeArray1D, srcGSA As SafeArray1D, srcBSA As SafeArray1D, srcASA As SafeArray1D
+    Dim copyAlpha As Boolean
+            
+    Dim r As Long, g As Long, b As Long, yccY As Long, yccB As Long, yccR As Long
+    Dim x As Long, y As Long
+    Dim dstPixels() As Byte, dstSA As SafeArray1D
+    Dim saOffset As Long, xOffset As Long
+    
+    'Unlike other image format libraries, OpenJPEG always loads channels as ints (Longs in VB6) regardless of
+    ' embedded color depth.  This is incredibly wasteful from a memory standpoint, but it does simplify
+    ' handling of various bit-depths, because the source channel data is always the same size.
+    targetWidth = m_OpjNotes.finalWidth
+    targetHeight = m_OpjNotes.finalHeight
+    channelSizeEstimate = targetWidth * targetHeight * 4    '(See above note - this line is not a typo!)
     
     'Load pixel data, with handling separated by color type
     If (targetColorSpace = OPJ_CLRSPC_GRAY) Then
     
     ElseIf (targetColorSpace = OPJ_CLRSPC_SRGB) Or (targetColorSpace = OPJ_CLRSPC_SYCC) Then
         
-        Dim targetWidth As Long, targetHeight As Long
-        Dim channelSizeEstimate As Long
-        Dim srcRs() As Long, srcGs() As Long, srcBs() As Long, srcAs() As Long
-        Dim srcRSA As SafeArray1D, srcGSA As SafeArray1D, srcBSA As SafeArray1D, srcASA As SafeArray1D
-        Dim copyAlpha As Boolean
-                
-        Dim r As Long, g As Long, b As Long, yccY As Long, yccB As Long, yccR As Long
-        Dim x As Long, y As Long
-        Dim dstPixels() As Byte, dstSA As SafeArray1D
-        Dim saOffset As Long, xOffset As Long
-        
+        'Precision can technically be any value between 1 and ???? (upper limit is unclear from the spec).
+        ' Note that data can also be *signed* which is currently a rare and untested state for PD handling.
         If (imgChannels(0).prec = 8) Then
             
-            'Size estimate obviously needs to change by bit-depth TODO
-            targetWidth = m_OpjNotes.finalWidth
-            targetHeight = m_OpjNotes.finalHeight
-            
-            channelSizeEstimate = targetWidth * targetHeight * 4
-            
+            'Wrap temporary arrays around 3 or 4 source channels
             VBHacks.WrapArrayAroundPtr_Long srcRs, srcRSA, imgChannels(0).p_data, channelSizeEstimate
             VBHacks.WrapArrayAroundPtr_Long srcGs, srcGSA, imgChannels(1).p_data, channelSizeEstimate
             VBHacks.WrapArrayAroundPtr_Long srcBs, srcBSA, imgChannels(2).p_data, channelSizeEstimate
@@ -624,72 +628,80 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             copyAlpha = m_OpjNotes.imgHasAlpha
             If copyAlpha Then VBHacks.WrapArrayAroundPtr_Long srcAs, srcASA, imgChannels(3).p_data, channelSizeEstimate
             
-            Debug.Print targetWidth, targetHeight, channelSizeEstimate
-            
+            'Iterate lines (data is stored top-down)
             For y = 0 To targetHeight - 1
+            
+                'Wrap a 1D array around the target line in in the destination image, and calculate an offset
+                ' into the corresponding source channel line.
                 dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
                 saOffset = y * targetWidth
-            If (targetColorSpace = OPJ_CLRSPC_SRGB) Then
                 
-                If subSamplingActive Then
-                    For x = 0 To targetWidth - 1
-                        dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX))
-                        dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX))
-                        dstPixels(x * 4 + 2) = srcRs(saOffset + x)
-                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
-                    Next x
-                Else
-                    For x = 0 To targetWidth - 1
-                        dstPixels(x * 4) = srcBs(saOffset + x)
-                        dstPixels(x * 4 + 1) = srcGs(saOffset + x)
-                        dstPixels(x * 4 + 2) = srcRs(saOffset + x)
-                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
-                    Next x
-                End If
-            
-            'YCC to RGB conversion taken from OpenJPEG itself: https://github.com/uclouvain/openjpeg/blob/e7453e398b110891778d8da19209792c69ca7169/src/bin/common/color.c#L74
-            ElseIf (targetColorSpace = OPJ_CLRSPC_SYCC) Then
-                
-                For x = 0 To targetWidth - 1
+                'Further handling is separated by color type
+                If (targetColorSpace = OPJ_CLRSPC_SRGB) Then
                     
+                    'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
+                    ' we split handling accordingly.
                     If subSamplingActive Then
-                        yccY = srcRs(saOffset + x)
-                        yccB = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) - 127
-                        yccR = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) - 127
-                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
+                        For x = 0 To targetWidth - 1
+                            dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX))
+                            dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX))
+                            dstPixels(x * 4 + 2) = srcRs(saOffset + x)
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
+                        Next x
                     Else
-                        yccY = srcRs(saOffset + x)
-                        yccB = srcGs(saOffset + x) - 127
-                        yccR = srcBs(saOffset + x) - 127
-                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                        For x = 0 To targetWidth - 1
+                            dstPixels(x * 4) = srcBs(saOffset + x)
+                            dstPixels(x * 4 + 1) = srcGs(saOffset + x)
+                            dstPixels(x * 4 + 2) = srcRs(saOffset + x)
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                        Next x
                     End If
-                    
-                    r = yccY + 1.402 * yccR
-                    If (r < 0) Then r = 0
-                    If (r > 255) Then r = 255
-                    g = yccY - (0.344 * yccB + 0.714 * yccR)
-                    If (g < 0) Then g = 0
-                    If (g > 255) Then g = 255
-                    b = yccY + (1.772 * yccB)
-                    If (b < 0) Then b = 0
-                    If (b > 255) Then b = 255
-                    dstPixels(x * 4) = b
-                    dstPixels(x * 4 + 1) = g
-                    dstPixels(x * 4 + 2) = r
-                    
-                Next x
                 
-            End If
+                'YCC to RGB conversion taken from OpenJPEG itself: https://github.com/uclouvain/openjpeg/blob/e7453e398b110891778d8da19209792c69ca7169/src/bin/common/color.c#L74
+                ElseIf (targetColorSpace = OPJ_CLRSPC_SYCC) Then
+                    
+                    For x = 0 To targetWidth - 1
+                        
+                        'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
+                        ' we split handling accordingly.
+                        If subSamplingActive Then
+                            yccY = srcRs(saOffset + x)
+                            yccB = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) - 127
+                            yccR = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
+                        Else
+                            yccY = srcRs(saOffset + x)
+                            yccB = srcGs(saOffset + x) - 127
+                            yccR = srcBs(saOffset + x) - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                        End If
+                        
+                        r = yccY + 1.402 * yccR
+                        If (r < 0) Then r = 0
+                        If (r > 255) Then r = 255
+                        g = yccY - (0.344 * yccB + 0.714 * yccR)
+                        If (g < 0) Then g = 0
+                        If (g > 255) Then g = 255
+                        b = yccY + (1.772 * yccB)
+                        If (b < 0) Then b = 0
+                        If (b > 255) Then b = 255
+                        dstPixels(x * 4) = b
+                        dstPixels(x * 4 + 1) = g
+                        dstPixels(x * 4 + 2) = r
+                        
+                    Next x
+                    
+                End If
+                
+            'Proceed to next line
             Next y
             
+        'In the future, we probably want to map this to a floating-point surface and propose tone-mapping
+        ' (if ICC profile is missing).  For now however we perform a default linear map.
         ElseIf (imgChannels(0).prec = 16) Then
             
-            'TODO: split by color model
-            
-            targetWidth = m_OpjNotes.finalWidth
-            targetHeight = m_OpjNotes.finalHeight
-            channelSizeEstimate = targetWidth * targetHeight * 4
-            
+            'Wrap a 1D array around the target line in in the destination image, and calculate an offset
+            ' into the corresponding source channel line.
             VBHacks.WrapArrayAroundPtr_Long srcRs, srcRSA, imgChannels(0).p_data, channelSizeEstimate
             VBHacks.WrapArrayAroundPtr_Long srcGs, srcGSA, imgChannels(1).p_data, channelSizeEstimate
             VBHacks.WrapArrayAroundPtr_Long srcBs, srcBSA, imgChannels(2).p_data, channelSizeEstimate
@@ -697,27 +709,70 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             copyAlpha = m_OpjNotes.imgHasAlpha
             If copyAlpha Then VBHacks.WrapArrayAroundPtr_Long srcAs, srcASA, imgChannels(3).p_data, channelSizeEstimate
             
+            'Iterate lines (data is stored top-down)
             For y = 0 To targetHeight - 1
             
+                'Wrap a 1D array around the target line in in the destination image, and calculate an offset
+                ' into the corresponding source channel line.
                 dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
                 saOffset = y * targetWidth
                 
-                If subSamplingActive Then
+                'Further handling is separated by color type
+                If (targetColorSpace = OPJ_CLRSPC_SRGB) Then
                         
-                    For x = 0 To targetWidth - 1
-                        dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) \ 256
-                        dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) \ 256
-                        dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
-                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) \ 256
-                    Next x
+                    If subSamplingActive Then
+                            
+                        For x = 0 To targetWidth - 1
+                            dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) \ 256
+                            dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) \ 256
+                            dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) \ 256
+                        Next x
+                        
+                    Else
                     
-                Else
+                        For x = 0 To targetWidth - 1
+                            dstPixels(x * 4) = srcBs(saOffset + x) \ 256
+                            dstPixels(x * 4 + 1) = srcGs(saOffset + x) \ 256
+                            dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
+                        Next x
+                        
+                    End If
+                    
                 
+                'YCC to RGB conversion taken from OpenJPEG itself: https://github.com/uclouvain/openjpeg/blob/e7453e398b110891778d8da19209792c69ca7169/src/bin/common/color.c#L74
+                ElseIf (targetColorSpace = OPJ_CLRSPC_SYCC) Then
+                    
                     For x = 0 To targetWidth - 1
-                        dstPixels(x * 4) = srcBs(saOffset + x) \ 256
-                        dstPixels(x * 4 + 1) = srcGs(saOffset + x) \ 256
-                        dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
-                        If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
+                        
+                        'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
+                        ' we split handling accordingly.
+                        If subSamplingActive Then
+                            yccY = srcRs(saOffset + x) \ 256
+                            yccB = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) \ 256 - 127
+                            yccR = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) \ 256 - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) \ 256
+                        Else
+                            yccY = srcRs(saOffset + x) \ 256
+                            yccB = srcGs(saOffset + x) \ 256 - 127
+                            yccR = srcBs(saOffset + x) \ 256 - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
+                        End If
+                        
+                        r = yccY + 1.402 * yccR
+                        If (r < 0) Then r = 0
+                        If (r > 255) Then r = 255
+                        g = yccY - (0.344 * yccB + 0.714 * yccR)
+                        If (g < 0) Then g = 0
+                        If (g > 255) Then g = 255
+                        b = yccY + (1.772 * yccB)
+                        If (b < 0) Then b = 0
+                        If (b > 255) Then b = 255
+                        dstPixels(x * 4) = b
+                        dstPixels(x * 4 + 1) = g
+                        dstPixels(x * 4 + 2) = r
+                        
                     Next x
                     
                 End If
@@ -734,6 +789,7 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
         dstDIB.UnwrapArrayFromDIB dstPixels
         dstDIB.SetAlphaPremultiplication True
         
+        'Load complete!  (Clean-up is still required, however.)
         LoadJP2 = True
         
     End If
@@ -743,8 +799,12 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     Exit Function
     
+    'Code beyond this point performs a full clean-up of all internal and external resources for the current jp2 image
 SafeCleanup:
-    Set m_Stream = Nothing
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.IsOpen() Then m_Stream.StopStream True
+        Set m_Stream = Nothing
+    End If
     If (Not cStream Is Nothing) Then cStream.StopStream True
     If (pImage <> 0) Then opj_image_destroy pImage
     If (pStream <> 0) Then opj_stream_destroy pStream
