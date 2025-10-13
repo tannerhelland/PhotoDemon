@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_OpenJPEG"
 'OpenJPEG (JPEG-2000) Library Interface
 'Copyright 2025-2025 by Tanner Helland
 'Created: 19/September/25
-'Last updated: 09/October/25
-'Last update: implement subsampling support
+'Last updated: 13/October/25
+'Last update: add import support for a bunch of esoteric JP2 formats
 '
 'Per its documentation (available at https://www.openjpeg.org/), OpenJPEG is...
 '
@@ -15,11 +15,10 @@ Attribute VB_Name = "Plugin_OpenJPEG"
 '
 'OpenJPEG is BSD-licensed and actively maintained.
 '
-'PhotoDemon originally used OpenJPEG via FreeImage, but FreeImage's abandonment made it impossible
-' to continue down that route.  As such, in 2025 I wrote a new, direct OpenJPEG interface from scratch.
-' (The only one of its kind in VB6, AFAIK.)
+'PhotoDemon originally used OpenJPEG via FreeImage, but FreeImage has been abandoned so a new solution
+' was needed.  So in 2025 I wrote a new, direct OpenJPEG interface from scratch.
 '
-'This interface was designed against v2.5.3 of the library (released 09 Dec 2024).  It should work fine
+'This interface was designed against v2.5.4 of the library (released 20 Sep 2025).  It should work fine
 ' with any version that maintains ABI compatibility with that release.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
