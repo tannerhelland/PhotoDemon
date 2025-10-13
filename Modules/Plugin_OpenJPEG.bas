@@ -30,7 +30,11 @@ Attribute VB_Name = "Plugin_OpenJPEG"
 Option Explicit
 
 'Enable at DEBUG-TIME for verbose logging
-Private Const JP2_DEBUG_VERBOSE As Boolean = True
+Private Const JP2_DEBUG_VERBOSE As Boolean = False
+
+'To strictly enforce the spec (and decrease chances of OpenJPEG crashes on malformed images), set this to TRUE.
+' I currently set it to FALSE in production builds, to allow many more "in the wild" images to actually load.
+Private Const JP2_FORCE_STRICT_DECODING As Boolean = False
 
 'Library handle will be non-zero if CharLS is available; you can also forcibly override the
 ' "availability" state by setting m_LibAvailable to FALSE
@@ -225,7 +229,7 @@ Private Type PD_OpjNotes
     numComponents As Long
     imgHasAlpha As Boolean
     idxAlphaChannel As Integer
-    isNot8Bit As Boolean
+    isAtLeast8Bit As Boolean
     hasSubsampling As Boolean
     isChannelSubsampled() As Boolean
     channelSsWidth() As Long        'Subsampled width/height, in pixels, of channel at index [n]
@@ -414,8 +418,10 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'Decoders can use a "strict" mode, where incomplete streams are disallowed.
     ' (Non-strict mode tells the decoder to simply decode as much as they can, and stop when they
     '  run out of room - this may allow *some* files to be partially recovered.)
-    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "setting strict mode to OFF..."
-    If (opj_decoder_set_strict_mode(pDecoder, 0&) <> 1&) Then
+    Dim strictModeValue As Long
+    If JP2_FORCE_STRICT_DECODING Then strictModeValue = 1& Else strictModeValue = 0&
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "setting strict mode to " & UCase$(CStr(JP2_FORCE_STRICT_DECODING)) & "..."
+    If (opj_decoder_set_strict_mode(pDecoder, strictModeValue) <> 1&) Then
         InternalError FUNC_NAME, "failed to set strictness mode"
         GoTo SafeCleanup
     End If
@@ -582,8 +588,8 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     End If
     
     'Non-8-bpp color depth handling is TODO
-    If m_OpjNotes.isNot8Bit Then
-        PDDebug.LogAction "Only 8-bit-per-channel JP2 images are currently supported"
+    If (Not m_OpjNotes.isAtLeast8Bit) Then
+        PDDebug.LogAction "Only 8+ bit-per-channel JP2 images are currently supported"
         GoTo SafeCleanup
     End If
     
@@ -599,10 +605,14 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     Dim srcRSA As SafeArray1D, srcGSA As SafeArray1D, srcBSA As SafeArray1D, srcASA As SafeArray1D
     Dim copyAlpha As Boolean
             
-    Dim r As Long, g As Long, b As Long, yccY As Long, yccB As Long, yccR As Long
+    Dim r As Long, g As Long, b As Long, a As Long, yccY As Long, yccB As Long, yccR As Long
     Dim x As Long, y As Long
     Dim dstPixels() As Byte, dstSA As SafeArray1D
-    Dim saOffset As Long, xOffset As Long
+    Dim saOffset As Long, xOffset As Long, hdrDivisor As Long
+    
+    'Data can be signed, meaning that e.g. 8-bit data is represented as [-127, 128] instead of [0, 255]
+    Dim rIsSigned As Boolean, gIsSigned As Boolean, bIsSigned As Boolean, aIsSigned As Boolean
+    Dim rSgnComp As Long, gSgnComp As Long, bSgnComp As Long, aSgnComp As Long
     
     'Unlike other image format libraries, OpenJPEG always loads channels as ints (Longs in VB6) regardless of
     ' embedded color depth.  This is incredibly wasteful from a memory standpoint, but it does simplify
@@ -613,8 +623,94 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
     'Load pixel data, with handling separated by color type
     If (targetColorSpace = OPJ_CLRSPC_GRAY) Then
+        
+        gIsSigned = (imgChannels(0).sgnd <> 0)
+        If gIsSigned Then gSgnComp = (2 ^ imgChannels(0).prec) \ 2 Else gSgnComp = 0
+        
+        'Precision can technically be any value between 1 and ???? (upper limit is unclear from the spec).
+        ' Note that data can also be *signed* which is currently a rare and untested state for PD handling.
+        If (imgChannels(0).prec = 8) Then
+            
+            'Wrap a temporary array around the source channel
+            VBHacks.WrapArrayAroundPtr_Long srcGs, srcGSA, imgChannels(0).p_data, channelSizeEstimate
+            
+            'Iterate lines (data is stored top-down)
+            For y = 0 To targetHeight - 1
+            
+                'Wrap a 1D array around the target line in in the destination image, and calculate an offset
+                ' into the corresponding source channel line.
+                dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
+                saOffset = y * targetWidth
+                
+                For x = 0 To targetWidth - 1
+                    
+                    g = srcGs(saOffset + x) + gSgnComp
+                    
+                    'Failsafe only, because some conformance test images have shown OOB gray colors.
+                    ' (Well-formed images should never trigger these states.)
+                    If (g < 0) Then g = 0
+                    If (g > 255) Then g = 255
+                    
+                    dstPixels(x * 4) = g
+                    dstPixels(x * 4 + 1) = g
+                    dstPixels(x * 4 + 2) = g
+                    
+                Next x
+                
+            'Proceed to next line
+            Next y
+            
+        'In the future, we probably want to map this to a floating-point surface and propose tone-mapping
+        ' (if ICC profile is missing).  For now however we perform a default linear map.
+        ElseIf (imgChannels(0).prec > 8) Then
+            
+            'Wrap a temporary array around the source channel
+            VBHacks.WrapArrayAroundPtr_Long srcGs, srcGSA, imgChannels(0).p_data, channelSizeEstimate
+            
+            'For now, do a quick drop to 8-bit data (tone-mapping in the future is TBD)
+            hdrDivisor = 2 ^ (imgChannels(0).prec - 8)
+            
+            'Iterate lines (data is stored top-down)
+            For y = 0 To targetHeight - 1
+            
+                'Wrap a 1D array around the target line in in the destination image, and calculate an offset
+                ' into the corresponding source channel line.
+                dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
+                saOffset = y * targetWidth
+                
+                For x = 0 To targetWidth - 1
+                    g = (srcGs(saOffset + x) + gSgnComp) \ hdrDivisor
+                    If (g < 0) Then g = 0
+                    If (g > 255) Then g = 255
+                    dstPixels(x * 4) = g
+                    dstPixels(x * 4 + 1) = g
+                    dstPixels(x * 4 + 2) = g
+                Next x
+                
+            'Proceed to next line
+            Next y
+            
+        End If
+        
+        'Unwrap all temporary arrays before exiting
+        VBHacks.UnwrapArrayFromPtr_Long srcGs
+        dstDIB.UnwrapArrayFromDIB dstPixels
+        dstDIB.SetAlphaPremultiplication True
+        
+        'Load complete!  (Clean-up is still required, however.)
+        LoadJP2 = True
     
     ElseIf (targetColorSpace = OPJ_CLRSPC_SRGB) Or (targetColorSpace = OPJ_CLRSPC_SYCC) Then
+        
+        rIsSigned = (imgChannels(0).sgnd <> 0)
+        gIsSigned = (imgChannels(1).sgnd <> 0)
+        bIsSigned = (imgChannels(2).sgnd <> 0)
+        If m_OpjNotes.imgHasAlpha Then aIsSigned = (imgChannels(3).sgnd <> 0) Else aIsSigned = False
+        
+        If rIsSigned Then rSgnComp = (2 ^ imgChannels(0).prec) \ 2 Else rSgnComp = 0
+        If gIsSigned Then gSgnComp = (2 ^ imgChannels(1).prec) \ 2 Else gSgnComp = 0
+        If bIsSigned Then bSgnComp = (2 ^ imgChannels(2).prec) \ 2 Else bSgnComp = 0
+        If aIsSigned Then aSgnComp = (2 ^ imgChannels(3).prec) \ 2 Else aSgnComp = 0
         
         'Precision can technically be any value between 1 and ???? (upper limit is unclear from the spec).
         ' Note that data can also be *signed* which is currently a rare and untested state for PD handling.
@@ -642,19 +738,61 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                     'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
                     ' we split handling accordingly.
                     If subSamplingActive Then
+                        
                         For x = 0 To targetWidth - 1
-                            dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX))
-                            dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX))
-                            dstPixels(x * 4 + 2) = srcRs(saOffset + x)
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
+                        
+                            b = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) + bSgnComp
+                            If (b < 0) Then b = 0
+                            If (b > 255) Then b = 255
+                            
+                            g = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) + gSgnComp
+                            If (g < 0) Then g = 0
+                            If (g > 255) Then g = 255
+                            
+                            r = srcRs(saOffset + x) + rSgnComp
+                            If (r < 0) Then r = 0
+                            If (r > 255) Then r = 255
+                    
+                            dstPixels(x * 4) = b
+                            dstPixels(x * 4 + 1) = g
+                            dstPixels(x * 4 + 2) = r
+                            
+                            If copyAlpha Then
+                                a = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) + aSgnComp
+                                If (a < 0) Then a = 0
+                                If (a > 255) Then a = 255
+                                dstPixels(x * 4 + 3) = a
+                            End If
+                            
                         Next x
+                        
                     Else
+                    
                         For x = 0 To targetWidth - 1
-                            dstPixels(x * 4) = srcBs(saOffset + x)
-                            dstPixels(x * 4 + 1) = srcGs(saOffset + x)
-                            dstPixels(x * 4 + 2) = srcRs(saOffset + x)
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                        
+                            b = srcBs(saOffset + x) + bSgnComp
+                            If (b < 0) Then b = 0
+                            If (b > 255) Then b = 255
+                            g = srcGs(saOffset + x) + gSgnComp
+                            If (g < 0) Then g = 0
+                            If (g > 255) Then g = 255
+                            r = srcRs(saOffset + x) + rSgnComp
+                            If (r < 0) Then r = 0
+                            If (r > 255) Then r = 255
+                            
+                            dstPixels(x * 4) = b
+                            dstPixels(x * 4 + 1) = g
+                            dstPixels(x * 4 + 2) = r
+                            
+                            If copyAlpha Then
+                                a = srcAs(saOffset + x) + aSgnComp
+                                If (a < 0) Then a = 0
+                                If (a > 255) Then a = 255
+                                dstPixels(x * 4 + 3) = a
+                            End If
+                            
                         Next x
+                        
                     End If
                 
                 'YCC to RGB conversion taken from OpenJPEG itself: https://github.com/uclouvain/openjpeg/blob/e7453e398b110891778d8da19209792c69ca7169/src/bin/common/color.c#L74
@@ -665,15 +803,15 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                         'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
                         ' we split handling accordingly.
                         If subSamplingActive Then
-                            yccY = srcRs(saOffset + x)
-                            yccB = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) - 127
-                            yccR = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) - 127
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX))
+                            yccY = srcRs(saOffset + x) + rSgnComp
+                            yccB = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) + gSgnComp - 127
+                            yccR = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) + bSgnComp - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) + aSgnComp
                         Else
-                            yccY = srcRs(saOffset + x)
-                            yccB = srcGs(saOffset + x) - 127
-                            yccR = srcBs(saOffset + x) - 127
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x)
+                            yccY = srcRs(saOffset + x) + rSgnComp
+                            yccB = srcGs(saOffset + x) + gSgnComp - 127
+                            yccR = srcBs(saOffset + x) + bSgnComp - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) + aSgnComp
                         End If
                         
                         r = yccY + 1.402 * yccR
@@ -685,6 +823,7 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                         b = yccY + (1.772 * yccB)
                         If (b < 0) Then b = 0
                         If (b > 255) Then b = 255
+                        
                         dstPixels(x * 4) = b
                         dstPixels(x * 4 + 1) = g
                         dstPixels(x * 4 + 2) = r
@@ -698,7 +837,10 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             
         'In the future, we probably want to map this to a floating-point surface and propose tone-mapping
         ' (if ICC profile is missing).  For now however we perform a default linear map.
-        ElseIf (imgChannels(0).prec = 16) Then
+        ElseIf (imgChannels(0).prec > 8) Then
+            
+            'For now, do a quick drop to 8-bit data (tone-mapping in the future is TBD)
+            hdrDivisor = 2 ^ (imgChannels(0).prec - 8)
             
             'Wrap a 1D array around the target line in in the destination image, and calculate an offset
             ' into the corresponding source channel line.
@@ -723,19 +865,57 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                     If subSamplingActive Then
                             
                         For x = 0 To targetWidth - 1
-                            dstPixels(x * 4) = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) \ 256
-                            dstPixels(x * 4 + 1) = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) \ 256
-                            dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) \ 256
+                        
+                            b = (srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) + bSgnComp) \ hdrDivisor
+                            If (b < 0) Then b = 0
+                            If (b > 255) Then b = 255
+                            
+                            g = (srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) + gSgnComp) \ hdrDivisor
+                            If (g < 0) Then g = 0
+                            If (g > 255) Then g = 255
+                            
+                            r = (srcRs(saOffset + x) + rSgnComp) \ hdrDivisor
+                            If (r < 0) Then r = 0
+                            If (r > 255) Then r = 255
+                        
+                            dstPixels(x * 4) = b
+                            dstPixels(x * 4 + 1) = g
+                            dstPixels(x * 4 + 2) = r
+                            
+                            If copyAlpha Then
+                                a = (srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) + aSgnComp) \ hdrDivisor
+                                If (a < 0) Then a = 0
+                                If (a > 255) Then a = 255
+                                dstPixels(x * 4 + 3) = a
+                            End If
+                            
                         Next x
                         
                     Else
                     
                         For x = 0 To targetWidth - 1
-                            dstPixels(x * 4) = srcBs(saOffset + x) \ 256
-                            dstPixels(x * 4 + 1) = srcGs(saOffset + x) \ 256
-                            dstPixels(x * 4 + 2) = srcRs(saOffset + x) \ 256
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
+                            
+                            b = (srcBs(saOffset + x) + bSgnComp) \ hdrDivisor
+                            If (b < 0) Then b = 0
+                            If (b > 255) Then b = 255
+                            g = (srcGs(saOffset + x) + gSgnComp) \ hdrDivisor
+                            If (g < 0) Then g = 0
+                            If (g > 255) Then g = 255
+                            r = (srcRs(saOffset + x) + rSgnComp) \ hdrDivisor
+                            If (r < 0) Then r = 0
+                            If (r > 255) Then r = 255
+                            
+                            dstPixels(x * 4) = b
+                            dstPixels(x * 4 + 1) = g
+                            dstPixels(x * 4 + 2) = r
+                            
+                            If copyAlpha Then
+                                a = (srcAs(saOffset + x) + aSgnComp) \ hdrDivisor
+                                If (a < 0) Then a = 0
+                                If (a > 255) Then a = 255
+                                dstPixels(x * 4 + 3) = a
+                            End If
+                            
                         Next x
                         
                     End If
@@ -749,15 +929,15 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                         'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
                         ' we split handling accordingly.
                         If subSamplingActive Then
-                            yccY = srcRs(saOffset + x) \ 256
-                            yccB = srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) \ 256 - 127
-                            yccR = srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) \ 256 - 127
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) \ 256
+                            yccY = (srcRs(saOffset + x) + rSgnComp) \ hdrDivisor
+                            yccB = (srcGs(Int(y * gSSfactorY) * gWidth + Int(x * gSSfactorX)) + gSgnComp) \ hdrDivisor - 127
+                            yccR = (srcBs(Int(y * bSSfactorY) * bWidth + Int(x * bSSfactorX)) + bSgnComp) \ hdrDivisor - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = (srcAs(Int(y * aSSfactorY) * aWidth + Int(x * aSSfactorX)) + aSgnComp) \ hdrDivisor
                         Else
-                            yccY = srcRs(saOffset + x) \ 256
-                            yccB = srcGs(saOffset + x) \ 256 - 127
-                            yccR = srcBs(saOffset + x) \ 256 - 127
-                            If copyAlpha Then dstPixels(x * 4 + 3) = srcAs(saOffset + x) \ 256
+                            yccY = (srcRs(saOffset + x) + rSgnComp) \ hdrDivisor
+                            yccB = (srcGs(saOffset + x) + gSgnComp) \ hdrDivisor - 127
+                            yccR = (srcBs(saOffset + x) + bSgnComp) \ hdrDivisor - 127
+                            If copyAlpha Then dstPixels(x * 4 + 3) = (srcAs(saOffset + x) + aSgnComp) \ hdrDivisor
                         End If
                         
                         r = yccY + 1.402 * yccR
@@ -841,7 +1021,7 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
         .finalHeight = targetHeight
         .hasSubsampling = False
         .imgHasAlpha = False
-        .isNot8Bit = False
+        .isAtLeast8Bit = True
         ReDim .isChannelSubsampled(0 To numComponents) As Boolean
         ReDim .channelSsWidth(0 To numComponents) As Long
         ReDim .channelSsHeight(0 To numComponents) As Long
@@ -856,7 +1036,7 @@ Private Function DetermineColorHandling(ByVal fileColorSpace As OPJ_COLOR_SPACE,
             .imgHasAlpha = False
             .idxAlphaChannel = -1
             .isChannelSubsampled(0) = False
-            .isNot8Bit = (imgChannels(0).prec <> 8)
+            .isAtLeast8Bit = (imgChannels(0).prec >= 8)
         End With
         Exit Function
     End If
@@ -957,11 +1137,11 @@ Private Function GetNameOfOpjColorSpace(ByVal srcSpace As OPJ_COLOR_SPACE) As St
 End Function
 
 Private Sub HandlerInfo(ByVal pMsg As Long, ByVal pUserData As Long)
-    PDDebug.LogAction "openJPEG Info: " & Strings.StringFromCharPtr(pMsg, False), PDM_External_Lib
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "openJPEG Info: " & Strings.StringFromCharPtr(pMsg, False), PDM_External_Lib
 End Sub
 
 Private Sub HandlerWarning(ByVal pMsg As Long, ByVal pUserData As Long)
-    PDDebug.LogAction "openJPEG Warning: " & Strings.StringFromCharPtr(pMsg, False), PDM_External_Lib
+    PDDebug.LogAction "openJPEG Warning: " & Trim$(Strings.StringFromCharPtr(pMsg, False)), PDM_External_Lib
 End Sub
 
 Private Sub HandlerError(ByVal pMsg As Long, ByVal pUserData As Long)
