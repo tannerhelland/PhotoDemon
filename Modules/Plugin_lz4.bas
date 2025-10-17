@@ -151,6 +151,9 @@ End Function
 ' for this, if they want it.
 Public Function Lz4CompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long, Optional ByVal dstArrayIsReady As Boolean = False, Optional ByVal dstArraySizeInBytes As Long = 0, Optional ByVal compressionAcceleration As Long = -1) As Long
     
+    'Failsafe only
+    If (m_Lz4Handle = 0) Then Exit Function
+    
     'Normally, we would want to validate the incoming compression acceleration parameter, but lz4 automatically handles
     ' negative numbers and sets them to the acceleraton default (currently 1).  Similarly, there's no upper maximum for
     ' acceleration, as far as I can see.  It just asymptotically approaches the speed of a raw memory copy as request
@@ -174,6 +177,9 @@ End Function
 ' Returns: success/failure, and size of the written data in dstSizeInBytes (passed ByRef).
 Public Function Lz4CompressNakedPointers(ByVal dstPointer As Long, ByRef dstSizeInBytes As Long, ByVal srcPointer As Long, ByVal srcSizeInBytes As Long, Optional ByVal compressionAcceleration As Long = -1) As Boolean
     
+    'Failsafe only
+    If (m_Lz4Handle = 0) Then Exit Function
+    
     Dim finalSize As Long
     finalSize = CallCDeclW(LZ4_compress_fast, vbLong, srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionAcceleration)
     
@@ -191,6 +197,9 @@ End Function
 'High-compression variant.  Note that compression level has different meaning here - higher values result in SLOWER but BETTER compression
 ' (vs normal LZ4, where higher values result in FASTER but WORSE compression).
 Public Function Lz4HCCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long, Optional ByVal dstArrayIsReady As Boolean = False, Optional ByVal dstArraySizeInBytes As Long = 0, Optional ByVal compressionLevel As Long = -1) As Long
+    
+    'Failsafe only
+    If (m_Lz4Handle = 0) Then Exit Function
     
     'LZ4_HC provides its own validation of compression levels, but for the record...
     ' 4 is the recommended minimum (though levels as low as 1 are supported, but compression will be poor)
@@ -213,6 +222,9 @@ End Function
 
 'High-compression variant of the normal LZ4 compression function.
 Public Function Lz4HCCompressNakedPointers(ByVal dstPointer As Long, ByRef dstSizeInBytes As Long, ByVal srcPointer As Long, ByVal srcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1) As Boolean
+    
+    'Failsafe only
+    If (m_Lz4Handle = 0) Then Exit Function
     
     Dim finalSize As Long
     finalSize = CallCDeclW(LZ4_compress_HC, vbLong, srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionLevel)
@@ -237,6 +249,9 @@ End Function
 'IMPORTANT!  The destination array is *not* resized to match the returned size.  The caller is responsible for this.
 Public Function Lz4DecompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long, ByVal knownUncompressedSize As Long, Optional ByVal dstArrayIsReady As Boolean = False) As Long
     
+    'Failsafe only
+    If (m_Lz4Handle = 0) Then Exit Function
+    
     'Prep the destination array, as necessary
     If (Not dstArrayIsReady) Then
         ReDim dstArray(0 To knownUncompressedSize - 1) As Byte
@@ -258,6 +273,9 @@ Public Function Lz4DecompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData 
 End Function
 
 Public Function Lz4Decompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByVal knownUncompressedSize As Long, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long) As Long
+    
+    'Failsafe only
+    If (m_Lz4Handle = 0) Then Exit Function
     
     'Perform decompression
     Dim finalSize As Long
