@@ -1294,7 +1294,16 @@ End Sub
 'Take a suspended DIB, and restore it to a normal GDI DIB object.
 Private Sub UnsuspendDIB()
     
+    'Failsafe only
     If (Not m_IsSuspended) Then Exit Sub
+    
+    'At shutdown, unloading toolbars may cause focus changes that trigger redraws; these are unnecessary
+    ' and we want to exit as fast as possible, so ignore unsuspend requests (cleanup will happen automatically
+    ' at class release)
+    If g_ProgramShuttingDown Then
+        Me.EraseDIB
+        Exit Sub
+    End If
     
     'Make sure we have suspended data
     If (m_dibWidth = 0) Or (m_dibHeight = 0) Or (m_dibBits <> 0) Or (m_SizeSuspended = 0) Or (m_SizeUnsuspended = 0) Or (m_dibHeader.Size <> Len(m_dibHeader)) Then Exit Sub

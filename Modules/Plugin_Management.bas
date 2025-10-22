@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 '3rd-Party Library Manager
 'Copyright 2014-2025 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 28/April/25
-'Last update: explore using DirectXTex as DDS library
+'Last updated: 19/September/25
+'Last update: add OpenJPEG as standalone library
 '
 'As with any project of reasonable size, PhotoDemon can't supply all of its needs through WAPI alone.
 ' Current builds require a number of third-party libraries for full feature availability.  (Some of these
@@ -29,7 +29,7 @@ Option Explicit
 ' so if you add or remove a plugin, YOU MUST UPDATE THIS.  PhotoDemon iterates plugins in order,
 ' so if you do not update this count, the plugin at the end of the chain (probably zstd) won't be
 ' initialized and PD will crash.
-Private Const CORE_PLUGIN_COUNT As Long = 16
+Private Const CORE_PLUGIN_COUNT As Long = 18
 
 'Currently supported core plugins.  These values are arbitrary and can be changed without consequence, but THEY MUST
 ' ALWAYS BE SEQUENTIAL, STARTING WITH ZERO, because the enum is iterated using for..next loops (during initialization).
@@ -46,7 +46,9 @@ Public Enum PD_PluginCore
     CCP_libwebp
     CCP_LittleCMS
     CCP_lz4
+    CCP_OpenJPEG
     CCP_pdfium
+    CCP_PDHelper
     CCP_pspiHost
     CCP_resvg
     CCP_zstd
@@ -54,8 +56,8 @@ End Enum
 
 #If False Then
     Private Const CCP_libavif = 0, CCP_CharLS = 0, CCP_DirectXTex = 0, CCP_ExifTool = 0, CCP_EZTwain = 0, CCP_FreeImage = 0, CCP_libdeflate = 0
-    Private Const CCP_libheif = 0, CCP_libjxl = 0, CCP_libwebp = 0, CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_pdfium = 0
-    Private Const CCP_pspiHost = 0, CCP_resvg = 0, CCP_zstd = 0
+    Private Const CCP_libheif = 0, CCP_libjxl = 0, CCP_libwebp = 0, CCP_LittleCMS = 0, CCP_lz4 = 0, CCP_OpenJPEG = 0, CCP_pdfium = 0
+    Private Const CCP_PDHelper = 0, CCP_pspiHost = 0, CCP_resvg = 0, CCP_zstd = 0
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -71,7 +73,9 @@ Private Const EXPECTED_LIBHEIF_VERSION As String = "1.17.6"
 Private Const EXPECTED_LIBJXL_VERSION As String = "0.11.1"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
+Private Const EXPECTED_OPENJPEG_VERSION As String = "2.5"
 Private Const EXPECTED_PDFIUM_VERSION As String = "136.0.7073"
+Private Const EXPECTED_PDHELPER_VERSION As String = "1.2.0"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_RESVG_VERSION As String = "0.45.0"
 Private Const EXPECTED_WEBP_VERSION As String = "1.5.0"
@@ -93,6 +97,10 @@ Private m_ExifToolEnabled As Boolean, m_LCMSEnabled As Boolean
 Private m_lz4Enabled As Boolean, m_LibDeflateEnabled As Boolean
 Private m_ZstdEnabled As Boolean
 
+'The "PDHelper" library is a twinBasic-built DLL that handles some esoteric tasks like stdcall-cdecl marshalling
+' and delegates against 3rd-party libraries.  Its enabled state is tracked as a non-null handle state.
+Private m_hPDHelper As Long
+
 'Path to plugin folder.  For security reasons, this is forcibly constructed as an absolute path
 ' (generally "App.Path/App/PhotoDemon/Plugins"), because we pass it directly to LoadLibrary.
 Private m_PluginPath As String
@@ -103,6 +111,9 @@ Private m_PluginPath As String
 ' you can bulk-retrieve stacks of all passed messages.  This is especially helpful when loading 1+ images,
 ' as a bunch of messages may be generated.
 Private m_ErrSrc As pdStringStack, m_ErrMsg As pdStringStack, m_ErrRelevantFile As pdStringStack
+
+'PD's internal library helper DLL exposes a few helper functions
+Private Declare Sub GetLibraryVersion Lib "PDHelper_win32.dll" (ByRef dstMajor As Long, ByRef dstMinor As Long, ByRef dstBuild As Long)
 
 Public Function GetPluginPath() As String
     If (LenB(m_PluginPath) <> 0) Then
@@ -253,16 +264,20 @@ Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginFilename = "libheif.dll"
         Case CCP_libjxl
             GetPluginFilename = "djxl.exe"
+        Case CCP_libwebp
+            GetPluginFilename = "libwebp.dll"
         Case CCP_LittleCMS
             GetPluginFilename = "lcms2.dll"
         Case CCP_lz4
             GetPluginFilename = "liblz4.dll"
+        Case CCP_OpenJPEG
+            GetPluginFilename = "openjp2.dll"
         Case CCP_pdfium
             GetPluginFilename = "pdfium.dll"
+        Case CCP_PDHelper
+            GetPluginFilename = "PDHelper_win32.dll"
         Case CCP_pspiHost
             GetPluginFilename = "pspiHost.dll"
-        Case CCP_libwebp
-            GetPluginFilename = "libwebp.dll"
         Case CCP_resvg
             GetPluginFilename = "resvg.dll"
         Case CCP_zstd
@@ -294,8 +309,12 @@ Public Function GetPluginName(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginName = "LittleCMS"
         Case CCP_lz4
             GetPluginName = "LZ4"
+        Case CCP_OpenJPEG
+            GetPluginName = "OpenJPEG"
         Case CCP_pdfium
             GetPluginName = "pdfium"
+        Case CCP_PDHelper
+            GetPluginName = "pdHelper"
         Case CCP_pspiHost
             GetPluginName = "pspiHost"
         Case CCP_libwebp
@@ -318,61 +337,76 @@ Public Function GetPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
     
     GetPluginVersion = vbNullString
     
-    Select Case pluginEnumID
+    If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then
         
-        Case CCP_CharLS
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_CharLS.GetVersion()
-        
-        Case CCP_DirectXTex
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_DDS.GetVersion()
-        
-        Case CCP_ExifTool
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = ExifTool.GetExifToolVersion()
+        Select Case pluginEnumID
             
-        Case CCP_EZTwain
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_EZTwain.GetEZTwainVersion()
-        
-        Case CCP_libavif
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_AVIF.GetVersion(False)
+            Case CCP_CharLS
+                GetPluginVersion = Plugin_CharLS.GetVersion()
             
-        Case CCP_libdeflate
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_libdeflate.GetCompressorVersion()
-        
-        Case CCP_libheif
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_Heif.GetVersion()
+            Case CCP_DirectXTex
+                GetPluginVersion = Plugin_DDS.GetVersion()
             
-        Case CCP_libjxl
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_jxl.GetLibJXLVersion()
-        
-        Case CCP_libwebp
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_WebP.GetVersion()
-        
-        Case CCP_LittleCMS
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = LittleCMS.GetLCMSVersion()
-        
-        Case CCP_lz4
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_lz4.GetLz4Version()
+            Case CCP_ExifTool
+                GetPluginVersion = ExifTool.GetExifToolVersion()
+                
+            Case CCP_EZTwain
+                GetPluginVersion = Plugin_EZTwain.GetEZTwainVersion()
             
-        Case CCP_pdfium
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PDF.GetVersion()
+            Case CCP_libavif
+                GetPluginVersion = Plugin_AVIF.GetVersion(False)
+                
+            Case CCP_libdeflate
+                GetPluginVersion = Plugin_libdeflate.GetCompressorVersion()
             
-        Case CCP_pspiHost
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_8bf.GetPspiVersion()
+            Case CCP_libheif
+                GetPluginVersion = Plugin_Heif.GetVersion()
+                
+            Case CCP_libjxl
+                GetPluginVersion = Plugin_jxl.GetLibJXLVersion()
             
-        Case CCP_resvg
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_resvg.GetVersion()
+            Case CCP_libwebp
+                GetPluginVersion = Plugin_WebP.GetVersion()
+            
+            Case CCP_LittleCMS
+                GetPluginVersion = LittleCMS.GetLCMSVersion()
+            
+            Case CCP_lz4
+                GetPluginVersion = Plugin_lz4.GetLz4Version()
+            
+            Case CCP_OpenJPEG
+                GetPluginVersion = Plugin_OpenJPEG.GetVersion()
+            
+            Case CCP_pdfium
+                GetPluginVersion = Plugin_PDF.GetVersion()
+                
+            Case CCP_PDHelper
+                Dim lMajor As Long, lMinor As Long, lBuild As Long
+                GetLibraryVersion lMajor, lMinor, lBuild
+                GetPluginVersion = CStr(lMajor) & "." & CStr(lMinor) & "." & CStr(lBuild) & ".0"
+                
+            Case CCP_pspiHost
+                GetPluginVersion = Plugin_8bf.GetPspiVersion()
+                
+            Case CCP_resvg
+                GetPluginVersion = Plugin_resvg.GetVersion()
+            
+            Case CCP_zstd
+                GetPluginVersion = Plugin_zstd.GetZstdVersion()
+            
+            'All other plugins pull their version info directly from file metadata
+            Case Else
+                Dim cFSO As pdFSO
+                Set cFSO = New pdFSO
+                cFSO.FileGetVersionAsString PluginManager.GetPluginPath & PluginManager.GetPluginFilename(pluginEnumID), GetPluginVersion, True
+                
+        End Select
         
-        Case CCP_zstd
-            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_zstd.GetZstdVersion()
-        
-        'All other plugins pull their version info directly from file metadata
-        Case Else
-            Dim cFSO As pdFSO
-            Set cFSO = New pdFSO
-            cFSO.FileGetVersionAsString PluginManager.GetPluginPath & PluginManager.GetPluginFilename(pluginEnumID), GetPluginVersion, True
-            
-    End Select
+    'Unavailable libraries can't retrieve version
+    'Else
     
+    End If
+        
 End Function
 
 'Given a plugin enum value, return a string stack of any non-essential files associated with the plugin.
@@ -426,6 +460,9 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As PD_PluginCore,
         Case CCP_lz4
             dstStringStack.AddString "liblz4-LICENSE.txt"
         
+        Case CCP_OpenJPEG
+            dstStringStack.AddString "openjp2-LICENSE.txt"
+            
         Case CCP_pdfium
             dstStringStack.AddString "pdfium-LICENSE.txt"
             
@@ -490,8 +527,12 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As PD_PluginCore) As
             IsPluginCurrentlyEnabled = m_LCMSEnabled
         Case CCP_lz4
             IsPluginCurrentlyEnabled = m_lz4Enabled
+        Case CCP_OpenJPEG
+            IsPluginCurrentlyEnabled = Plugin_OpenJPEG.IsOpenJPEGEnabled()
         Case CCP_pdfium
             IsPluginCurrentlyEnabled = Plugin_PDF.IsPDFiumAvailable()
+        Case CCP_PDHelper
+            IsPluginCurrentlyEnabled = (m_hPDHelper <> 0)
         Case CCP_pspiHost
             IsPluginCurrentlyEnabled = Plugin_8bf.IsPspiEnabled()
         Case CCP_resvg
@@ -531,8 +572,19 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As PD_PluginCore, ByVal newEna
             m_LCMSEnabled = newEnabledState
         Case CCP_lz4
             m_lz4Enabled = newEnabledState
+        Case CCP_OpenJPEG
+            Plugin_OpenJPEG.ForciblySetAvailability newEnabledState
         Case CCP_pdfium
             Plugin_PDF.ForciblySetAvailability newEnabledState
+        Case CCP_PDHelper
+            If newEnabledState Then
+                If (m_hPDHelper = 0) Then m_hPDHelper = VBHacks.LoadLib(PluginManager.GetPluginPath() & "PDHelper_win32.dll")
+            Else
+                If (m_hPDHelper <> 0) Then
+                    VBHacks.FreeLib m_hPDHelper
+                    m_hPDHelper = 0
+                End If
+            End If
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability newEnabledState
         Case CCP_resvg
@@ -581,6 +633,8 @@ Public Function IsPluginHighPriority(ByVal pluginEnumID As PD_PluginCore) As Boo
         Case CCP_LittleCMS
             IsPluginHighPriority = True
         Case CCP_lz4
+            IsPluginHighPriority = True
+        Case CCP_PDHelper
             IsPluginHighPriority = True
         Case CCP_zstd
             IsPluginHighPriority = True
@@ -641,8 +695,12 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As PD_PluginCore) As St
             ExpectedPluginVersion = EXPECTED_LITTLECMS_VERSION
         Case CCP_lz4
             ExpectedPluginVersion = EXPECTED_LZ4_VERSION
+        Case CCP_OpenJPEG
+            ExpectedPluginVersion = EXPECTED_OPENJPEG_VERSION
         Case CCP_pdfium
             ExpectedPluginVersion = EXPECTED_PDFIUM_VERSION
+        Case CCP_PDHelper
+            ExpectedPluginVersion = EXPECTED_PDHELPER_VERSION
         Case CCP_pspiHost
             ExpectedPluginVersion = EXPECTED_PSPI_VERSION
         Case CCP_resvg
@@ -679,8 +737,12 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As PD_PluginCore) As String
             GetPluginHomepage = "http://www.littlecms.com"
         Case CCP_lz4
             GetPluginHomepage = "https://lz4.github.io/lz4/"
+        Case CCP_OpenJPEG
+            GetPluginHomepage = "https://www.openjpeg.org/"
         Case CCP_pdfium
             GetPluginHomepage = "https://pdfium.googlesource.com/pdfium/"
+        Case CCP_PDHelper
+            GetPluginHomepage = "https://photodemon.org"
         Case CCP_pspiHost
             GetPluginHomepage = "https://github.com/spetric/Photoshop-Plugin-Host"
         Case CCP_resvg
@@ -717,7 +779,11 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As PD_PluginCore) As Str
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
         Case CCP_lz4
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
+        Case CCP_OpenJPEG
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_pdfium
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
+        Case CCP_PDHelper
             GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_pspiHost
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
@@ -755,8 +821,12 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As PD_PluginCore) As Stri
             GetPluginLicenseURL = "http://www.opensource.org/licenses/mit-license.php"
         Case CCP_lz4
             GetPluginLicenseURL = "https://github.com/lz4/lz4/blob/dev/lib/LICENSE"
+        Case CCP_OpenJPEG
+            GetPluginLicenseURL = "https://github.com/uclouvain/openjpeg/blob/master/LICENSE"
         Case CCP_pdfium
             GetPluginLicenseURL = "https://pdfium.googlesource.com/pdfium/+/main/LICENSE"
+        Case CCP_PDHelper
+            GetPluginLicenseURL = "https://github.com/tannerhelland/PhotoDemon/blob/main/LICENSE.md"
         Case CCP_pspiHost
             GetPluginLicenseURL = "https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE"
         Case CCP_resvg
@@ -838,11 +908,18 @@ Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolea
         Case CCP_LittleCMS
             initializationSuccessful = LittleCMS.InitializeLCMS()
         
+        Case CCP_OpenJPEG
+            initializationSuccessful = Plugin_OpenJPEG.InitializeEngine(PluginManager.GetPluginPath)
+        
         'pdfium is loaded on-demand.  This initial check only checks to see if the file exists;
         ' once a PDF function is actually called, we'll load the full library.
         Case CCP_pdfium
             initializationSuccessful = Plugin_PDF.InitializeEngine(False)
-            
+        
+        Case CCP_PDHelper
+            m_hPDHelper = VBHacks.LoadLib(PluginManager.GetPluginPath() & "PDHelper_win32.dll")
+            initializationSuccessful = (m_hPDHelper <> 0)
+        
         Case CCP_pspiHost
             initializationSuccessful = Plugin_8bf.InitializeEngine(PluginManager.GetPluginPath)
             
@@ -898,8 +975,21 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As PD_PluginCore, ByVal plug
         Case CCP_lz4
             m_lz4Enabled = pluginState
             
+        Case CCP_OpenJPEG
+            Plugin_OpenJPEG.ForciblySetAvailability pluginState
+            
         Case CCP_pdfium
             Plugin_PDF.ForciblySetAvailability pluginState
+        
+        Case CCP_PDHelper
+            If pluginState Then
+                If (m_hPDHelper = 0) Then m_hPDHelper = VBHacks.LoadLib(PluginManager.GetPluginPath() & "PDHelper_win32.dll")
+            Else
+                If (m_hPDHelper <> 0) Then
+                    VBHacks.FreeLib m_hPDHelper
+                    m_hPDHelper = 0
+                End If
+            End If
             
         Case CCP_pspiHost
             Plugin_8bf.ForciblySetAvailability pluginState
@@ -1074,6 +1164,9 @@ Public Sub TerminateAllPlugins()
     Plugin_CharLS.ReleaseEngine
     PDDebug.LogAction "CharLS released"
     
+    Plugin_OpenJPEG.ReleaseEngine
+    PDDebug.LogAction "OpenJPEG released"
+    
     Plugin_WebP.ReleaseEngine
     PDDebug.LogAction "libwebp released"
     
@@ -1102,6 +1195,12 @@ Public Sub TerminateAllPlugins()
         m_ZstdEnabled = False
         m_lz4Enabled = False
         PDDebug.LogAction "Compression engines released"
+    End If
+    
+    If (m_hPDHelper <> 0) Then
+        VBHacks.FreeLib m_hPDHelper
+        m_hPDHelper = 0
+        PDDebug.LogAction "External PD Helper library released"
     End If
     
 End Sub

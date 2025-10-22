@@ -247,11 +247,14 @@ Public Sub GenerateInputFormats()
     
     If m_FreeImageEnabled Then AddInputFormat "IFF - Amiga Interchange Format", "*.iff", PDIF_IFF
     
+    'Lossless JPEG requires the 3rd-party CharLS library
     If PluginManager.IsPluginCurrentlyEnabled(CCP_CharLS) Then AddInputFormat "JLS - JPEG-LS", "*.jls", PDIF_JLS
     
-    If m_FreeImageEnabled Then
-        AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
-        AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpc;*.jpx;*.jpf", PDIF_JP2
+    If m_FreeImageEnabled Then AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
+    
+    'OpenJPEG is preferred for JPEG-2000 handling, but we can fall back to FreeImage as a worst-case option
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_OpenJPEG) Or m_FreeImageEnabled Then
+        AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpt;*.j2c;*.jpc;*.jpx;*.jpf;*.jph;*.jpc", PDIF_JP2
     End If
     
     AddInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", PDIF_JPEG
@@ -652,14 +655,12 @@ Public Function IsExtensionOkayForPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT, ByRef s
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "ico", "cur")
         Case PDIF_IFF
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "iff", "lbm")
-        Case PDIF_J2K
-            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "j2k", "j2c")
+        Case PDIF_JP2
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jp2", "j2k", "jpt", "j2c", "jpc", "jpx", "jpf", "jph", "jpc")
         Case PDIF_JLS
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jls")
         Case PDIF_JNG
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jng")
-        Case PDIF_JP2
-            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jp2", "j2k", "jpc", "jpx", "jpf")
         Case PDIF_JPEG
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "jpg", "jpeg", "jpe", "jfif", "jif")
         Case PDIF_JXL
@@ -814,13 +815,12 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String, Optional ByVa
             GetPDIFFromExtension = PDIF_ICO
         Case "iff"
             GetPDIFFromExtension = PDIF_IFF
-        Case "j2k"
-            GetPDIFFromExtension = PDIF_J2K
+            GetPDIFFromExtension = PDIF_JP2
         Case "jls"
             GetPDIFFromExtension = PDIF_JLS
         Case "jng"
             GetPDIFFromExtension = PDIF_JNG
-        Case "jp2"
+        Case "jp2", "j2k", "j2c"
             GetPDIFFromExtension = PDIF_JP2
         Case "jpg", "jpe", "jpeg"
             GetPDIFFromExtension = PDIF_JPEG

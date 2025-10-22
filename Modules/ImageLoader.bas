@@ -1095,6 +1095,17 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'FreeImage claims to work with JPEG-2000, but its support is nearly a decade out-of-date
+    ' and it fails to cover many edge-cases correctly.
+    ' In v2025.9+, I added support for direct integration with OpenJPEG.
+    If (Not CascadeLoadGenericImage) And Plugin_OpenJPEG.IsOpenJPEGEnabled() Then
+        CascadeLoadGenericImage = LoadJPEG2000(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_OpenJPEG
+            dstImage.SetOriginalFileFormat PDIF_JP2
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1138,7 +1149,22 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         'For other formats, let FreeImage have a go at it, and we'll try GDI+ if it fails
         Else
             freeImage_Return = PD_FAILURE_GENERIC
-            If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+            If (Not CascadeLoadGenericImage) And ImageFormats.IsFreeImageEnabled() Then
+                
+                'Disallow some formats where FreeImage has known bugs.
+                Dim doNotAllowFI As Boolean
+                doNotAllowFI = False
+                
+                'JPEG-2000 files crash FreeImage with some regularity
+                If (Not doNotAllowFI) Then doNotAllowFI = Plugin_OpenJPEG.IsFileJP2(srcFile)
+                
+                'Some PCX and DCX images crash FreeImage too
+                If (Not doNotAllowFI) Then doNotAllowFI = Strings.StringsEqualAny(Files.FileGetExtension(srcFile), True, "pcx", "dcx")
+                
+                'If this file looks safe, allow FreeImage to try it
+                If (Not doNotAllowFI) Then CascadeLoadGenericImage = AttemptFreeImageLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
+                
+            End If
             If (Not CascadeLoadGenericImage) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then CascadeLoadGenericImage = AttemptGDIPlusLoad(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages, overrideParameters)
         End If
         
@@ -1462,6 +1488,38 @@ Private Function LoadJLS(ByRef srcFile As String, ByRef dstImage As pdImage, ByR
         dstImage.SetOriginalColorDepth 32       'TODO: retrieve this from file?
         dstImage.SetOriginalGrayscale False     'Same here?
         dstImage.SetOriginalAlpha True          'Same here?
+    End If
+    
+End Function
+
+Private Function LoadJPEG2000(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadJPEG2000 = False
+    
+    'OpenJPEG handles all the dirty work for us
+    If (Not Plugin_OpenJPEG.IsFileJP2(srcFile)) Then Exit Function
+    
+    'If validation passes, attempt a full load
+    LoadJPEG2000 = Plugin_OpenJPEG.LoadJP2(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadJPEG2000 Then
+        
+        dstImage.SetOriginalFileFormat PDIF_JP2
+        dstImage.NotifyImageChanged UNDO_Everything
+        
+        Dim numChannels As Long, finalPrec As Long
+        numChannels = Plugin_OpenJPEG.GetComponentCountOfLastImage()
+        finalPrec = Plugin_OpenJPEG.GetPrecisionOfLastImage()
+        
+        dstImage.SetOriginalGrayscale (numChannels < 3)
+        dstImage.SetOriginalAlpha (numChannels >= 4)
+        If (finalPrec <= 8) Then
+            dstImage.SetOriginalColorDepth 8 * numChannels
+        Else
+            dstImage.SetOriginalColorDepth 16 * numChannels
+        End If
+        
     End If
     
 End Function

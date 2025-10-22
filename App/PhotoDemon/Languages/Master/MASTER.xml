@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2025.4.63</langversion>
+		<langversion>2025.4.104</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -2763,7 +2763,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation></translation>
 </phrase>
 
-		<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -14730,8 +14730,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<phrasecount>2798</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5958 phrases. -->
-	<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
+	<!-- As of this build, PhotoDemon contains 5962 phrases. -->
+	<!-- 3164 are duplicates, so only 2798 unique phrases have been written to file. -->
 	<!-- These 2798 phrases contain approximately 12109 total words. -->
 
 	</pdData>
