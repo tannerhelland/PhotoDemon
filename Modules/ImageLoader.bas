@@ -1507,15 +1507,18 @@ Private Function LoadJPEG2000(ByRef srcFile As String, ByRef dstImage As pdImage
         
         dstImage.SetOriginalFileFormat PDIF_JP2
         dstImage.NotifyImageChanged UNDO_Everything
-        dstImage.SetOriginalColorDepth 32
-        dstImage.SetOriginalGrayscale False
-        dstImage.SetOriginalAlpha True
         
-        'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
-        ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        'If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-        'dstDIB.CreateBlank 16, 16, 32, 0
-        'dstDIB.SetColorManagementState cms_ProfileConverted
+        Dim numChannels As Long, finalPrec As Long
+        numChannels = Plugin_OpenJPEG.GetComponentCountOfLastImage()
+        finalPrec = Plugin_OpenJPEG.GetPrecisionOfLastImage()
+        
+        dstImage.SetOriginalGrayscale (numChannels < 3)
+        dstImage.SetOriginalAlpha (numChannels >= 4)
+        If (finalPrec <= 8) Then
+            dstImage.SetOriginalColorDepth 8 * numChannels
+        Else
+            dstImage.SetOriginalColorDepth 16 * numChannels
+        End If
         
     End If
     
