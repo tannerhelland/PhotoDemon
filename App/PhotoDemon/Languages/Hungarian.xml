@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>2025.4.1</langversion>
+<langversion>2025.4.2</langversion>
 <langstatus>complete</langstatus>
 
 <author>István Bánszki</author>
@@ -14762,32 +14762,32 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>mipmap-ek</translation>
 </phrase>
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>látványalapú</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>lassú</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>összes</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>pont</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>köbös</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
