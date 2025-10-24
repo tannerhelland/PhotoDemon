@@ -1055,7 +1055,7 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
         MoveWindow dialogHWnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
         
     End If
-        
+    
     'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
     ' on older OSes, even though a toolbox window has focus.
     Interface.FixPopupWindow dialogHWnd, True

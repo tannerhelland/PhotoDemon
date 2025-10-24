@@ -581,8 +581,8 @@ Private Sub HandleMinMaxMsg(ByVal lParam As Long)
     CopyMemoryStrict VarPtr(copyOfStruct), lParam, LenB(copyOfStruct)
     
     'We don't enforce a max size - only a min size
-    copyOfStruct.ptMinTrackSize.x = PDMath.Min2Int(800, m_ParentRectScreen.x2 - m_ParentRectScreen.x1)
-    copyOfStruct.ptMinTrackSize.y = PDMath.Min2Int(600, m_ParentRectScreen.y2 - m_ParentRectScreen.y1)
+    copyOfStruct.ptMinTrackSize.x = PDMath.Min2Int(Interface.FixDPI(800), m_ParentRectScreen.x2 - m_ParentRectScreen.x1)
+    copyOfStruct.ptMinTrackSize.y = PDMath.Min2Int(Interface.FixDPI(600), m_ParentRectScreen.y2 - m_ParentRectScreen.y1)
     CopyMemoryStrict lParam, VarPtr(copyOfStruct), LenB(copyOfStruct)
     
 End Sub
