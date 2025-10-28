@@ -880,14 +880,6 @@ Private Sub CreateNewPreferencesFile()
         .WriteBlankLine
         
         .WriteTag "Plugins", vbNullString, True
-            .WriteTag "ForceExifToolDisable", "False"
-            .WriteTag "ForceEZTwainDisable", "False"
-            .WriteTag "ForceFreeImageDisable", "False"
-            .WriteTag "ForceLibDeflateDisable", "False"
-            .WriteTag "ForceLittleCMSDisable", "False"
-            .WriteTag "ForceLz4Disable", "False"
-            .WriteTag "ForcepspiHostDisable", "False"
-            .WriteTag "ForceZstdDisable", "False"
             .WriteTag "LastPluginPreferencesPage", "0"
         .CloseTag "Plugins"
         .WriteBlankLine
@@ -1124,8 +1116,9 @@ Public Function WritePreference(ByVal strSectionHeader As String, ByVal strVaria
         'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
         WritePreference = m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader)
         
-        'Tag updates will fail if the requested preferences section doesn't exist (which may happen after the user upgrades
-        ' from an old PhotoDemon version, but retains their existing preferences file).  To prevent the problem from recurring,
+        'Tag updates will fail if the requested preferences section doesn't exist
+        ' (which may happen after the user upgrades from an old PhotoDemon version,
+        ' but retains their existing preferences file).  To prevent the problem from recurring,
         ' add this section to the current preferences file.
         If (Not WritePreference) Then
             WritePreference = m_XMLEngine.WriteNewSection(strSectionHeader)
@@ -1152,7 +1145,9 @@ End Function
 
 'Set an XML parameter list for a given dialog ID (constructed by the last-used settings class).
 Public Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As String) As Boolean
-    m_XMLPresets.UpdateTag dialogID, srcXMLString
+    If Not m_XMLPresets.UpdateTag(dialogID, srcXMLString) Then
+        PDDebug.LogAction "UserPrefs.SetDialogPresets() failed to update ID " & dialogID
+    End If
 End Function
 
 Public Sub StartPrefEngine()
@@ -1161,6 +1156,7 @@ Public Sub StartPrefEngine()
     ' the core PD user preferences file.
     Set m_XMLPresets = New pdXML
     Set m_XMLEngine = New pdXML
+    m_XMLEngine.SetTextCompareMode vbBinaryCompare
     
     'Note that XML data is *not actually loaded* until the InitializePaths function is called.  (That function determines
     ' where PD's user settings file is actually stored, as it can be in several places depending on folder rights of

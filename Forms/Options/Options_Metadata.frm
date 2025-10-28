@@ -164,7 +164,7 @@ Public Sub LoadUserPreferences()
     chkMetadataJPEG.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Estimate JPEG", True)
     chkMetadataUnknown.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Unknown", False)
     chkMetadataBinary.Value = UserPrefs.GetPref_Boolean("Loading", "Metadata Extract Binary", False)
-    chkLoadingOrientation.Value = UserPrefs.GetPref_Boolean("Loading", "EXIF Auto Rotate", True)
+    chkLoadingOrientation.Value = UserPrefs.GetPref_Boolean("Loading", "ExifAutoRotate", True)
     chkMetadataListPD.Value = UserPrefs.GetPref_Boolean("Saving", "MetadataListPD", True)
     
 End Sub
