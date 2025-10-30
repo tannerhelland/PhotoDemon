@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_OpenJPEG"
 'OpenJPEG (JPEG-2000) Library Interface
 'Copyright 2025-2025 by Tanner Helland
 'Created: 19/September/25
-'Last updated: 22/October/25
-'Last update: numerous tweaks to improve compatibility against official OpenJPEG conformance suite
+'Last updated: 30/October/25
+'Last update: switch to custom-built OpenJPEG to enable support all the way back to Windows XP
 '
 'Per its documentation (available at https://www.openjpeg.org/), OpenJPEG is...
 '
@@ -233,11 +233,6 @@ Private Type opj_image
     icc_profile_len As Long
 End Type
 
-'OpenJPEG supports callbacks for messages, warnings, and errors, but these require cdecl functions.
-' I use a twinbasic-built wrapper with delegate relays to allow me to safely handle these from within VB6.
-Private Declare Sub PD_GetAddrJP2KCallbacks Lib "PDHelper_win32" (ByVal dstInfoCallbackIn As Long, ByVal dstWarnCallbackIn As Long, ByVal dstErrCallbackIn As Long, ByRef dstInfoCallback As Long, ByRef dstWarnCallback As Long, ByRef dstErrCallback As Long)
-Private Declare Sub PD_GetAddrJP2FileCallbacks Lib "PDHelper_win32" (ByVal dstCbRead As Long, ByVal dstCbWrite As Long, ByRef dstCbSeek As Long, ByVal dstCbSkip As Long, ByRef outCbRead As Long, ByRef outCbWrite As Long, ByRef outCbSeek As Long, ByRef outCbSkip As Long)
-
 'Official OpenJPEG builds use stdcall, but without a def file, so we need to manually alias exports here
 Private Declare Function opj_version Lib "openjp2" Alias "_opj_version@0" () As Long
 Private Declare Sub opj_set_default_decoder_parameters Lib "openjp2" Alias "_opj_set_default_decoder_parameters@4" (ByVal p_parameters As Long)
@@ -260,6 +255,8 @@ Private Declare Function opj_stream_default_create Lib "openjp2" Alias "_opj_str
 Private Declare Function opj_stream_create Lib "openjp2" Alias "_opj_stream_create@8" (ByVal p_buffer_size As Long, ByVal bool_p_is_input As Long) As Long
 Private Declare Sub opj_stream_destroy Lib "openjp2" Alias "_opj_stream_destroy@4" (ByVal p_stream As Long)
 
+'Default OpenJPEG builds assume cdecl callbacks, but I'm currently custom-building OpenJPEG with support for stdcall callbacks
+' so we can handle everything from inside VB6
 Private Declare Sub opj_stream_set_read_function Lib "openjp2" Alias "_opj_stream_set_read_function@8" (ByVal p_stream As Long, ByVal p_function As Long)
 Private Declare Sub opj_stream_set_write_function Lib "openjp2" Alias "_opj_stream_set_write_function@8" (ByVal p_stream As Long, ByVal p_function As Long)
 Private Declare Sub opj_stream_set_skip_function Lib "openjp2" Alias "_opj_stream_set_skip_function@8" (ByVal p_stream As Long, ByVal p_function As Long)
@@ -319,7 +316,7 @@ Public Function GetVersion() As String
     
 End Function
 
-'Must be called before any OpenJPEG functions are used
+'Must be called before any OpenJPEG functions are used.
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
 
     Dim strLibPath As String
@@ -369,6 +366,12 @@ Public Function IsFileJP2(ByRef srcFile As String, Optional ByRef outCodecFormat
             outCodecFormat = OPJ_CODEC_JPT
             IsFileJP2 = True
             If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "File is JPT stream"
+            Exit Function
+        End If
+        
+        'We need at least 12-bytes to make a concrete determination
+        If (Files.FileLenW(srcFile) < 12) Then
+            IsFileJP2 = False
             Exit Function
         End If
         
@@ -463,16 +466,11 @@ AttemptDecodingWithReduction:
     End If
     
     'Initialize local I/O functions for our constructed decoder.
-    '
-    '(We do this via a twinBasic-built helper library, which allows for CDecl callbacks
-    '  without needing embedded assembly shenanigans.)
+    ' (Note that this requires a custom-built version of OpenJPEG with manually added support for stdcall callbacks.)
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing callbacks..."
-    Dim hInfo As Long, hWarning As Long, hError As Long
-    PD_GetAddrJP2KCallbacks AddressOf HandlerInfo, AddressOf HandlerWarning, AddressOf HandlerError, hInfo, hWarning, hError
-    
-    opj_set_info_handler pDecoder, hInfo, 0&
-    opj_set_warning_handler pDecoder, hWarning, 0&
-    opj_set_error_handler pDecoder, hError, 0&
+    opj_set_info_handler pDecoder, AddressOf HandlerInfo, 0&
+    opj_set_warning_handler pDecoder, AddressOf HandlerWarning, 0&
+    opj_set_error_handler pDecoder, AddressOf HandlerError, 0&
     
     'Decoders support variable behavior via a "decoder parameter" struct.
     ' Populate a parameter struct with default values.
@@ -546,17 +544,14 @@ AttemptDecodingWithReduction:
     
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Blank jp2 stream initialized OK..."
     
-    'Pass our callbacks to OpenJPEG.  This step requires an intermediary twinBasic DLL to translate between
-    ' stdcall (here) and cdecl (required by OpenJPEG) calling conventions.
-    Dim hRead As Long, hWrite As Long, hSkip As Long, hSeek As Long
-    PD_GetAddrJP2FileCallbacks AddressOf JP2_ReadProcDelegate, AddressOf JP2_WriteProcDelegate, AddressOf JP2_SkipProcDelegate, AddressOf JP2_SeekProcDelegate, hRead, hWrite, hSeek, hSkip
-    
+    'Pass our local I/O callbacks to OpenJPEG.
+    ' (Note that this requires a custom-built version of OpenJPEG with manually added support for stdcall callbacks.)
     opj_stream_set_user_data pStream, 0&, 0&
     opj_stream_set_user_data_length pStream, Files.FileLenW(srcFile) \ 10000
-    opj_stream_set_read_function pStream, hRead
-    opj_stream_set_write_function pStream, hWrite
-    opj_stream_set_skip_function pStream, hSkip
-    opj_stream_set_seek_function pStream, hSeek
+    opj_stream_set_read_function pStream, AddressOf JP2_ReadProcDelegate
+    opj_stream_set_write_function pStream, AddressOf JP2_WriteProcDelegate
+    opj_stream_set_skip_function pStream, AddressOf JP2_SkipProcDelegate
+    opj_stream_set_seek_function pStream, AddressOf JP2_SeekProcDelegate
     
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "I/O callbacks assigned OK..."
     
@@ -1437,6 +1432,10 @@ Private Sub HandlerError(ByVal pMsg As Long, ByVal pUserData As Long)
     PDDebug.LogAction "openJPEG Error: " & Strings.StringFromCharPtr(pMsg, False), PDM_External_Lib
 End Sub
 
+'OpenJPEG does not support wide chars in its default Windows I/O functions,
+' so we need to supply our own callbacks and use them for all I/O behavior.
+' (As a nice bonus, this also improves performance because we use memory mapped I/O which can
+'  greatly improve throughput.)
 Private Function JP2_ReadProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes As Long, ByVal p_user_data As Long) As Long
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Read requested for " & p_nb_bytes
     If (Not m_Stream Is Nothing) Then

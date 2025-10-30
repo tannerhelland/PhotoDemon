@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.662</langversion>
+<langversion>6.7.663</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
@@ -2792,7 +2792,7 @@ Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoD
 <translation>LGPL license</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -13868,6 +13868,11 @@ Voulez-vous vraiment continuer?</translation>
 </phrase>
 
 <phrase>
+<original>incompatible with Windows 7</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>installed, but disabled by user</original>
 <translation>installé, mais désactivé par l'utilisateur</translation>
 </phrase>
@@ -13907,7 +13912,7 @@ Voulez-vous vraiment continuer?</translation>
 <translation>Si vous interagissez avec %1, PhotoDemon vous proposera de télécharger et configuer cette bibliothèque pour vous.</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14807,10 +14812,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2799</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5958 phrases. -->
-<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12109 total words. -->
+<!-- As of this build, PhotoDemon contains 5964 phrases. -->
+<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
+<!-- These 2799 phrases contain approximately 12112 total words. -->
 
 </pdData>

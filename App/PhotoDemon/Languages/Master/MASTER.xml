@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2025.4.104</langversion>
+		<langversion>2025.4.139</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -13798,6 +13798,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>incompatible with Windows 7</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>installed, but disabled by user</original>
 <translation></translation>
 </phrase>
@@ -13837,7 +13842,7 @@ Are you sure you want to continue?</original>
 <translation></translation>
 </phrase>
 
-		<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+		<!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14728,10 +14733,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text generation complete. -->
 
-		<phrasecount>2798</phrasecount>
+		<phrasecount>2799</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5962 phrases. -->
-	<!-- 3164 are duplicates, so only 2798 unique phrases have been written to file. -->
-	<!-- These 2798 phrases contain approximately 12109 total words. -->
+	<!-- As of this build, PhotoDemon contains 5964 phrases. -->
+	<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
+	<!-- These 2799 phrases contain approximately 12112 total words. -->
 
 	</pdData>

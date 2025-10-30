@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（2025.4 build 130）</langname>
-<langversion>2025.10.24</langversion>
+<langversion>2025.10.25</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Oct 24, 2025</author>
@@ -2787,7 +2787,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation>LGPL 许可证</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -13858,6 +13858,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>incompatible with Windows 7</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>installed, but disabled by user</original>
 <translation>已经安装，但是被用户禁用</translation>
 </phrase>
@@ -13897,7 +13902,7 @@ Are you sure you want to continue?</original>
 <translation>如果您与 %1 交互，PhotoDemon将为您下载并配置此库。</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14792,11 +14797,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2799</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5958 phrases. -->
-<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12109 total words. -->
+<!-- As of this build, PhotoDemon contains 5964 phrases. -->
+<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
+<!-- These 2799 phrases contain approximately 12112 total words. -->
 
 <special-translations>
 

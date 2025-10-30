@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).36</langversion>
+<langversion>2028.8 Alfa (Build 25).37</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -2788,7 +2788,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation>LGPL licence</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -13861,6 +13861,11 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <phrase>
+<original>incompatible with Windows 7</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>installed, but disabled by user</original>
 <translation>instalēta, bet lietotājs to ir atspējojis</translation>
 </phrase>
@@ -13900,7 +13905,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 <translation>Ja jūs mijiedarbosieties ar %1, PhotoDemon piedāvās lejupielādēt un konfigurēt šo bibliotēku jūsu vietā.</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 50 phrases. 25 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14795,10 +14800,10 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2799</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5958 phrases. -->
-<!-- 3160 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12109 total words. -->
+<!-- As of this build, PhotoDemon contains 5964 phrases. -->
+<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
+<!-- These 2799 phrases contain approximately 12112 total words. -->
 
 </pdData>
