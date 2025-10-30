@@ -413,12 +413,14 @@ Private Sub Form_Load()
     GenerateContributor "Sinisa Petric", "https://github.com/spetric/Photoshop-Plugin-Host"
     GenerateContributor "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateContributor "Tom Loos", "http://www.designedbyinstinct.com"
+    GenerateContributor "twinBASIC", "https://github.com/twinbasic/twinbasic"
     GenerateContributor "TyraVex", "https://github.com/TyraVex"
     GenerateContributor "Vatterspun", "https://github.com/vatterspun"
     GenerateContributor "Vladimir Vissoultchev", "https://github.com/wqweto"
     GenerateContributor "Will Stampfer", "https://github.com/epmatsw"
     GenerateContributor "Yuriy Balyuk", "https://github.com/veksha"
     GenerateContributor "Zhu JinYong", "https://github.com/Planet-Source-Code?q=jinyong&type=&language="
+    GenerateContributor Strings.StringFromUtf8Base64("5piH"), "https://github.com/love80312"
     
     'Add dummy entries to the owner-drawn list boxes
     Dim i As Long

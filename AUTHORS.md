@@ -33,9 +33,11 @@ The current PhotoDemon build uses these 3rd-party libraries.  Thank you to these
 * [libwebp](https://developers.google.com/speed/webp)
 * [LittleCMS](http://www.littlecms.com)
 * [LZ4](https://lz4.github.io/lz4/)
+* [OpenJPEG](https://github.com/uclouvain/openjpeg)
 * [pdfium](https://pdfium.googlesource.com/pdfium/)
 * [Photoshop-Plugin-Host](https://github.com/spetric/Photoshop-Plugin-Host)
 * [resvg](https://github.com/RazrFalcon/resvg)
+* [twinBASIC](https://github.com/twinbasic/twinbasic)
 * [ZStandard](https://github.com/facebook/zstd)
 
 ### Direct contributors
@@ -50,18 +52,18 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Andrew Yeoman
 * [Ari Sohandri Putra](https://github.com/arisohandriputra)
 * [Avery](https://github.com/Planet-Source-Code/avery-use-gdi-aka-gdiplus-with-vb6-and-win98__1-37541)
-* Bánszki István
+* BÃ¡nszki IstvÃ¡n
 * [Boban Gjerasimoski](https://www.behance.net/Boban_Gjerasimoski)
 * [Bonnie West](https://github.com/Planet-Source-Code/bonnie-west-the-optimum-fileexists-function__1-74264)
 * [Carles P.V.](https://github.com/Planet-Source-Code/carles-p-v-ibmp-1-2__1-42376)
 * [Charltsing](https://www.cnblogs.com/Charltsing/)
 * ChenLin
 * [Chiahong Hong](https://github.com/ChiahongHong)
-* [Clément Mariage](https://www.medexprim.com/)
+* [ClÃ©ment Mariage](https://www.medexprim.com/)
 * Cody Robertson
 * [Dana Seaman](http://www.cyberactivex.com/)
 * DarkAlchy
-* Davor Šikic
+* Davor Å ikic
 * [Dilettante](http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control)
 * [Dirk Hartmann](http://www.taichi-zentrum-heidelberg.de)
 * [Djordje Djoric](https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/)
@@ -102,7 +104,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Miguel Chamorro
 * [Ming](http://ufoym.com/)
 * Mohammad Reza Karimi
-* [Nguyen Van Hùng](https://github.com/vhreal1302)
+* [Nguyen Van HÃ¹ng](https://github.com/vhreal1302)
 * [Olaf Schmidt](http://www.vbrichclient.com)
 * Old Abiquiu Photographic
 * [Paul Bourke](http://paulbourke.net/miscellaneous/)
@@ -124,3 +126,4 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * [Will Stampfer](https://github.com/epmatsw)
 * [Yuriy Balyuk](https://github.com/veksha)
 * [Zhu JinYong](https://github.com/Planet-Source-Code/zhu-jinyong-unicode-browseforfolder__1-73919)
+* [æ˜‡](https://github.com/love80312)
