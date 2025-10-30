@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
-	<pdData>
+<pdData>
 
-		<pdDataType>Translation</pdDataType>
+<pdDataType>Translation</pdDataType>
 
-		<langid>zh-TW</langid>
-		<langname>正體中文</langname>
-		<langversion>2025.4.104</langversion>
-		<langstatus>Translation completed on 2025/10/29 (bulid 135)</langstatus>
+<langid>zh-TW</langid>
+<langname>正體中文</langname>
+<langversion>2025.4.105</langversion>
+<langstatus>Translation completed on 2025/10/29 (bulid 135)</langstatus>
 
-		<author>昇</author>
+<author>昇</author>
 
-		<!-- BEGIN AUTOMATIC TEXT GENERATION -->
+<!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
 <phrase>
 <original>New image</original>
@@ -723,7 +723,6 @@
 <translation>通道混合器</translation>
 </phrase>
 
-
 <phrase>
 <original>Rechannel</original>
 <translation>改變通道</translation>
@@ -1014,7 +1013,6 @@
 <translation>增強邊線</translation>
 </phrase>
 
-<!--  先跳過特效翻譯  -->
 <phrase>
 <original>Find edges</original>
 <translation>偵查邊線</translation>
@@ -1519,7 +1517,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>圖像太大</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- FileMenu.bas contains 27 phrases. 15 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
@@ -1585,8 +1583,8 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 <translation>雕刻圖像浮雕</translation>
 </phrase>
 
-
 <!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+
 <phrase>
 <original>Counting the number of unique colors in this image</original>
 <translation>計算該圖像中獨一顏色的數量</translation>
@@ -1621,7 +1619,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <original>repeat</original>
 <translation>重複</translation>
 </phrase>
-<!--  特效 可能重複 先略過  -->
+
 <phrase>
 <original>waves</original>
 <translation>波動</translation>
@@ -1656,7 +1654,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <original>maze</original>
 <translation>迷宮</translation>
 </phrase>
-<!--  以上略過了  -->
+
 <phrase>
 <original>triangle</original>
 <translation>三角形</translation>
@@ -1812,7 +1810,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>Shift</translation>
 </phrase>
 
-<!-- Hotkeys.bas contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Hotkeys.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -1848,7 +1846,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>%1 頁</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Repeat</original>
@@ -2135,7 +2133,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>預覽不可用</translation>
 </phrase>
 
-<!-- Interface.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2238,11 +2236,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>In the future, automatically rasterize without prompting me</original>
-<translation>以後自動點陣化，不用提示</translation>
-</phrase>
-
-<phrase>
 <original>Paint layer</original>
 <translation>繪圖圖層</translation>
 </phrase>
@@ -2252,7 +2245,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>%1 幀</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 34 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -2397,7 +2390,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>圖像複製完成。</translation>
 </phrase>
 
-<!-- Loading.bas contains 28 phrases. 11 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2494,7 +2487,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 </phrase>
 
 <!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-<!--  以下暫略  -->
+
 <phrase>
 <original>All supported palettes</original>
 <translation>所有支持的調色盤</translation>
@@ -2639,7 +2632,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>下載被取消</translation>
 </phrase>
 
-<!-- Plugin_AVIF.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Plugin_AVIF.bas contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2729,11 +2722,9 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>應用色調映射</translation>
 </phrase>
 
-
-<!-- Plugin_FreeImage.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
@@ -2798,14 +2789,12 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation>FreeImage公共許可證</translation>
 </phrase>
 
-
-
 <phrase>
 <original>LGPL license</original>
 <translation>LGPL許可證</translation>
 </phrase>
 
-		<!-- Plugin_Management.bas contains 37 phrases. 29 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3151,7 +3140,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>錯誤回報指南</translation>
 </phrase>
 
-<!-- Processor.bas contains 128 phrases. 68 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3240,7 +3229,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>您可以繼續，但圖像將保存為靜態圖像，而不是動畫圖像。</translation>
 </phrase>
 
-<!-- Saving.bas contains 41 phrases. 34 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3448,7 +3437,7 @@ Please enter a numeric value.</original>
 <translation>裁切工具</translation>
 </phrase>
 
-<!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Fill tool</original>
@@ -3584,7 +3573,7 @@ Please enter a numeric value.</original>
 <translation>派卡</translation>
 </phrase>
 
-<!-- Units.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Units.bas contains 40 phrases. 27 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
@@ -3646,7 +3635,7 @@ Please enter a numeric value.</original>
 <translation>您已將PhotoDemon放置在受限系統資料夾中。因為PhotoDemon沒有管理員權限，所以無法為您下載圖檔。請將PhotoDemon移動到不受限製的資料夾，然後重試。</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -3827,14 +3816,14 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>匯入的圖像</translation>
 </phrase>
 
-		<!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
 <translation>記憶體使用率偏高；在繼續之前，將部分資料暫存到硬碟</translation>
 </phrase>
 
-		<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -4222,6 +4211,8 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -4656,7 +4647,7 @@ You will need to manually download this file using your Internet browser.</origi
 <translation>重排列圖層</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -5870,7 +5861,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切換語言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 394 phrases. 212 were duplicates of existing phrases, so only 182 new phrases were written to file. -->
+<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -6452,7 +6443,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>更新直方圖</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 40 phrases. 29 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Histogram_DisplayHistogram.frm contains 41 phrases. 29 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>radius</original>
@@ -7462,7 +7453,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
-<!-- Dialog_SVGImport.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Dialog_SVGImport.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -8339,7 +8330,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>cell size</original>
@@ -8877,7 +8868,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>用虛擬畫筆描摹圖像邊線</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 22 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 23 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>background color and opacity</original>
@@ -9683,7 +9674,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>左下</translation>
 </phrase>
 
-<!-- Effects_Transform_Perspective.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Transform_Perspective.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -10334,12 +10325,12 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Original filenames</original>
+<original>original filenames</original>
 <translation>原始圖檔名</translation>
 </phrase>
 
 <phrase>
-<original>Ascending numbers (1, 2, 3, etc.)</original>
+<original>ascending numbers (1, 2, 3, etc.)</original>
 <translation>升序編號（1，2，3等）</translation>
 </phrase>
 
@@ -10398,7 +10389,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估計剩餘時間</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 177 phrases. 74 were duplicates of existing phrases, so only 103 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -10467,7 +10458,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>盡力</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression level</original>
@@ -10491,7 +10482,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>最佳</translation>
 </phrase>
 
-		<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>layers to export</original>
@@ -10738,7 +10729,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>自定義顏色</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>copies</original>
@@ -11001,7 +10992,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>使用原始圖檔設置</translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 18 phrases. 8 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -11248,7 +11239,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>PNG圖檔支持不同的壓縮策略（稱為「濾鏡」）。 智能濾波器選擇產生更好的壓縮 使用自動設置讓PhotoDemon測試多種策略，並自動選擇產生最佳壓縮的策略。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 22 phrases. 8 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
@@ -11274,7 +11265,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>單色壓縮</translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>image type</original>
@@ -12081,7 +12072,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 <translation>單擊：添加此圖層的副本</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
@@ -12451,7 +12442,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 <translation>切換畫筆遊標</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 102 phrases. 41 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12650,7 +12641,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 這能提高精確度（尤其是在筆刷尺寸較小時），但筆刷筆觸看起來可能會比較不自然。</translation>
 </phrase>
 
-<!-- Toolpanel_Eraser.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -12873,11 +12864,11 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 <translation>使目前圖層變換（大小，角度和剪切）永久性的。這個動作是從來沒有必需的，但如果視彩現是呆滯，它可以提高性能。</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolpanel_MoveSize.frm contains 28 phrases. 12 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 11 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- Toolpanel_Pencil.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>animate</original>
@@ -13040,7 +13031,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 <translation>此選項控制了魔術棒使用的標準，以確定是否應該將像素添加到目前選擇。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 75 phrases. 42 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 75 phrases. 43 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13092,7 +13083,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 <translation>單擊此處將此層轉換為基本文字。</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 23 phrases. 12 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -13219,7 +13210,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 <translation>單擊此處將此層轉換為進階文字。</translation>
 </phrase>
 
-		<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -13794,7 +13785,7 @@ Are you sure you want to continue?</original>
 <translation>重置 PhotoDemon</translation>
 </phrase>
 
-		<!-- Tools_Options.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13882,6 +13873,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>incompatible with Windows 7</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>installed, but disabled by user</original>
 <translation>已安裝，但被用戶停用</translation>
 </phrase>
@@ -13921,7 +13917,7 @@ Are you sure you want to continue?</original>
 <translation>如果您與 %1 交互，PhotoDemon將為您下載並配置此庫。</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 46 phrases. 23 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -14072,7 +14068,7 @@ Are you sure you want to continue?</original>
 <translation>大型</translation>
 </phrase>
 
-		<!-- Options_Interface.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14135,6 +14131,7 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
 <translation>關閉圖像時，警告未保存的更改</translation>
@@ -14249,7 +14246,7 @@ PhotoDemon 提供一個更「安全」的選項，每次儲存都會產生檔案
 PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自動為你遞增檔案名稱。」</translation>
 </phrase>
 
-		<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14466,7 +14463,7 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 <translation>有些影像格式同時支援 ICC 設定檔及其自身的色彩管理解決方案。PhotoDemon 總是偏好 ICC 設定檔，但若無內嵌設定檔，則會嘗試其他色彩管理方式。</translation>
 </phrase>
 
-		<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>(disclaimer populated at run-time)</original>
@@ -14646,7 +14643,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 如果程式行為異常，這可能會解決問題。</translation>
 </phrase>
 
-		<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>add another folder</original>
@@ -14673,7 +14670,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>更改將在您下次啟動 PhotoDemon 時生效。</translation>
 </phrase>
 
-		<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
@@ -14707,7 +14704,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 在這些情況下，你可以使用這個設定來恢復正確的滑鼠行為。</translation>
 </phrase>
 
-		<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>display access keys (mnemonics)</original>
@@ -14851,14 +14848,14 @@ PhotoDemon 可以透過分析其他元數據（例如量化表）來推斷品質
 <translation>立方</translation>
 </phrase>
 
-		<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-		<!-- Automatic text generation complete. -->
+<!-- Automatic text generation complete. -->
 
-	<phrasecount>2798</phrasecount>
+<phrasecount>2799</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5962 phrases. -->
-	<!-- 3164 are duplicates, so only 2798 unique phrases have been written to file. -->
-	<!-- These 2798 phrases contain approximately 12109 total words. -->
+<!-- As of this build, PhotoDemon contains 5964 phrases. -->
+<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
+<!-- These 2799 phrases contain approximately 12112 total words. -->
 
-	</pdData>
+</pdData>
