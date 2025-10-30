@@ -590,6 +590,8 @@ Private Function CheckLibraryStateUI(ByVal pluginID As PD_PluginCore, Optional B
             ' let the user know
             If (Not OS.IsVistaOrLater) And PluginManager.IsPluginUnavailableOnXP(pluginID) Then
                 dstStateString = g_Language.TranslateMessage("incompatible with Windows XP")
+            ElseIf (Not OS.IsWin10OrLater) And PluginManager.IsPluginUnavailableOnWin7(pluginID) Then
+                dstStateString = g_Language.TranslateMessage("incompatible with Windows 7")
             Else
                 dstStateString = g_Language.TranslateMessage("installed, but disabled by user")
             End If

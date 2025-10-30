@@ -75,7 +75,7 @@ Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_OPENJPEG_VERSION As String = "2.5"
 Private Const EXPECTED_PDFIUM_VERSION As String = "136.0.7073"
-Private Const EXPECTED_PDHELPER_VERSION As String = "1.2.0"
+Private Const EXPECTED_PDHELPER_VERSION As String = "1.3.0"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_RESVG_VERSION As String = "0.45.0"
 Private Const EXPECTED_WEBP_VERSION As String = "1.5.0"
@@ -381,9 +381,11 @@ Public Function GetPluginVersion(ByVal pluginEnumID As PD_PluginCore) As String
                 GetPluginVersion = Plugin_PDF.GetVersion()
                 
             Case CCP_PDHelper
-                Dim lMajor As Long, lMinor As Long, lBuild As Long
-                GetLibraryVersion lMajor, lMinor, lBuild
-                GetPluginVersion = CStr(lMajor) & "." & CStr(lMinor) & "." & CStr(lBuild) & ".0"
+                If (m_hPDHelper <> 0) Then
+                    Dim lMajor As Long, lMinor As Long, lBuild As Long
+                    GetLibraryVersion lMajor, lMinor, lBuild
+                    GetPluginVersion = CStr(lMajor) & "." & CStr(lMinor) & "." & CStr(lBuild) & ".0"
+                End If
                 
             Case CCP_pspiHost
                 GetPluginVersion = Plugin_8bf.GetPspiVersion()
@@ -661,8 +663,23 @@ Public Function IsPluginUnavailableOnXP(ByVal pluginEnumID As PD_PluginCore) As 
             IsPluginUnavailableOnXP = True
         Case CCP_pdfium
             IsPluginUnavailableOnXP = True
+        Case CCP_PDHelper
+            IsPluginUnavailableOnXP = True
         Case CCP_resvg
             IsPluginUnavailableOnXP = True
+    End Select
+    
+End Function
+
+'External libraries built using rust (currently resvg) require Win 10+.  I'm unsure of the specific Win 10+ version,
+' but generally speaking that's not relevant to initialization.
+Public Function IsPluginUnavailableOnWin7(ByVal pluginEnumID As PD_PluginCore) As Boolean
+    
+    IsPluginUnavailableOnWin7 = False
+    
+    Select Case pluginEnumID
+        Case CCP_resvg
+            IsPluginUnavailableOnWin7 = True
     End Select
     
 End Function
@@ -916,8 +933,12 @@ Private Function InitializePlugin(ByVal pluginEnumID As PD_PluginCore) As Boolea
         Case CCP_pdfium
             initializationSuccessful = Plugin_PDF.InitializeEngine(False)
         
+        'The PD "helper" library is required for libheif integration.  libheif only works on Win7+ so
+        ' there's no point in initializing the helper library on XP.  (tB also produces broken DLLs
+        ' on XP as of beta 895, the last version I tested, so this prevents crashes when attempting
+        ' to call the simple "get version" function in the DLL.)
         Case CCP_PDHelper
-            m_hPDHelper = VBHacks.LoadLib(PluginManager.GetPluginPath() & "PDHelper_win32.dll")
+            If OS.IsWin7OrLater Then m_hPDHelper = VBHacks.LoadLib(PluginManager.GetPluginPath() & "PDHelper_win32.dll")
             initializationSuccessful = (m_hPDHelper <> 0)
         
         Case CCP_pspiHost

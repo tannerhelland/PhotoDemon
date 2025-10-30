@@ -414,6 +414,12 @@ End Function
 
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
     
+    'Because of a current reliance on vcpkg for compilation, libheif only works on Win 7+
+    If (Not OS.IsWin7OrLater) Then
+        PDDebug.LogAction "skipping libheif initialization (OS not supported)"
+        Exit Function
+    End If
+    
     'Initialize all required libraries
     Dim strLibPath As String
     
