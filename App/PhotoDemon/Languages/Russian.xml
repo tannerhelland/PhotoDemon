@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2025.4 Alpha - Build 24.4</langversion>
+<langversion>2025.4.141</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -4334,7 +4334,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Center image in viewport</original>
-<translation></translation>
+<translation>Центрировать изображение в окне просмотра</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -13864,7 +13864,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>Несовместима с Windows 7</translation>
 </phrase>
 
 <phrase>
@@ -13990,7 +13990,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>reset all "remember my choice" decisions</original>
-<translation></translation>
+<translation>сбросить все правила "Запомнить мой выбор"</translation>
 </phrase>
 
 <phrase>
@@ -14020,7 +14020,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>remember my choice</original>
-<translation></translation>
+<translation>Запомнить мой выбор</translation>
 </phrase>
 
 <phrase>

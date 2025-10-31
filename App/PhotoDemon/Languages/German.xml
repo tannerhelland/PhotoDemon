@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2025.4 Alpha - Build 63.1</langversion>
+<langversion>2025.4 Alpha - Build 141</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -13862,7 +13862,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>Inkompatibel mit Windows 7</translation>
 </phrase>
 
 <phrase>
