@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>正體中文</langname>
-<langversion>2025.4.105</langversion>
+<langversion>2025.4.106</langversion>
 <langstatus>Translation completed on 2025/10/29 (bulid 135)</langstatus>
 
 <author>昇</author>
@@ -14034,6 +14034,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>after pasting a new layer, activate the Move tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compact (filename only)</original>
 <translation>緊湊(僅圖檔名)</translation>
 </phrase>
@@ -14068,7 +14073,7 @@ Are you sure you want to continue?</original>
 <translation>大型</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14852,10 +14857,10 @@ PhotoDemon 可以透過分析其他元數據（例如量化表）來推斷品質
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2799</phrasecount>
+<phrasecount>2800</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5964 phrases. -->
-<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
-<!-- These 2799 phrases contain approximately 12112 total words. -->
+<!-- As of this build, PhotoDemon contains 5966 phrases. -->
+<!-- 3166 are duplicates, so only 2800 unique phrases have been written to file. -->
+<!-- These 2800 phrases contain approximately 12121 total words. -->
 
 </pdData>

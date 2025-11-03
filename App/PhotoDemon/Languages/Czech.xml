@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.31</langversion>
+<langversion>1.0.32</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -14651,6 +14651,11 @@ Opravdu chcete pokračovat?</translation>
 </phrase>
 
 <phrase>
+<original>after pasting a new layer, activate the Move tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compact (filename only)</original>
 <translation>kompaktní (pouze název souboru)</translation>
 </phrase>
@@ -14685,7 +14690,7 @@ Opravdu chcete pokračovat?</translation>
 <translation>velký</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -15439,10 +15444,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2799</phrasecount>
+<phrasecount>2800</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5964 phrases. -->
-<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
-<!-- These 2799 phrases contain approximately 12112 total words. -->
+<!-- As of this build, PhotoDemon contains 5966 phrases. -->
+<!-- 3166 are duplicates, so only 2800 unique phrases have been written to file. -->
+<!-- These 2800 phrases contain approximately 12121 total words. -->
 
 </pdData>

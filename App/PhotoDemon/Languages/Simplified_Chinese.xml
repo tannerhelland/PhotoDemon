@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（2025.4 build 130）</langname>
-<langversion>2025.10.25</langversion>
+<langversion>2025.10.26</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Oct 24, 2025</author>
@@ -14019,6 +14019,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>after pasting a new layer, activate the Move tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compact (filename only)</original>
 <translation>紧凑（仅限文件名）</translation>
 </phrase>
@@ -14053,7 +14058,7 @@ Are you sure you want to continue?</original>
 <translation>大型</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14797,11 +14802,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2799</phrasecount>
+<phrasecount>2800</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5964 phrases. -->
-<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
-<!-- These 2799 phrases contain approximately 12112 total words. -->
+<!-- As of this build, PhotoDemon contains 5966 phrases. -->
+<!-- 3166 are duplicates, so only 2800 unique phrases have been written to file. -->
+<!-- These 2800 phrases contain approximately 12121 total words. -->
 
 <special-translations>
 

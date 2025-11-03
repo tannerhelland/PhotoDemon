@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.70</langversion>
+<langversion>1.0.71</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -13981,6 +13981,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>after pasting a new layer, activate the Move tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compact (filename only)</original>
 <translation></translation>
 </phrase>
@@ -14015,7 +14020,7 @@ Are you sure you want to continue?</original>
 <translation>büyük</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14755,10 +14760,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2799</phrasecount>
+<phrasecount>2800</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5964 phrases. -->
-<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
-<!-- These 2799 phrases contain approximately 12112 total words. -->
+<!-- As of this build, PhotoDemon contains 5966 phrases. -->
+<!-- 3166 are duplicates, so only 2800 unique phrases have been written to file. -->
+<!-- These 2800 phrases contain approximately 12121 total words. -->
 
 </pdData>

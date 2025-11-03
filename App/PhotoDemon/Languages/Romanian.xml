@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.3</langversion>
+<langversion>1.0.4</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -14037,6 +14037,11 @@ Ești sigur că vreți să continuați?</translation>
 </phrase>
 
 <phrase>
+<original>after pasting a new layer, activate the Move tool</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>compact (filename only)</original>
 <translation>Compact (doar nume fișier)</translation>
 </phrase>
@@ -14071,7 +14076,7 @@ Ești sigur că vreți să continuați?</translation>
 <translation>Mare</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 28 phrases. 14 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Options_Interface.frm contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14813,10 +14818,10 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2799</phrasecount>
+<phrasecount>2800</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5964 phrases. -->
-<!-- 3165 are duplicates, so only 2799 unique phrases have been written to file. -->
-<!-- These 2799 phrases contain approximately 12112 total words. -->
+<!-- As of this build, PhotoDemon contains 5966 phrases. -->
+<!-- 3166 are duplicates, so only 2800 unique phrases have been written to file. -->
+<!-- These 2800 phrases contain approximately 12121 total words. -->
 
 </pdData>

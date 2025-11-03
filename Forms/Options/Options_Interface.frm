@@ -43,7 +43,7 @@ Begin VB.Form options_Interface
    Begin PhotoDemon.pdPictureBox picGrid 
       Height          =   735
       Left            =   150
-      Top             =   3960
+      Top             =   4920
       Width           =   735
       _ExtentX        =   1296
       _ExtentY        =   1296
@@ -84,7 +84,7 @@ Begin VB.Form options_Interface
       Height          =   810
       Left            =   1080
       TabIndex        =   2
-      Top             =   3900
+      Top             =   4860
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1429
@@ -95,7 +95,7 @@ Begin VB.Form options_Interface
       Height          =   795
       Left            =   4140
       TabIndex        =   3
-      Top             =   3900
+      Top             =   4860
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1402
@@ -106,7 +106,7 @@ Begin VB.Form options_Interface
       Height          =   690
       Left            =   7260
       TabIndex        =   4
-      Top             =   3960
+      Top             =   4920
       Width           =   465
       _ExtentX        =   820
       _ExtentY        =   1217
@@ -116,7 +116,7 @@ Begin VB.Form options_Interface
       Height          =   690
       Left            =   7770
       TabIndex        =   5
-      Top             =   3960
+      Top             =   4920
       Width           =   465
       _ExtentX        =   820
       _ExtentY        =   1217
@@ -126,7 +126,7 @@ Begin VB.Form options_Interface
       Height          =   285
       Index           =   2
       Left            =   0
-      Top             =   3480
+      Top             =   4440
       Width           =   8205
       _ExtentX        =   14473
       _ExtentY        =   503
@@ -156,6 +156,28 @@ Begin VB.Form options_Interface
       Caption         =   "remember my choice"
       FontSize        =   12
       ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   3
+      Left            =   0
+      Top             =   3480
+      Width           =   8205
+      _ExtentX        =   14473
+      _ExtentY        =   503
+      Caption         =   "tools"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdCheckBox chkAfterPaste 
+      Height          =   330
+      Left            =   225
+      TabIndex        =   7
+      Top             =   3945
+      Width           =   7920
+      _ExtentX        =   13970
+      _ExtentY        =   582
+      Caption         =   "after pasting a new layer, activate the Move tool"
    End
 End
 Attribute VB_Name = "options_Interface"
@@ -405,6 +427,10 @@ Public Sub LoadUserPreferences()
     btsTitleText.ListIndex = UserPrefs.GetPref_Long("Interface", "Window Caption Length", 0)
     csCanvasColor.Color = UserPrefs.GetCanvasColor()
     
+    'Tools
+    chkAfterPaste.Value = UserPrefs.GetPref_Boolean("Interface", "MoveToolAfterPaste", True)
+    
+    'Transparency
     m_userInitiatedAlphaSelection = False
     cboAlphaCheck.ListIndex = UserPrefs.GetPref_Long("Transparency", "Alpha Check Mode", 0)
     csAlphaOne.Color = UserPrefs.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
@@ -422,6 +448,10 @@ Public Sub SaveUserPreferences()
     UserPrefs.SetPref_String "Interface", "Canvas Color", Colors.GetHexStringFromRGB(csCanvasColor.Color)
     UserPrefs.SetCanvasColor csCanvasColor.Color
     
+    'Tools
+    UserPrefs.SetPref_Boolean "Interface", "MoveToolAfterPaste", chkAfterPaste.Value
+    
+    'Transparency
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Mode", CLng(cboAlphaCheck.ListIndex)
     UserPrefs.SetPref_Long "Transparency", "Alpha Check One", CLng(csAlphaOne.Color)
     UserPrefs.SetPref_Long "Transparency", "Alpha Check Two", CLng(csAlphaTwo.Color)

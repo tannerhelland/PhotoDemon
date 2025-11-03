@@ -578,8 +578,9 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
             'Synchronize the interface to the new image
             SyncInterfaceToCurrentImage
             
-            'Finally, activate the move tool (in case the user wants to further tweak position)
-            toolbar_Toolbox.SelectNewTool NAV_MOVE
+            'Finally, activate the move tool (in case the user wants to further tweak position).
+            ' (NOTE Nov 2025: this behavior is now user-controlled by a Tools > Options > Interface preference)
+            If UserPrefs.GetPref_Boolean("Interface", "MoveToolAfterPaste", True) Then toolbar_Toolbox.SelectNewTool NAV_MOVE
             
         End If
         
