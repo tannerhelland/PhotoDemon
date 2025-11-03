@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2025.4 Alpha - Build 141.1</langversion>
+<langversion>2025.4 Alpha - Build 143</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14023,7 +14023,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>Nach Einfügen eines neuen Layers das Verschieben-Tool aktivieren</translation>
 </phrase>
 
 <phrase>
