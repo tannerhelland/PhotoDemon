@@ -233,6 +233,256 @@ Private Type opj_image
     icc_profile_len As Long
 End Type
 
+'Compression parameters
+
+'/**
+' * Progression order
+' * */
+Private Enum prog_order
+    OPJ_PROG_UNKNOWN = -1   ',  /**< place-holder */
+    OPJ_LRCP = 0            ',  /**< layer-resolution-component-precinct order */
+    OPJ_RLCP = 1            ',  /**< resolution-layer-component-precinct order */
+    OPJ_RPCL = 2            ',  /**< resolution-precinct-component-layer order */
+    OPJ_PCRL = 3            ',  /**< precinct-component-resolution-layer order */
+    OPJ_CPRL = 4            ' /**< component-precinct-resolution-layer order */
+End Enum
+
+'/**
+' * Progression order changes
+' *
+' */
+Private Type opj_poc
+    '/** Resolution num start, Component num start, given by POC */
+    resno0 As Long
+    compno0 As Long
+    '/** Layer num end,Resolution num end, Component num end, given by POC */
+    layno1 As Long
+    resno1 As Long
+    compno1 As Long
+    '/** Layer num start,Precinct num start, Precinct num end */
+    layno0 As Long
+    precno0 As Long
+    precno1 As Long
+    '/** Progression order enum*/
+    prg1 As prog_order
+    prg As prog_order
+    '/** Progression order string*/
+    progorder(0 To 4) As Byte   'TODO: investigate padding behavior here
+    '/** Tile number (starting at 1) */
+    tile As Long
+    '/** Start and end values for Tile width and height*/
+    tx0 As Long
+    tx1 As Long
+    ty0 As Long
+    ty1 As Long
+    '/** Start value, initialised in pi_initialise_encode*/
+    layS As Long
+    resS As Long
+    compS As Long
+    prcS As Long
+    '/** End value, initialised in pi_initialise_encode */
+    layE As Long
+    resE As Long
+    compE As Long
+    prcE As Long
+    '/** Start and end values of Tile width and height, initialised in pi_initialise_encode*/
+    txS As Long
+    txE As Long
+    tyS As Long
+    tyE As Long
+    dx As Long
+    dy As Long
+    '/** Temporary values for Tile parts, initialised in pi_create_encode */
+    lay_t As Long
+    res_t As Long
+    comp_t As Long
+    prc_t As Long
+    tx0_t As Long
+    ty0_t As Long
+End Type
+
+'/**
+' * DEPRECATED: use RSIZ, OPJ_PROFILE_* and OPJ_EXTENSION_* instead
+' * Digital cinema operation mode
+' * */
+Private Enum OPJ_CINEMA_MODE
+    OPJ_OFF = 0         ',    /** Not Digital Cinema*/
+    OPJ_CINEMA2K_24 = 1 ',    /** 2K Digital Cinema at 24 fps*/
+    OPJ_CINEMA2K_48 = 2 ',    /** 2K Digital Cinema at 48 fps*/
+    OPJ_CINEMA4K_24 = 3 '     /** 4K Digital Cinema at 24 fps*/
+End Enum
+
+'/**
+' * DEPRECATED: use RSIZ, OPJ_PROFILE_* and OPJ_EXTENSION_* instead
+' * Rsiz Capabilities
+' * */
+Private Enum RSIZ_CAPABILITIES
+    OPJ_STD_RSIZ = 0    ',       /** Standard JPEG2000 profile*/
+    OPJ_CINEMA2K = 3    ',       /** Profile name for a 2K image*/
+    OPJ_CINEMA4K = 4    ',       /** Profile name for a 4K image*/
+    OPJ_MCT = &H8100&
+End Enum
+
+'/**
+' * Compression parameters
+' * */
+Private Type opj_cparameters
+    '/** size of tile: tile_size_on = false (not in argument) or = true (in argument) */
+    tile_size_on As Long
+    '/** XTOsiz */
+    cp_tx0 As Long
+    '/** YTOsiz */
+    cp_ty0 As Long
+    '/** XTsiz */
+    cp_tdx As Long
+    '/** YTsiz */
+    cp_tdy As Long
+    '/** allocation by rate/distortion */
+    cp_disto_alloc As Long
+    '/** allocation by fixed layer */
+    cp_fixed_alloc As Long
+    '/** allocation by fixed quality (PSNR) */
+    cp_fixed_quality As Long
+    '/** fixed layer */
+    p_cp_matrice As Long
+    '/** comment for coding */
+    p_cp_comment As Long
+    '/** csty : coding style */
+    csty As Long
+    '/** progression order (default OPJ_LRCP) */
+    progorder As prog_order
+    '/** progression order changes */
+    POC(0 To 31) As opj_poc
+    '/** number of progression order changes (POC), default to 0 */
+    numpocs As Long
+    '/** number of layers */
+    tcp_numlayers As Long
+    '/** rates of layers - might be subsequently limited by the max_cs_size field.
+    ' * Should be decreasing. 1 can be
+    ' * used as last value to indicate the last layer is lossless. */
+    tcp_rates(0 To 99) As Single
+    '/** different psnr for successive layers. Should be increasing. 0 can be
+    ' * used as last value to indicate the last layer is lossless. */
+    tcp_distoratio(0 To 99) As Single
+    '/** number of resolutions */
+    numresolution As Long
+    '/** initial code block width, default to 64 */
+    cblockw_init As Long
+    '/** initial code block height, default to 64 */
+    cblockh_init As Long
+    '/** mode switch (cblk_style) */
+    mode As Long
+    '/** 1 : use the irreversible DWT 9-7, 0 : use lossless compression (default) */
+    irreversible As Long
+    '/** region of interest: affected component in [0..3], -1 means no ROI */
+    roi_compno As Long
+    '/** region of interest: upshift value */
+    roi_shift As Long
+    '/* number of precinct size specifications */
+    res_spec As Long
+    '/** initial precinct width */
+    '#define OPJ_J2K_MAXRLVLS 33                 /**< Number of maximum resolution level authorized */
+    prcw_init(0 To 32) As Long
+    '/** initial precinct height */
+    prch_init(0 To 32) As Long
+
+    '/**@name command line encoder parameters (not used inside the library) */
+    '/*@{*/
+    '/** input file name */
+    '#define OPJ_PATH_LEN 4096 /**< Maximum allowed size for filenames */
+    infile(0 To 4095) As Byte
+    '/** output file name */
+    outfile(0 To 4095) As Byte
+    '/** DEPRECATED. Index generation is now handled with the opj_encode_with_info() function. Set to NULL */
+    index_on As Long
+    '/** DEPRECATED. Index generation is now handled with the opj_encode_with_info() function. Set to NULL */
+    index_opj(0 To 4095) As Byte
+    '/** subimage encoding: origin image offset in x direction */
+    image_offset_x0 As Long
+    '/** subimage encoding: origin image offset in y direction */
+    image_offset_y0 As Long
+    '/** subsampling value for dx */
+    subsampling_dx As Long
+    '/** subsampling value for dy */
+    subsampling_dy As Long
+    '/** input file format 0: PGX, 1: PxM, 2: BMP 3:TIF*/
+    decod_format As Long
+    '/** output file format 0: J2K, 1: JP2, 2: JPT */
+    cod_format As Long
+    '/*@}*/
+
+    '/* UniPG>> */ /* NOT YET USED IN THE V2 VERSION OF OPENJPEG */
+    '/**@name JPWL encoding parameters */
+    '/*@{*/
+    '/** enables writing of EPC in MH, thus activating JPWL */
+    jpwl_epc_on As Long
+    '/** error protection method for MH (0,1,16,32,37-128) */
+    jpwl_hprot_MH As Long
+    '/** tile number of header protection specification (>=0) */
+    '#define JPWL_MAX_NO_TILESPECS   16 /**< Maximum number of tile parts expected by JPWL: increase at your will */
+    jpwl_hprot_TPH_tileno(0 To 15) As Long
+    '/** error protection methods for TPHs (0,1,16,32,37-128) */
+    jpwl_hprot_TPH(0 To 15) As Long
+    '/** tile number of packet protection specification (>=0) */
+    '#define JPWL_MAX_NO_PACKSPECS   16 /**< Maximum number of packet parts expected by JPWL: increase at your will */
+    jpwl_pprot_tileno(0 To 15) As Long
+    '/** packet number of packet protection specification (>=0) */
+    jpwl_pprot_packno(0 To 15) As Long
+    '/** error protection methods for packets (0,1,16,32,37-128) */
+    jpwl_pprot(0 To 15) As Long
+    '/** enables writing of ESD, (0=no/1/2 bytes) */
+    jpwl_sens_size As Long
+    '/** sensitivity addressing size (0=auto/2/4 bytes) */
+    jpwl_sens_addr As Long
+    '/** sensitivity range (0-3) */
+    jpwl_sens_range As Long
+    '/** sensitivity method for MH (-1=no,0-7) */
+    jpwl_sens_MH As Long
+    '/** tile number of sensitivity specification (>=0) */
+    jpwl_sens_TPH_tileno(0 To 15) As Long
+    '/** sensitivity methods for TPHs (-1=no,0-7) */
+    jpwl_sens_TPH(0 To 15) As Long
+    '/*@}*/
+    '/* <<UniPG */
+
+    '/**
+    ' * DEPRECATED: use RSIZ, OPJ_PROFILE_* and MAX_COMP_SIZE instead
+    ' * Digital Cinema compliance 0-not compliant, 1-compliant
+    ' * */
+    cp_cinema As OPJ_CINEMA_MODE
+    '/**
+    ' * Maximum size (in bytes) for each component.
+    ' * If == 0, component size limitation is not considered
+    ' * */
+    max_comp_size As Long
+    '/**
+    ' * DEPRECATED: use RSIZ, OPJ_PROFILE_* and OPJ_EXTENSION_* instead
+    ' * Profile name
+    ' * */
+    cp_rsiz As RSIZ_CAPABILITIES
+    '/** Tile part generation*/
+    tp_on As Byte
+    '/** Flag for Tile part generation*/
+    tp_flag As Byte
+    '/** MCT (multiple component transform) */
+    tcp_mct As Byte
+    '/** Enable JPIP indexing*/
+    jpip_on As Long
+    '/** Naive implementation of MCT restricted to a single reversible array based
+    '    encoding without offset concerning all the components. */
+    p_mct_data As Long
+    '/**
+    ' * Maximum size (in bytes) for the whole codestream.
+    ' * If == 0, codestream size limitation is not considered
+    ' * If it does not comply with tcp_rates, max_cs_size prevails
+    ' * and a warning is issued.
+    ' * */
+    max_cs_size As Long
+    '/** RSIZ value
+    '    To be used to combine OPJ_PROFILE_*, OPJ_EXTENSION_* and (sub)levels values. */
+    rsiz As Integer
+End Type
+
 'Official OpenJPEG builds use stdcall, but without a def file, so we need to manually alias exports here
 Private Declare Function opj_version Lib "openjp2" Alias "_opj_version@0" () As Long
 Private Declare Sub opj_set_default_decoder_parameters Lib "openjp2" Alias "_opj_set_default_decoder_parameters@4" (ByVal p_parameters As Long)
