@@ -486,7 +486,7 @@ End Type
 'Official OpenJPEG builds use stdcall, but without a def file, so we need to manually alias exports here
 Private Declare Function opj_version Lib "openjp2" Alias "_opj_version@0" () As Long
 Private Declare Sub opj_set_default_decoder_parameters Lib "openjp2" Alias "_opj_set_default_decoder_parameters@4" (ByVal p_parameters As Long)
-Private Declare Function opj_create_decompress Lib "openjp2" Alias "_opj_create_decompress@4" (ByVal OPJ_CODEC_FORMAT As Long) As Long
+Private Declare Function opj_create_decompress Lib "openjp2" Alias "_opj_create_decompress@4" (ByVal jp2_format As OPJ_CODEC_FORMAT) As Long
 Private Declare Function opj_setup_decoder Lib "openjp2" Alias "_opj_setup_decoder@8" (ByVal p_codec As Long, ByVal p_parameters As Long) As Long
 Private Declare Sub opj_set_info_handler Lib "openjp2" Alias "_opj_set_info_handler@12" (ByVal p_codec As Long, ByVal opj_msg_callback As Long, ByVal p_user_data As Long)
 Private Declare Sub opj_set_warning_handler Lib "openjp2" Alias "_opj_set_warning_handler@12" (ByVal p_codec As Long, ByVal opj_msg_callback As Long, ByVal p_user_data As Long)
@@ -499,7 +499,13 @@ Private Declare Sub opj_image_destroy Lib "openjp2" Alias "_opj_image_destroy@4"
 Private Declare Function opj_decode Lib "openjp2" Alias "_opj_decode@12" (ByVal p_decompressor As Long, ByVal p_stream As Long, ByVal p_image As Long) As Long
 Private Declare Function opj_end_decompress Lib "openjp2" Alias "_opj_end_decompress@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
 Private Declare Function opj_set_decoded_components Lib "openjp2" Alias "_opj_set_decoded_components@16" (ByVal p_codec As Long, ByVal numcomps As Long, ByVal p_comps_indices As Long, ByVal b_apply_color_transforms As Long) As Long
-
+Private Declare Function opj_image_create Lib "openjp2" Alias "_opj_image_create@12" (ByVal numcmpts As Long, ByVal p_cmptparms As Long, ByVal clrspc As OPJ_COLOR_SPACE) As Long
+Private Declare Function opj_create_compress Lib "openjp2" Alias "_opj_create_compress@4" (ByVal jp2_format As OPJ_CODEC_FORMAT) As Long
+Private Declare Sub opj_set_default_encoder_parameters Lib "openjp2" Alias "_opj_set_default_encoder_parameters@4" (ByVal p_opj_cparameters_t As Long)
+Private Declare Function opj_setup_encoder Lib "openjp2" Alias "_opj_setup_encoder@12" (ByVal p_codec As Long, ByVal p_parameters As Long, ByVal p_image As Long) As Long
+Private Declare Function opj_start_compress Lib "openjp2" Alias "_opj_start_compress@12" (ByVal p_codec As Long, ByVal p_image As Long, ByVal p_stream As Long) As Long
+Private Declare Function opj_encode Lib "openjp2" Alias "_opj_encode@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
+Private Declare Function opj_end_compress Lib "openjp2" Alias "_opj_end_compress@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
 Private Declare Function opj_stream_create_default_file_stream Lib "openjp2" Alias "_opj_stream_create_default_file_stream@8" (ByVal p_fname As Long, ByVal p_is_read_stream As Long) As Long
 Private Declare Function opj_stream_default_create Lib "openjp2" Alias "_opj_stream_default_create@4" (ByVal bool_p_is_input As Long) As Long
 Private Declare Function opj_stream_create Lib "openjp2" Alias "_opj_stream_create@8" (ByVal p_buffer_size As Long, ByVal bool_p_is_input As Long) As Long
@@ -547,6 +553,10 @@ Private m_IccBytes() As Byte, m_IccLength As Long, m_ColorProfile As pdICCProfil
 ' otherwise "unloadable" on 32-bit systems.
 Private Const MAX_SIZE_COMPONENTS As Long = 120000000
 Private m_SizeReduction As Long
+
+'Caches for export; generating some OpenJPEG objects is resource-intensive, so any steps we can skip
+' on back-to-back calls (e.g. when previewing export quality) is beneficial.
+Private m_OpjExportImg As Long
     
 'Forcibly disable library interactions at run-time (if newState is FALSE).
 ' Setting newState to TRUE is not advised; this module will handle state internally based
@@ -796,8 +806,11 @@ AttemptDecodingWithReduction:
     
     'Pass our local I/O callbacks to OpenJPEG.
     ' (Note that this requires a custom-built version of OpenJPEG with manually added support for stdcall callbacks.)
+    
+    '(These user-data objects are not currently required; these are just placeholders for future enhancement)
     opj_stream_set_user_data pStream, 0&, 0&
     opj_stream_set_user_data_length pStream, Files.FileLenW(srcFile) \ 10000
+    
     opj_stream_set_read_function pStream, AddressOf JP2_ReadProcDelegate
     opj_stream_set_write_function pStream, AddressOf JP2_WriteProcDelegate
     opj_stream_set_skip_function pStream, AddressOf JP2_SkipProcDelegate
@@ -1496,6 +1509,266 @@ Public Function GetPrecisionOfLastImage() As Long
     GetPrecisionOfLastImage = m_OpjNotes.finalPrecision
 End Function
 
+'Save a pdDIB object to a pdStream object.  This provides flexibility in saving to file vs saving to memory,
+' since OpenJPEG relies on us to supply an I/O stream object anyway.
+'
+'FOR THIS TO WORK, the stream MUST BE OPEN AND INITIALIZED BEFORE CALLING this function.
+'
+'ALSO: for performance reasons, this function creates (potentially large) module-level caches for storing
+' original DIB pixel data, because everything has to be translated to 96/126-bit (32-bit channels) prior
+' to passing it to OpenJPEG.  After this function wraps, you MUST call FreeJp2Caches() if you want that
+' memory reclaimed.
+Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As pdStream, ByVal saveQuality As Long, Optional ByVal forceNewImageObject As Boolean = False) As Boolean
+    
+    Const FUNC_NAME As String = "SavePdDIBToJp2Stream"
+    SavePdDIBToJp2Stream = False
+    
+    'Exit immediately if the destination stream isn't open
+    If (dstStream Is Nothing) Then Exit Function
+    If (Not dstStream.IsOpen()) Then Exit Function
+    
+    'Initialize a default set of encoding parameters
+    Dim srcParams As opj_cparameters
+    opj_set_default_encoder_parameters VarPtr(srcParams)
+    
+    'To maximize compatibility, PD only saves single-layer JP2 images with minimal deviations from default behavior
+    srcParams.tcp_numlayers = 1
+    srcParams.tcp_rates(0) = CSng(saveQuality And &HFF&)
+    srcParams.cp_disto_alloc = 1    'Use quality as the primary export consideration
+    
+    'Next, we need to prep an OpenJPEG-format image object.  PD will attempt to reuse previous creations
+    ' unless explicitly told otherwise.
+    If forceNewImageObject Or (m_OpjExportImg = 0) Then
+        
+        'Free the previous image, if any
+        If (m_OpjExportImg <> 0) Then
+            opj_image_destroy m_OpjExportImg
+            m_OpjExportImg = 0
+        End If
+        
+        'Initialize an array of component parameters (one per component).
+        ' We pass these to OpenJPEG to tell it what kind of image to initialize.
+        ' TODO: variable behavior here based on alpha presence, grayscale output
+        Dim numParams As Long
+        numParams = 4
+        
+        'Multi-component images can use an MCT (multi-component transform) for large file size savings
+        If (numParams > 1) Then srcParams.tcp_mct = 1 Else srcParams.tcp_mct = 0
+        
+        'Next, we need to populate a list of image component headers with desired encoding settings
+        Dim cmpParams() As opj_image_comp
+        ReDim cmpParams(0 To numParams - 1) As opj_image_comp
+        
+        'Populate all component parameter values
+        Dim i As Long
+        For i = 0 To numParams - 1
+            With cmpParams(i)
+                .dx = srcParams.subsampling_dx 'TODO: support subsampling?
+                .dy = srcParams.subsampling_dy
+                .factor = 1
+                .w = srcDIB.GetDIBWidth
+                .h = srcDIB.GetDIBHeight
+                .prec = 8       'TODO: allow the user to modify this?
+                .opj_bpp = .prec    'BPP is deprecated; only .prec matters in modern OpenJPEG builds
+                .sgnd = 0       'PD only writes unsigned data
+                If (i = 3) Then .Alpha = 1 Else .Alpha = 0
+            End With
+        Next i
+        
+        'TODO: support grayscale (eventually)
+        Dim dstColorSpace As OPJ_COLOR_SPACE
+        dstColorSpace = OPJ_CLRSPC_SRGB
+        
+        'We now have everything we need to initialize an OpenJPEG image object
+        m_OpjExportImg = opj_image_create(numParams, VarPtr(cmpParams(0)), dstColorSpace)
+        If (m_OpjExportImg = 0) Then GoTo SafeCleanup
+        
+        'Set image size.  (Because we can't easily alias m_OpjExportImage as an opj_image object,
+        ' we're just gonna set the values manually, in x0, y0, x1, y1 order)
+        VBHacks.PutMem4 m_OpjExportImg, 0&
+        VBHacks.PutMem4 m_OpjExportImg + 4, 0&
+        VBHacks.PutMem4 m_OpjExportImg + 8, srcDIB.GetDIBWidth - 1
+        VBHacks.PutMem4 m_OpjExportImg + 12, srcDIB.GetDIBHeight - 1
+        
+        'Next we need to populate pixel channels.  OpenJPEG has already allocated memory for each channel,
+        ' but we (obviously) have to fill them.
+        
+        'First, we need to retrieve the custom opj structs that actually store component information.
+        Dim imgChannels() As opj_image_comp
+        ReDim imgChannels(0 To numParams - 1) As opj_image_comp
+    
+        'The target struct has non-aligned members (entries that don't align cleanly on 4-byte boundaries),
+        ' so we need to account for this when memcpy'ing them into local structs.
+        Dim sizeOfChannel As Long, sizeOfChannelAligned As Long
+        sizeOfChannelAligned = LenB(imgChannels(0))
+        sizeOfChannel = Len(imgChannels(0))
+        
+        'To simplify reading data from arbitrary pointers, use a pdStream object.
+        ' (Note the 24 is a magic number representing the offset of the pcomps struct member.)
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * numParams, baseFilePointerOffset:=m_OpjExportImg + 24, optimizeAccess:=OptimizeSequentialAccess) Then
+            
+            'Pull *all* components into local structs that we can easily traverse via VB6 code
+            For i = 0 To numParams - 1
+            
+                cStream.SetPosition i * sizeOfChannelAligned, FILE_BEGIN
+                VBHacks.CopyMemoryStrict VarPtr(imgChannels(i)), cStream.ReadBytes_PointerOnly(sizeOfChannel), sizeOfChannel
+                
+                'Components often have unpredictable behavior, and it required a *lot* of debugging to solve.
+                ' If users encounter problems on their own images, I need to see this info to resolve crashes.
+                If JP2_DEBUG_VERBOSE Then
+                    PDDebug.LogAction "Channel #" & CStr(i + 1) & " info: "
+                    With imgChannels(i)
+                        PDDebug.LogAction .x0 & ", " & .y0 & ", " & .w & ", " & .h & ", " & .prec & ", " & .Alpha
+                        PDDebug.LogAction .p_data & ", " & .dx & ", " & .dy & ", " & .factor & ", " & .sgnd
+                    End With
+                End If
+            
+            Next i
+        
+        'The only time stream construction would fail is if we're passed bad (null) pointers by OpenJPEG
+        Else
+            PDDebug.LogAction "Failed to initialize stream against component pointer."
+            GoTo SafeCleanup
+        End If
+        
+        'We are done with that temporary stream object
+        cStream.StopStream True
+        
+        'To simplify our life, wrap VB arrays (ints!) around the component pointers
+        Dim dstR() As Long, dstG() As Long, dstB() As Long, dstA() As Long
+        Dim dstSaR As SafeArray1D, dstSaG As SafeArray1D, dstSaB As SafeArray1D, dstSaA As SafeArray1D
+        If (numParams = 1) Then
+            'TODO
+        Else
+            VBHacks.WrapArrayAroundPtr_Long dstR, dstSaR, imgChannels(0).p_data, imgChannels(0).w * imgChannels(0).h
+            VBHacks.WrapArrayAroundPtr_Long dstG, dstSaG, imgChannels(1).p_data, imgChannels(1).w * imgChannels(1).h
+            VBHacks.WrapArrayAroundPtr_Long dstB, dstSaB, imgChannels(2).p_data, imgChannels(2).w * imgChannels(2).h
+            If (numParams > 3) Then VBHacks.WrapArrayAroundPtr_Long dstA, dstSaA, imgChannels(3).p_data, imgChannels(3).w * imgChannels(3).h
+        End If
+        
+        'Copy pixel data
+        Dim x As Long, y As Long, idxDst As Long, idxSrc As Long
+        Dim srcPx() As Byte, srcSA As SafeArray1D
+        
+        Dim srcWidth As Long, srcHeight As Long
+        srcWidth = srcDIB.GetDIBWidth
+        srcHeight = srcDIB.GetDIBHeight
+        For y = 0 To srcHeight - 1
+            srcDIB.WrapArrayAroundScanline srcPx, srcSA, y
+        For x = 0 To srcWidth - 1
+            idxSrc = y * srcWidth + x
+            dstB(idxDst) = srcPx(idxSrc)
+            dstG(idxDst) = srcPx(idxSrc + 1)
+            dstR(idxDst) = srcPx(idxSrc + 2)
+            dstA(idxDst) = srcPx(idxSrc + 3)
+            idxDst = idxDst + 1
+        Next x
+        Next y
+        
+        'Unwrap all unsafe arrays
+        srcDIB.UnwrapArrayFromDIB srcPx
+        VBHacks.UnwrapArrayFromPtr_Long dstR
+        VBHacks.UnwrapArrayFromPtr_Long dstG
+        VBHacks.UnwrapArrayFromPtr_Long dstB
+        VBHacks.UnwrapArrayFromPtr_Long dstA
+        
+    End If
+    
+    'With the OpenJPEG-specific image object prepped, we are finally ready to encode the data in JP2 format
+    
+    'Prep an encoder.  Note that we have multiple options here - naked j2k codestreams are unsupported in PD
+    ' (they have extreme limitations when loading, like not defining component types) so we explicitly write
+    ' JP2 images only.
+    Dim hEncoder As Long
+    hEncoder = opj_create_compress(OPJ_CODEC_JP2)
+    If (hEncoder = 0) Then GoTo SafeCleanup
+    
+    'Before doing anything with the encoder, assign the callbacks we'll be using to write the actual image data
+    ' to memory/file (via the pdStream object we were passed).
+    Set m_Stream = dstStream
+    
+    'Initialize local I/O functions for our constructed decoder.
+    ' (Note that this requires a custom-built version of OpenJPEG with manually added support for stdcall callbacks.)
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing callbacks..."
+    opj_set_info_handler hEncoder, AddressOf HandlerInfo, 0&
+    opj_set_warning_handler hEncoder, AddressOf HandlerWarning, 0&
+    opj_set_error_handler hEncoder, AddressOf HandlerError, 0&
+    
+    'Start a blank OpenJPEG memory stream.  Again, this stream object won't actually touch the file -
+    ' it'll simply hand over whatever chunks of file data *we* must write.)
+    Dim pStream As Long
+    pStream = opj_stream_default_create(0&)
+    If (pStream = 0&) Then
+        InternalError FUNC_NAME, "couldn't start blank jp2 stream"
+        GoTo SafeCleanup
+    End If
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Blank jp2 stream initialized OK..."
+    
+    opj_stream_set_read_function pStream, AddressOf JP2_ReadProcDelegate
+    opj_stream_set_write_function pStream, AddressOf JP2_WriteProcDelegate
+    opj_stream_set_skip_function pStream, AddressOf JP2_SkipProcDelegate
+    opj_stream_set_seek_function pStream, AddressOf JP2_SeekProcDelegate
+    
+    'With everything initialized, we can now initialize the encoder with our image and encoding parameters
+    If (opj_setup_encoder(hEncoder, VarPtr(srcParams), m_OpjExportImg) = 0) Then
+        InternalError FUNC_NAME, "failed to setup encoder"
+        GoTo SafeCleanup
+    End If
+    
+    'Time to compress the image!
+    
+    'Attempt to start compression
+    If (opj_start_compress(hEncoder, m_OpjExportImg, pStream) = 0) Then
+        InternalError FUNC_NAME, "opj_start_compress failed"
+        GoTo SafeCleanup
+    End If
+    
+    'Perform the actual encoding.  This will hand bytes over to our delegate I/O function
+    ' as they're encoded (typically in 1 MB chunks).
+    If (opj_encode(hEncoder, pStream) = 0) Then
+        InternalError FUNC_NAME, "opj_encode failed"
+        GoTo SafeCleanup
+    End If
+    
+    'End compression and close the target file
+    If (opj_end_compress(hEncoder, pStream) = 0) Then
+        InternalError FUNC_NAME, "opj_end_compress failed"
+        GoTo SafeCleanup
+    End If
+    
+    'If we're still here, the stream was written correctly!
+    SavePdDIBToJp2Stream = True
+    
+    'Free everything relevant before exiting.  Note that the OpenJPEG-format image is explicitly *not* freed;
+    ' the caller must manually free this because we will reuse it between calls (such as when previewing export)
+    If (hEncoder <> 0) Then opj_destroy_codec hEncoder
+    If (pStream <> 0) Then opj_stream_destroy pStream
+    Set m_Stream = Nothing
+    
+    Exit Function
+
+'On failure, attempt as much cleanup as we can, including the cached opj-format image object
+SafeCleanup:
+
+    SavePdDIBToJp2Stream = False
+    
+    If (m_OpjExportImg <> 0) Then opj_image_destroy m_OpjExportImg
+    If (hEncoder <> 0) Then opj_destroy_codec hEncoder
+    If (pStream <> 0) Then opj_stream_destroy pStream
+    FreeJp2Caches
+    Set m_Stream = Nothing
+    
+End Function
+
+'After saving, *if you don't plan to reuse the source image data*, call this function to free intermediate caches.
+' It will reclaim (potentially) very large amounts of memory.
+Public Sub FreeJp2Caches()
+    If (m_OpjExportImg <> 0) Then opj_image_destroy m_OpjExportImg
+End Sub
+
 'Figure out how to handle the source color data.  JPEG-2000 streams are extremely flexible in terms of color components
 ' (e.g. "undefined" color spaces and infinite color component counts are allowed, and each channel is allowed its own
 ' encoding method and/or grid dimensions via subsampling).  This makes them messy to handle, and a lot of software simply
@@ -1687,7 +1960,9 @@ End Sub
 ' (As a nice bonus, this also improves performance because we use memory mapped I/O which can
 '  greatly improve throughput.)
 Private Function JP2_ReadProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes As Long, ByVal p_user_data As Long) As Long
+    
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Read requested for " & p_nb_bytes
+    
     If (Not m_Stream Is Nothing) Then
     
         'Return -1 when EOF is reached
@@ -1715,9 +1990,16 @@ Private Function JP2_ReadProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes A
 End Function
 
 Private Function JP2_WriteProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes As Long, ByVal p_user_data As Long) As Long
+    
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Write requested for " & p_nb_bytes
-    'Debug.Print "JP2_WriteProcDelegate", p_nb_bytes
-    'TBD!
+    
+    If (Not m_Stream Is Nothing) Then
+        
+        'Write [n] bytes to the output stream
+        If (m_Stream.WriteBytesFromPointer(p_buffer, p_nb_bytes) <> 0) Then JP2_WriteProcDelegate = p_nb_bytes
+        
+    End If
+    
 End Function
 
 'Advance pointer [n] bytes in input file.

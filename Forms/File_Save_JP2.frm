@@ -143,8 +143,9 @@ Attribute VB_Exposed = False
 'Last updated: 07/May/16
 'Last update: convert dialog to new export engine
 '
-'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
-' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
+'Dialog for presenting the user a number of options related to JPEG-2000 exporting.
+'
+'As of 2025, this dialog relies on OpenJPEG for both previews and final export.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -160,9 +161,10 @@ Private m_SrcImage As pdImage
 'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
 Private m_CompositedImage As pdDIB
 
-'FreeImage-specific copy of the preview window corresponding to m_CompositedImage, above.  We cache this to save time,
-' but note that it must be regenerated whenever the preview source is regenerated.
-Private m_FIHandle As Long
+'TODO: allocate arrays (int-type) for individual channels; copy DIB there first.
+
+'Preview stream (reused to improve perf)
+Private m_previewStream As pdStream
 
 'OK or CANCEL result
 Private m_UserDialogAnswer As VbMsgBoxResult
@@ -253,7 +255,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
+    Plugin_OpenJPEG.FreeJp2Caches
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
@@ -272,22 +274,22 @@ Private Sub UpdateDropDown()
     Select Case sltQuality.Value
         
         Case 1
-            If cboSaveQuality.ListIndex <> 0 Then cboSaveQuality.ListIndex = 0
+            If (cboSaveQuality.ListIndex <> 0) Then cboSaveQuality.ListIndex = 0
                 
         Case 16
-            If cboSaveQuality.ListIndex <> 1 Then cboSaveQuality.ListIndex = 1
+            If (cboSaveQuality.ListIndex <> 1) Then cboSaveQuality.ListIndex = 1
                 
         Case 32
-            If cboSaveQuality.ListIndex <> 2 Then cboSaveQuality.ListIndex = 2
+            If (cboSaveQuality.ListIndex <> 2) Then cboSaveQuality.ListIndex = 2
                 
         Case 64
-            If cboSaveQuality.ListIndex <> 3 Then cboSaveQuality.ListIndex = 3
+            If (cboSaveQuality.ListIndex <> 3) Then cboSaveQuality.ListIndex = 3
                 
         Case 256
-            If cboSaveQuality.ListIndex <> 4 Then cboSaveQuality.ListIndex = 4
+            If (cboSaveQuality.ListIndex <> 4) Then cboSaveQuality.ListIndex = 4
                 
         Case Else
-            If cboSaveQuality.ListIndex <> 5 Then cboSaveQuality.ListIndex = 5
+            If (cboSaveQuality.ListIndex <> 5) Then cboSaveQuality.ListIndex = 5
                 
     End Select
     
@@ -315,7 +317,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Next, prepare various controls on the metadata panel
     Set m_SrcImage = srcImage
-    mtdManager.SetParentImage m_SrcImage, PDIF_JPEG
+    mtdManager.SetParentImage m_SrcImage, PDIF_JP2
     
     'By default, the basic options panel is always shown.
     btsCategory.AddItem "basic", 0
@@ -358,10 +360,13 @@ Private Sub UpdatePreviewSource()
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
         'Finally, convert that preview copy to a FreeImage-compatible handle.
-        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
+        'If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
         
         'During previews, we can always use 32-bpp mode
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha)
+        'm_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha)
+        
+        'TODO: initialize int arrays and copy RGB/A into them?
+        ' (Will require a special JP2 wrapper function to use external arrays)
         
     End If
     
@@ -369,20 +374,31 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If ((cmdBar.PreviewsAllowed Or forceUpdate) And ImageFormats.IsFreeImageEnabled() And (Not m_SrcImage Is Nothing)) Then
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And Plugin_OpenJPEG.IsOpenJPEGEnabled() And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
-        If (m_FIHandle = 0) Then UpdatePreviewSource
+        'If (m_FIHandle = 0) Then UpdatePreviewSource
         
-        'Prep all relevant FreeImage flags
-        Dim fi_Flags As FREE_IMAGE_SAVE_OPTIONS
-        If sltQuality.IsValid Then fi_Flags = Abs(sltQuality.Value) Else fi_Flags = 0&
-        
-        'Retrieve a JPEG-saved version of the current preview image
+        'Reset the intermediary DIB?
         workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_JP2, fi_Flags) Then
+        
+        'Set transform flags
+        Dim saveQuality As Long
+        If sltQuality.IsValid Then saveQuality = Abs(sltQuality.Value) Else saveQuality = 0&
+        
+        'Initialize a pdStream object (memory only for this preview)
+        If (m_previewStream Is Nothing) Then Set m_previewStream = New pdStream
+        m_previewStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, reuseExistingBuffer:=True
+        
+        'Perform a fast in-memory save
+        If Plugin_OpenJPEG.SavePdDIBToJp2Stream(m_CompositedImage, m_previewStream, saveQuality) Then
+            
+            'TODO: convert the save object back to pdDIB format?
+            
+            'Flip the preview to the screen
             workingDIB.SetAlphaPremultiplication True, True
             FinalizeNonstandardPreview pdFxPreview, True
+            
         Else
             Debug.Print "WARNING: JP2 EXPORT PREVIEW IS HORRIBLY BROKEN!"
         End If
