@@ -920,35 +920,66 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     ExportJP2 = False
     Dim sFileType As String: sFileType = "JP2"
     
-    If ImageFormats.IsFreeImageEnabled Then
+    'Parse incoming JP2 parameters
+    Dim cParams As pdSerialize
+    Set cParams = New pdSerialize
+    cParams.SetParamString formatParams
     
-        'Parse incoming JP2 parameters
-        Dim cParams As pdSerialize
-        Set cParams = New pdSerialize
-        cParams.SetParamString formatParams
+    'The only output parameter JP2 supports is compression level
+    Dim jp2Quality As Long
+    jp2Quality = cParams.GetLong("jp2-quality", 1)
+    
+    'Generate a composited image copy, with alpha automatically un-premultiplied
+    ' (JPEG-2000 does not currently support layers or premultiplied alpha)
+    Dim tmpImageCopy As pdDIB
+    Set tmpImageCopy = New pdDIB
+    srcPDImage.GetCompositedImage tmpImageCopy, False
+    
+    'Retrieve the recommended output color depth of the image.
+    ' (TODO: parse incoming params and honor requests for forced color-depths!)
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JP2, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
+    ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
+    
+    'Our JP2 exporter is a simplified one, so ignore special alpha modes
+    If (currentAlphaStatus = PDAS_NoAlpha) Then
+        desiredAlphaStatus = PDAS_NoAlpha
+        outputColorDepth = 24   'Color-depths below 24 will crash FreeImage for this format
+    Else
+        desiredAlphaStatus = PDAS_ComplicatedAlpha
+        outputColorDepth = 32
+    End If
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
+    ' the original file remains untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
+    Else
+        tmpFilename = dstFile
+    End If
+    
+    'Direct OpenJPEG export is preferred
+    If Plugin_OpenJPEG.IsOpenJPEGEnabled() Then
         
-        'The only output parameter JP2 supports is compression level
-        Dim jp2Quality As Long
-        jp2Quality = cParams.GetLong("jp2-quality", 1)
+        'Open a pdStream object on the target file
+        Dim dstStream As pdStream
+        Set dstStream = New pdStream
         
-        'Generate a composited image copy, with alpha automatically un-premultiplied
-        Dim tmpImageCopy As pdDIB
-        Set tmpImageCopy = New pdDIB
-        srcPDImage.GetCompositedImage tmpImageCopy, False
-        
-        'Retrieve the recommended output color depth of the image.
-        ' (TODO: parse incoming params and honor requests for forced color-depths!)
-        Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
-        outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JP2, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
-        ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
-        
-        'Our JP2 exporter is a simplified one, so ignore special alpha modes
-        If (currentAlphaStatus = PDAS_NoAlpha) Then
-            desiredAlphaStatus = PDAS_NoAlpha
-        Else
-            desiredAlphaStatus = PDAS_ComplicatedAlpha
-            outputColorDepth = 32
+        If dstStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, tmpFilename) Then
+            
+            'OpenJPEG handles the rest
+            ExportJP2 = Plugin_OpenJPEG.SavePdDIBToJp2Stream(tmpImageCopy, dstStream, jp2Quality, True)
+            dstStream.StopStream True
+            
         End If
+        
+    'As a last resort, we can use the old FreeImage-based JPEG-2000 pathway as a fallback
+    ' (which is more prone to crashes, but should work OK on ).
+    ElseIf ImageFormats.IsFreeImageEnabled Then
         
         'To save us some time, auto-convert any non-transparent images to 24-bpp now
         If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
@@ -961,32 +992,9 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             Dim fi_Flags As Long: fi_Flags = 0&
             fi_Flags = fi_Flags Or jp2Quality
             
-            'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
-            ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
-            ' the original file remains untouched).
-            Dim tmpFilename As String
-            If Files.FileExists(dstFile) Then
-                Do
-                    tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
-                Loop While Files.FileExists(tmpFilename)
-            Else
-                tmpFilename = dstFile
-            End If
             
             ExportJP2 = FreeImage_Save(FIF_JP2, fi_DIB, tmpFilename, fi_Flags)
-            If ExportJP2 Then
-            
-                ExportDebugMsg "Export to " & sFileType & " appears successful."
-                
-                'If the original file already existed, attempt to replace it now
-                If Strings.StringsNotEqual(dstFile, tmpFilename) Then
-                    If (Files.FileReplace(dstFile, tmpFilename) <> FPR_SUCCESS) Then
-                        Files.FileDelete tmpFilename
-                        PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
-                    End If
-                End If
-                
-            Else
+            If (Not ExportJP2) Then
                 PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
                 Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
             End If
@@ -999,6 +1007,20 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     Else
         GenericLibraryMissingError CCP_FreeImage
         ExportJP2 = False
+    End If
+    
+    If ExportJP2 Then
+        
+        ExportDebugMsg "Export to " & sFileType & " appears successful."
+        
+        'If the original file already existed, attempt to replace it now
+        If Strings.StringsNotEqual(dstFile, tmpFilename) Then
+            If (Files.FileReplace(dstFile, tmpFilename) <> FPR_SUCCESS) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+            End If
+        End If
+        
     End If
     
     Exit Function

@@ -352,32 +352,26 @@ End Sub
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
 
-    If (Not (m_CompositedImage Is Nothing)) Then
+    If (Not m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
-        'Finally, convert that preview copy to a FreeImage-compatible handle.
-        'If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        
-        'During previews, we can always use 32-bpp mode
-        'm_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha)
-        
-        'TODO: initialize int arrays and copy RGB/A into them?
-        ' (Will require a special JP2 wrapper function to use external arrays)
+        'Notify the OpenJPEG wrapper to clear any internal caches because the source image has changed
+        Plugin_OpenJPEG.FreeJp2Caches
         
     End If
     
 End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
-
+    
+    'TODO: implement previews
+    Exit Sub
+    
     If ((cmdBar.PreviewsAllowed Or forceUpdate) And Plugin_OpenJPEG.IsOpenJPEGEnabled() And (Not m_SrcImage Is Nothing)) Then
-        
-        'Make sure the preview source is up-to-date
-        'If (m_FIHandle = 0) Then UpdatePreviewSource
         
         'Reset the intermediary DIB?
         workingDIB.ResetDIB
@@ -386,18 +380,45 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         Dim saveQuality As Long
         If sltQuality.IsValid Then saveQuality = Abs(sltQuality.Value) Else saveQuality = 0&
         
-        'Initialize a pdStream object (memory only for this preview)
-        If (m_previewStream Is Nothing) Then Set m_previewStream = New pdStream
-        m_previewStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, reuseExistingBuffer:=True
+        'Initialize a pdStream object (memory only for the preview)
+        If (m_previewStream Is Nothing) Then
+            Set m_previewStream = New pdStream
+            m_previewStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=1048576
+        Else
+            m_previewStream.StopStream False
+            m_previewStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, reuseExistingBuffer:=True
+        End If
+        
+        Set m_previewStream = New pdStream
+        m_previewStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=1048576
         
         'Perform a fast in-memory save
-        If Plugin_OpenJPEG.SavePdDIBToJp2Stream(m_CompositedImage, m_previewStream, saveQuality) Then
+        If Plugin_OpenJPEG.SavePdDIBToJp2Stream(m_CompositedImage, m_previewStream, saveQuality, forceNewImageObject:=True) Then
             
-            'TODO: convert the save object back to pdDIB format?
+            'TEST ONLY:
+            Files.FileCreateFromPtr m_previewStream.Peek_PointerOnly(0, m_previewStream.GetStreamSize()), m_previewStream.GetStreamSize, "c:\tanner-dev\test-jp2.jp2", True
             
-            'Flip the preview to the screen
-            workingDIB.SetAlphaPremultiplication True, True
-            FinalizeNonstandardPreview pdFxPreview, True
+            'The preview stream now contains the encoded JP2 bytes.
+            m_previewStream.SetPosition 0&, FILE_BEGIN
+            
+            'Dim testStream As pdStream
+            'Set testStream = New pdStream
+            'testStream.StartStream PD_SM_FileMemoryMapped, PD_SA_ReadOnly, "c:\tanner-dev\test-jp2.jp2"
+            'testStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
+            'testStream.WriteStream m_previewStream
+            'testStream.SetPosition 0&, FILE_BEGIN
+            
+            ' Now we want to decode it back to a pure pdDIB object.
+            If Plugin_OpenJPEG.FastDecodeFromStreamToDIB(m_previewStream, workingDIB) Then
+            'If Plugin_OpenJPEG.FastDecodeFromStreamToDIB(testStream, workingDIB) Then
+            
+                'Flip the preview to the screen
+                workingDIB.SetAlphaPremultiplication True, True
+                FinalizeNonstandardPreview pdFxPreview, True
+                
+            Else
+                Debug.Print "Failed to fast decode jp2 stream"
+            End If
             
         Else
             Debug.Print "WARNING: JP2 EXPORT PREVIEW IS HORRIBLY BROKEN!"

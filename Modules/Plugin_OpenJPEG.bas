@@ -60,7 +60,7 @@ Attribute VB_Name = "Plugin_OpenJPEG"
 Option Explicit
 
 'Enable at DEBUG-TIME for verbose logging
-Private Const JP2_DEBUG_VERBOSE As Boolean = False
+Private Const JP2_DEBUG_VERBOSE As Boolean = True
 
 'To strictly enforce the spec (and decrease chances of OpenJPEG crashes on malformed images), set this to TRUE.
 ' I currently set it to FALSE in production builds, to allow many more "in the wild" images to actually load.
@@ -174,6 +174,30 @@ Private Type opj_dparameters
     Flags As Long   'unsigned int ;
 
 End Type    'opj_dparameters_t;
+
+'/**
+' * Component parameters structure used by the opj_image_create function
+' * */
+Private Type opj_image_comptparm
+    '/** XRsiz: horizontal separation of a sample of ith component with respect to the reference grid */
+    dx As Long
+    '/** YRsiz: vertical separation of a sample of ith component with respect to the reference grid */
+    dy As Long
+    '/** data width */
+    w As Long
+    '/** data height */
+    h As Long
+    '/** x component offset compared to the whole image */
+    x0 As Long
+    '/** y component offset compared to the whole image */
+    y0 As Long
+    '/** precision: number of bits per component per pixel */
+    prec As Long
+    '/** obsolete: use prec instead */
+    opj_bpp As Long
+    '/** signed (1) / unsigned (0) */
+    sgnd As Long
+End Type
 
 '/**
 ' * Defines a single image component
@@ -371,7 +395,7 @@ Private Type opj_cparameters
     '/** initial code block height, default to 64 */
     cblockh_init As Long
     '/** mode switch (cblk_style) */
-    mode As Long
+    Mode As Long
     '/** 1 : use the irreversible DWT 9-7, 0 : use lossless compression (default) */
     irreversible As Long
     '/** region of interest: affected component in [0..3], -1 means no ROI */
@@ -557,6 +581,9 @@ Private m_SizeReduction As Long
 'Caches for export; generating some OpenJPEG objects is resource-intensive, so any steps we can skip
 ' on back-to-back calls (e.g. when previewing export quality) is beneficial.
 Private m_OpjExportImg As Long
+
+'Set to TRUE when writing a JP2 file; FALSE when reading
+Private m_writeMode As Boolean
     
 'Forcibly disable library interactions at run-time (if newState is FALSE).
 ' Setting newState to TRUE is not advised; this module will handle state internally based
@@ -690,6 +717,7 @@ Public Function LoadJP2(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
 
     Const FUNC_NAME As String = "LoadJP2"
     LoadJP2 = False
+    m_writeMode = False
     
     'Failsafe check; this function is pointless if OpenJPEG doesn't exist
     If (Not Plugin_OpenJPEG.IsOpenJPEGEnabled()) Then Exit Function
@@ -1509,6 +1537,678 @@ Public Function GetPrecisionOfLastImage() As Long
     GetPrecisionOfLastImage = m_OpjNotes.finalPrecision
 End Function
 
+'Perform a max-speed decode from an open pdStream (*MUST* be opened and set to the desired offset by the caller) to a pdDIB object.
+' Does *not* perform extra validations, and does *not* color-manage the result.  sRGB is assumed.
+' (PhotoDemon uses this function for save previews, where color-management has already occurred externally.)
+Public Function FastDecodeFromStreamToDIB(ByRef srcStream As pdStream, ByRef dstDIB As pdDIB) As Boolean
+
+    Const FUNC_NAME As String = "FastDecodeFromStreamToDIB"
+    FastDecodeFromStreamToDIB = False
+    m_writeMode = False
+    
+    'Failsafe check; this function is pointless if OpenJPEG doesn't exist
+    If (Not Plugin_OpenJPEG.IsOpenJPEGEnabled()) Then Exit Function
+    
+    'Reset any module-level items from previous JPEG-2000 interactions.
+    ' Note that - by design - this function will *not* fill all of these values.
+    Erase m_IccBytes
+    m_IccLength = 0
+    Set m_ColorProfile = Nothing
+    Set m_Stream = srcStream
+    
+    'Initialize a default JPEG-2000 decoder.  Note that this requires us to know which codec to use in advance;
+    ' *that's* why we need to identify the file header concretely in a previous step (note the codec return).
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder itself..."
+    Dim pDecoder As Long
+    pDecoder = opj_create_decompress(OPJ_CODEC_JP2)
+    If (pDecoder = 0) Then
+        InternalError FUNC_NAME, "opj_create_Decompress failed"
+        Exit Function
+    End If
+    
+    'Initialize local I/O functions for our constructed decoder.
+    ' (Note that this requires a custom-built version of OpenJPEG with manually added support for stdcall callbacks.)
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing callbacks..."
+    opj_set_info_handler pDecoder, AddressOf HandlerInfo, 0&
+    opj_set_warning_handler pDecoder, AddressOf HandlerWarning, 0&
+    opj_set_error_handler pDecoder, AddressOf HandlerError, 0&
+    
+    'Decoders support variable behavior via a "decoder parameter" struct.
+    ' Populate a parameter struct with default values.
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Prepping decoder params..."
+    Dim dParams As opj_dparameters
+    opj_set_default_decoder_parameters VarPtr(dParams)
+    
+    'If you want to set custom decoding parameters, do it here.
+    ' (For now, PD uses default decoding params.)
+    
+    'Load our decoding parameters into the decoder object
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing decoder against params..."
+    Dim retOpj As Long
+    retOpj = opj_setup_decoder(pDecoder, VarPtr(dParams))
+    If (retOpj = 0) Then
+        InternalError FUNC_NAME, "failed to set up decoder"
+        GoTo SafeCleanup
+    End If
+    
+    'Decoders can use a "strict" mode, where incomplete or broken JP2 streams are simply disallowed.
+    '
+    '(Non-strict mode tells the decoder to decode as much as they can, and stop when they
+    '  reach EOF or some other meaningful marker in the file - this can allow *some* files to be partially recovered,
+    '  and testing shows a fair amount of in-the-wild images require strict turned OFF to work at all.)
+    Dim strictModeValue As Long
+    If JP2_FORCE_STRICT_DECODING Then strictModeValue = 1& Else strictModeValue = 0&
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "setting strict mode to " & UCase$(CStr(JP2_FORCE_STRICT_DECODING)) & "..."
+    If (opj_decoder_set_strict_mode(pDecoder, strictModeValue) <> 1&) Then
+        InternalError FUNC_NAME, "failed to set strictness mode"
+        GoTo SafeCleanup
+    End If
+    
+    'Allow the decoder to use as many logical threads as it wants; this provides meaningful perf improvements
+    ' on modern systems.
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "allowing multithreaded decode..."
+    If (opj_codec_set_threads(pDecoder, OS.LogicalCoreCount()) = 1&) Then
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Allowing OpenJPEG to use " & OS.LogicalCoreCount() & " cores"
+    Else
+        InternalError FUNC_NAME, "couldn't set thread count; single-thread mode will be used"
+    End If
+    
+    'Prep a generic OpenJPEG-specific "stream" (read-only) against the target file.
+    ' This generic object will call our I/O functions for all behaviors, but it's still required as a parameter
+    ' for OpenJPEG-specific read functions.
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Creating default file stream..."
+    
+    Dim pStream As Long
+    pStream = opj_stream_default_create(1&)
+    If (pStream = 0&) Then
+        InternalError FUNC_NAME, "couldn't start blank jp2 stream"
+        GoTo SafeCleanup
+    End If
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Blank jp2 stream initialized OK..."
+    
+    'Pass our local I/O callbacks to OpenJPEG.
+    ' (Note that this requires a custom-built version of OpenJPEG with manually added support for stdcall callbacks.)
+    opj_stream_set_read_function pStream, AddressOf JP2_ReadProcDelegate
+    opj_stream_set_write_function pStream, AddressOf JP2_WriteProcDelegate
+    opj_stream_set_skip_function pStream, AddressOf JP2_SkipProcDelegate
+    opj_stream_set_seek_function pStream, AddressOf JP2_SeekProcDelegate
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "I/O callbacks assigned OK..."
+    
+    'With the file set up, we can now attempt to read the header.
+    ' (From this point forward, OpenJPEG will call our I/O callbacks as necessary to grab file bits.)
+    Dim pImage As Long
+    If (opj_read_header(pStream, pDecoder, VarPtr(pImage)) <> 1&) Then
+        InternalError FUNC_NAME, "failed to read header"
+        GoTo SafeCleanup
+    End If
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Header read successfully"
+    
+    'Finish decoding all pixel data.  (Expect multiple I/O callbacks here.)
+    If (opj_decode(pDecoder, pStream, pImage) <> 1&) Then
+        InternalError FUNC_NAME, "failed to decode image"
+        GoTo SafeCleanup
+    End If
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Decoded full image successfully"
+    
+    'Although pixel data is done, we still need to read to the end of the file to pull other potentially useful info
+    ' (metadata, ICC profile, etc)
+    If (opj_end_decompress(pDecoder, pStream) <> 1&) Then
+        InternalError FUNC_NAME, "failed to read to end of file"
+        'Malformed data beyond pixel encoding isn't a deal-breaker.  We'll still attempt to load the image.
+    Else
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Reached EOF successfully"
+    End If
+    
+    'Only NOW can we actually read the header, because it may have changed from previous accesses.
+    '
+    'Copy the header struct from OpenJPEG's handle to our own local struct, so we can traverse it
+    ' and conveniently access relevant struct members.
+    VBHacks.CopyMemoryStrict VarPtr(m_jp2Image), pImage, LenB(m_jp2Image)
+    If JP2_DEBUG_VERBOSE Then
+        PDDebug.LogAction "Final header values:"
+        PDDebug.LogAction m_jp2Image.x0 & ", " & m_jp2Image.y0 & ", " & m_jp2Image.x1 & ", " & m_jp2Image.y1 & ", " & m_jp2Image.numcomps & " " & GetNameOfOpjColorSpace(m_jp2Image.color_space) & " components"
+    End If
+    
+    'With the image data fully parsed, we can now pull channel data from the supplied component pointer(s).
+    
+    'Handling varies by component count.  PD can handle 1, 3, 4-channel data OK; for higher counts, it'll just grab
+    ' the first 1/3/4 (depending on color model) and use them as-is.
+    '
+    '2-channel is currently treated as grayscale, but handling could be added for grayscale+alpha if I can find
+    ' a relevant official image "in the wild" that uses this combination.
+    Dim numComponents As Long
+    numComponents = m_jp2Image.numcomps
+    
+    If (numComponents <= 0) Then
+        PDDebug.LogAction "Invalid channel count: " & numComponents
+        GoTo SafeCleanup
+    End If
+    
+    Dim imgChannels() As opj_image_comp
+    ReDim imgChannels(0 To numComponents - 1) As opj_image_comp
+    
+    'Next, we want to pull individual component headers.  This struct has non-aligned members
+    ' (entries that don't align cleanly on 4-byte boundaries), so we need to account for this when
+    ' memcpy'ing them into local structs.
+    Dim sizeOfChannel As Long, sizeOfChannelAligned As Long
+    sizeOfChannelAligned = LenB(imgChannels(0))
+    sizeOfChannel = Len(imgChannels(0))
+    
+    'To simplify reading data from arbitrary pointers, use a pdStream object.
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * numComponents, baseFilePointerOffset:=m_jp2Image.pComps, optimizeAccess:=OptimizeSequentialAccess) Then
+        
+        'Pull *all* components into local structs that we can easily traverse via VB6 code
+        Dim i As Long
+        For i = 0 To numComponents - 1
+        
+            cStream.SetPosition i * sizeOfChannelAligned, FILE_BEGIN
+            VBHacks.CopyMemoryStrict VarPtr(imgChannels(i)), cStream.ReadBytes_PointerOnly(sizeOfChannel), sizeOfChannel
+            
+            'Components often have unpredictable behavior, and it required a *lot* of debugging to solve.
+            ' If users encounter problems on their own images, I need to see this info to resolve crashes.
+            If JP2_DEBUG_VERBOSE Then
+                PDDebug.LogAction "Channel #" & CStr(i + 1) & " info: "
+                With imgChannels(i)
+                    PDDebug.LogAction .x0 & ", " & .y0 & ", " & .w & ", " & .h & ", " & .prec & ", " & .Alpha
+                    PDDebug.LogAction .p_data & ", " & .dx & ", " & .dy & ", " & .factor & ", " & .sgnd
+                End With
+            End If
+        
+        Next i
+    
+    'The only time stream construction would fail is if we're passed bad (null) pointers by OpenJPEG
+    Else
+        PDDebug.LogAction "Failed to initialize stream against component pointer."
+        GoTo SafeCleanup
+    End If
+    
+    'We are done with that temporary stream object; release it to free memory for the next (high-consumption) step
+    cStream.StopStream True
+    
+    'With channel headers assembled, we now need to iterate channels and copy their contents into a local image object.
+    
+    'First, figure out what color space to use for the embedded data.  This is necessary because the JP2 designers
+    ' (insanely) allow "unknown" as a descriptor for key fields like "what color space does this image use".
+    ' This forces us to make hard decisions (or as GIMP decided, query the user at load-time) about what to
+    ' do with "unknown" data, because a huge fraction of wild JP2 images use "unknown" despite being absolutely
+    ' normal color spaces like RGB.
+    '
+    'To other designers: DO NOT ALLOW "UNKNOWN" AS AN OFFICIAL VALUE IN YOUR SPEC.  THIS IS STUPID AND DEFEATS
+    ' THE WHOLE POINT OF A SPECIFICATION.
+    Dim targetColorSpace As OPJ_COLOR_SPACE
+    targetColorSpace = DetermineColorHandling(m_jp2Image.color_space, numComponents, imgChannels)
+    If (targetColorSpace <> OPJ_CLRSPC_GRAY) And (targetColorSpace <> OPJ_CLRSPC_SRGB) And (targetColorSpace <> OPJ_CLRSPC_SYCC) Then
+        PDDebug.LogAction "Unknown color space or component count.  Abandoning load."
+        GoTo SafeCleanup
+    End If
+    
+    'JP2 images allow each component to have their own size.  At load-time, the caller is responsible for
+    ' normalizing all sizes.  (This is handled differently by nearly every JP2 library, because the spec
+    ' doesn't properly define behavior like "what resampling algorithm to use" or "how/when to round values", etc.)
+    '
+    'Because subsampling can impose a significant performance hit, PD tracks it as on a per-component basis,
+    ' with alternate (much faster) load pathways for non-subsampled channels.  This provides a large speed
+    ' improvement over e.g. FreeImage's approach.
+    '
+    '(NOTE: yes, even the *first* channel in the image can technically be subsampled!  We do cover this case,
+    '  but only because it shows up in the official conformance suite lol.)
+    Dim subSamplingActive As Boolean
+    subSamplingActive = m_OpjNotes.hasSubsampling
+    
+    Dim rSSfactorX As Single, gSSfactorX As Single, bSSfactorX As Single, aSSfactorX As Single
+    Dim rSSfactorY As Single, gSSfactorY As Single, bSSfactorY As Single, aSSfactorY As Single
+    Dim rWidth As Long, gWidth As Long, bWidth As Long, aWidth As Long
+    
+    Dim rSSPosX() As Long, rSSPosY() As Long, gSSPosX() As Long, gSSPosY() As Long, bSSPosX() As Long, bSSPosY() As Long
+    Dim aSSPosX() As Long, aSSPosY() As Long
+    
+    Dim x As Long, y As Long
+    
+    'OpenJPEG's reference library uses rounding when upsampling, but using a naive 0.5 factor can produce
+    ' OOB errors on images with odd-numbered heights.  A slightly sub-0.5 rounding factor prevents this.
+    ' (This produces results basically identical to the official reference library - I say "basically"
+    '  because all images in the official conformance suite match, but I can't test every image in existence.)
+    Dim ssRoundingFactor As Single
+    ssRoundingFactor = 0.4999!
+    
+    'ADDED OCT 2025: if an image only has one channel, ignore the image header's defined dimensions
+    ' and instead force the image to the single channel's dimensions.  This matches OpenJPEG's reference
+    ' handling of this case.
+    If subSamplingActive And (numComponents >= 1) Then
+        
+        'Calculate indices into each color channel.  (Note that we use RGBA indices, but channels may represent
+        ' other color data - the spec foolishly doesn't provide a way to determine canonical color representation,
+        ' and testing shows that pretty much all wild files use standard RGB/YUV order convention.)
+        If (numComponents >= 1) Then
+            rSSfactorX = CDbl(m_OpjNotes.channelSsWidth(0)) / CDbl(m_OpjNotes.finalWidth)
+            rSSfactorY = CDbl(m_OpjNotes.channelSsHeight(0)) / CDbl(m_OpjNotes.finalHeight)
+            rWidth = m_OpjNotes.channelSsWidth(0)
+            
+            'If subsampling is active, precalculate all offsets into the image (with correct rounding)
+            ' and store the calculated positions in local LUTs.  This is faster than calculating offsets repeatedly
+            ' across millions of pixels.
+            ReDim rSSPosX(0 To m_OpjNotes.finalWidth - 1) As Long
+            For x = 0 To m_OpjNotes.finalWidth - 1
+                rSSPosX(x) = Int(x * rSSfactorX + ssRoundingFactor)
+            Next x
+            
+            ReDim rSSPosY(0 To m_OpjNotes.finalHeight - 1) As Long
+            For y = 0 To m_OpjNotes.finalHeight - 1
+                rSSPosY(y) = Int(y * rSSfactorY + ssRoundingFactor) * rWidth
+            Next y
+            
+        End If
+        
+        If (numComponents >= 2) Then
+            gSSfactorX = CDbl(m_OpjNotes.channelSsWidth(1)) / CDbl(m_OpjNotes.finalWidth)
+            gSSfactorY = CDbl(m_OpjNotes.channelSsHeight(1)) / CDbl(m_OpjNotes.finalHeight)
+            gWidth = m_OpjNotes.channelSsWidth(1)
+            ReDim gSSPosX(0 To m_OpjNotes.finalWidth - 1) As Long
+            For x = 0 To m_OpjNotes.finalWidth - 1
+                gSSPosX(x) = Int(x * gSSfactorX + ssRoundingFactor)
+            Next x
+            ReDim gSSPosY(0 To m_OpjNotes.finalHeight - 1) As Long
+            For y = 0 To m_OpjNotes.finalHeight - 1
+                gSSPosY(y) = Int(y * gSSfactorY + ssRoundingFactor) * gWidth
+            Next y
+        End If
+        
+        If (numComponents >= 3) Then
+            bSSfactorX = CDbl(m_OpjNotes.channelSsWidth(2)) / CDbl(m_OpjNotes.finalWidth)
+            bSSfactorY = CDbl(m_OpjNotes.channelSsHeight(2)) / CDbl(m_OpjNotes.finalHeight)
+            bWidth = m_OpjNotes.channelSsWidth(2)
+            ReDim bSSPosX(0 To m_OpjNotes.finalWidth - 1) As Long
+            For x = 0 To m_OpjNotes.finalWidth - 1
+                bSSPosX(x) = Int(x * bSSfactorX + ssRoundingFactor)
+            Next x
+            
+            ReDim bSSPosY(0 To m_OpjNotes.finalHeight - 1) As Long
+            For y = 0 To m_OpjNotes.finalHeight - 1
+                bSSPosY(y) = Int(y * bSSfactorY + ssRoundingFactor) * bWidth
+            Next y
+        End If
+        
+        If (numComponents >= 4) Then
+            aSSfactorX = CDbl(m_OpjNotes.channelSsWidth(3)) / CDbl(m_OpjNotes.finalWidth)
+            aSSfactorY = CDbl(m_OpjNotes.channelSsHeight(3)) / CDbl(m_OpjNotes.finalHeight)
+            aWidth = m_OpjNotes.channelSsWidth(3)
+            ReDim aSSPosX(0 To m_OpjNotes.finalWidth - 1) As Long
+            For x = 0 To m_OpjNotes.finalWidth - 1
+                aSSPosX(x) = Int(x * aSSfactorX + ssRoundingFactor)
+            Next x
+            
+            ReDim aSSPosY(0 To m_OpjNotes.finalHeight - 1) As Long
+            For y = 0 To m_OpjNotes.finalHeight - 1
+                aSSPosY(y) = Int(y * aSSfactorY + ssRoundingFactor) * aWidth
+            Next y
+        End If
+        
+    End If
+    
+    'With (up-to-four) channels successfully sized, and a determination made on color mode handling,
+    ' we can now load pixel data.
+    
+    'Prep the destination image object.
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    dstDIB.CreateBlank m_OpjNotes.finalWidth, m_OpjNotes.finalHeight, 32, RGB(255, 255, 255), 255
+    
+    Dim targetWidth As Long, targetHeight As Long
+    Dim channelSizeEstimate As Long
+    Dim srcRs() As Long, srcGs() As Long, srcBs() As Long, srcAs() As Long
+    Dim srcRSA As SafeArray1D, srcGSA As SafeArray1D, srcBSA As SafeArray1D, srcASA As SafeArray1D
+    Dim copyAlpha As Boolean
+            
+    Dim r As Long, g As Long, b As Long, a As Long, yccY As Long, yccB As Long, yccR As Long
+    Dim dstPixels() As Byte, dstSA As SafeArray1D
+    Dim saOffset As Long, xOffset As Long, hdrDivisor As Long
+    
+    'Data in JP2 files can be signed, meaning that e.g. 8-bit data is represented as [-127, 128] instead of [0, 255].
+    ' PD handles this case successfully.
+    Dim rIsSigned As Boolean, gIsSigned As Boolean, bIsSigned As Boolean, aIsSigned As Boolean
+    Dim rSgnComp As Long, gSgnComp As Long, bSgnComp As Long, aSgnComp As Long
+    
+    'Unlike other image format libraries, OpenJPEG always loads channels as 4-byte ints (Longs in VB6)
+    ' regardless of embedded color depth.  This is incredibly wasteful from a memory standpoint,
+    ' but it does simplify handling of various bit-depths, because the source channel data is always the
+    ' same size per-pixel.
+    targetWidth = m_OpjNotes.finalWidth
+    targetHeight = m_OpjNotes.finalHeight
+    channelSizeEstimate = targetWidth * targetHeight * 4    '(See above note - this line is not a typo!)
+    
+    Dim finalPrec As Long
+    finalPrec = imgChannels(0).prec
+    m_OpjNotes.finalPrecision = finalPrec
+    
+    'Load pixel data, with handling separated by color type
+    If (targetColorSpace = OPJ_CLRSPC_GRAY) Then
+        
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Importing image using grayscale decoder..."
+        
+        'Handle the sign bit universally for all channels
+        gIsSigned = (imgChannels(0).sgnd <> 0)
+        If gIsSigned Then rSgnComp = (2 ^ imgChannels(0).prec) \ 2 Else rSgnComp = 0
+        
+        'Wrap a temporary array around the source channel
+        VBHacks.WrapArrayAroundPtr_Long srcRs, srcRSA, imgChannels(0).p_data, channelSizeEstimate
+        
+        'Precision can technically be any value between 1 and ???? (upper limit is unclear from the spec).
+        ' All images from the official conformance spec are handled correctly, but PD hasn't been tested
+        ' against 32-bit unsigned data.  (All other precision+signed combinations work well!)
+        
+        'Sub-8pp channels
+        If (finalPrec < 8) Then
+            
+            'Reusing variable names is stupid, but here we are!  This value is multiplied by the sub-8-bit component value
+            ' to arrive at a value on the range [0, 255].
+            '
+            'Well, TECHNICALLY it won't be on the range [0, 255] because e.g. a 4-bit image will go from [0, 15] to [0, 240].
+            ' I only do it this way because that's what the official OpenJPEG library does, and it's bad but we need to
+            ' mimic their behavior for consistency.
+            hdrDivisor = 2 ^ (8 - finalPrec)
+        
+        'Normal 8-bpp channels require no extra handling
+        'ElseIf (imgChannels(0).prec = 8) Then
+        
+        'HDR data needs to be downsampled to 8-bpp for PD.
+        ' (TODO at some future date: in the absence of an ICC profile, allow the user to tone-map the data as they wish?
+        Else
+            hdrDivisor = 2 ^ (finalPrec - 8)
+        End If
+        
+        'Iterate lines (data is stored top-down)
+        For y = 0 To targetHeight - 1
+            
+            'Wrap a 1D array around the target line in in the destination image, and calculate an offset
+            ' into the corresponding source channel line.
+            dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
+            saOffset = y * targetWidth
+            
+            For x = 0 To targetWidth - 1
+                
+                'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
+                ' we split handling.
+                If subSamplingActive Then
+                    g = srcRs(rSSPosY(y) + rSSPosX(x))
+                Else
+                    g = srcRs(saOffset + x)
+                End If
+                
+                g = g + rSgnComp
+                
+                'Up-sample low-precision
+                If (finalPrec < 8) Then
+                    g = g * hdrDivisor
+                'Down-sample high-precision
+                ElseIf (finalPrec > 8) Then
+                    g = g \ hdrDivisor
+                End If
+                
+                'Failsafe only, because some conformance test images have shown OOB gray colors.
+                ' (Well-formed images should never trigger these states.)
+                If (g < 0) Then g = 0
+                If (g > 255) Then g = 255
+                
+                dstPixels(x * 4) = g
+                dstPixels(x * 4 + 1) = g
+                dstPixels(x * 4 + 2) = g
+                
+            Next x
+            
+        'Proceed to next line
+        Next y
+        
+        'Unwrap all temporary arrays before exiting
+        VBHacks.UnwrapArrayFromPtr_Long srcRs
+        dstDIB.UnwrapArrayFromDIB dstPixels
+        dstDIB.SetAlphaPremultiplication True
+        
+        'Load complete!  (Clean-up is still required, however.)
+        FastDecodeFromStreamToDIB = True
+        
+        'End grayscale handling
+    
+    'Color and YCC spaces are handled together
+    ElseIf (targetColorSpace = OPJ_CLRSPC_SRGB) Or (targetColorSpace = OPJ_CLRSPC_SYCC) Or (targetColorSpace = OPJ_CLRSPC_EYCC) Then
+        
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Importing image using color decoder..."
+        
+        'Color channels can be signed or unsigned.  For example, 8-bit SIGNED data needs to be
+        ' treated as if on the range [-127, 127] while signed is [0, 255].  Signed state is available
+        ' in all precisions (and for all channels, including alpha) and must be handled accordingly.
+        rIsSigned = (imgChannels(0).sgnd <> 0)
+        gIsSigned = (imgChannels(1).sgnd <> 0)
+        bIsSigned = (imgChannels(2).sgnd <> 0)
+        If m_OpjNotes.imgHasAlpha Then aIsSigned = (imgChannels(3).sgnd <> 0) Else aIsSigned = False
+        
+        If rIsSigned Then rSgnComp = (2 ^ imgChannels(0).prec) \ 2 Else rSgnComp = 0
+        If gIsSigned Then gSgnComp = (2 ^ imgChannels(1).prec) \ 2 Else gSgnComp = 0
+        If bIsSigned Then bSgnComp = (2 ^ imgChannels(2).prec) \ 2 Else bSgnComp = 0
+        If aIsSigned Then aSgnComp = (2 ^ imgChannels(3).prec) \ 2 Else aSgnComp = 0
+        
+        'Wrap temporary arrays around 3 (or 4) source channels
+        VBHacks.WrapArrayAroundPtr_Long srcRs, srcRSA, imgChannels(0).p_data, channelSizeEstimate
+        VBHacks.WrapArrayAroundPtr_Long srcGs, srcGSA, imgChannels(1).p_data, channelSizeEstimate
+        VBHacks.WrapArrayAroundPtr_Long srcBs, srcBSA, imgChannels(2).p_data, channelSizeEstimate
+        
+        copyAlpha = m_OpjNotes.imgHasAlpha
+        If copyAlpha Then VBHacks.WrapArrayAroundPtr_Long srcAs, srcASA, imgChannels(3).p_data, channelSizeEstimate
+        
+        'Precision can technically be any value between 1 and ???? (upper limit is unclear from the spec).
+        ' All images from the official conformance spec are handled correctly, but PD hasn't been tested
+        ' against 32-bit unsigned data.  (All other precision+signed combinations work well!)
+        
+        'Sub-8pp channels
+        If (finalPrec < 8) Then
+            
+            'Reusing variable names is stupid, but here we are!  This value is multiplied by the sub-8-bit component value
+            ' to arrive at a value on the range [0, 255].
+            '
+            'Well, TECHNICALLY it won't be on the range [0, 255] because e.g. a 4-bit image will go from [0, 15] to [0, 240].
+            ' I only do it this way because that's what the official OpenJPEG library does, and it's bad but we need to
+            ' mimic their behavior for consistency.
+            hdrDivisor = 2 ^ (8 - finalPrec)
+        
+        'Normal 8-bpp channels require no extra handling
+        'ElseIf (imgChannels(0).prec = 8) Then
+        
+        'HDR data needs to be downsampled to 8-bpp for PD.
+        ' (TODO at some future date: in the absence of an ICC profile, allow the user to tone-map the data as they wish
+        Else
+            hdrDivisor = 2 ^ (finalPrec - 8)
+        End If
+        
+        'Iterate lines (data is stored top-down)
+        For y = 0 To targetHeight - 1
+        
+            'Wrap a 1D array around the target line in in the destination image, and calculate an offset
+            ' into the corresponding source channel line.
+            dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
+            saOffset = y * targetWidth
+            
+            'Further handling is separated by color type
+            If (targetColorSpace = OPJ_CLRSPC_SRGB) Then
+            
+                For x = 0 To targetWidth - 1
+                
+                    'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
+                    ' we split handling.
+                    If subSamplingActive Then
+                        b = srcBs(bSSPosY(y) + bSSPosX(x))
+                        g = srcGs(gSSPosY(y) + gSSPosX(x))
+                        r = srcRs(rSSPosY(y) + rSSPosX(x))
+                    Else
+                        b = srcBs(saOffset + x)
+                        g = srcGs(saOffset + x)
+                        r = srcRs(saOffset + x)
+                    End If
+                    
+                    b = b + bSgnComp
+                    g = g + gSgnComp
+                    r = r + rSgnComp
+                    
+                    'Up-sample low-precision
+                    If (finalPrec < 8) Then
+                        b = b * hdrDivisor
+                        g = g * hdrDivisor
+                        r = r * hdrDivisor
+                    'Down-sample high-precision
+                    ElseIf (finalPrec > 8) Then
+                        b = b \ hdrDivisor
+                        g = g \ hdrDivisor
+                        r = r \ hdrDivisor
+                    End If
+                    
+                    If (b < 0) Then b = 0
+                    If (b > 255) Then b = 255
+                    
+                    If (g < 0) Then g = 0
+                    If (g > 255) Then g = 255
+                    
+                    If (r < 0) Then r = 0
+                    If (r > 255) Then r = 255
+            
+                    dstPixels(x * 4) = b
+                    dstPixels(x * 4 + 1) = g
+                    dstPixels(x * 4 + 2) = r
+                    
+                    'Repeat all the above steps for the alpha channel, as relevant
+                    If copyAlpha Then
+                        If subSamplingActive Then
+                            a = srcAs(aSSPosY(y) + aSSPosX(x))
+                        Else
+                            a = srcAs(saOffset + x)
+                        End If
+                        a = a + aSgnComp
+                        If (finalPrec < 8) Then
+                            a = a * hdrDivisor
+                        ElseIf (finalPrec > 8) Then
+                            a = a \ hdrDivisor
+                        End If
+                        If (a < 0) Then a = 0
+                        If (a > 255) Then a = 255
+                        dstPixels(x * 4 + 3) = a
+                    End If
+                    
+                Next x
+                
+            'YCC to RGB conversion taken from OpenJPEG itself: https://github.com/uclouvain/openjpeg/blob/e7453e398b110891778d8da19209792c69ca7169/src/bin/common/color.c#L74
+            ' TODO: find eYCC images and test conversion; it likely needs different conversion matrices,
+            ' but the conformance suite doesn't use that format so I'm SOL for testing currently
+            ElseIf (targetColorSpace = OPJ_CLRSPC_SYCC) Or (targetColorSpace = OPJ_CLRSPC_EYCC) Then
+                
+                For x = 0 To targetWidth - 1
+                    
+                    'Subsampling imposes a perf penalty, so to improve performance on non-subsampled images,
+                    ' we split handling accordingly.
+                    If subSamplingActive Then
+                        yccR = srcBs(bSSPosY(y) + bSSPosX(x))
+                        yccB = srcGs(gSSPosY(y) + gSSPosX(x))
+                        yccY = srcRs(rSSPosY(y) + rSSPosX(x))
+                    Else
+                        yccR = srcBs(saOffset + x)
+                        yccB = srcGs(saOffset + x)
+                        yccY = srcRs(saOffset + x)
+                    End If
+                    
+                    'Handle signed vs unsigned
+                    yccY = yccY + bSgnComp
+                    yccB = yccB + gSgnComp
+                    yccR = yccR + rSgnComp
+                    
+                    'Up-sample low-precision
+                    If (finalPrec < 8) Then
+                        yccY = yccY * hdrDivisor
+                        yccB = yccB * hdrDivisor
+                        yccR = yccR * hdrDivisor
+                    'Down-sample high-precision
+                    ElseIf (finalPrec > 8) Then
+                        yccY = yccY \ hdrDivisor
+                        yccB = yccB \ hdrDivisor
+                        yccR = yccR \ hdrDivisor
+                    End If
+                    
+                    'Scale B/R to the correct range for sRGB conversion
+                    yccB = yccB - 127
+                    yccR = yccR - 127
+                    
+                    'Convert from YUV to RGB and clamp for safety
+                    r = yccY + 1.402 * yccR
+                    If (r < 0) Then r = 0
+                    If (r > 255) Then r = 255
+                    g = yccY - (0.344 * yccB + 0.714 * yccR)
+                    If (g < 0) Then g = 0
+                    If (g > 255) Then g = 255
+                    b = yccY + (1.772 * yccB)
+                    If (b < 0) Then b = 0
+                    If (b > 255) Then b = 255
+                    
+                    dstPixels(x * 4) = b
+                    dstPixels(x * 4 + 1) = g
+                    dstPixels(x * 4 + 2) = r
+                    
+                    'Repeat all the above steps for the alpha channel, as relevant
+                    If copyAlpha Then
+                        If subSamplingActive Then
+                            a = srcAs(aSSPosY(y) + aSSPosX(x))
+                        Else
+                            a = srcAs(saOffset + x)
+                        End If
+                        a = a + aSgnComp
+                        If (finalPrec < 8) Then
+                            a = a * hdrDivisor
+                        ElseIf (finalPrec > 8) Then
+                            a = a \ hdrDivisor
+                        End If
+                        If (a < 0) Then a = 0
+                        If (a > 255) Then a = 255
+                        dstPixels(x * 4 + 3) = a
+                    End If
+                    
+                Next x
+                
+            End If
+            
+        'Proceed to next line
+        Next y
+        
+        'Unwrap all temporary arrays before exiting
+        VBHacks.UnwrapArrayFromPtr_Long srcRs
+        VBHacks.UnwrapArrayFromPtr_Long srcGs
+        VBHacks.UnwrapArrayFromPtr_Long srcBs
+        If copyAlpha Then VBHacks.UnwrapArrayFromPtr_Long srcAs
+        dstDIB.UnwrapArrayFromDIB dstPixels
+        
+        'Load complete!  (Clean-up is still required, however.)
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "JP2 pixel data processed successfully!"
+        FastDecodeFromStreamToDIB = True
+        
+    End If
+    
+    'If (Not dstDIB Is Nothing) Then dstDIB.SetAlphaPremultiplication True
+    
+    'For now cleanup and exit
+    GoTo SafeCleanup
+    
+    Exit Function
+    
+    'Code beyond this point performs a full clean-up of all internal and external resources for the current jp2 image
+SafeCleanup:
+    If (Not m_Stream Is Nothing) Then m_Stream.SetPosition 0&, FILE_BEGIN
+    Set m_Stream = Nothing
+    
+    If (Not cStream Is Nothing) Then cStream.StopStream True
+    If (pImage <> 0) Then opj_image_destroy pImage
+    If (pStream <> 0) Then opj_stream_destroy pStream
+    If (pDecoder <> 0) Then opj_destroy_codec pDecoder
+    
+End Function
+
 'Save a pdDIB object to a pdStream object.  This provides flexibility in saving to file vs saving to memory,
 ' since OpenJPEG relies on us to supply an I/O stream object anyway.
 '
@@ -1522,23 +2222,37 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
     
     Const FUNC_NAME As String = "SavePdDIBToJp2Stream"
     SavePdDIBToJp2Stream = False
+    m_writeMode = True
     
     'Exit immediately if the destination stream isn't open
-    If (dstStream Is Nothing) Then Exit Function
-    If (Not dstStream.IsOpen()) Then Exit Function
+    If (dstStream Is Nothing) Then
+        InternalError FUNC_NAME, "stream must be initialized"
+        Exit Function
+    End If
+    
+    If (Not dstStream.IsOpen()) Then
+        InternalError FUNC_NAME, "stream must be open"
+        Exit Function
+    End If
     
     'Initialize a default set of encoding parameters
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Retrieving default jp2 params..."
     Dim srcParams As opj_cparameters
+    PDDebug.LogAction "LenB opj_cparameters: " & Len(srcParams) & ", " & LenB(srcParams)
     opj_set_default_encoder_parameters VarPtr(srcParams)
     
     'To maximize compatibility, PD only saves single-layer JP2 images with minimal deviations from default behavior
     srcParams.tcp_numlayers = 1
-    srcParams.tcp_rates(0) = CSng(saveQuality And &HFF&)
+    srcParams.tcp_rates(0) = CSng(CLng(saveQuality And &H3FF&))
     srcParams.cp_disto_alloc = 1    'Use quality as the primary export consideration
+    'Debug.Print srcParams.cblockw_init & ", " & srcParams.cblockh_init
+    'PDDebug.LogAction "Size of Object: " & Len(srcParams.POC(0)) & ", " & LenB(srcParams.POC(0))
     
     'Next, we need to prep an OpenJPEG-format image object.  PD will attempt to reuse previous creations
     ' unless explicitly told otherwise.
     If forceNewImageObject Or (m_OpjExportImg = 0) Then
+        
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Creating new image object..."
         
         'Free the previous image, if any
         If (m_OpjExportImg <> 0) Then
@@ -1553,25 +2267,26 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
         numParams = 4
         
         'Multi-component images can use an MCT (multi-component transform) for large file size savings
-        If (numParams > 1) Then srcParams.tcp_mct = 1 Else srcParams.tcp_mct = 0
+        If (numParams = 3) Then srcParams.tcp_mct = 1 Else srcParams.tcp_mct = 0
         
         'Next, we need to populate a list of image component headers with desired encoding settings
-        Dim cmpParams() As opj_image_comp
-        ReDim cmpParams(0 To numParams - 1) As opj_image_comp
+        Dim cmpParams() As opj_image_comptparm
+        ReDim cmpParams(0 To numParams - 1) As opj_image_comptparm
         
         'Populate all component parameter values
+        Debug.Print srcParams.subsampling_dx, srcParams.subsampling_dy
         Dim i As Long
         For i = 0 To numParams - 1
             With cmpParams(i)
                 .dx = srcParams.subsampling_dx 'TODO: support subsampling?
                 .dy = srcParams.subsampling_dy
-                .factor = 1
+                '.factor = 1
                 .w = srcDIB.GetDIBWidth
                 .h = srcDIB.GetDIBHeight
                 .prec = 8       'TODO: allow the user to modify this?
                 .opj_bpp = .prec    'BPP is deprecated; only .prec matters in modern OpenJPEG builds
                 .sgnd = 0       'PD only writes unsigned data
-                If (i = 3) Then .Alpha = 1 Else .Alpha = 0
+                'If (i = 3) Then .Alpha = 1 Else .Alpha = 0
             End With
         Next i
         
@@ -1580,15 +2295,20 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
         dstColorSpace = OPJ_CLRSPC_SRGB
         
         'We now have everything we need to initialize an OpenJPEG image object
+        Debug.Print numParams, VarPtr(cmpParams(0)), dstColorSpace
         m_OpjExportImg = opj_image_create(numParams, VarPtr(cmpParams(0)), dstColorSpace)
-        If (m_OpjExportImg = 0) Then GoTo SafeCleanup
+        If (m_OpjExportImg = 0) Then
+            InternalError FUNC_NAME, "opj_image_create failed"
+            GoTo SafeCleanup
+        End If
         
         'Set image size.  (Because we can't easily alias m_OpjExportImage as an opj_image object,
         ' we're just gonna set the values manually, in x0, y0, x1, y1 order)
+        Debug.Print GetMem4_DirectReturn(m_OpjExportImg), GetMem4_DirectReturn(m_OpjExportImg + 4), GetMem4_DirectReturn(m_OpjExportImg + 8), GetMem4_DirectReturn(m_OpjExportImg + 12)
         VBHacks.PutMem4 m_OpjExportImg, 0&
         VBHacks.PutMem4 m_OpjExportImg + 4, 0&
-        VBHacks.PutMem4 m_OpjExportImg + 8, srcDIB.GetDIBWidth - 1
-        VBHacks.PutMem4 m_OpjExportImg + 12, srcDIB.GetDIBHeight - 1
+        VBHacks.PutMem4 m_OpjExportImg + 8, srcDIB.GetDIBWidth
+        VBHacks.PutMem4 m_OpjExportImg + 12, srcDIB.GetDIBHeight
         
         'Next we need to populate pixel channels.  OpenJPEG has already allocated memory for each channel,
         ' but we (obviously) have to fill them.
@@ -1603,11 +2323,18 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
         sizeOfChannelAligned = LenB(imgChannels(0))
         sizeOfChannel = Len(imgChannels(0))
         
+        'TODO: FIX COMMENT
+        'Only NOW can we actually read the header, because it may have changed from previous accesses.
+        '
+        'Copy the header struct from OpenJPEG's handle to our own local struct, so we can traverse it
+        ' and conveniently access relevant struct members.
+        VBHacks.CopyMemoryStrict VarPtr(m_jp2Image), m_OpjExportImg, LenB(m_jp2Image)
+        
         'To simplify reading data from arbitrary pointers, use a pdStream object.
         ' (Note the 24 is a magic number representing the offset of the pcomps struct member.)
         Dim cStream As pdStream
         Set cStream = New pdStream
-        If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * numParams, baseFilePointerOffset:=m_OpjExportImg + 24, optimizeAccess:=OptimizeSequentialAccess) Then
+        If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, startingBufferSize:=sizeOfChannelAligned * numParams, baseFilePointerOffset:=m_jp2Image.pComps, optimizeAccess:=OptimizeSequentialAccess) Then
             
             'Pull *all* components into local structs that we can easily traverse via VB6 code
             For i = 0 To numParams - 1
@@ -1642,10 +2369,10 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
         If (numParams = 1) Then
             'TODO
         Else
-            VBHacks.WrapArrayAroundPtr_Long dstR, dstSaR, imgChannels(0).p_data, imgChannels(0).w * imgChannels(0).h
-            VBHacks.WrapArrayAroundPtr_Long dstG, dstSaG, imgChannels(1).p_data, imgChannels(1).w * imgChannels(1).h
-            VBHacks.WrapArrayAroundPtr_Long dstB, dstSaB, imgChannels(2).p_data, imgChannels(2).w * imgChannels(2).h
-            If (numParams > 3) Then VBHacks.WrapArrayAroundPtr_Long dstA, dstSaA, imgChannels(3).p_data, imgChannels(3).w * imgChannels(3).h
+            VBHacks.WrapArrayAroundPtr_Long dstR, dstSaR, imgChannels(0).p_data, imgChannels(0).w * imgChannels(0).h * 4
+            VBHacks.WrapArrayAroundPtr_Long dstG, dstSaG, imgChannels(1).p_data, imgChannels(1).w * imgChannels(1).h * 4
+            VBHacks.WrapArrayAroundPtr_Long dstB, dstSaB, imgChannels(2).p_data, imgChannels(2).w * imgChannels(2).h * 4
+            If (numParams > 3) Then VBHacks.WrapArrayAroundPtr_Long dstA, dstSaA, imgChannels(3).p_data, imgChannels(3).w * imgChannels(3).h * 4
         End If
         
         'Copy pixel data
@@ -1658,7 +2385,7 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
         For y = 0 To srcHeight - 1
             srcDIB.WrapArrayAroundScanline srcPx, srcSA, y
         For x = 0 To srcWidth - 1
-            idxSrc = y * srcWidth + x
+            idxSrc = x * 4
             dstB(idxDst) = srcPx(idxSrc)
             dstG(idxDst) = srcPx(idxSrc + 1)
             dstR(idxDst) = srcPx(idxSrc + 2)
@@ -1674,6 +2401,8 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
         VBHacks.UnwrapArrayFromPtr_Long dstB
         VBHacks.UnwrapArrayFromPtr_Long dstA
         
+    Else
+        If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Reusing old jp2 image object..."
     End If
     
     'With the OpenJPEG-specific image object prepped, we are finally ready to encode the data in JP2 format
@@ -1681,9 +2410,13 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
     'Prep an encoder.  Note that we have multiple options here - naked j2k codestreams are unsupported in PD
     ' (they have extreme limitations when loading, like not defining component types) so we explicitly write
     ' JP2 images only.
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Initializing jp2 encoder..."
     Dim hEncoder As Long
     hEncoder = opj_create_compress(OPJ_CODEC_JP2)
-    If (hEncoder = 0) Then GoTo SafeCleanup
+    If (hEncoder = 0) Then
+        InternalError FUNC_NAME, "opj_create_compress failed"
+        GoTo SafeCleanup
+    End If
     
     'Before doing anything with the encoder, assign the callbacks we'll be using to write the actual image data
     ' to memory/file (via the pdStream object we were passed).
@@ -1747,12 +2480,14 @@ Public Function SavePdDIBToJp2Stream(ByRef srcDIB As pdDIB, ByRef dstStream As p
     If (hEncoder <> 0) Then opj_destroy_codec hEncoder
     If (pStream <> 0) Then opj_stream_destroy pStream
     Set m_Stream = Nothing
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction FUNC_NAME & " successful"
     
     Exit Function
 
 'On failure, attempt as much cleanup as we can, including the cached opj-format image object
 SafeCleanup:
-
+    
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Exiting " & FUNC_NAME & " via SafeCleanup"
     SavePdDIBToJp2Stream = False
     
     If (m_OpjExportImg <> 0) Then opj_image_destroy m_OpjExportImg
@@ -1978,7 +2713,9 @@ Private Function JP2_ReadProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes A
             numBytesLeft = m_Stream.GetStreamSize() - m_Stream.GetPosition()
             If (numBytesLeft < numBytesToRead) Then numBytesToRead = numBytesLeft
             
+            PDDebug.LogAction "Pre-ReadCheck: " & m_Stream.GetPosition() & " vs " & m_Stream.GetStreamSize() & " vs " & numBytesToRead
             JP2_ReadProcDelegate = m_Stream.ReadBytesToBarePointer(p_buffer, numBytesToRead)
+            PDDebug.LogAction "ReadCheck: " & p_nb_bytes & " vs " & numBytesToRead & " vs " & JP2_ReadProcDelegate
             
             'Once again, return -1 for the special case of reaching EOF (should have been caught above; this is just a failsafe)
             If (JP2_ReadProcDelegate = 0) Then JP2_ReadProcDelegate = -1
@@ -2003,7 +2740,6 @@ Private Function JP2_WriteProcDelegate(ByVal p_buffer As Long, ByVal p_nb_bytes 
 End Function
 
 'Advance pointer [n] bytes in input file.
-' Trial-and-error shows that this expects offsets relative to stream start, *not* current pointer.
 Private Function JP2_SkipProcDelegate(ByVal p_nb_bytes As Currency, ByVal p_user_data As Long) As Currency
     
     'PD can't actually use 64-bit values (yet) for file seeks; use only the lower 4 bytes.
@@ -2014,17 +2750,29 @@ Private Function JP2_SkipProcDelegate(ByVal p_nb_bytes As Currency, ByVal p_user
     If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Skip requested for " & lowerFourSkip
     
     If (Not m_Stream Is Nothing) Then
-        If m_Stream.SetPosition(lowerFourSkip, FILE_BEGIN) Then
-            JP2_SkipProcDelegate = p_nb_bytes
+        
+        'In *read* mode, simply advance the pointer
+        If (Not m_writeMode) Then
+            If m_Stream.SetPosition(lowerFourSkip, FILE_CURRENT) Then
+                JP2_SkipProcDelegate = p_nb_bytes
+            Else
+                JP2_SkipProcDelegate = -1
+            End If
+        
+        'In *write* mode, write null values
         Else
-            JP2_SkipProcDelegate = -1
+            If m_Stream.WritePadding(lowerFourSkip) Then
+                JP2_SkipProcDelegate = p_nb_bytes
+            Else
+                JP2_SkipProcDelegate = -1
+            End If
         End If
+        
     End If
     
 End Function
 
-'Advance pointer [n] bytes in output file.
-' TODO: debug this to see if seek is relative to file start or current pointer!
+'Set pointer to [n] bytes from 0 in output file.
 Private Function JP2_SeekProcDelegate(ByVal p_nb_bytes As Currency, ByVal p_user_data As Long) As Long
 
     'PD can't actually use 64-bit values (yet) for file seeks; use only the lower 4 bytes.
@@ -2032,13 +2780,13 @@ Private Function JP2_SeekProcDelegate(ByVal p_nb_bytes As Currency, ByVal p_user
     Dim lowerFourSkip As Long
     VBHacks.GetMem4_Ptr VarPtr(p_nb_bytes), VarPtr(lowerFourSkip)
     
-    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Seek requested for " & lowerFourSkip
+    If JP2_DEBUG_VERBOSE Then PDDebug.LogAction "Seek requested for " & lowerFourSkip & ", " & m_Stream.GetStreamSize()
     
     If (Not m_Stream Is Nothing) Then
         If m_Stream.SetPosition(lowerFourSkip, FILE_BEGIN) Then
-            JP2_SeekProcDelegate = p_nb_bytes
+            JP2_SeekProcDelegate = 1
         Else
-            JP2_SeekProcDelegate = -1
+            JP2_SeekProcDelegate = 0
         End If
     End If
     
