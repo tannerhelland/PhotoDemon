@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.71</langversion>
+<langversion>1.0.72</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -10957,36 +10957,36 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>Lossless (1:1)</original>
+<original>Lossless (%1)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Low compression, good image quality (16:1)</original>
+<original>Low compression, good image quality (%1)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Moderate compression, medium image quality (32:1)</original>
+<original>Moderate compression, medium image quality (%1)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>High compression, poor image quality (64:1)</original>
+<original>High compression, poor image quality (%1)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Super compression, very poor image quality (256:1)</original>
+<original>Super compression, very poor image quality (%1)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Custom ratio (X:1)</original>
+<original>Custom ratio (%1)</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -11082,32 +11082,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Lossless (100)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Low compression, good image quality (80)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Moderate compression, medium image quality (60)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>High compression, poor image quality (40)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Super compression, very poor image quality (20)</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_JXR.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_JXR.frm contains 22 phrases. 21 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>change file extension to match color model</original>
@@ -14760,10 +14735,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2800</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5966 phrases. -->
-<!-- 3166 are duplicates, so only 2800 unique phrases have been written to file. -->
-<!-- These 2800 phrases contain approximately 12121 total words. -->
+<!-- As of this build, PhotoDemon contains 5978 phrases. -->
+<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

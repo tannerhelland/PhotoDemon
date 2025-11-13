@@ -161,8 +161,8 @@ Attribute VB_Exposed = False
 'JPEG XR Export Dialog
 'Copyright 2014-2025 by Tanner Helland
 'Created: 14/February/14
-'Last updated: 07/May/16
-'Last update: convert dialog to new export engine
+'Last updated: 11/November/25
+'Last update: merge localizations with JPEG-2000 to reduce localization burden
 '
 'Dialog for presenting the user a number of options related to JPEG XR exporting.  Obviously this feature
 ' relies on FreeImage, and JPEG XR support will be disabled if FreeImage cannot be found.
@@ -328,12 +328,12 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Populate the quality drop-down box with presets corresponding to the JPEG XR file format
     cboSaveQuality.Clear
-    cboSaveQuality.AddItem "Lossless (100)", 0
-    cboSaveQuality.AddItem "Low compression, good image quality (80)", 1
-    cboSaveQuality.AddItem "Moderate compression, medium image quality (60)", 2
-    cboSaveQuality.AddItem "High compression, poor image quality (40)", 3
-    cboSaveQuality.AddItem "Super compression, very poor image quality (20)", 4
-    cboSaveQuality.AddItem "Custom ratio (X:1)", 5
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Lossless (%1)", "100"), 0
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Low compression, good image quality (%1)", "80"), 1
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Moderate compression, medium image quality (%1)", "60"), 2
+    cboSaveQuality.AddItem g_Language.TranslateMessage("High compression, poor image quality (%1)", "40"), 3
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Super compression, very poor image quality (%1)", "20"), 4
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Custom ratio (%1)", "X:100"), 5
     cboSaveQuality.ListIndex = 0
     
     'Next, prepare various controls on the metadata panel
