@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageImporter"
 'Low-level image import interfaces
 'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 26/August/24
-'Last update: wrap up work on HEIF import
+'Last updated: 12/November/25
+'Last update: clean up final work on JPEG-2000 via OpenJPEG import path
 '
 'This module provides low-level "import" functionality for importing image files into PD.
 ' You will not generally want to interface with this module directly; instead, rely on the
@@ -1508,16 +1508,23 @@ Private Function LoadJPEG2000(ByRef srcFile As String, ByRef dstImage As pdImage
         dstImage.SetOriginalFileFormat PDIF_JP2
         dstImage.NotifyImageChanged UNDO_Everything
         
-        Dim numChannels As Long, finalPrec As Long
-        numChannels = Plugin_OpenJPEG.GetComponentCountOfLastImage()
+        'JP2 files can have arbitrary numbers of color components.  PD only cares about gray vs RGB vs RGBA
+        Dim channelCount As Long
+        channelCount = Plugin_OpenJPEG.GetComponentCountOfLastImage()
+        If (channelCount <= 0) Then channelCount = 3
+        If (channelCount = 2) Then channelCount = 1
+        If (channelCount > 4) Then channelCount = 4
+        dstImage.SetOriginalGrayscale (channelCount < 3)
+        dstImage.SetOriginalAlpha (channelCount >= 4)
+        
+        'JP2 files can have arbitrary "precision" (bits-per-component).  We only want to distinguish between SDR and HDR.
+        Dim finalPrec As Long
         finalPrec = Plugin_OpenJPEG.GetPrecisionOfLastImage()
         
-        dstImage.SetOriginalGrayscale (numChannels < 3)
-        dstImage.SetOriginalAlpha (numChannels >= 4)
         If (finalPrec <= 8) Then
-            dstImage.SetOriginalColorDepth 8 * numChannels
+            dstImage.SetOriginalColorDepth 8 * channelCount
         Else
-            dstImage.SetOriginalColorDepth 16 * numChannels
+            dstImage.SetOriginalColorDepth 16 * channelCount
         End If
         
     End If

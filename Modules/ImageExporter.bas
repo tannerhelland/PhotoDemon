@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageExporter"
 'Low-level image export interfaces
 'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 14/May/25
-'Last update: add DDS export
+'Last updated: 12/November/25
+'Last update: rewrite JPEG-2000 export against OpenJPEG
 '
 'This module provides low-level "export" functionality for exporting image files out of PD.
 '
@@ -912,7 +912,7 @@ ExportHEIFError:
     
 End Function
 
-'Save to JP2 format using the FreeImage library
+'Save to JPEG-2000 format using OpenJPEG (with an optional, outdated fallback to FreeImage)
 Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportJP2Error
@@ -936,7 +936,6 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     srcPDImage.GetCompositedImage tmpImageCopy, False
     
     'Retrieve the recommended output color depth of the image.
-    ' (TODO: parse incoming params and honor requests for forced color-depths!)
     Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
     outputColorDepth = ImageExporter.AutoDetectOutputColorDepth(tmpImageCopy, PDIF_JP2, currentAlphaStatus, netColorCount, isTrueColor, isGrayscale, isMonochrome)
     ExportDebugMsg "Color depth auto-detection returned " & CStr(outputColorDepth) & "bpp"
@@ -944,7 +943,11 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     'Our JP2 exporter is a simplified one, so ignore special alpha modes
     If (currentAlphaStatus = PDAS_NoAlpha) Then
         desiredAlphaStatus = PDAS_NoAlpha
-        outputColorDepth = 24   'Color-depths below 24 will crash FreeImage for this format
+        If isGrayscale Or isMonochrome Then
+            outputColorDepth = 8    'Grayscale *is* supported.
+        Else
+            outputColorDepth = 24   'JP2 doesn't support palettes, so force to RGB
+        End If
     Else
         desiredAlphaStatus = PDAS_ComplicatedAlpha
         outputColorDepth = 32
@@ -968,11 +971,12 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         'Open a pdStream object on the target file
         Dim dstStream As pdStream
         Set dstStream = New pdStream
-        
         If dstStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, tmpFilename) Then
             
             'OpenJPEG handles the rest
-            ExportJP2 = Plugin_OpenJPEG.SavePdDIBToJp2Stream(tmpImageCopy, dstStream, jp2Quality, True)
+            ExportJP2 = Plugin_OpenJPEG.SavePdDIBToJp2Stream(tmpImageCopy, dstStream, jp2Quality, outputColorDepth, True)
+            
+            'Close the stream to commit the final bytes to disk.
             dstStream.StopStream True
             
         End If
