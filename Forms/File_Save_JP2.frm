@@ -140,11 +140,11 @@ Attribute VB_Exposed = False
 'JPEG-2000 (JP2) Export Dialog
 'Copyright 2012-2025 by Tanner Helland
 'Created: 04/December/12
-'Last updated: 07/May/16
-'Last update: convert dialog to new export engine
+'Last updated: 11/November/25
+'Last update: overhaul to use OpenJPEG instead of FreeImage
 '
-'Dialog for presenting the user a number of options related to JPEG-2000 exporting.  Obviously this feature
-' relies on FreeImage, and JPEG-2000 support will be disabled if FreeImage cannot be found.
+'This dialog provides the UI for JPEG-2000 exporting.  As of 2025, this dialog requires OpenJPEG for both
+' previewing JP2 export settings, and handling the ultimate export to file.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -153,27 +153,35 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This form can (and should!) be notified of the image being exported.  The only exception to this rule is invoking
-' the dialog from the batch process dialog, as no image is associated with that preview.
+'This form needs to be notified of the image being exported.
+' The only time to *not* do this is when invoking this dialog from the batch process tool
+' (because a specific image won't be associated with the preview).
 Private m_SrcImage As pdImage
 
-'A composite of the current image, 32-bpp, fully composited.  This is only regenerated if the source image changes.
+'A composite of the current image, 32-bpp, fully composited.
+' This only needs to be regenerated when the source image changes.
 Private m_CompositedImage As pdDIB
 
-'FreeImage-specific copy of the preview window corresponding to m_CompositedImage, above.  We cache this to save time,
-' but note that it must be regenerated whenever the preview source is regenerated.
-Private m_FIHandle As Long
+'Preview stream (holds JP2-compressed bytes, cached to improve perf on low-end PCs)
+Private m_previewStream As pdStream
 
-'OK or CANCEL result
+'Preview DIB (holds the actual preview image, cached to improve perf)
+Private m_PreviewDIB As pdDIB
+
+'OK or CANCEL result.  Must be returned to the caller.
 Private m_UserDialogAnswer As VbMsgBoxResult
 
 'Final format-specific XML packet, with all format-specific settings defined as tag+value pairs
 Private m_FormatParamString As String
 
-'Final metadata XML packet, with all metadata settings defined as tag+value pairs
+'Final metadata-specific XML packet, with all metadata settings defined as tag+value pairs
 Private m_MetadataParamString As String
 
-'The user's answer is returned via this property
+'For this format, output color depth is auto-calculated based on image contents.
+' The caller cannot request specific color modes.
+Private m_outputColorDepth As Long
+
+'The user's answer is returned via the following properties
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
 End Function
@@ -186,11 +194,12 @@ Public Function GetMetadataParams() As String
     GetMetadataParams = m_MetadataParamString
 End Function
 
+'Switchin between format-specific and metadata-specific settings
 Private Sub btsCategory_Click(ByVal buttonIndex As Long)
     UpdatePanelVisibility
 End Sub
 
-'QUALITY combo box - when adjusted, change the scroll bar to match
+'QUALITY dropdown must auto-synchronize with the scroll bar
 Private Sub cboSaveQuality_Click()
     
     Select Case cboSaveQuality.ListIndex
@@ -214,16 +223,19 @@ Private Sub cboSaveQuality_Click()
     
 End Sub
 
+'When closing the dialog (via OK or CANCEL), some caches must be manually freed
 Private Sub cmdBar_CancelClick()
     m_UserDialogAnswer = vbCancel
+    Plugin_OpenJPEG.FreeJp2Caches
     Me.Visible = False
 End Sub
 
 Private Sub cmdBar_OKClick()
-
-    'Determine the compression ratio for the JPEG2000 wavelet transformation
+    
+    'Highlight errors and return to the dialog, preventing exit via OK until problems are rectified
     If (Not sltQuality.IsValid) Then Exit Sub
     
+    'Serialize all parameters to string (currently just quality at present)
     Dim cParams As pdSerialize
     Set cParams = New pdSerialize
     cParams.AddParam "jp2-quality", Abs(sltQuality)
@@ -233,14 +245,15 @@ Private Sub cmdBar_OKClick()
     'The metadata panel manages its own XML string
     m_MetadataParamString = mtdManager.GetMetadataSettings
     
-    'Free resources that are no longer required
+    'Free JP2-specific resources that are no longer required
     Set m_CompositedImage = Nothing
     Set m_SrcImage = Nothing
+    Plugin_OpenJPEG.FreeJp2Caches
     
-    'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
+    'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve all setting strings before unloading us.
     m_UserDialogAnswer = vbOK
     Me.Visible = False
-
+    
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -253,7 +266,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Plugin_FreeImage.ReleasePreviewCache m_FIHandle
+    Plugin_OpenJPEG.FreeJp2Caches   'Failsafe cache free (should have already happened via OK/Cancel)
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
@@ -266,34 +279,34 @@ Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
 
-'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
+'Keep the "compression" text box, scroll bar, and combo box in sync
 Private Sub UpdateDropDown()
     
     Select Case sltQuality.Value
         
         Case 1
-            If cboSaveQuality.ListIndex <> 0 Then cboSaveQuality.ListIndex = 0
+            If (cboSaveQuality.ListIndex <> 0) Then cboSaveQuality.ListIndex = 0
                 
         Case 16
-            If cboSaveQuality.ListIndex <> 1 Then cboSaveQuality.ListIndex = 1
+            If (cboSaveQuality.ListIndex <> 1) Then cboSaveQuality.ListIndex = 1
                 
         Case 32
-            If cboSaveQuality.ListIndex <> 2 Then cboSaveQuality.ListIndex = 2
+            If (cboSaveQuality.ListIndex <> 2) Then cboSaveQuality.ListIndex = 2
                 
         Case 64
-            If cboSaveQuality.ListIndex <> 3 Then cboSaveQuality.ListIndex = 3
+            If (cboSaveQuality.ListIndex <> 3) Then cboSaveQuality.ListIndex = 3
                 
         Case 256
-            If cboSaveQuality.ListIndex <> 4 Then cboSaveQuality.ListIndex = 4
+            If (cboSaveQuality.ListIndex <> 4) Then cboSaveQuality.ListIndex = 4
                 
         Case Else
-            If cboSaveQuality.ListIndex <> 5 Then cboSaveQuality.ListIndex = 5
+            If (cboSaveQuality.ListIndex <> 5) Then cboSaveQuality.ListIndex = 5
                 
     End Select
     
 End Sub
 
-'The ShowDialog routine presents the user with this form.
+'The ShowDialog routine presents this form to the user.
 Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
@@ -303,28 +316,30 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     Screen.MousePointer = 0
     Message "Waiting for user to specify export options... "
     
-    'Populate the quality drop-down box with presets corresponding to the JPEG-2000 file format
+    'Populate the quality drop-down box with JP2-specific presets.
+    ' (There's no "good" way to present this, because JPEG-2000 doesn't expose quality the same way
+    '  other formats do.  This strategy was the first draft I attempted in PD decades ago, and because
+    '  translations are done I've stuck with it ever since.  [Insert shrug emoji])
     cboSaveQuality.Clear
-    cboSaveQuality.AddItem "Lossless (1:1)", 0
-    cboSaveQuality.AddItem "Low compression, good image quality (16:1)", 1
-    cboSaveQuality.AddItem "Moderate compression, medium image quality (32:1)", 2
-    cboSaveQuality.AddItem "High compression, poor image quality (64:1)", 3
-    cboSaveQuality.AddItem "Super compression, very poor image quality (256:1)", 4
-    cboSaveQuality.AddItem "Custom ratio (X:1)", 5
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Lossless (%1)", "1:1"), 0
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Low compression, good image quality (%1)", "16:1"), 1
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Moderate compression, medium image quality (%1)", "32:1"), 2
+    cboSaveQuality.AddItem g_Language.TranslateMessage("High compression, poor image quality (%1)", "64:1"), 3
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Super compression, very poor image quality (%1)", "256:1"), 4
+    cboSaveQuality.AddItem g_Language.TranslateMessage("Custom ratio (%1)", "X:1"), 5
     cboSaveQuality.ListIndex = 0
     
     'Next, prepare various controls on the metadata panel
     Set m_SrcImage = srcImage
-    mtdManager.SetParentImage m_SrcImage, PDIF_JPEG
+    mtdManager.SetParentImage m_SrcImage, PDIF_JP2
     
-    'By default, the basic options panel is always shown.
+    'By default, the basic (format-specific) options panel is always shown.
     btsCategory.AddItem "basic", 0
     btsCategory.AddItem "advanced", 1
     btsCategory.ListIndex = 0
     UpdatePanelVisibility
     
-    'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
-    ' when absolutely necessary.
+    'Make a copy of the composited image; it takes time to composite layers, so we only want to do this once
     If ((m_SrcImage Is Nothing) Or (Not ImageFormats.IsFreeImageEnabled())) Then
         Interface.ShowDisabledPreviewImage pdFxPreview
     Else
@@ -332,7 +347,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
     
-    'Update the preview
+    'Draw the initial preview
     UpdatePreviewSource
     UpdatePreview True
     
@@ -340,49 +355,90 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     ApplyThemeAndTranslations Me, True, True
     Interface.SetFormCaptionW Me, g_Language.TranslateMessage("%1 options", "JPEG-2000")
     
-    'Display the dialog
+    'Present the dialog
     ShowPDDialog vbModal, Me, True
     
 End Sub
 
-'When a parameter changes that requires a new source DIB for the preview (e.g. changing the background composite color),
-' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
+'When a parameter changes that requires a new source image for the preview (e.g. changing the background composite color),
+' call this function to generate a new preview image.  Note that you *do not* need to call this function for format-specific
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
 
-    If (Not (m_CompositedImage Is Nothing)) Then
+    If (Not m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SafeArray2D
         EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
-        'Finally, convert that preview copy to a FreeImage-compatible handle.
-        If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
+        'The public object "workingDIB" now contains the source preview.  Make a backup copy
+        ' of that image to a local DIB object; we'll reuse that on subsequent calls.
+        If (m_PreviewDIB Is Nothing) Then Set m_PreviewDIB = New pdDIB
+        m_PreviewDIB.CreateFromExistingDIB workingDIB
         
-        'During previews, we can always use 32-bpp mode
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, 32, PDAS_ComplicatedAlpha)
+        'Auto-determine output color depth now
+        If DIBs.IsDIBTransparent(m_PreviewDIB) Then
+            m_outputColorDepth = 32
+        Else
+            If DIBs.IsDIBGrayscale(m_PreviewDIB) Then
+                m_outputColorDepth = 8
+            Else
+                m_outputColorDepth = 24
+            End If
+        End If
+        
+        'Notify the OpenJPEG wrapper to clear any internal caches because the source image has changed
+        Plugin_OpenJPEG.FreeJp2Caches
         
     End If
     
 End Sub
 
+'Draw a new preview.  Only refreshes JP2-specific settings - image-specific settings must be set prior,
+' via UpdatePreviewSource(), above.
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
-
-    If ((cmdBar.PreviewsAllowed Or forceUpdate) And ImageFormats.IsFreeImageEnabled() And (Not m_SrcImage Is Nothing)) Then
+    
+    'Prevent redraws during dialog initialization
+    If (Not Me.Visible) Or (m_outputColorDepth = 0) Then Exit Sub
+    
+    'Previews need to be disabled during batch processes, missing plugins, etc
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And Plugin_OpenJPEG.IsOpenJPEGEnabled() And (Not m_SrcImage Is Nothing)) Then
         
-        'Make sure the preview source is up-to-date
-        If (m_FIHandle = 0) Then UpdatePreviewSource
+        'Failsafe only
+        If (m_PreviewDIB Is Nothing) Then UpdatePreviewSource
         
-        'Prep all relevant FreeImage flags
-        Dim fi_Flags As FREE_IMAGE_SAVE_OPTIONS
-        If sltQuality.IsValid Then fi_Flags = Abs(sltQuality.Value) Else fi_Flags = 0&
+        'Set quality flags
+        Dim saveQuality As Long
+        If sltQuality.IsValid Then saveQuality = Abs(sltQuality.Value) Else saveQuality = 0&
         
-        'Retrieve a JPEG-saved version of the current preview image
-        workingDIB.ResetDIB
-        If Plugin_FreeImage.GetExportPreview(m_FIHandle, workingDIB, PDIF_JP2, fi_Flags) Then
-            workingDIB.SetAlphaPremultiplication True, True
-            FinalizeNonstandardPreview pdFxPreview, True
+        'Initialize a pdStream object (memory only for the preview)
+        If (m_previewStream Is Nothing) Then
+            Set m_previewStream = New pdStream
+            m_previewStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=1048576
+        Else
+            m_previewStream.StopStream False
+            m_previewStream.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, reuseExistingBuffer:=True
+        End If
+        
+        'Perform a fast in-memory save to the target stream
+        If Plugin_OpenJPEG.SavePdDIBToJp2Stream(m_PreviewDIB, m_previewStream, saveQuality, m_outputColorDepth, forceNewImageObject:=True) Then
+            
+            'The preview stream now contains the encoded JP2 bytes.
+            ' Reset the stream pointer to the start of the stream.
+            m_previewStream.SetPosition 0&, FILE_BEGIN
+            
+            'Now we want to decode the JP2 bytes back into a standard RGBA buffer
+            If Plugin_OpenJPEG.FastDecodeFromStreamToDIB(m_previewStream, workingDIB) Then
+            
+                'Flip the resulting preview to the screen
+                workingDIB.SetAlphaPremultiplication True, True
+                EffectPrep.FinalizeNonstandardPreview pdFxPreview, True
+                
+            Else
+                Debug.Print "Failed to fast decode jp2 stream"
+            End If
+            
         Else
             Debug.Print "WARNING: JP2 EXPORT PREVIEW IS HORRIBLY BROKEN!"
         End If
@@ -391,6 +447,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
 End Sub
 
+'Flip between export settings panels
 Private Sub UpdatePanelVisibility()
     Dim i As Long
     For i = 0 To btsCategory.ListCount - 1

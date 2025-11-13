@@ -225,6 +225,10 @@ Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPo
     
 End Function
 
+Friend Function GetStreamAccess() As PD_STREAM_ACCESS
+    GetStreamAccess = m_StreamAccess
+End Function
+
 Friend Function GetStreamMode() As PD_STREAM_MODE
     GetStreamMode = m_StreamMode
 End Function
@@ -415,8 +419,11 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
     End If
     
     StartStream = m_Open
-    
-    If (Not StartStream) Then InternalStreamError "Could not start stream"
+    If StartStream Then
+        m_Pointer = 0
+    Else
+        InternalStreamError "Could not start stream"
+    End If
     
 End Function
 
@@ -1116,7 +1123,7 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
             
             'Copy the data into place
             CopyMemoryStrict VarPtr(m_MemBuffer(m_Pointer)), dataPointer, dataLength
-    
+            
             'Increment the buffer pointer to reflect its new position post-write
             m_Pointer = m_Pointer + dataLength
             
@@ -1251,7 +1258,7 @@ End Function
 Friend Function WritePadding(ByVal padLength As Long) As Boolean
     Dim nullPadding() As Byte
     ReDim nullPadding(0 To padLength - 1) As Byte
-    Me.WriteBytesFromPointer VarPtr(nullPadding(0)), padLength
+    WritePadding = (Me.WriteBytesFromPointer(VarPtr(nullPadding(0)), padLength) <> 0)
 End Function
 
 'Write the contents of another stream.  By default, the *full* source stream is written; if writing less than this

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.5</langversion>
+<langversion>2025.4.6</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -10993,36 +10993,36 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>Lossless (1:1)</original>
-<translation>Senza perdite (1:1)</translation>
+<original>Lossless (%1)</original>
+<translation>Senza perdite (%1)</translation>
 </phrase>
 
 <phrase>
-<original>Low compression, good image quality (16:1)</original>
-<translation>Compressione bassa, qualità dell'immagine buona (16:1)</translation>
+<original>Low compression, good image quality (%1)</original>
+<translation>Bassa compressione, buona qualità dell'immagine (%1)</translation>
 </phrase>
 
 <phrase>
-<original>Moderate compression, medium image quality (32:1)</original>
-<translation>Compression moderata, qualità dell'immagine media (32:1)</translation>
+<original>Moderate compression, medium image quality (%1)</original>
+<translation>Compressione moderata, qualità media dell'immagine (%1)</translation>
 </phrase>
 
 <phrase>
-<original>High compression, poor image quality (64:1)</original>
-<translation>Compressione alta, qualità dell'immagine bassa (64:1)</translation>
+<original>High compression, poor image quality (%1)</original>
+<translation>Alta compressione, scarsa qualità dell'immagine (%1)</translation>
 </phrase>
 
 <phrase>
-<original>Super compression, very poor image quality (256:1)</original>
-<translation>Compressione altissima, qualità dell'immagine scarsa (256:1)</translation>
+<original>Super compression, very poor image quality (%1)</original>
+<translation>Compressione Super, qualità dell'immagine molto scarsa (%1)</translation>
 </phrase>
 
 <phrase>
-<original>Custom ratio (X:1)</original>
-<translation>Rapporto personalizzato (X:1)</translation>
+<original>Custom ratio (%1)</original>
+<translation>Rapporto personalizzato (%1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- File_Save_JP2.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -11118,32 +11118,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <translation>usa la codifica progressiva</translation>
 </phrase>
 
-<phrase>
-<original>Lossless (100)</original>
-<translation>Senza perdite (100)</translation>
-</phrase>
-
-<phrase>
-<original>Low compression, good image quality (80)</original>
-<translation>Bassa compressione, buona qualità dell'immagine (80)</translation>
-</phrase>
-
-<phrase>
-<original>Moderate compression, medium image quality (60)</original>
-<translation>Compressione moderata, qualità media dell'immagine (60)</translation>
-</phrase>
-
-<phrase>
-<original>High compression, poor image quality (40)</original>
-<translation>Alta compressione, scarsa qualità dell'immagine (40)</translation>
-</phrase>
-
-<phrase>
-<original>Super compression, very poor image quality (20)</original>
-<translation>Compressione Super, qualità dell'immagine molto scarsa (20)</translation>
-</phrase>
-
-<!-- File_Save_JXR.frm contains 16 phrases. 10 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_JXR.frm contains 22 phrases. 21 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>change file extension to match color model</original>
@@ -14806,10 +14781,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2800</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5966 phrases. -->
-<!-- 3166 are duplicates, so only 2800 unique phrases have been written to file. -->
-<!-- These 2800 phrases contain approximately 12121 total words. -->
+<!-- As of this build, PhotoDemon contains 5978 phrases. -->
+<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

@@ -554,6 +554,10 @@ Public Sub SleepAPI(ByVal sleepTimeInMS As Long)
     Sleep sleepTimeInMS
 End Sub
 
+Public Function GetMem4_DirectReturn(ByVal pSrc As Long) As Long
+    GetMem4 pSrc, GetMem4_DirectReturn
+End Function
+
 'Make certain the length of the source array is an even number (e.g. the UBound is odd) before calling;
 ' this function does not attempt to verify otherwise
 Public Sub SwapEndianness16(ByRef srcData() As Byte)
