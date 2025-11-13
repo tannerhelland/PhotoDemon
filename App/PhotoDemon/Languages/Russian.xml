@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2025.4.143</langversion>
+<langversion>2025.4.144</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -14000,7 +14000,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>После вставки нового слоя, активировать инструмент "Перемещение"</translation>
 </phrase>
 
 <phrase>
