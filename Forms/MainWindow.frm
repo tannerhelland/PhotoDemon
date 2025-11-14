@@ -2233,15 +2233,16 @@ End Sub
 ' about any images with unsaved images.
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
-    'Set a public variable to let other functions know that the user has initiated a program-wide shutdown.
-    ' (Asynchronous functions in particular need this to prep their own shutdown routines.)
-    g_ProgramShuttingDown = True
-    
     'An external function handles unloading.  If it fails, we will also cancel our unload.
     Cancel = (Not CanvasManager.CloseAllImages())
     If Cancel Then
-        g_ProgramShuttingDown = False
         If (PDImages.GetNumOpenImages() > 0) Then Message vbNullString  'Clear any shutdown-related messages
+    Else
+    
+        'Set a public variable to let other functions know that the user has initiated a program-wide shutdown.
+        ' (Asynchronous functions in particular need this to prep their own shutdown routines.)
+        g_ProgramShuttingDown = True
+    
     End If
     
 End Sub
