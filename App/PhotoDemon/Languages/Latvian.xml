@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).39</langversion>
+<langversion>2028.8 Alfa (Build 25).40</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -4321,7 +4321,7 @@ Jums būs nepieciešams manuāli lejupielādēt šo failu, izmantojot interneta 
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation>Atvērt atrašanās vietu programmā Explorer</translation>
 </phrase>
 
@@ -5854,7 +5854,7 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 <translation>Valoda veiksmīgi mainīta.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14782,8 +14782,8 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

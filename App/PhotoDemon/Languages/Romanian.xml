@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.5</langversion>
+<langversion>1.0.6</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -1185,7 +1185,7 @@
 
 <phrase>
 <original>Truchet</original>
-<translation>Truchet</</translation>
+<translation>Truchet</translation>
 </phrase>
 
 <phrase>
@@ -4333,7 +4333,7 @@ Va trebui să descărcați manual acest fișier folosind browserul dvs. de Inter
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation>Deschide locație în Explorer</translation>
 </phrase>
 
@@ -5867,7 +5867,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 <translation>Limbă schimbată cu succes.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -9393,7 +9393,7 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 
 <phrase>
 <original>Rendering Truchet tiles</original>
-<translation>Randare plăcuțe Truchet</</translation>
+<translation>Randare plăcuțe Truchet</translation>
 </phrase>
 
 <!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -14795,8 +14795,8 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

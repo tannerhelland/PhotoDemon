@@ -266,6 +266,7 @@ Public Sub InitializeMenus()
         AddMenuItem "-", "-", 2, 21, 2
         AddMenuItem "Count unique colors", "image_countcolors", 2, 21, 3
         AddMenuItem "Map photo location...", "image_maplocation", 2, 21, 4, "image_maplocation"
+    AddMenuItem "Show in file manager...", "image_showinexplorer", 2, 22
     
     'Layer menu
     AddMenuItem "Layer", "layer_top", 3

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1769</langversion>
+<langversion>8.9.1770</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4321,7 +4321,7 @@ U moet dit bestand handmatig downloaden met uw internetbrowser.</translation>
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation></translation>
 </phrase>
 
@@ -5854,7 +5854,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14782,8 +14782,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

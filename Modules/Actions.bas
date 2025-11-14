@@ -486,7 +486,10 @@ Private Function Launch_ByName_MenuImage(ByRef srcMenuName As String, Optional B
                 
             Case "image_maplocation"
                 Web.MapImageLocation
-                
+        
+        Case "image_showinexplorer"
+            Interface.ShowActiveImageFileInExplorer
+            
         Case Else
             cmdFound = False
                 
@@ -1778,6 +1781,7 @@ Public Sub BuildActionDatabase()
     AddAction "image_removemetadata", "Remove all metadata"
     AddAction "image_countcolors", "Count unique colors"
     AddAction "image_maplocation", vbNullString
+    AddAction "image_showinexplorer", vbNullString
     
     'AddAction "layer_add"
     AddAction "layer_addbasic", "Add new layer", True

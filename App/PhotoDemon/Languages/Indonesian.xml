@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1761</langversion>
+<langversion>8.9.1762</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -4321,7 +4321,7 @@ Anda perlu mengunduh file ini secara manual menggunakan browser internet Anda.</
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation>Buka Lokasi di Explorer</translation>
 </phrase>
 
@@ -5854,7 +5854,7 @@ Pembaruan secara otomatis diproses di latar belakang.Anda akan menerima pemberit
 <translation>Bahasa berhasil berubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14782,8 +14782,8 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

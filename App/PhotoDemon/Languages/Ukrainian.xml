@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.36</langversion>
+<langversion>1.0.37</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -4321,7 +4321,7 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation>Відкрити розташування в Провіднику</translation>
 </phrase>
 
@@ -5854,7 +5854,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Мова змінилася успішно.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14782,8 +14782,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

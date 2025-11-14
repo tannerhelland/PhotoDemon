@@ -6,7 +6,7 @@
 
 <langid>ja-JP</langid>
 <langname>日本語 (Japanese)</langname>
-<langversion>2024.7.41</langversion>
+<langversion>2024.7.42</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Kenji Hoshimoto (Hosiken)</author>
@@ -4322,7 +4322,7 @@ You will need to manually download this file using your Internet browser.</origi
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation>エクスプローラーで場所を開く</translation>
 </phrase>
 
@@ -5855,7 +5855,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>言語を変更しました。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -12145,7 +12145,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>画像を開くもう一つの方法は、デスクトップまたは Windows エクスプローラから PhotoDemon にドラッグ & ドロップすることです。</translation>
+<translation>画像を開くもう一つの方法は、デスクトップまたは Windows エクスプローラから PhotoDemon にドラッグ &amp; ドロップすることです。</translation>
 </phrase>
 
 <phrase>
@@ -12205,7 +12205,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>ハンド (クリック & ドラッグで画像スクロール)</translation>
+<translation>ハンド (クリック &amp; ドラッグで画像スクロール)</translation>
 </phrase>
 
 <phrase>
@@ -14783,8 +14783,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

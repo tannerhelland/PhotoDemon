@@ -71,12 +71,13 @@ Public Enum PD_UI_Group
     PDUI_SelectionTransforms = 13
     PDUI_LayerTools = 14
     PDUI_ICCProfile = 15
+    PDUI_FileOnDisk = 16
 End Enum
 
 #If False Then
     Private Const PDUI_Save = 0, PDUI_SaveAs = 1, PDUI_Close = 2, PDUI_Undo = 3, PDUI_Redo = 4, PDUI_Copy = 5, PDUI_Paste = 6, PDUI_View = 7
     Private Const PDUI_ImageMenu = 8, PDUI_Metadata = 9, PDUI_GPSMetadata = 10, PDUI_Macros = 11, PDUI_Selections = 12
-    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_ICCProfile = 15
+    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_ICCProfile = 15, PDUI_FileOnDisk = 16
 #End If
 
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.
@@ -437,8 +438,11 @@ Private Sub SyncUI_CurrentImageSettings()
         SetUIGroupState PDUI_GPSMetadata, False
     End If
     
-    'If the image has an embedded ICC profile, expose the File > Export > ICC profile menu
+    'If the image has an embedded ICC profile, expose the `File > Export > ICC profile` menu
     SetUIGroupState PDUI_ICCProfile, (LenB(PDImages.GetActiveImage.GetColorProfile_Original()) <> 0)
+    
+    'If the image exists on-disk, expose the `Image > Show location in Explorer` menu
+    SetUIGroupState PDUI_FileOnDisk, (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
     
     'Display the image's path in the title bar.
     If (Not g_WindowManager Is Nothing) Then
@@ -537,6 +541,7 @@ Private Sub SetUIMode_NoImages()
     SetUIGroupState PDUI_Undo, False
     SetUIGroupState PDUI_Redo, False
     SetUIGroupState PDUI_ICCProfile, False
+    SetUIGroupState PDUI_FileOnDisk, False
     
     'Disable various layer-related toolbox options as well
     If (g_CurrentTool = NAV_MOVE) Then
@@ -965,6 +970,9 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'Images with embedded color profiles support extra features
         Case PDUI_ICCProfile
             Menus.SetMenuEnabled "file_export_colorprofile", newState
+            
+        Case PDUI_FileOnDisk
+            Menus.SetMenuEnabled "image_showinexplorer", newState
             
     End Select
     
@@ -2292,4 +2300,14 @@ Public Sub RedrawEntireUI(Optional ByVal useDoEvents As Boolean = False)
         
     End If
 
+End Sub
+
+'Open a file manager window (defaults to Windows Explorer) and auto-select the backing file
+' for the currently loaded image
+Public Sub ShowActiveImageFileInExplorer()
+    If PDImages.IsImageActive() Then
+        If (LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0) Then
+            Files.FileSelectInExplorer PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+        End If
+    End If
 End Sub

@@ -888,9 +888,9 @@ Private Sub m_PopupMenu_MenuClicked(ByRef clickedMenuID As String, ByVal idxMenu
         '(separator)
         Case 4
         
-        'Open location in Explorer
+        'Show in file manager
         Case 5
-            Files.FileSelectInExplorer PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+            Actions.LaunchAction_ByName "image_showinexplorer"
             
         '(separator)
         Case 6
@@ -2667,7 +2667,7 @@ Private Sub BuildPopupMenu()
         .AddMenuItem "-"
         
         'Open in Explorer only works if the image is currently on-disk
-        .AddMenuItem g_Language.TranslateMessage("Open location in Explorer"), menuIsEnabled:=(LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
+        .AddMenuItem g_Language.TranslateMessage("Show in file manager..."), menuIsEnabled:=(LenB(PDImages.GetActiveImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0)
         
         .AddMenuItem "-"
         .AddMenuItem Menus.GetCaptionFromName("file_close")

@@ -457,6 +457,10 @@ Begin VB.Form FormMain
             Index           =   4
          End
       End
+      Begin VB.Menu MnuImage 
+         Caption         =   "Show in file manager..."
+         Index           =   22
+      End
    End
    Begin VB.Menu MnuLayerTop 
       Caption         =   "Layer"
@@ -3317,6 +3321,8 @@ Private Sub MnuImage_Click(Index As Integer)
             'Compare top-level
         Case 21
             'Metadata top-level
+        Case 22
+            Actions.LaunchAction_ByName "image_showinexplorer"
     End Select
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.33</langversion>
+<langversion>1.0.34</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -4491,9 +4491,8 @@ Tento soubor budete muset stáhnout ručně pomocí vašeho internetového prohl
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
-<translation>Otevřete umístění v Průzkumníku
-</translation>
+<original>Show in file manager</original>
+<translation>Otevřete umístění v Průzkumníku</translation>
 </phrase>
 
 <phrase>
@@ -6107,7 +6106,7 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 </translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -15421,8 +15420,8 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

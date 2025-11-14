@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.68</langversion>
+<langversion>9.0.70</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -4318,7 +4318,7 @@ Musisz ręcznie pobrać ten plik za pomocą przeglądarki internetowej.</transla
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation>Otwórz lokalizację w Eksploratorze</translation>
 </phrase>
 
@@ -5848,7 +5848,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -11328,12 +11328,7 @@ Dziękujemy!</translation>
 
 <phrase>
 <original>Thank you to our wonderful Patreon supporters!</original>
-<translation>Dziękujemy naszym wspaniałym zwolennikom z Patreon!/translation>
-</phrase>
-
-<phrase>
-<original>(You can become a patron, too!  Click here to learn more.)</original>
-<translation>(Ty też możesz zostać patronatem! Kliknij tutaj, aby dowiedzieć się więcej).</translation>
+<translation>Dziękujemy naszym wspaniałym zwolennikom z Patreon!</translation>
 </phrase>
 
 <phrase>
@@ -14780,8 +14775,8 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>

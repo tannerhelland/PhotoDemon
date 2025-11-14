@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>2025.4.5</langversion>
+<langversion>2025.4.6</langversion>
 <langstatus>complete</langstatus>
 
 <author>István Bánszki</author>
@@ -4324,7 +4324,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 </phrase>
 
 <phrase>
-<original>Open location in Explorer</original>
+<original>Show in file manager</original>
 <translation>Hely megnyitása a Fájlkezelőben</translation>
 </phrase>
 
@@ -5857,7 +5857,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 <translation>Nyelv sikeresen megváltoztatva.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 408 phrases. 220 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14781,8 +14781,8 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 
 <phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5978 phrases. -->
-<!-- 3183 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
 <!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>
