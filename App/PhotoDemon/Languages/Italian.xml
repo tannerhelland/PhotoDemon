@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -110,7 +110,7 @@
 
 <phrase>
 <original>Batch wizard</original>
-<translation>Procedura guidata</translation>
+<translation>Procedura guidata in lotti</translation>
 </phrase>
 
 <phrase>
@@ -220,7 +220,7 @@
 
 <phrase>
 <original>Duplicate image</original>
-<translation>Duplica immagine</translation>
+<translation>Duplica l'immagine</translation>
 </phrase>
 
 <phrase>
@@ -280,7 +280,7 @@
 
 <phrase>
 <original>Arbitrary image rotation</original>
-<translation>Rotazione personalizzata dell'immagine</translation>
+<translation>Rotazione personalizzata</translation>
 </phrase>
 
 <phrase>
@@ -485,7 +485,7 @@
 
 <phrase>
 <original>Trim empty layer borders</original>
-<translation>Tagli bordi vuoti del livello</translation>
+<translation>Taglia bordi vuoti del livello</translation>
 </phrase>
 
 <phrase>
@@ -510,17 +510,17 @@
 
 <phrase>
 <original>Arbitrary layer rotation</original>
-<translation>Rotazione arbitraria</translation>
+<translation>Rotazione personalizzata del livello</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer horizontally</original>
-<translation>Capovolgi orizzontalmente</translation>
+<translation>Capovolgi livello orizzontalmente</translation>
 </phrase>
 
 <phrase>
 <original>Flip layer vertically</original>
-<translation>Capovolgi verticalmente</translation>
+<translation>Capovolgi livello verticalmente</translation>
 </phrase>
 
 <phrase>
@@ -575,17 +575,17 @@
 
 <phrase>
 <original>Split layer into image</original>
-<translation>Dividi il livello in immagine</translation>
+<translation>Separa il livello in immagine</translation>
 </phrase>
 
 <phrase>
 <original>Split layers into images</original>
-<translation>Dividi i livelli in immagini</translation>
+<translation>Separa i livelli in immagini</translation>
 </phrase>
 
 <phrase>
 <original>Split images into layers</original>
-<translation>Dividi le immagini in livelli</translation>
+<translation>Separa le immagini in livelli</translation>
 </phrase>
 
 <phrase>
@@ -610,7 +610,7 @@
 
 <phrase>
 <original>Shrink selection</original>
-<translation>Riduci la selezione</translation>
+<translation>Restringi la selezione</translation>
 </phrase>
 
 <phrase>
@@ -620,7 +620,7 @@
 
 <phrase>
 <original>Feather selection</original>
-<translation>Ammorbidisci la selezione</translation>
+<translation>Sfuma la selezione</translation>
 </phrase>
 
 <phrase>
@@ -650,7 +650,7 @@
 
 <phrase>
 <original>Load selection</original>
-<translation>Carica selezione</translation>
+<translation>Carica una selezione</translation>
 </phrase>
 
 <phrase>
@@ -680,7 +680,7 @@
 
 <phrase>
 <original>Black and white</original>
-<translation>Bianco e Nero</translation>
+<translation>Bianco e nero</translation>
 </phrase>
 
 <phrase>
@@ -915,7 +915,7 @@
 
 <phrase>
 <original>Stained glass</original>
-<translation>Vetrate</translation>
+<translation>Vetrata</translation>
 </phrase>
 
 <phrase>
@@ -950,7 +950,7 @@
 
 <phrase>
 <original>Correct lens distortion</original>
-<translation>Correggi la distorsione lenticolare</translation>
+<translation>Correggi la distorsione della lente</translation>
 </phrase>
 
 <phrase>
@@ -965,7 +965,7 @@
 
 <phrase>
 <original>Apply lens distortion</original>
-<translation>Applica distorsione lenticolare</translation>
+<translation>Applica distorsione della lente</translation>
 </phrase>
 
 <phrase>
@@ -1390,7 +1390,7 @@
 
 <phrase>
 <original>How would you like to load this image?</original>
-<translation>Come vorresti caricare questa immagine?</translation>
+<translation>Come vuoi caricare questa immagine?</translation>
 </phrase>
 
 <phrase>
@@ -1405,7 +1405,7 @@
 
 <phrase>
 <original>I can't decide.  Cancel this action.</original>
-<translation>Non riesco a decidere.  Annulla questa azione.</translation>
+<translation>Annulla questa azione.</translation>
 </phrase>
 
 <phrase>
@@ -1526,7 +1526,7 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 
 <phrase>
 <original>Adjusting image white balance</original>
-<translation>Regolazione bilanciamento del bianco nell'immagine</translation>
+<translation>Regolazione bilanciamento del bianco dell'immagine</translation>
 </phrase>
 
 <phrase>
@@ -1556,7 +1556,7 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 
 <phrase>
 <original>Auto-enhancing color and lighting</original>
-<translation>Auto-amplificazione del colore e dell'illuminazione</translation>
+<translation>Miglioramento automatico di colore e illuminazione</translation>
 </phrase>
 
 <!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
@@ -1587,7 +1587,7 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
-<translation>Conteggio del numero di colori unici in questa immagine</translation>
+<translation>Conta del numero di colori unici in questa immagine</translation>
 </phrase>
 
 <phrase>
@@ -1687,7 +1687,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 
 <phrase>
 <original>Image is all one color.  Autocrop unnecessary.</original>
-<translation>L'immagine è tutta di un colore.  Autoritaglio inutile.</translation>
+<translation>L'immagine è tutta di un colore.  Autoritaglio non necessario.</translation>
 </phrase>
 
 <phrase>
@@ -2588,14 +2588,14 @@ Per favore verifica che queste immagini esistano e che utilizzino un formato imm
 
 <phrase>
 <original>Applying plugin</original>
-<translation>Applicazione plugin</translation>
+<translation>Applicazione del plugin</translation>
 </phrase>
 
 <!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation>AVIF è un moderno formato di immagine sviluppato dalla Alliance for Open Media.  PhotoDemon non supporta le immagini AVIF nativamente, ma può scaricare un plugin gratuito per abilita permanentemente il supporto AVIF.</translation>
+<translation>AVIF è un moderno formato di immagine sviluppato dalla Alliance for Open Media.  PhotoDemon non supporta le immagini AVIF nativamente, ma può scaricare un plugin gratuito per abilitare permanentemente il supporto AVIF.</translation>
 </phrase>
 
 <phrase>
@@ -2620,12 +2620,12 @@ Per favore verifica che queste immagini esistano e che utilizzino un formato imm
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation>Per abilitare manualmente il supporto AVIF, puoi scaricare gratuitamente le ultime versioni di "%1" e "%2" e metterle nella cartella dei plugin di PhotoDemon</translation>
+<translation>Per abilitare manualmente il supporto AVIF, puoi scaricare gratuitamente le ultime versioni di "%1" e "%2" e posizionarle nella cartella dei plugin di PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation>Queste librerie sono sempre disponibili nella pagina release di libavif della Alliance for Open Media</translation>
+<translation>Queste librerie sono sempre disponibili nella pagina Release di libavif della Alliance for Open Media</translation>
 </phrase>
 
 <phrase>
@@ -2658,7 +2658,7 @@ Per favore assicurati che il dispositivo sia acceso e pronto per l'uso.</transla
 <original>The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization.
 
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
-<translation>L'interfaccia dello scanner/fotocamera del plugin (EZTW32.dll) è marcato come mancante durante l'inizializzazione del programma.
+<translation>Il plugin di scanner/fotocamera (EZTW32.dll) è stato contrassegnato come mancante durante l'inizializzazione dell'applicazione.
 
 Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (disponibile per lo scricamento sul sito http:// eztwain.com/ezt1_download.htm) all'interno della cartella plugin e riavvia il programma.</translation>
 </phrase>
@@ -2685,12 +2685,12 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <phrase>
 <original>Scan successful, but temporary file save failed.  Is it possible that your hard drive is full (or almost full)?</original>
-<translation>Scansione riuscita, ma il salvataggio del file temporaneo è fallito.  E' possibile che il vostro disco sia pieno (o quasi)?</translation>
+<translation>Scansione riuscita, ma il salvataggio del file temporaneo è fallito.  E' possibile che il disco sia pieno (o quasi)?</translation>
 </phrase>
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>Impossibile acquisire, DIB bloccato.  Per favore assicurati che un altro programma non stia usando lo scanner.  Se il problema persiste, riavvia e prova ancora.</translation>
+<translation>Impossibile acquisire, DIB bloccato.  Per favore assicurati che un altro programma non stia usando lo scanner.  Se il problema persiste, riavvia e riprova.</translation>
 </phrase>
 
 <phrase>
@@ -2726,7 +2726,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation>JPEG XL (JXL) è un sostituto moderno per il formato JPEG. PhotoDemon non supporta nativamente il formato JPEG XL, ma può scaricare un plugin gratuito e open-source che aggiunge il supporto JPEG XL.</translation>
+<translation>JPEG XL (JXL) è un'alternativa moderna al formato JPEG. PhotoDemon non supporta nativamente il formato JPEG XL, ma può scaricare un plugin gratuito e open-source che aggiunge il supporto JPEG XL.</translation>
 </phrase>
 
 <phrase>
@@ -2752,7 +2752,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
 <translation>Una libreria di terze parti necessaria (%1) è mancante o disabilitata.
 
-Per abilitare questa funzionalità, scaricare una nuova copia di PhotoDemon o ripristinare la libreria mancante.</translation>
+Per abilitare questa funzionalità, scarica una nuova copia di PhotoDemon o ripristina la libreria mancante.</translation>
 </phrase>
 
 <phrase>
@@ -2810,12 +2810,12 @@ Per abilitare questa funzionalità, scaricare una nuova copia di PhotoDemon o ri
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Richiesta inviata al processore sconosciuta: %1
 
-Per favore, riporta questo bug tramite il menù Guida -> Invia segnalazione di bug.</translation>
+Per favore, segnala questo bug tramite il menù Aiuto -> Invia segnalazione di bug.</translation>
 </phrase>
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
-<translation>Non c'è abbastanza memoria disponibile per continuare questa operazione.  Per favore libera un pò di memoria di sistema (RAM) chiudendo i programmi inutili - specialmente il navigatore, se è aperto - poi riprova.</translation>
+<translation>Non c'è abbastanza memoria disponibile per continuare questa operazione.  Per favore libera un pò di memoria di sistema (RAM) chiudendo le applicazioni non necessarie - ad esempio il browser, se è aperto - poi riprova.</translation>
 </phrase>
 
 <phrase>
@@ -2827,8 +2827,8 @@ Per favore, riporta questo bug tramite il menù Guida -> Invia segnalazione di b
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation>Il file specificato non può essere localizzato.  Se era memorizzato in un supporto rimovibile, per favore reinserisci il corretto dischetto, CD o il supporto rimovibile.  Se il file non viene localizzato sul supporto rimovibile, assicurati che:
-1) il file non sia stato cancellato, e...
+<translation>Il file specificato non è stato trovato. Se era memorizzato in un supporto rimovibile, per favore reinserisci il corretto dischetto, CD o drive. Se il file non si trova su un supporto rimovibile assicurati che:
+1) non sia stato cancellato, rinominato o spostato
 2) il percorso fornito a PhotoDemon sia corretto.</translation>
 </phrase>
 
@@ -2836,8 +2836,8 @@ Per favore, riporta questo bug tramite il menù Guida -> Invia segnalazione di b
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon non può trovare informazioni addizionali per questo tipo di errore.  Questo significa che probabilmente l'errore è un bug che deve essere risolto! 
- Vuoi inviare un rapporto sul bug?  (Questo non ruberà più di un minuto, e aiuterà tutti quelli che utilizzano il software.)</translation>
+<translation>PhotoDemon non ha informazioni aggiuntive per questo tipo di errore.  Questo significa che probabilmente l'errore è un bug che deve essere risolto! 
+Vuoi inviare un rapporto sul bug? (Questo non richiederà più di un minuto, e aiuterà tutti gli utenti del software.)</translation>
 </phrase>
 
 <phrase>
@@ -2852,7 +2852,7 @@ Error number %1
 Description: %2
 
 %3</original>
-<translation>PhotoDemon ha incontrato un errore.  I dettagli sul problema sono:
+<translation>PhotoDemon ha incontrato un errore.  Dettagli sul problema:
 
 Numero di errore %1
 Descrizione: %2
@@ -2887,12 +2887,12 @@ Descrizione: %2
 
 <phrase>
 <original>X offset</original>
-<translation>X offset</translation>
+<translation>Offset orizzontale</translation>
 </phrase>
 
 <phrase>
 <original>Y offset</original>
-<translation>Y offset</translation>
+<translation>Offset verticale</translation>
 </phrase>
 
 <phrase>
@@ -2927,12 +2927,12 @@ Descrizione: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation>cesoia orizzontale</translation>
+<translation>inclinazione orizzontale</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation>cesoia verticale</translation>
+<translation>inclinazione verticale</translation>
 </phrase>
 
 <phrase>
@@ -2947,12 +2947,12 @@ Descrizione: %2
 
 <phrase>
 <original>font (color)</original>
-<translation>fare (colore)</translation>
+<translation>colore del carattere</translation>
 </phrase>
 
 <phrase>
 <original>font face</original>
-<translation>faccia del carattere</translation>
+<translation>carattere</translation>
 </phrase>
 
 <phrase>
@@ -2962,7 +2962,7 @@ Descrizione: %2
 
 <phrase>
 <original>font (size unit)</original>
-<translation>carattere (unità di misura)</translation>
+<translation>unità di misura del carattere</translation>
 </phrase>
 
 <phrase>
@@ -2972,22 +2972,22 @@ Descrizione: %2
 
 <phrase>
 <original>style (bold)</original>
-<translation>stile (grassetto)</translation>
+<translation>stile grassetto</translation>
 </phrase>
 
 <phrase>
 <original>style (italic)</original>
-<translation>stile (corsivo)</translation>
+<translation>stile corsivo</translation>
 </phrase>
 
 <phrase>
 <original>style (underline)</original>
-<translation>stile (sottolineare)</translation>
+<translation>stile sottolinato</translation>
 </phrase>
 
 <phrase>
 <original>style (strikeout)</original>
-<translation>stile (strikeout)</translation>
+<translation>stile barrato</translation>
 </phrase>
 
 <phrase>
@@ -3017,12 +3017,12 @@ Descrizione: %2
 
 <phrase>
 <original>hinting</original>
-<translation>allusione a</translation>
+<translation>hinting</translation>
 </phrase>
 
 <phrase>
 <original>word wrap</original>
-<translation>impacco di parole</translation>
+<translation>ritorno a capo</translation>
 </phrase>
 
 <phrase>
@@ -3042,17 +3042,17 @@ Descrizione: %2
 
 <phrase>
 <original>outline style</original>
-<translation>stile di contorno</translation>
+<translation>stile del contorno</translation>
 </phrase>
 
 <phrase>
 <original>background style</original>
-<translation>stile di sfondo</translation>
+<translation>stile dello sfondo</translation>
 </phrase>
 
 <phrase>
 <original>background border</original>
-<translation>bordo di sfondo</translation>
+<translation>bordo dello sfondo</translation>
 </phrase>
 
 <phrase>
@@ -3117,16 +3117,16 @@ Descrizione: %2
 
 <phrase>
 <original>Modify selection</original>
-<translation>Modificare la selezione</translation>
+<translation>Modifica la selezione</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon ha aperto automaticamente la pagina web di segnalazione dei bug per voi.  Fare clic sul pulsante "Nuovo numero", quindi selezionare "Bug Report".  Rispondi alle domande come meglio puoi, e per favore includi il seguente numero di errore da qualche parte nella tua segnalazione: %1
+<translation>PhotoDemon ha aperto automaticamente la pagina web di segnalazione dei bug per voi.  Fare clic sul pulsante "New Issue", quindi selezionare "Bug Report".  Rispondi alle domande come meglio puoi, e per favore includi il seguente numero di errore nella segnalazione: %1
 
- Quando hai finito, clicca sul pulsante "Submit New Issue".  Grazie!</translation>
+Quando hai finito, clicca sul pulsante "Submit New Issue".  Grazie!</translation>
 </phrase>
 
 <phrase>
@@ -3143,7 +3143,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 
 <phrase>
 <original>nearest-neighbor</original>
-<translation>il più vicino</translation>
+<translation>vicino più prossimo</translation>
 </phrase>
 
 <phrase>
@@ -3213,12 +3213,12 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 
 <phrase>
 <original>This is a still image (only one frame of animation).</original>
-<translation>Si tratta di un fermo immagine (un solo fotogramma di animazione).</translation>
+<translation>Questa immagine è statica (un solo fotogramma).</translation>
 </phrase>
 
 <phrase>
 <original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
-<translation>Si può procedere, ma l'immagine verrà salvata come immagine statica e non animata.</translation>
+<translation>Si può procedere, ma l'immagine verrà salvata come immagine singola non animata.</translation>
 </phrase>
 
 <!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -3252,7 +3252,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 
 <phrase>
 <original>Export selection as image</original>
-<translation>Selezione Esporta come immagine</translation>
+<translation>Esporta selezione come immagine</translation>
 </phrase>
 
 <phrase>
@@ -3304,7 +3304,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 
 <phrase>
 <original>Feathering selection</original>
-<translation>Selezione sfumatura</translation>
+<translation>Sfumatura della selezione</translation>
 </phrase>
 
 <phrase>
@@ -3329,7 +3329,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 
 <phrase>
 <original>Shrinking selection</original>
-<translation>Compattamento della selezione</translation>
+<translation>Restringimento della selezione</translation>
 </phrase>
 
 <phrase>
@@ -3415,7 +3415,7 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation>Ctrl+Clic per impostare l'origine di clonazione</translation>
+<translation>Ctrl+click per impostare l'origine di clonazione</translation>
 </phrase>
 
 <phrase>
@@ -3455,7 +3455,7 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Tasto maiusc: mantiene le proporzioni del livello</translation>
+<translation>Tasto Maiusc: mantiene le proporzioni del livello</translation>
 </phrase>
 
 <phrase>
@@ -3632,12 +3632,12 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation>Alternare tra 1x e anteprime ripetute</translation>
+<translation>Alterna tra 1x e anteprime ripetute</translation>
 </phrase>
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Le preimpostazioni precedentemente salvate possono essere selezionate qui.  È possibile salvare le impostazioni correnti come un nuovo settaggio facendo clic sul pulsante Salva Preimpostazioni sulla destra.</translation>
+<translation>Le impostazione precedentemente salvate possono essere selezionate qui.  È possibile salvare le impostazioni correnti come un nuovo settaggio facendo clic sul pulsante Salva preimpostazioni sulla destra.</translation>
 </phrase>
 
 <phrase>
@@ -4323,7 +4323,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Show in file manager</original>
-<translation>Apri posizione in Esplora risorse</translation>
+<translation>Mostra posizione in Esplora file</translation>
 </phrase>
 
 <phrase>
@@ -4333,7 +4333,7 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Center image in viewport</original>
-<translation></translation>
+<translation>Centra immagine nella vista</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -5709,7 +5709,7 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 
 <phrase>
 <original>Show when multiple images are loaded</original>
-<translation>Mostra quando ci sono più immagini aperte</translation>
+<translation>Mostra se c'è più di un'immagine aperta</translation>
 </phrase>
 
 <phrase>
@@ -6185,7 +6185,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation>clicca per aprire questa cartella in Esplora risorse</translation>
+<translation>clicca per aprire questa cartella in Esplora file</translation>
 </phrase>
 
 <!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -7368,7 +7368,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 
 <phrase>
 <original>%1 options</original>
-<translation>%1 opzioni</translation>
+<translation>Opzioni %1</translation>
 </phrase>
 
 <phrase>
@@ -8656,12 +8656,12 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>pull in</original>
-<translation>tira dentro</translation>
+<translation>tira</translation>
 </phrase>
 
 <phrase>
 <original>push out</original>
-<translation>spingi fuori</translation>
+<translation>spingi</translation>
 </phrase>
 
 <phrase>
@@ -8700,7 +8700,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Poking image</original>
-<translation>Pungolatura immagine</translation>
+<translation>Pungolatura dell'immagine</translation>
 </phrase>
 
 <!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8722,7 +8722,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Simulating ripples across image surface</original>
-<translation>Simulazione delle ondulazioni attraverso la superfice dell'immagine</translation>
+<translation>Simulazione di ondulazioni attraverso la superfice dell'immagine</translation>
 </phrase>
 
 <!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -8736,7 +8736,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Swirling image round and round</original>
-<translation>Immagine arricciata attorno</translation>
+<translation>Arricciando l'immagine attorno</translation>
 </phrase>
 
 <!-- Effects_Distort_Swirl.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8763,7 +8763,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Dipping image in virtual wave pool</original>
-<translation>Tuffatura dell'immagine in una piscina con onde virtuali</translation>
+<translation>Tuffando l'immagine in una piscina con onde virtuali</translation>
 </phrase>
 
 <!-- Effects_Distort_Waves.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8807,7 +8807,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Artistic contour edge detection</original>
-<translation>Rilevamento artistico del bordo del contorno</translation>
+<translation>Rilevamento dei bordi di contorno artistico</translation>
 </phrase>
 
 <phrase>
@@ -8817,7 +8817,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Laplacian edge detection</original>
-<translation>Rilevazione del bordo Laplaciano</translation>
+<translation>Rilevamento dei bordi Laplaciano</translation>
 </phrase>
 
 <phrase>
@@ -9051,7 +9051,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Lighting image on fire</original>
-<translation>Immagine illuminata dal fuoco</translation>
+<translation>Accendendo l'immagine con il fuoco</translation>
 </phrase>
 
 <!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9077,7 +9077,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Let it snow, let it snow, let it snow</original>
-<translation>Lascia che nevichi, lascia che nevichi, lascia che nevichi</translation>
+<translation>Lascia che nevichi</translation>
 </phrase>
 
 <!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9128,7 +9128,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation>Calcolo dei sfumaturi di energia (passaggio %1 di %2)</translation>
+<translation>Calcolo dei gradienti di energia (passaggio %1 di %2)</translation>
 </phrase>
 
 <phrase>
@@ -9335,7 +9335,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Splattering canvas with paint</original>
-<translation>Tela splattering con vernice</translation>
+<translation>Cospargendo la tela di vernice</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9347,7 +9347,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Rendering clouds</original>
-<translation>Rendere le nuvole</translation>
+<translation>Rendering delle nuvole</translation>
 </phrase>
 
 <phrase>
@@ -9412,7 +9412,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>fade edges</original>
-<translation>sbiadiscono i bordi</translation>
+<translation>sbiadisci i bordi</translation>
 </phrase>
 
 <phrase>
@@ -9429,7 +9429,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Simulating large image explosion</original>
-<translation>Simula l'esplosione di una grande immagine</translation>
+<translation>Simulazione di una grande esplosione dell'immagine</translation>
 </phrase>
 
 <!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9569,7 +9569,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>orientation</original>
-<translation>orientazione</translation>
+<translation>orientamento</translation>
 </phrase>
 
 <phrase>
@@ -9613,7 +9613,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Applying pan and zoom (Ken Burns) effect</original>
-<translation>Applicazione dell'effetto bilanciamento e zoom (Ken Burns)</translation>
+<translation>Applicazione dell'effetto pan e zoom (Ken Burns)</translation>
 </phrase>
 
 <!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9645,7 +9645,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>reverse (outline defines source area)</original>
-<translation>indietro (il contorno definisce l'area d'origine)</translation>
+<translation>inverso (il contorno definisce l'area d'origine)</translation>
 </phrase>
 
 <phrase>
@@ -9682,7 +9682,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Performing polar coordinate conversion</original>
-<translation>Esecuzione della conversione delle coordinate polari</translation>
+<translation>Conversione delle coordinate polari</translation>
 </phrase>
 
 <phrase>
@@ -9926,7 +9926,7 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 
 <phrase>
 <original>fix exposure and lighting problems</original>
-<translation>risolve i problemi di esposizione e di illuminazione</translation>
+<translation>risolvi i problemi di esposizione e illuminazione</translation>
 </phrase>
 
 <phrase>
@@ -9991,7 +9991,7 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 
 <phrase>
 <original>(batch conversion process will appear here at run-time)</original>
-<translation>(il processo di conversione autoamatico comparirà qui durante l'esecuzione)</translation>
+<translation>(il processo di conversione automatico comparirà qui durante l'esecuzione)</translation>
 </phrase>
 
 <phrase>
@@ -10051,7 +10051,7 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 
 <phrase>
 <original>additional rename options</original>
-<translation>opzioni di ridenominazione aggiuntive</translation>
+<translation>opzioni di rinomina aggiuntive</translation>
 </phrase>
 
 <phrase>
@@ -10078,14 +10078,14 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 <original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-<translation>Se esci ora, la tua lista (la lista delle immagini da processare) sarà persa.  Salvando la tua lista, puoi semplicemente riutilizzarla in un altro momento.
+<translation>Se esci ora, la lista delle immagini da processare verrà persa.  Salvando la tua lista, puoi semplicemente riutilizzarla in un altro momento.
 
 Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
 <original>Batch Image List</original>
-<translation>Lista delle Immagini per la procedura guidata</translation>
+<translation>Lista delle immagini per la procedura guidata</translation>
 </phrase>
 
 <phrase>
@@ -10095,7 +10095,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
-<translation>Hai già creato una lista di immagini da processare.  La lista delle immagini contenute in questo file, verrà aggiunta in coda alla lista corrente.</translation>
+<translation>Hai già creato una lista di immagini da processare.  La lista delle immagini contenute in questo file verrà aggiunta in coda alla lista corrente.</translation>
 </phrase>
 
 <phrase>
@@ -10130,7 +10130,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
-<translation>Non avete selezionato alcuna immagine da elaborare!  Si prega di aggiungere una o più immagini all'elenco dei batch.</translation>
+<translation>Non avete selezionato alcuna immagine da elaborare!  Si prega di aggiungere una o più immagini all'elenco batch.</translation>
 </phrase>
 
 <phrase>
@@ -10140,7 +10140,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation>Prima di procedere, è necessario cliccare sul pulsante "imposta impostazioni di esportazione per questo formato" per specificare quali impostazioni di esportazione si desidera utilizzare.</translation>
+<translation>Prima di procedere, è necessario cliccare sul pulsante "imposta opzioni di esportazione per questo formato" per specificare quali impostazioni di esportazione si desidera utilizzare.</translation>
 </phrase>
 
 <phrase>
@@ -10150,7 +10150,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon non può accedere alla cartella per il salvataggio.  Per favore seleziona una cartella non vincolata dal sistema per il processo automatico.</translation>
+<translation>PhotoDemon non può accedere alla cartella per il salvataggio.  Per favore seleziona una cartella non ristretta dal sistema per il processo in lotti.</translation>
 </phrase>
 
 <phrase>
@@ -10165,17 +10165,17 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
-<translation>Benvenuti nel processo automatico di PhotoDemon.  Questo strumento può essere utilizzato per modificare più immagini contemporaneamente, in quello che viene chiamato un "processo automatico".</translation>
+<translation>Benvenuti nel processo automatico di PhotoDemon.  Questo strumento può essere utilizzato per modificare più immagini contemporaneamente, in quello che viene chiamato un "processo in lotti".</translation>
 </phrase>
 
 <phrase>
 <original>Start by selecting the photo editing action(s) you want to apply.  If multiple actions are selected, they will be applied in the order they appear on this page.</original>
-<translation>Inizia selezionando l'azione(i) di fotoritocco che si desidera applicare.  Se sono selezionati più azioni, verranno applicate nell'ordine in cui appaiono su questa pagina.</translation>
+<translation>Inizia selezionando l'azione/i di fotoritocco che si desidera applicare.  Se sono selezionate più azioni, verranno applicate nell'ordine in cui appaiono su questa pagina.</translation>
 </phrase>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Nota: una "macro" è semplicemente un elenco di azioni di modifica fotografica.  Può includere qualsiasi regolazione, filtro, o un effetto nel programma principale.  È possibile creare una nuova macro utilizzando il menù "Strumenti -> Macro -> Registra nuova macro" nella finestra principale di PhotoDemon.</translation>
+<translation>Nota: una "macro" è semplicemente un elenco di azioni di modifica fotografica.  Può includere qualsiasi regolazione, filtro, o effetto del programma principale.  È possibile creare una nuova macro utilizzando il menù "Strumenti -> Macro -> Registra nuova macro" nella finestra principale di PhotoDemon.</translation>
 </phrase>
 
 <phrase>
@@ -10195,7 +10195,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1) Aggiungendo manualmente uno o più file immagine utilizzando una finestra di dialogo standard Open Image.</translation>
+<translation>1) Aggiungendo manualmente uno o più file immagine utilizzando la finestra di dialogo standard Apri.</translation>
 </phrase>
 
 <phrase>
@@ -10210,22 +10210,22 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Step 3: choose a destination image format</original>
-<translation>Fase 3: scegli una destinazione per il formato dell'immagine</translation>
+<translation>Fase 3: scegli il formato di destinazione</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon needs to know which format to use when saving the images in your batch list.</original>
-<translation>PhotoDemon necessita di sapere quale formato usi quando salvi le immagini nella tua lista da processare.</translation>
+<translation>PhotoDemon necessita di sapere quale formato utilizzare per il salvataggio delle immagini nella tua lista.</translation>
 </phrase>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Se "mantieni le immagini nel loro formato originale" è selezionato, PhotoDemon tenterà di salvare ogni immagine nel formato originale.  Se il formato originale non è supportato, verrà utilizzato un formato standard (JPEG o PNG, a seconda della profondità del colore).</translation>
+<translation>Se "mantieni le immagini nel formato originale" è selezionato, PhotoDemon tenterà di salvare ogni immagine nel formato originale.  Se il formato originale non è supportato, verrà utilizzato un formato standard (JPEG o PNG, a seconda della profondità del colore).</translation>
 </phrase>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Se si sceglie di salvare le immagini in un nuovo formato, si prega di assicurarsi che il formato selezionato è appropriato per tutte le immagini nella vostra lista.  (Per esempio, le immagini con la trasparenza devono essere salvati in un formato che supporta la trasparenza!)</translation>
+<translation>Se si sceglie di salvare le immagini in un nuovo formato, si prega di assicurarsi che il formato selezionato sia appropriato per tutte le immagini nella vostra lista.  (Per esempio, le immagini con trasparenza devono essere salvate in un formato che supporta la trasparenza)</translation>
 </phrase>
 
 <phrase>
@@ -10235,22 +10235,22 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Step 4: provide a destination folder and any renaming options</original>
-<translation>Fase 4: provvedi ad una cartella di destinazione per tutte le opzioni di rinomina</translation>
+<translation>Fase 4: fornisci una cartella di destinazione per tutte le opzioni di rinomina</translation>
 </phrase>
 
 <phrase>
 <original>In this final step, PhotoDemon needs to know where to save the processed images, and what name to give the new files.</original>
-<translation>In questo passo finale, PhotoDemon ha bisogno di conoscere dove salvare le immagini processate, e quale nome dargli per i nuovi file.</translation>
+<translation>In questo passo finale, PhotoDemon ha bisogno di conoscere dove salvare le immagini processate, e quale nome dare ai nuovi file.</translation>
 </phrase>
 
 <phrase>
 <original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
-<translation>Per la vostra comodità, sono anche previste una serie di opzioni di ridenominazione standard.  Si noti che tutte le voci sotto "ulteriori opzioni di rinomina" sono opzionali.</translation>
+<translation>Per vostra comodità, sono anche previste una serie di opzioni di ridenominazione standard.  Si noti che tutte le voci sotto "opzioni di rinomina aggiuntive" sono opzionali.</translation>
 </phrase>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Finalmente, se una o più immagini nella lista da processare hanno lo stesso nome, e l'opzione 'nomi dei file originali" è selezionata, detti file otterranno automaticamente un nome univoco prima del salvataggio (per esempio, "nome del file originale (2)").</translation>
+<translation>Infine, se una o più immagini nella lista da processare hanno lo stesso nome, e l'opzione 'nomi dei file originali" è selezionata, ai file sarà dato un nome univoco prima del salvataggio (per esempio, "nome del file originale (2)").</translation>
 </phrase>
 
 <phrase>
@@ -10270,7 +10270,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation>È possibile annullare l'elaborazione automatica in qualsiasi momento premendo il pulsante "Annulla" nell'angolo in basso a destra.  Se si sceglie di annullare, le immagini elaborate saranno ancora presenti nella cartella di destinazione, quindi potrebbe essere necessario rimuoverle manualmente....</translation>
+<translation>È possibile annullare l'elaborazione automatica in qualsiasi momento premendo il pulsante "Annulla" nell'angolo in basso a destra.  Se si sceglie di annullare, le immagini elaborate saranno ancora presenti nella cartella di destinazione, quindi potrebbe essere necessario rimuoverle manualmente.</translation>
 </phrase>
 
 <phrase>
@@ -10432,7 +10432,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>Questo pulsante influisce solo sull'anteprima di cui sopra.  L'impostazione di ripetizione a destra è quella che verrà utilizzata dal file immagine esportato.</translation>
+<translation>Questo pulsante influisce solo sull'anteprima in alto.  L'impostazione di ripetizione a destra è quella che verrà utilizzata dal file immagine esportato.</translation>
 </phrase>
 
 <phrase>
@@ -10648,7 +10648,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
-<translation>programmi attualmente disponibili (elencati per titolo della finestra)</translation>
+<translation>applicazioni attualmente disponibili (elencati per titolo della finestra)</translation>
 </phrase>
 
 <phrase>
@@ -10678,17 +10678,17 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>entire desktop</original>
-<translation>scrivania intera</translation>
+<translation>intero schermo</translation>
 </phrase>
 
 <phrase>
 <original>specific program</original>
-<translation>programma specifico</translation>
+<translation>applicazione specifica</translation>
 </phrase>
 
 <phrase>
 <original>This program is currently minimized.  Restore it to normal size for best results.</original>
-<translation>Questo programma è attualmente ridotto al minimo.  Ripristinarlo alle dimensioni normali per ottenere i migliori risultati.</translation>
+<translation>Questa applicazione è attualmente ridotto a icona.  Ripristinarlo alle dimensioni normali per ottenere i migliori risultati.</translation>
 </phrase>
 
 <phrase>
@@ -10747,7 +10747,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>Immagine stampata con successo. (Nota: dipendentemente dalla tua stampante, un'ulteriore conferma della stampa può apparire sullo schermo.)</translation>
+<translation>Immagine stampata con successo. (Nota: in base alla tua stampante, un'ulteriore conferma della stampa può apparire sullo schermo.)</translation>
 </phrase>
 
 <phrase>
@@ -11164,7 +11164,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation>incorporare il colore di sfondo (pezzo bKGD)</translation>
+<translation>incorporare il colore di sfondo (blocco bKGD)</translation>
 </phrase>
 
 <phrase>
@@ -11606,7 +11606,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation>Questo è un tag protetto.  Le modifiche sono consentite, ma possono essere sovrascritte per produrre un file di immagine valido.</translation>
+<translation>Questo tag è protetto.  Le modifiche sono consentite, ma potrebbero essere sovrascritte per produrre un file di immagine valido.</translation>
 </phrase>
 
 <phrase>
@@ -11703,7 +11703,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>when changing aspect ratio, fit image to new size by</original>
-<translation>quando cambi il rapporto dell'aspetto, adatta l'immagine al nuovo formato con</translation>
+<translation>quando le proporzioni cambiano, adatta l'immagine al nuovo formato con</translation>
 </phrase>
 
 <phrase>
@@ -11733,7 +11733,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
-<translation>Il ricampionamento influenza la qualità di un'immagine ridimensionata.  Per una buona sintesi delle tecniche di ricampionamento, visita l'articolo Ricampionamento Immagine su Wikipedia.</translation>
+<translation>Il ricampionamento influenza la qualità di un'immagine ridimensionata.  Per una buona sintesi delle tecniche di ricampionamento, visita l'articolo Image Resampling su Wikipedia.</translation>
 </phrase>
 
 <phrase>
@@ -12110,7 +12110,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation>Strumenti Annulla/Ripeti: annulla i cambiamenti fatti a un'immagine o livello</translation>
+<translation>Strumenti Annulla/Ripeti: annulla o ripristina i cambiamenti fatti a un'immagine o livello</translation>
 </phrase>
 
 <phrase>
@@ -12145,7 +12145,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>Un altro modo per aprire le immagini è quello di trascinarle dal tuo desktop o da Esplora Risorse rilasciandole su PhotoDemon.</translation>
+<translation>Un altro modo per aprire le immagini è quello di trascinarle dal tuo desktop o da Esplora file rilasciandole su PhotoDemon.</translation>
 </phrase>
 
 <phrase>
@@ -13838,7 +13838,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>incompatibile con Windows 7</translation>
 </phrase>
 
 <phrase>
@@ -13964,7 +13964,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>reset all "remember my choice" decisions</original>
-<translation></translation>
+<translation>reimposta tutte le scelte memorizzate</translation>
 </phrase>
 
 <phrase>
@@ -13994,12 +13994,12 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>remember my choice</original>
-<translation></translation>
+<translation>ricorda la mia scelta</translation>
 </phrase>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>attiva lo strumento Sposta dopo aver incollato un livello</translation>
 </phrase>
 
 <phrase>
@@ -14019,7 +14019,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>midtones</original>
-<translation>Mezzitoni</translation>
+<translation>mezzitoni</translation>
 </phrase>
 
 <phrase>
@@ -14046,7 +14046,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>quando le immagini arrivano da una fonte esterna (come Esplora risorse)</translation>
+<translation>quando le immagini arrivano da una fonte esterna (come Esplora file)</translation>
 </phrase>
 
 <phrase>
@@ -14163,7 +14163,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>La maggior parte degli editor foto utilizza la cartella dell'immagine corrente.  Per flussi di lavoro che richiedono di caricare immagini da una cartella e salvarle in un'altra cartella, imposta "ultima cartella usata" per risparmiare tempo.</translation>
+<translation>La maggior parte degli editor foto utilizza la cartella dell'immagine corrente come predefinita.  Per flussi di lavoro che richiedono di caricare immagini da una cartella e salvarle in un'altra cartella, imposta "ultima cartella usata" per risparmiare tempo.</translation>
 </phrase>
 
 <phrase>
@@ -14178,7 +14178,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>La maggior parte degli editor foto utilizza il formato dell'immagine corrente.  Per flussi di lavoro che richiedono di caricare immagini in un formato (ad es. RAW) e salvarle in un altro formato (ad es. JPEG), imposta "ultimo formato usato" per risparmiare tempo.</translation>
+<translation>La maggior parte degli editor foto utilizza il formato dell'immagine corrente come predefinito.  Per flussi di lavoro che richiedono di caricare immagini in un formato (ad es. RAW) e salvarle in un altro formato (ad es. JPEG), imposta "ultimo formato usato" per risparmiare tempo.</translation>
 </phrase>
 
 <phrase>
@@ -14193,7 +14193,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>In parecchi Editor fotografici, il comando "Salva" salva l'immagine sulla stessa versione originale, cancellando quella copia per sempre.  PhotoDemon offre una opzione "più sicura", dove ogni salvataggio risulta in una nuova copia del file.</translation>
+<translation>Nella maggior parte delle applicazioni, il comando "Salva" salva l'immagine sullo stesso file originale, cancellando la versione precedente per sempre.  PhotoDemon offre una opzione "più sicura", dove ogni salvataggio produce una nuova copia del file.</translation>
 </phrase>
 
 <phrase>
@@ -14208,7 +14208,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>In molti editor di foto, il comando "Salva con nome" ha per impostazione predefinita il nome file attuale.  PhotoDemon ha anche un'opzione "più sicura", in cui Salva con nome incrementa automaticamente i nomi dei file.</translation>
+<translation>Nella maggior parte delle applicazioni, il comando "Salva con nome" ha per impostazione predefinita il nome file attuale.  PhotoDemon ha anche un'opzione "più sicura", in cui Salva con nome incrementa automaticamente i nomi dei file.</translation>
 </phrase>
 
 <!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
@@ -14290,12 +14290,12 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>La resa della tela dell'immagine primaria è un collo di bottiglia comune per le prestazioni di PhotoDemon.  L'impostazione automatica è consigliata, ma per vecchi PC, è possibile selezionare manualmente l'opzione Massimizza le prestazioni sacrificando la qualità per una prestazione cruda.</translation>
+<translation>La resa della tela dell'immagine primaria è un collo di bottiglia comune per le prestazioni di PhotoDemon.  L'impostazione automatica è consigliata, ma per vecchi PC è possibile selezionare manualmente l'opzione Massimizza le prestazioni sacrificando la qualità.</translation>
 </phrase>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Le impostazioni di bassa compressione richiedono più spazio su disco, ma le operazioni undoredo saranno più veloci.  Impostazioni di compressione elevate richiedono meno spazio su disco, ma le operazioni undoredo saranno più lente.  I dati di undoredo vengono cancellati quando le immagini vengono chiuse, quindi questa impostazione influisce solo sullo spazio su disco mentre le immagini vengono modificate attivamente.</translation>
+<translation>Le impostazioni di bassa compressione richiedono più spazio su disco, ma le operazioni annullamento/ripetizione saranno più veloci.  Impostazioni di compressione elevate richiedono meno spazio su disco, ma le operazioni annullamento/ripetizione saranno più lente.  I dati di annullamento vengono cancellati quando le immagini vengono chiuse, quindi questa impostazione influisce sullo spazio su disco solo mentre le immagini vengono modificate attivamente.</translation>
 </phrase>
 
 <!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
@@ -14322,7 +14322,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>turn off display color management</original>
-<translation>disattivare la gestione colore dello schermo</translation>
+<translation>disattiva la gestione colore dello schermo</translation>
 </phrase>
 
 <phrase>
@@ -14337,7 +14337,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>display policies</original>
-<translation>politiche di visualizzazione</translation>
+<translation>criteri di visualizzazione</translation>
 </phrase>
 
 <phrase>
@@ -14372,12 +14372,12 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation>La gestione del colore del display spento può fornire un piccolo incremento delle prestazioni.  Se il vostro display non è attualmente configurato per la gestione del colore, utilizzate questa impostazione.</translation>
+<translation>Disattivare la gestione del colore dello schermo può fornire un piccolo incremento delle prestazioni.  Se lo schermo non è attualmente configurato per la gestione del colore, utilizzate questa impostazione.</translation>
 </phrase>
 
 <phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Questa impostazione è la scelta migliore per la maggior parte degli utenti.  Se non avete idea di che cosa è la gestione del colore, utilizzate questa impostazione.  Se è stato configurato correttamente un profilo di visualizzazione tramite il Pannello di Controllo di Windows, utilizzate anche questa impostazione.</translation>
+<translation>Questa impostazione è la scelta migliore per la maggior parte degli utenti.  Se non avete idea di che cosa è la gestione del colore, utilizzate questa impostazione.  Se è stato configurato correttamente un profilo di visualizzazione tramite il Pannello di Controllo di Windows, utilizzate questa impostazione.</translation>
 </phrase>
 
 <phrase>
@@ -14387,17 +14387,17 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor.</original>
-<translation>Si prega di specificare un profilo del colore per ogni monitor attualmente collegata al sistema.  Si noti che il testo tra parentesi è la scheda video che pilota il monitor denominato.</translation>
+<translation>Si prega di specificare un profilo del colore per ogni monitor attualmente collegata al sistema.  Si noti che il testo tra parentesi è la scheda video utilizzata dal monitor.</translation>
 </phrase>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Fare clic su questo pulsante per aprire la finestra di dialogo "cerca il profilo del colore".</translation>
+<translation>Fare clic su questo pulsante per aprire la finestra di dialogo "cerca il profilo di colore".</translation>
 </phrase>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>Se non sapete cosa controlla questa impostazione, impostatela su "Perceptual".  L'intento di rendering percettivo è la scelta migliore per la maggior parte degli utenti.</translation>
+<translation>Se non sapete cosa controlla questa impostazione, impostatela su "Percettivo".  L'intento di rendering percettivo è la scelta migliore per la maggior parte degli utenti.</translation>
 </phrase>
 
 <phrase>
@@ -14534,7 +14534,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>start over</original>
-<translation>ricomincia</translation>
+<translation>ripristina</translation>
 </phrase>
 
 <phrase>
@@ -14628,7 +14628,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation>ingresso mouse ad alta risoluzione</translation>
+<translation>input mouse ad alta risoluzione</translation>
 </phrase>
 
 <phrase>
@@ -14749,7 +14749,7 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>mipmap</translation>
 </phrase>
 
 <phrase>
