@@ -3,8 +3,8 @@ Attribute VB_Name = "Loading"
 'General-purpose image and data import interface
 'Copyright 2001-2025 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 10/March/25
-'Last update: warn the user about mismatched file extensions (and offer to fix them)
+'Last updated: 18/November/25
+'Last update: expand QuickLoad support for recent format support enhancements
 '
 'This module provides high-level "load" functionality for getting image files into PD.
 ' There are a number of different ways to do this; for example, loading a user-facing image
@@ -703,13 +703,17 @@ End Function
 
 'Quick and dirty function for loading an image file to a pdDIB object (*NOT* a pdImage object).
 '
-'This function provides none of the extra scans or features that the more advanced LoadFileAsNewImage() does;
-' instead, it assumes that the calling function will handle any extra work.
-' (Note that things like metadata will not be processed *at all* for the image file.)
+'Per the name, this function provides an absolutely barebones approach to getting image data into a useable RGBA surface.
+' It explicitly assumes that the calling function handles any work above and beyond this.
+' (Note that things like metadata are not processed *at all.*)
 '
-'That said, internal decoders and FreeImage/GDI+ are still used intelligently, so this function should reflect
-' PD's full capacity for image format support.  Importantly, however, multi-page files will be squashed into
-' single-frame composite forms, by design.
+'Similarly, format sorting is *primarily* handled by file extension.  This function doesn't interrogate
+' format details as aggressively as PD's central LoadFileAsNewImage(), so mislabeled file extensions
+' may result in a file not being loaded.  This is by design.
+'
+'That said, format ID and decoder sorting is still applied intelligently, so this function should reflect
+' PD's full capacity for image format support.  Importantly, however, multi-page files get squashed into
+' single-frame composites, by design.
 '
 'The function will return TRUE if successful; detailed load information is not available past that.
 Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True, Optional ByVal displayMessagesToUser As Boolean = True, Optional ByVal suppressDebugData As Boolean = False) As Boolean
@@ -729,7 +733,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         If applyUIChanges Then Processor.MarkProgramBusyState False, True
         Exit Function
     End If
-        
+    
     'Prepare a dummy pdImage object, which some external functions may require
     Dim tmpPDImage As pdImage
     Set tmpPDImage = New pdImage
@@ -738,6 +742,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     Dim fileExtension As String
     fileExtension = UCase$(Files.FileGetExtension(imagePath))
     loadSuccessful = False
+    
+    'For weird and/or esoteric formats, we'll throw 'em at FreeImage and see what happens
+    Dim freeImageReturn As PD_OPERATION_OUTCOME
+    freeImageReturn = PD_FAILURE_GENERIC
     
     'Depending on the file's extension, load the image using the most appropriate image decoding routine
     Select Case fileExtension
@@ -776,14 +784,38 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             Set cCBZ = New pdCBZ
             If cCBZ.IsFileCBZ(imagePath) Then loadSuccessful = cCBZ.LoadCBZ(imagePath, tmpPDImage)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
-            
+        
+        Case "DDS"
+            If Plugin_DDS.IsDirectXTexAvailable() Then
+                loadSuccessful = ImageImporter.LoadDDS(imagePath, tmpPDImage, targetDIB, False, 1, False)
+            Else
+                freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, Nothing, suppressDebugData)
+                loadSuccessful = (freeImageReturn = PD_SUCCESS)
+            End If
+        
         Case "HGT"
             Dim cHGT As pdHGT
             Set cHGT = New pdHGT
             If cHGT.IsFileHGT(imagePath) Then loadSuccessful = cHGT.LoadHGT_FromFile(imagePath, tmpPDImage, targetDIB)
-            
+        
+        'Icons are weird because we need to grab a specific frame, but which one?  Just grab the first for now;
+        ' if the user wants a specific one, they'd need to load the file individually and manually grab a layer.
+        Case "ICO"
+            Dim cIconReader As pdICO
+            Set cIconReader = New pdICO
+            If cIconReader.IsFileICO(imagePath, True) Then
+                loadSuccessful = (cIconReader.LoadICO(imagePath, tmpPDImage, targetDIB) < ico_Failure)
+                If loadSuccessful And (Not tmpPDImage Is Nothing) Then
+                    Set targetDIB = New pdDIB
+                    targetDIB.CreateFromExistingDIB tmpPDImage.GetActiveLayer.GetLayerDIB
+                End If
+            End If
+        
         Case "JLS"
             loadSuccessful = Plugin_CharLS.LoadJLS(imagePath, tmpPDImage, targetDIB)
+        
+        Case "JP2", "J2K", "JPT", "J2C", "JPC", "JPX", "JPF", "JPH"
+            loadSuccessful = Plugin_OpenJPEG.LoadJP2(imagePath, tmpPDImage, targetDIB)
         
         Case "JXL"
             If Plugin_jxl.IsFileJXL_NoExternalLibrary(imagePath) Then
@@ -850,6 +882,11 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 If Plugin_resvg.IsFileSVGCandidate(imagePath) Then loadSuccessful = Plugin_resvg.LoadSVG_FromFile(imagePath, tmpPDImage, targetDIB, True)
             End If
         
+        Case "WBMP", "WBM", "WAP"
+            Dim cWbmp As pdWBMP
+            Set cWbmp = New pdWBMP
+            If cWbmp.IsFileWBMP(imagePath) Then loadSuccessful = cWbmp.LoadWBMP_FromFile(imagePath, tmpPDImage, targetDIB)
+        
         Case "WEBP"
             If Plugin_WebP.IsWebPEnabled() Then
                 If Plugin_WebP.IsWebP(imagePath) Then
@@ -860,6 +897,11 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                 End If
             End If
         
+        Case "XBM"
+            Dim cXbm As pdXBM
+            Set cXbm = New pdXBM
+            If cXbm.IsFileXBM(imagePath) Then loadSuccessful = cXbm.LoadXBM_FromFile(imagePath, tmpPDImage, targetDIB)
+            
         Case "XCF"
             Dim cXCF As pdXCF
             Set cXCF = New pdXCF
@@ -871,7 +913,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If Plugin_Heif.IsFileHeif(imagePath) Then loadSuccessful = Plugin_Heif.LoadHeifImage(imagePath, tmpPDImage, targetDIB, True, True)
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             
-        'AVIF support was provisionally added in v9.0.
+        'AVIF support was added in v9.0
         Case "AVCI", "AVCS", "AVIF", "AVIFS"
             loadSuccessful = Plugin_AVIF.QuickLoadPotentialAVIFToDIB(imagePath, targetDIB, tmpPDImage)
             
@@ -898,9 +940,6 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             
             'If GDI+ failed, proceed with FreeImage
             If (Not loadSuccessful) And ImageFormats.IsFreeImageEnabled() Then
-                
-                Dim freeImageReturn As PD_OPERATION_OUTCOME
-                freeImageReturn = PD_FAILURE_GENERIC
                 freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, Nothing, suppressDebugData)
                 loadSuccessful = (freeImageReturn = PD_SUCCESS)
                 

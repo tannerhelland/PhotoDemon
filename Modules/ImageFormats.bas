@@ -254,7 +254,7 @@ Public Sub GenerateInputFormats()
     
     'OpenJPEG is preferred for JPEG-2000 handling, but we can fall back to FreeImage as a worst-case option
     If PluginManager.IsPluginCurrentlyEnabled(CCP_OpenJPEG) Or m_FreeImageEnabled Then
-        AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpt;*.j2c;*.jpc;*.jpx;*.jpf;*.jph;*.jpc", PDIF_JP2
+        AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpt;*.j2c;*.jpc;*.jpx;*.jpf;*.jph", PDIF_JP2
     End If
     
     AddInputFormat "JPG/JPEG - Joint Photographic Experts Group", "*.jpg;*.jpeg;*.jpe;*.jif;*.jfif", PDIF_JPEG
