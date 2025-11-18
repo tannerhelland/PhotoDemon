@@ -62,6 +62,7 @@ Private Enum Libheif_ProcAddress
     heif_context_get_list_of_top_level_image_IDs
     heif_context_get_number_of_top_level_images
     heif_context_get_primary_image_ID
+    heif_context_has_sequence
     heif_context_is_top_level_image_ID
     heif_encoder_list_parameters
     heif_encoder_release
@@ -447,6 +448,7 @@ Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
         m_ProcAddresses(heif_context_get_list_of_top_level_image_IDs) = GetProcAddress(m_hLibHeif, "heif_context_get_list_of_top_level_image_IDs")
         m_ProcAddresses(heif_context_get_number_of_top_level_images) = GetProcAddress(m_hLibHeif, "heif_context_get_number_of_top_level_images")
         m_ProcAddresses(heif_context_get_primary_image_ID) = GetProcAddress(m_hLibHeif, "heif_context_get_primary_image_ID")
+        m_ProcAddresses(heif_context_has_sequence) = GetProcAddress(m_hLibHeif, "heif_context_has_sequence")
         m_ProcAddresses(heif_context_is_top_level_image_ID) = GetProcAddress(m_hLibHeif, "heif_context_is_top_level_image_ID")
         m_ProcAddresses(heif_encoder_list_parameters) = GetProcAddress(m_hLibHeif, "heif_encoder_list_parameters")
         m_ProcAddresses(heif_encoder_release) = GetProcAddress(m_hLibHeif, "heif_encoder_release")
@@ -666,6 +668,16 @@ Public Function LoadHeifImage(ByRef srcFilename As String, ByRef dstImage As pdI
         ProgressBars.SetProgBarMax numImages * 2
         ProgressBars.SetProgBarVal 0
         
+    End If
+    
+    'UPDATE NOV 2025: libheif has added new APIs for animation sequences.  These can exist alongside
+    ' image series, and can be accessed separately.  I've yet to find any sample images to test this on,
+    ' but here's how you can query state:
+    If HEIF_DEBUG_VERBOSE Then
+        Dim heifHasSequence As Boolean
+        heifHasSequence = (CallCDeclW(heif_context_has_sequence, vbLong, ctxHeif) <> 0)
+        PDDebug.LogAction "heifHasSequence: " & heifHasSequence
+        'TODO someday: implement fully, see https://github.com/strukturag/libheif/wiki/Reading-and-Writing-Sequences
     End If
     
     'Ensure we have a target image to work with
