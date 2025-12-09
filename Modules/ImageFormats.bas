@@ -228,10 +228,11 @@ Public Sub GenerateInputFormats()
     'EMFs are handled via GDI+ for improved rendering and feature compatibility
     AddInputFormat "EMF - Enhanced Metafile", "*.emf", PDIF_EMF
     
-    If m_FreeImageEnabled Then
-        AddInputFormat "EXR - Industrial Light and Magic", "*.exr", PDIF_EXR
-        AddInputFormat "G3 - Digital Fax Format", "*.g3", PDIF_FAXG3
-    End If
+    If m_FreeImageEnabled Then AddInputFormat "EXR - Industrial Light and Magic", "*.exr", PDIF_EXR
+    
+    AddInputFormat "FITS - Flexible Image Transport System", "*.fits;*.fts;*.fit", PDIF_FITS
+    
+    If m_FreeImageEnabled Then AddInputFormat "G3 - Digital Fax Format", "*.g3", PDIF_FAXG3
     
     AddInputFormat "GIF - Graphics Interchange Format", "*.gif;*.agif", PDIF_GIF
     
@@ -515,6 +516,8 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
             GetExtensionFromPDIF = "exr"
         Case PDIF_FAXG3
             GetExtensionFromPDIF = "g3"
+        Case PDIF_FITS
+            GetExtensionFromPDIF = "fits"
         Case PDIF_GIF
             GetExtensionFromPDIF = "gif"
         Case PDIF_HDR
@@ -643,6 +646,8 @@ Public Function IsExtensionOkayForPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT, ByRef s
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "exr")
         Case PDIF_FAXG3
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "g3")
+        Case PDIF_FITS
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "fits", "fit", "fts")
         Case PDIF_GIF
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "gif", "agif")
         Case PDIF_HDR
@@ -801,6 +806,8 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String, Optional ByVa
             GetPDIFFromExtension = PDIF_EMF
         Case "exr"
             GetPDIFFromExtension = PDIF_EXR
+        Case "fits", "fit", "fts"
+            GetPDIFFromExtension = PDIF_FITS
         Case "g3"
             GetPDIFFromExtension = PDIF_FAXG3
         Case "gif", "agif"

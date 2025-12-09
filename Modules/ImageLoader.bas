@@ -23,6 +23,7 @@ Option Explicit
 ' *CANNOT* read most (if any) of these formats.  If you encounter problems with a specific
 ' image format, PLEASE FILE AN ISSUE ON GITHUB.
 Private Const USE_INTERNAL_PARSER_CBZ As Boolean = True
+Private Const USE_INTERNAL_PARSER_FITS As Boolean = True
 Private Const USE_INTERNAL_PARSER_HGT As Boolean = True
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
@@ -1106,6 +1107,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'FITS support was added in 2025.11
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_FITS Then
+        CascadeLoadGenericImage = LoadFITS(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_FITSParser
+            dstImage.SetOriginalFileFormat PDIF_FITS
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1398,6 +1408,42 @@ Public Function LoadDDS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
 LoadFailed:
     LoadDDS = False
+    
+End Function
+
+Private Function LoadFITS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadFITS = False
+    
+    'pdFITS handles all the dirty work for us
+    Dim cReader As pdFITS
+    Set cReader = New pdFITS
+    
+    'Validate the source file
+    LoadFITS = cReader.IsFileFITS(srcFile, False)
+    
+    'Validate and (potentially) load the file in one fell swoop
+    'LoadFITS = cReader.LoadFITS_FromFile(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadFITS Then
+        
+        'Set format flags and reset internal image caches
+        dstImage.SetOriginalFileFormat PDIF_FITS
+        dstImage.NotifyImageChanged UNDO_Everything
+        
+        'FITS files are typically grayscale, but we mirror FITS Liberator and "color" some pixels at load-time
+        ' based on user criteria
+        dstImage.SetOriginalColorDepth 24
+        dstImage.SetOriginalGrayscale True
+        
+        'FITS files never contain alpha
+        dstImage.SetOriginalAlpha False
+        
+        'FITS files contain raw data (not even *color* representations, technically), so we don't need to color-manage them
+        dstDIB.SetColorManagementState cms_ProfileConverted
+        
+    End If
     
 End Function
 
