@@ -368,7 +368,7 @@ Friend Function ImportStage1_ValidatePNG(ByRef srcFile As String, Optional ByVal
     ' running as a compiled exe (as the PNG's failure is simply due to not being a PNG at all, and not due to
     ' any internal problem in this class).
     If (okToProceed >= png_Failure) Then
-        InternalError "ImportStage1_ValidatePNG", "file is not a valid PNG file", False
+        If PNG_DEBUG_VERBOSE Then InternalError "ImportStage1_ValidatePNG", "file is not a valid PNG file", False
         If m_Stream.IsOpen() Then m_Stream.StopStream True
     End If
     
