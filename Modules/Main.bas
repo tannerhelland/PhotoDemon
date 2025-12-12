@@ -686,12 +686,14 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Prep developer menus"
     LogStartupEvent "Preparing program menus..."
     
-    'In debug modes, certain developer and experimental menus will be enabled.
+    'In alpha-build or IDE modes, Tools > Options > Developer is exposed.
+    ' (Two menus are toggled for this - the first is just a separator bar.)
+    'TODO: when we switch to owner-drawn menus, there is no mechanism for run-time visibility changes.
+    ' These menus will simply need to *not* be created at all.
     Dim debugMenuVisibility As Boolean
-    debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
-    FormMain.MnuTest.Visible = debugMenuVisibility
+    debugMenuVisibility = ((PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)) Or (Not OS.IsProgramCompiled)
+    FormMain.MnuTool(13).Visible = debugMenuVisibility
     FormMain.MnuTool(14).Visible = debugMenuVisibility
-    FormMain.MnuTool(15).Visible = debugMenuVisibility
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     perfCheck.MarkEvent "Prep MRU menus"

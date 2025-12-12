@@ -356,7 +356,6 @@ Private Sub InitializeDefaultHotkeys()
     'Tools menu
     AddHotkey 190, vbCtrlMask Or vbAltMask, "tools_playmacro", True  'KeyCode 190 = >.  (two keys to the right of the M letter key)
     AddHotkey vbKeyK, vbCtrlMask, "tools_options", True
-    AddHotkey vbKeyM, vbCtrlMask Or vbAltMask, "tools_3rdpartylibs", True
     
     'View menu
     AddHotkey vbKey0, vbCtrlMask, "view_fit", True

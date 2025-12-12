@@ -1636,16 +1636,12 @@ Begin VB.Form FormMain
          Index           =   12
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Third-party libraries..."
+         Caption         =   "-"
          Index           =   13
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "-"
-         Index           =   14
-      End
-      Begin VB.Menu MnuTool 
          Caption         =   "Developers"
-         Index           =   15
+         Index           =   14
          Begin VB.Menu MnuDevelopers 
             Caption         =   "View debug log for this session..."
             Index           =   0
@@ -1968,8 +1964,16 @@ Begin VB.Form FormMain
          Index           =   11
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "About..."
+         Caption         =   "Third-party libraries..."
          Index           =   12
+      End
+      Begin VB.Menu MnuHelp 
+         Caption         =   "-"
+         Index           =   13
+      End
+      Begin VB.Menu MnuHelp 
+         Caption         =   "About..."
+         Index           =   14
       End
    End
 End
@@ -3259,6 +3263,10 @@ Private Sub MnuHelp_Click(Index As Integer)
         Case 11
             '(separator)
         Case 12
+            Actions.LaunchAction_ByName "help_3rdpartylibs"
+        Case 13
+            '(separator)
+        Case 14
             Actions.LaunchAction_ByName "help_about"
     End Select
 End Sub
@@ -3953,7 +3961,9 @@ Private Sub mnuTool_Click(Index As Integer)
         Case 12
             Actions.LaunchAction_ByName "tools_options"
         Case 13
-            Actions.LaunchAction_ByName "tools_3rdpartylibs"
+            '(separator)
+        Case 14
+            'Developer menu top-level
     End Select
 End Sub
 
