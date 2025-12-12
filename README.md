@@ -2,7 +2,7 @@
 
 | Stable (2025.12) | Nightly | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download ZIP (22 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2025.4/PhotoDemon-2025.4.zip) | [Download ZIP (22 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (26 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
+| [Download ZIP (22 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2025.12/PhotoDemon-2025.12.zip) | [Download ZIP (22 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (26 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
 
 ## About PhotoDemon
 
