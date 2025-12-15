@@ -1468,7 +1468,7 @@
 <original>Before lossless copies can be saved, you must save this image at least once.
 
 Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation></translation>
+<translation>Voordat verliesvrije kopieën kunnen worden opgeslagen, moet u deze afbeelding minstens één keer opslaan. Verliesvrije kopieën worden opgeslagen in dezelfde map als deze initiële opslag van de afbeelding.</translation>
 </phrase>
 
 <phrase>
@@ -2729,7 +2729,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>De libjxl-bibliotheek biedt gratis, open-source JPEG XL-compatibiliteit. Een draagbare kopie van libjxl vereist ~%1 mb schijfruimte. Eenmaal gedownload, kan PhotoDemon libjxl gebruiken om JPEG XL-afbeeldingen (inclusief animaties) te laden en op te slaan.</translation>
 </phrase>
 
 <phrase>
@@ -2825,14 +2825,18 @@ A.U.B. rapporteer deze bug via de Help -> Indienen Bug Report menu.</translation
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation></translation>
+<translation>Het opgegeven bestand kan niet worden gevonden. Als het opgeslagen was op een verwisselbaar medium, gebruik dan de juiste diskette, cd of draagbare schijf. Als het bestand zich niet op draagbaar medium stond,zorg er dan voor dat:
+1) het bestand niet is verwijderd is, en...
+2) de bestandslocatie doorgegeven aan PhotoDemon correct is.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation></translation>
+<translation>PhotoDemon kon geen extra informatie vinden voor deze fout. Dit betekent waarschijnlijk dat deze fout een bug is, en het moet worden opgelost!
+
+Wilt u een bug rapport indienen? (Het duurt minder dan een minuut, en het helpt iedereen die gebruik maakt van de software.)</translation>
 </phrase>
 
 <phrase>
@@ -3119,7 +3123,9 @@ Beschrijving: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation></translation>
+<translation>PhotoDemon heeft automatisch de webpagina voor bugrapporten voor u geopend.  Klik op de knop "Nieuw probleem" en selecteer vervolgens "Foutrapport".  Beantwoord de vragen zo goed mogelijk en vermeld het volgende foutnummer ergens in uw rapport: %1
+
+Als u klaar bent, klikt u op de knop "Nieuw probleem indienen".  Dank U!</translation>
 </phrase>
 
 <phrase>
@@ -3182,12 +3188,16 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation></translation>
+<translation>Er is een fout opgetreden bij een poging om de afbeelding op te slaan. De FreeImage plugin meldde de volgende foutgegevens: 
+
+ %1
+
+Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan de PhotoDemon ontwikkelaars ook laten weten over dit, via de Help-> Submit Bug Report menu.</translation>
 </phrase>
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation></translation>
+<translation>Output formaat niet herkend. Opslaan afgebroken. Gebruik het Help -> Indienen Bug Report menu-item om dit incident te melden .</translation>
 </phrase>
 
 <phrase>
@@ -3281,7 +3291,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation></translation>
+<translation>Onbekende fout voorgekomen. De selectie is niet opgeslagen. Probeer nogmaals.</translation>
 </phrase>
 
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -3614,7 +3624,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation></translation>
+<translation>U hebt PhotoDemon in een beveiligde systeemmap geplaatst.  Omdat PhotoDemon geen beheerderstoegang heeft, kan het geen bestanden voor u downloaden.  Verplaats PhotoDemon naar een map zonder beperkingen en probeer het opnieuw.</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3661,7 +3671,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
-<translation>Werksetpanelen sluiten automatisch, maar u kunt er een vastmaken om hem open te houden.  (Vastgemaakte panelen sluiten nog steeds wanneer u van gereedschap wisselt of nieuwe panelen opent)</translation>
+<translation>Werksetpanelen sluiten automatisch, maar u kunt er een vastmaken om hem open te houden. (Vastgemaakte panelen sluiten nog steeds wanneer u van gereedschap wisselt of nieuwe panelen opent)</translation>
 </phrase>
 
 <phrase>
@@ -3688,7 +3698,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation>PhotoDemon kan het internet niet bereiken.  Controleer uw verbinding en probeer het opnieuw.</translation>
+<translation>PhotoDemon kan het internet niet bereiken. Controleer uw verbinding en probeer het opnieuw.</translation>
 </phrase>
 
 <phrase>
@@ -3698,7 +3708,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>PhotoDemon kon de doel-URL (%1) niet bereiken.  Als het probleem zich blijft voordoen, probeer het bestand dan handmatig te downloaden met uw internetbrowser.</translation>
+<translation>PhotoDemon kon de doel-URL (%1) niet bereiken. Als het probleem zich blijft voordoen, probeer het bestand dan handmatig te downloaden met uw internetbrowser.</translation>
 </phrase>
 
 <phrase>
@@ -5794,7 +5804,7 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation>Een nieuwe versie van PhotoDemonis  beschikbaar! 
+<translation>Een nieuwe versie van PhotoDemonis beschikbaar! 
 
 De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mededeling wanneer het voltooid is.</translation>
 </phrase>
@@ -6596,7 +6606,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation></translation>
+<translation>Net als alle zwart-wit-naar-grijswaarden tools, zal dit gereedschap een wazige afbeelding produceren. Je kan gebruik maken van de Effecten -> Verscherpen -> Onscherp maskeren tool om dit op te lossen. (Voor de beste resultaten een onscherp masker straal gebruiken tenminste zo groot als deze radius.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -7102,7 +7112,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>Een kleurverloop met de naam "%1" bestaat al in je collectie.  Wil je het overschrijven?</translation>
+<translation>Een kleurverloop met de naam "%1" bestaat al in je collectie. Wil je het overschrijven?</translation>
 </phrase>
 
 <phrase>
@@ -7112,7 +7122,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
-<translation>Deze gradient heeft nog geen naam.  Geef het een naam voordat u het aan uw collectie toevoegt.</translation>
+<translation>Deze gradient heeft nog geen naam. Geef het een naam voordat u het aan uw collectie toevoegt.</translation>
 </phrase>
 
 <phrase>
@@ -7484,7 +7494,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>This image contains more than 16 million colors.  Before it can be displayed on your screen, it must be converted to a simpler format.  This process is called tone mapping.</original>
-<translation></translation>
+<translation>Deze afbeelding bevat meer dan 16 miljoen kleuren. Voordat ze op uw scherm kan worden weergegeven, moet deze worden omgezet naar een eenvoudigere indeling. Dit proces heet tone mapping.</translation>
 </phrase>
 
 <phrase>
@@ -7978,17 +7988,17 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation></translation>
+<translation>Photoshop (8bf) plugins zijn bestanden met een "8bf" extensie.  Deze plugins zorgen voor nieuwe beeldeffecten.  Duizenden 8bf-plugins zijn online beschikbaar.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation></translation>
+<translation>PhotoDemon wordt niet geleverd met 8bf-plugins, maar als u plugins online vindt, kunt u ze downloaden en aan PhotoDemon toevoegen.  (PhotoDemon ondersteunt de meeste 32-bits 8bf-plugins.  64-bits invoegtoepassingen worden niet ondersteund)</translation>
 </phrase>
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>Nadat u een of meer 8bf-bestanden hebt gedownload, gebruikt u de knop Instellingen (hierboven) om PhotoDemon te vertellen waar u ze kunt vinden.  PhotoDemon voegt ze dan toe aan uw Effectenverzameling.</translation>
+<translation>Nadat u een of meer 8bf-bestanden hebt gedownload, gebruikt u de knop Instellingen (hierboven) om PhotoDemon te vertellen waar u ze kunt vinden. PhotoDemon voegt ze dan toe aan uw Effectenverzameling.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -9521,7 +9531,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>WARNING!  Palette file invalid.</original>
-<translation>WAARSCHUWING!  Palet bestand ongeldig.</translation>
+<translation>WAARSCHUWING! Palet bestand ongeldig.</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -10168,7 +10178,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation></translation>
+<translation>Opmerking: een macro is simpelweg een lijst van fotobewerkingsacties. Het kan elke aanpassing, filter of effect bevatten in het hoofdprogramma. Je kan een nieuwe macro maken met gebruik van "Gereedschappen -> Macros -> Opnemen nieuwe macro" menu in het hoofdscherm.</translation>
 </phrase>
 
 <phrase>
@@ -10363,7 +10373,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation></translation>
+<translation>Batch conversie geannuleerd.  %1 beeld(en) werden verwerkt voor de annulering.  Laatste verwerkte afbeelding was "%2".</translation>
 </phrase>
 
 <phrase>
@@ -10425,7 +10435,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>Deze knop heeft alleen invloed op het voorbeeld hierboven.  De herhalingsinstelling rechts is wat zal worden gebruikt door het geëxporteerde beeldbestand.</translation>
+<translation>Deze knop heeft alleen invloed op het voorbeeld hierboven. De herhalingsinstelling rechts is wat zal worden gebruikt door het geëxporteerde beeldbestand.</translation>
 </phrase>
 
 <phrase>
@@ -10592,7 +10602,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation></translation>
+<translation>Adobe Swatch Exchange (ASE)-bestanden kunnen meerdere paletten in één bestand opslaan.  Als u de optie "toevoegen" selecteert, voegt PhotoDemon dit palet aan uw bestaande ASE-bestand toe.  Paletten die al in het bestand aanwezig zijn, worden niet gewijzigd.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10629,7 +10639,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Thanks!</original>
-<translation>Respecteer de auteursrechten bij het downloaden van afbeeldingen.  Bedankt!</translation>
+<translation>Respecteer de auteursrechten bij het downloaden van afbeeldingen. Bedankt!</translation>
 </phrase>
 
 <phrase>
@@ -10787,7 +10797,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>This image format is very computationally intensive.  On older or slower PCs, you may want to disable live previews.</original>
-<translation>Compressie is zeer rekenintensief.  Op oudere of tragere PC's kunt u live previews misschien beter uitschakelen.</translation>
+<translation>Compressie is zeer rekenintensief. Op oudere of tragere PC's kunt u live previews misschien beter uitschakelen.</translation>
 </phrase>
 
 <!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -11197,7 +11207,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation></translation>
+<translation>PNG bestanden ondersteunen verschillende compressie strategieën (genaamd "filters").  Slimme filterselectie levert een betere compressie op.  Gebruik de automatische instelling om PhotoDemon meerdere strategieën te laten testen en automatisch de strategie te laten kiezen die de beste compressie oplevert.</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11721,7 +11731,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Some image resampling filters support approximate calculations.  These improve performance at a minor penalty to quality.</original>
-<translation>Sommige filters voor het resamplen van beelden ondersteunen benaderende berekeningen.  Deze verbeteren de prestaties maar gaan ten koste van de kwaliteit.</translation>
+<translation>Sommige filters voor het resamplen van beelden ondersteunen benaderende berekeningen. Deze verbeteren de prestaties maar gaan ten koste van de kwaliteit.</translation>
 </phrase>
 
 <phrase>
@@ -12564,7 +12574,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Lock this value.  (Only one value can be locked at a time.  If you lock a new value, previously locked values will unlock.)</original>
-<translation></translation>
+<translation>Vergrendel deze waarde.  (Er kan slechts één waarde tegelijk worden vergrendeld.  Als u een nieuwe waarde vergrendelt, worden eerder vergrendelde waarden ontgrendeld)</translation>
 </phrase>
 
 <phrase>
@@ -12643,7 +12653,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation>Vullingen ondersteunen veel verschillende stijlen.  Klik om te schakelen tussen effen kleuren, patronen en kleurverlopen.</translation>
+<translation>Vullingen ondersteunen veel verschillende stijlen. Klik om te schakelen tussen effen kleuren, patronen en kleurverlopen.</translation>
 </phrase>
 
 <phrase>
@@ -12653,12 +12663,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation>Normaal gesproken analyseren vullingsbewerkingen de hele afbeelding.  U kunt ook alleen de actieve laag analyseren.</translation>
+<translation>Normaal gesproken analyseren vullingsbewerkingen de hele afbeelding. U kunt ook alleen de actieve laag analyseren.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation>Normaal spreiden de vullingen zich uit vanaf een doelpixel, waarbij aangrenzende pixels worden toegevoegd.  U kunt het ook zo instellen dat de gehele afbeelding wordt geanalyseerd, zonder rekening te houden met de continuïteit.</translation>
+<translation>Normaal spreiden de vullingen zich uit vanaf een doelpixel, waarbij aangrenzende pixels worden toegevoegd. U kunt het ook zo instellen dat de gehele afbeelding wordt geanalyseerd, zonder rekening te houden met de continuïteit.</translation>
 </phrase>
 
 <phrase>
@@ -12935,7 +12945,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
-<translation>Selecties selecteren normaal gesproken het gebied binnen hun grenzen, maar u kunt dit gedrag hier wijzigen.  (Gebruik het menu Selecteren voor geavanceerde aanpassingen aan het selectiegebied)</translation>
+<translation>Selecties selecteren normaal gesproken het gebied binnen hun grenzen, maar u kunt dit gedrag hier wijzigen. (Gebruik het menu Selecteren voor geavanceerde aanpassingen aan het selectiegebied)</translation>
 </phrase>
 
 <phrase>
@@ -12945,7 +12955,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation></translation>
+<translation>Dit bevederingsschuiver zorgt voor onmiddellijke aanpassingen van de bevedering. Vanwege de prestaties, is het beperkt tot kleine radiaties. Voor een grotere bevederingsradiatie, gebruik je het Selecteren -> bevedering menu.</translation>
 </phrase>
 
 <phrase>
@@ -12955,7 +12965,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
-<translation>Dit paneel kan automatisch worden geopend wanneer u een selectie bewerkt of maakt.  Op kleinere schermen kan dit niet nuttig zijn als het een te groot deel van het canvas aan het oog onttrekt, dus kunt u dit gedrag hier uitschakelen.</translation>
+<translation>Dit paneel kan automatisch worden geopend wanneer u een selectie bewerkt of maakt. Op kleinere schermen kan dit niet nuttig zijn als het een te groot deel van het canvas aan het oog onttrekt, dus kunt u dit gedrag hier uitschakelen.</translation>
 </phrase>
 
 <phrase>
@@ -13159,7 +13169,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>This is a basic text layer.  To edit it with the advanced text tool, you must first convert it to an advanced text layer.</original>
-<translation>Dit is een basistekstlaag.  Om deze met het geavanceerde tekstgereedschap te bewerken, moet u deze eerst omzetten in een geavanceerde tekstlaag.</translation>
+<translation>Dit is een basistekstlaag. Om deze met het geavanceerde tekstgereedschap te bewerken, moet u deze eerst omzetten in een geavanceerde tekstlaag.</translation>
 </phrase>
 
 <phrase>
@@ -13296,7 +13306,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation>Dit zal alle sneltoetsbewerkingen overschrijven.  Weet u zeker dat u wilt doorgaan?</translation>
+<translation>Dit zal alle sneltoetsbewerkingen overschrijven. Weet u zeker dat u wilt doorgaan?</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -13448,7 +13458,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation>Deze optionele instellingen kunnen het vertaalproces versnellen.  Ze worden niet opgeslagen in het taalbestand.</translation>
+<translation>Deze optionele instellingen kunnen het vertaalproces versnellen. Ze worden niet opgeslagen in het taalbestand.</translation>
 </phrase>
 
 <phrase>
@@ -13648,7 +13658,7 @@ Download een nieuwe kopie van PhotoDemon via photodemon.org. om verder te gaan</
 
 <phrase>
 <original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation>WAARSCHUWING: dit is geen geldige macro.  Je moet minstens één actie toevoegen die de afbeelding wijzigt.</translation>
+<translation>WAARSCHUWING: dit is geen geldige macro. Je moet minstens één actie toevoegen die de afbeelding wijzigt.</translation>
 </phrase>
 
 <phrase>
@@ -13658,7 +13668,7 @@ Download een nieuwe kopie van PhotoDemon via photodemon.org. om verder te gaan</
 
 <phrase>
 <original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
-<translation>WAARSCHUWING: dit is geen geldige macro.  De laatste actie kan niet plaatsvinden na de eerste actie.</translation>
+<translation>WAARSCHUWING: dit is geen geldige macro. De laatste actie kan niet plaatsvinden na de eerste actie.</translation>
 </phrase>
 
 <phrase>
@@ -14017,7 +14027,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Om transparante pixels te helpen identificeren, verschijnt er een speciaal raster "achter" hen.  Deze instelling wijzigt het uiterlijk van het raster.</translation>
+<translation>Om transparante pixels te helpen identificeren, verschijnt er een speciaal raster "achter" hen. Deze instelling wijzigt het uiterlijk van het raster.</translation>
 </phrase>
 
 <phrase>
@@ -14156,7 +14166,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>De meeste foto-editors gebruiken standaard de map van de huidige afbeelding.  Voor workflows waarbij afbeeldingen uit één map worden geladen maar in een nieuwe map worden opgeslagen, gebruikt u de laatst gebruikte map om tijd te besparen.</translation>
+<translation>De meeste foto-editors gebruiken standaard de map van de huidige afbeelding. Voor workflows waarbij afbeeldingen uit één map worden geladen maar in een nieuwe map worden opgeslagen, gebruikt u de laatst gebruikte map om tijd te besparen.</translation>
 </phrase>
 
 <phrase>
@@ -14171,7 +14181,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>De meeste foto-editors gebruiken standaard de indeling van de huidige foto.  Voor workflows waarbij beelden worden geladen in één formaat (bv. RAW) maar opgeslagen in een nieuw formaat (bv. JPEG), gebruikt u het laatst gebruikte formaat om tijd te besparen.</translation>
+<translation>De meeste foto-editors gebruiken standaard de indeling van de huidige foto. Voor workflows waarbij beelden worden geladen in één formaat (bv. RAW) maar opgeslagen in een nieuw formaat (bv. JPEG), gebruikt u het laatst gebruikte formaat om tijd te besparen.</translation>
 </phrase>
 
 <phrase>
@@ -14278,7 +14288,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>PhotoDemon generates many thumbnail images, especially when images contain multiple layers.  Thumbnail quality can be lowered to improve performance.</original>
-<translation>PhotoDemon genereert veel miniatuurafbeeldingen, vooral wanneer afbeeldingen meerdere lagen bevatten.  De kwaliteit van thumbnails kan worden verlaagd om de prestaties te verbeteren.</translation>
+<translation>PhotoDemon genereert veel miniatuurafbeeldingen, vooral wanneer afbeeldingen meerdere lagen bevatten. De kwaliteit van thumbnails kan worden verlaagd om de prestaties te verbeteren.</translation>
 </phrase>
 
 <phrase>
@@ -14288,7 +14298,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation></translation>
+<translation>Lage compressie-instellingen vereisen meer schijfruimte, maar ongedaan maken/herhalen bewerkingen zullen sneller zijn. Hoge compressie-instellingen vereisen minder schijfruimte, maar ongedaan maken/herhalen bewerkingen zullen trager zijn. Ongedaan maken gegevens worden gewist wanneer afbeeldingen worden gesloten, dus deze instelling beïnvloedt alleen de schijfruimte terwijl afbeeldingen actief worden bewerkt.</translation>
 </phrase>
 
 <!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
@@ -14370,7 +14380,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation></translation>
+<translation>Deze instelling is de beste keuze voor de meeste gebruikers.  Indien je geen idee hebt wat kleurbeheer is, gebruik dan deze instelling. Wanneer je een correct beeldscherm profiel hebt geconfigureerd via het Configuratiescherm van Windows, gebruikt u ook deze instelling.</translation>
 </phrase>
 
 <phrase>
@@ -14395,7 +14405,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>ZPC (Zwartpuntcompensatie) is voornamelijk relevant in colorimetrische renderintenties, waar het helpt om details in donkere (schaduw) gebieden van afbeeldingen te behouden.  Voor de meeste workflows moet ZPC AAN staan.</translation>
+<translation>ZPC (Zwartpuntcompensatie) is voornamelijk relevant in colorimetrische renderintenties, waar het helpt om details in donkere (schaduw) gebieden van afbeeldingen te behouden. Voor de meeste workflows moet ZPC AAN staan.</translation>
 </phrase>
 
 <phrase>
@@ -14477,7 +14487,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation></translation>
+<translation>Een van de beste manieren om PhotoDemon te ondersteunen is om nieuwe releases te helpen testen. Standaard zal PhotoDemon zowel stabiele als bètaversies suggereren, maar de echte avonturiers kunnen ook ontwikkelaarsversies proberen. (Ontwikkelaarsversies geven u directe toegang tot de nieuwste programmaverbeteringen, maar u kunt enkele bugs tegenkomen.)</translation>
 </phrase>
 
 <phrase>
@@ -14489,7 +14499,9 @@ Weet je zeker dat je door wilt gaan?</translation>
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation></translation>
+<translation>U hebt PhotoDemon in een beveiligde systeemmap geplaatst.  Beveiligingsmaatregelen voorkomen dat PhotoDemon deze map wijzigt, dus automatische updates zijn nu uitgeschakeld.  Om ze te herstellen, moet u PhotoDemon verplaatsen naar een niet-beheerdersmap, zoals Bureaublad, Documenten of Downloads.
+
+(Als u PhotoDemon laat waar het is, vergeet dan niet van tijd tot tijd photodemon.org te bezoeken om te controleren op nieuwe versies)</translation>
 </phrase>
 
 <phrase>
@@ -14540,7 +14552,7 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation></translation>
+<translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt opgegeven, gebruikt PhotoDemon de tijdelijke systeemmap.</translation>
 </phrase>
 
 <phrase>
@@ -14550,7 +14562,7 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation></translation>
+<translation>In ontwikkelaarsversies worden debug-gegevens automatisch gelogd in de map \Data\Debug van het programma.  Als u bugs tegenkomt in een stabiele release, activeer deze instelling dan handmatig.  Dit zal ontwikkelaars helpen uw probleem op te lossen.</translation>
 </phrase>
 
 <phrase>
@@ -14570,7 +14582,7 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Met deze knop worden alle instellingen van PhotoDemon gereset.  Als het programma zich onverwacht gedraagt, kan dit het probleem oplossen.</translation>
+<translation>Met deze knop worden alle instellingen van PhotoDemon gereset. Als het programma zich onverwacht gedraagt, kan dit het probleem oplossen.</translation>
 </phrase>
 
 <!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -14629,7 +14641,7 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation></translation>
+<translation>Wanneer u Remote Desktop of een VM (Virtual Machine) gebruikt, werkt muisinvoer met hoge resolutie mogelijk niet correct.  Dit is een reeds lang bestaande Windows-bug.  In deze situaties kunt u deze instelling gebruiken om het juiste muisgedrag te herstellen.</translation>
 </phrase>
 
 <!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14656,7 +14668,7 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation>Toegangstoetsen (memorabilia) stellen u in staat om door menu's te navigeren met behulp van het toetsenbord.  In de "auto"-modus tonen talen zonder native toegangstoetsen de U.S. Engelse toegangstoets voor elk menu.</translation>
+<translation>Toegangstoetsen (memorabilia) stellen u in staat om door menu's te navigeren met behulp van het toetsenbord. In de "auto"-modus tonen talen zonder native toegangstoetsen de U.S. Engelse toegangstoets voor elk menu.</translation>
 </phrase>
 
 <phrase>
@@ -14708,22 +14720,22 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Oudere camera's en fotobewerkingssoftware kunnen metagegevens niet correct insluiten, wat leidt tot meerdere kopieën van metagegevens in één bestand.  PhotoDemon kan dubbele vermeldingen automatisch voor u oplossen.</translation>
+<translation>Oudere camera's en fotobewerkingssoftware kunnen metagegevens niet correct insluiten, wat leidt tot meerdere kopieën van metagegevens in één bestand. PhotoDemon kan dubbele vermeldingen automatisch voor u oplossen.</translation>
 </phrase>
 
 <phrase>
 <original>The JPEG format does not provide a way to store JPEG quality settings inside image files.  PhotoDemon can work around this by inferring quality settings from other metadata (like quantization tables).</original>
-<translation>Het JPEG-formaat biedt geen manier om JPEG-kwaliteitsinstellingen in afbeeldingsbestanden op te slaan.  PhotoDemon kan dit omzeilen door kwaliteitsinstellingen af te leiden uit andere metadata (zoals kwantiseringstabellen).</translation>
+<translation>Het JPEG-formaat biedt geen manier om JPEG-kwaliteitsinstellingen in afbeeldingsbestanden op te slaan. PhotoDemon kan dit omzeilen door kwaliteitsinstellingen af te leiden uit andere metadata (zoals kwantiseringstabellen).</translation>
 </phrase>
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Sommige camerafabrikanten slaan eigen metadatatags op in beeldbestanden.  Deze tags zijn over het algemeen niet bruikbaar voor mensen, maar PhotoDemon kan toch proberen ze te extraheren.</translation>
+<translation>Sommige camerafabrikanten slaan eigen metadatatags op in beeldbestanden. Deze tags zijn over het algemeen niet bruikbaar voor mensen, maar PhotoDemon kan toch proberen ze te extraheren.</translation>
 </phrase>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation></translation>
+<translation>Standaard worden grote binaire tags (zoals miniaturen van afbeeldingen) niet verwerkt.  In plaats daarvan rapporteert PhotoDemon alleen de grootte van de ingesloten gegevens.  Als u deze gegevens nodig hebt, kan PhotoDemon ze handmatig converteren naar Base64 voor verdere analyse.</translation>
 </phrase>
 
 <phrase>
@@ -14733,7 +14745,7 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <phrase>
 <original>The EXIF specification asks programs to correctly identify themselves as the software of origin when exporting image files.  For increased privacy, you can suspend this behavior.</original>
-<translation>De EXIF-specificatie vraagt programma's om zichzelf correct te identificeren als de software van herkomst bij het exporteren van beeldbestanden.  Voor meer privacy kunt u dit gedrag opschorten.</translation>
+<translation>De EXIF-specificatie vraagt programma's om zichzelf correct te identificeren als de software van herkomst bij het exporteren van beeldbestanden. Voor meer privacy kunt u dit gedrag opschorten.</translation>
 </phrase>
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
