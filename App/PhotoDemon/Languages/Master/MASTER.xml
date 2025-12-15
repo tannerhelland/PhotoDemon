@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2025.4.157</langversion>
+		<langversion>2025.12.0</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -5495,11 +5495,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Third-party libraries</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Developers</original>
 <translation></translation>
 </phrase>
@@ -5736,6 +5731,11 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>PhotoDemon website</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Third-party libraries</original>
 <translation></translation>
 </phrase>
 
