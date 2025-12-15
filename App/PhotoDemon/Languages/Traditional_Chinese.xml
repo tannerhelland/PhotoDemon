@@ -6,8 +6,8 @@
 
 <langid>zh-TW</langid>
 <langname>正體中文</langname>
-<langversion>2025.4.108</langversion>
-<langstatus>Translation completed on 2025/10/29 (bulid 135)</langstatus>
+<langversion>2025.12</langversion>
+<langstatus>Translation completed on 2025/12/1 (bulid 135)</langstatus>
 
 <author>昇</author>
 
@@ -110,7 +110,7 @@
 
 <phrase>
 <original>Batch wizard</original>
-<translation>批處理向導</translation>
+<translation>批處理嚮導</translation>
 </phrase>
 
 <phrase>
@@ -250,12 +250,12 @@
 
 <phrase>
 <original>Crop</original>
-<translation>裁剪</translation>
+<translation>裁切</translation>
 </phrase>
 
 <phrase>
 <original>Trim empty image borders</original>
-<translation>修剪圖像透明邊</translation>
+<translation>修剪空白圖像邊界</translation>
 </phrase>
 
 <phrase>
@@ -465,17 +465,17 @@
 
 <phrase>
 <original>Show all layers</original>
-<translation>顯示所有層</translation>
+<translation>顯示全圖層</translation>
 </phrase>
 
 <phrase>
 <original>Hide all layers</original>
-<translation>隱藏所有層</translation>
+<translation>隱藏全圖層</translation>
 </phrase>
 
 <phrase>
 <original>Crop layer to selection</original>
-<translation>裁剪圖層到選區</translation>
+<translation>將圖層裁切至選取範圍</translation>
 </phrase>
 
 <phrase>
@@ -485,7 +485,7 @@
 
 <phrase>
 <original>Trim empty layer borders</original>
-<translation>修剪空圖層邊框</translation>
+<translation>修剪空白圖層邊界</translation>
 </phrase>
 
 <phrase>
@@ -595,37 +595,37 @@
 
 <phrase>
 <original>Remove selection</original>
-<translation>刪除選區</translation>
+<translation>移除選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Invert selection</original>
-<translation>反轉選區</translation>
+<translation>顛倒選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Grow selection</original>
-<translation>增加選區</translation>
+<translation>擴展選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Shrink selection</original>
-<translation>縮小選區</translation>
+<translation>收縮選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Border selection</original>
-<translation>邊界選取</translation>
+<translation>選取範圍邊界</translation>
 </phrase>
 
 <phrase>
 <original>Feather selection</original>
-<translation>羽化選區</translation>
+<translation>羽化選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Sharpen selection</original>
-<translation>銳化選區</translation>
+<translation>銳化選取範圍</translation>
 </phrase>
 
 <phrase>
@@ -645,17 +645,17 @@
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation>描邊選區大綱</translation>
+<translation>描繪選取範圍邊框</translation>
 </phrase>
 
 <phrase>
 <original>Load selection</original>
-<translation>載入選區</translation>
+<translation>讀取選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Save selection</original>
-<translation>保存選區</translation>
+<translation>保存選取範圍</translation>
 </phrase>
 
 <phrase>
@@ -665,7 +665,7 @@
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation>匯出選區遮罩成圖像</translation>
+<translation>將選取範圍的遮罩匯出為圖像</translation>
 </phrase>
 
 <phrase>
@@ -1429,12 +1429,13 @@
 
 <phrase>
 <original>Please wait while the tag database is created</original>
-<translation>請稍候，正在創建標簽數據庫</translation>
+<translation>請稍候，正在創建標簽資料庫</translation>
 </phrase>
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>標籤資料庫處理 PhotoDemon 支援的 20,000 多個元數據標籤的技術細節。建立資料庫需要10到15秒，第一次使用元數據編輯器時只需要建立一次。</translation>
+<translation>標籤資料庫處理 PhotoDemon 支援的 20,000 多項元數據標籤的技術細節。
+建立資料庫需要10到15秒，第一次使用元數據編輯器時只需要建立一次。</translation>
 </phrase>
 
 <phrase>
@@ -1468,9 +1469,9 @@
 <original>Before lossless copies can be saved, you must save this image at least once.
 
 Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation>在儲存無損副本之前，您必須至少儲存該圖像一次。
+<translation>在儲存無失真副本之前，您必須至少儲存該圖像一次。
 
-無損副本將保存到與初始圖像的同資料夾中。</translation>
+無失真副本將保存到與此初始圖像的同資料夾中。</translation>
 </phrase>
 
 <phrase>
@@ -1691,17 +1692,19 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
-<translation>圖像已被智慧裁剪。 自動裁剪被放棄。 （未對圖像進行任何更改。）</translation>
+<translation>圖像已進行智慧裁切。
+自動裁切已中止。
+（圖像未做任何變更。）</translation>
 </phrase>
 
 <phrase>
 <original>Cropping image</original>
-<translation>裁剪圖像</translation>
+<translation>正在裁切圖像</translation>
 </phrase>
 
 <phrase>
 <original>No active selection found.  Crop abandoned.</original>
-<translation>未找到無作用中選區，裁剪被放棄</translation>
+<translation>找不到作用中的選取範圍。裁切已中止。</translation>
 </phrase>
 
 <phrase>
@@ -1726,7 +1729,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Image is fully transparent.  Trim abandoned.</original>
-<translation>圖像是完全透明的，修剪被放棄。</translation>
+<translation>圖像完全透明。修剪已中止。</translation>
 </phrase>
 
 <phrase>
@@ -1736,7 +1739,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Trimming image</original>
-<translation>修剪圖像</translation>
+<translation>正在修剪圖像</translation>
 </phrase>
 
 <!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -2167,7 +2170,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>New layer from selection</original>
-<translation>從選區新建圖層</translation>
+<translation>從選取範圍建立新圖層</translation>
 </phrase>
 
 <phrase>
@@ -2398,7 +2401,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 (Press No to continue recording.)</original>
 <translation>該巨集不包含任何可記錄的動作。要停止記錄嗎？
 
-（按否繼續紀錄。）</translation>
+（按否繼續記錄。）</translation>
 </phrase>
 
 <phrase>
@@ -2420,8 +2423,8 @@ Please verify that these image(s) exist, and that they use a supported image for
 <original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
 
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>如果您沒有保存該巨集，所有的行動，在這個會議記錄將永久丟失。您確定要取消嗎？
-（按「取消」返回到保存巨集螢幕。請注意，您可以刪除這個巨集以後如果你決定你不想要它。）</translation>
+<translation>如果您沒有保存此巨集，本次工作階段期間的所有操作記錄都會永久遺失。您確定要取消嗎？
+（按「否」返回「儲存巨集」畫面。請注意，如果您以後不想保留此巨集，可以隨時刪除。）</translation>
 </phrase>
 
 <phrase>
@@ -3123,7 +3126,7 @@ Description: %2
 
 <phrase>
 <original>Modify selection</original>
-<translation>修改選區</translation>
+<translation>修改選取範圍</translation>
 </phrase>
 
 <phrase>
@@ -3255,22 +3258,22 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>此操作需要一個活動的選區。繼續之前，請創建一個選區。</translation>
+<translation>此操作需要選取目標。請先建立一個選取範圍再繼續。</translation>
 </phrase>
 
 <phrase>
 <original>Export selection as image</original>
-<translation>匯出選區為圖像</translation>
+<translation>匯出選取範圍為圖像</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon selection</original>
-<translation>PhotoDemon選區</translation>
+<translation>PhotoDemon 選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Load a previously saved selection</original>
-<translation>載入先前保存的選區</translation>
+<translation>讀取之前存檔的選取範圍</translation>
 </phrase>
 
 <phrase>
@@ -3280,69 +3283,69 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Loading selection</original>
-<translation>載入選擇</translation>
+<translation>正在讀取選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Selection loaded successfully</original>
-<translation>載入選擇完成</translation>
+<translation>選取範圍已完成讀取</translation>
 </phrase>
 
 <phrase>
 <original>Save the current selection</original>
-<translation>保存目前選擇</translation>
+<translation>保存目前選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Selection saved.</original>
-<translation>保存選擇</translation>
+<translation>選取範圍已儲存</translation>
 </phrase>
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>未知錯誤，選擇沒有保存，請重試。</translation>
+<translation>發生未知錯誤。選取範圍未儲存。請再試一次。</translation>
 </phrase>
 
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
-<translation>選擇反轉完成</translation>
+<translation>顛倒選取範圍完成</translation>
 </phrase>
 
 <phrase>
 <original>Feathering selection</original>
-<translation>羽化選擇</translation>
+<translation>正在羽化選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Feathering complete.</original>
-<translation>羽化完成。</translation>
+<translation>羽化正好完成。</translation>
 </phrase>
 
 <phrase>
 <original>Sharpening selection</original>
-<translation>銳化選擇</translation>
+<translation>銳化選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Growing selection</original>
-<translation>組選擇</translation>
+<translation>正在擴展選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Selection resize complete.</original>
-<translation>選擇調整大小完成。</translation>
+<translation>選取範圍調整大小完成。</translation>
 </phrase>
 
 <phrase>
 <original>Shrinking selection</original>
-<translation>收縮選擇</translation>
+<translation>正在收縮選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Finding selection border</original>
-<translation>尋找選區邊界</translation>
+<translation>尋找選取範圍邊界</translation>
 </phrase>
 
 <!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -3351,7 +3354,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Create selection</original>
-<translation>創建選區</translation>
+<translation>創建範圍邊界</translation>
 </phrase>
 
 <phrase>
@@ -3877,7 +3880,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Building color lookup</original>
-<translation>構建顏色查找</translation>
+<translation>顏色查找 構建中</translation>
 </phrase>
 
 <phrase>
@@ -4315,7 +4318,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Batch process</original>
-<translation>批量加工</translation>
+<translation>批量處理</translation>
 </phrase>
 
 <phrase>
@@ -4330,7 +4333,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Show in file manager</original>
-<translation>在資源管理器中打開位置</translation>
+<translation>在檔案總管中顯示</translation>
 </phrase>
 
 <phrase>
@@ -5041,7 +5044,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Crop to selection</original>
-<translation>裁剪選擇圖像</translation>
+<translation>裁切選取範圍</translation>
 </phrase>
 
 <phrase>
@@ -5266,7 +5269,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Select</original>
-<translation>選擇</translation>
+<translation>選取</translation>
 </phrase>
 
 <phrase>
@@ -5291,7 +5294,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Border</original>
-<translation>選擇全部</translation>
+<translation>邊界</translation>
 </phrase>
 
 <phrase>
@@ -5301,17 +5304,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Save current selection</original>
-<translation>保存目前選區</translation>
+<translation>保存目前選取範圍</translation>
 </phrase>
 
 <phrase>
 <original>Selected area as image</original>
-<translation>選定區域成圖像</translation>
+<translation>將選取範圍作為圖像</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask as image</original>
-<translation>選擇遮罩圖像</translation>
+<translation>將選取遮罩作為圖像</translation>
 </phrase>
 
 <phrase>
@@ -5516,7 +5519,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>From history</original>
-<translation>從記錄歷史</translation>
+<translation>從記錄史</translation>
 </phrase>
 
 <phrase>
@@ -5706,7 +5709,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Image tabstrip</original>
-<translation>圖像選項卡</translation>
+<translation>圖像分頁</translation>
 </phrase>
 
 <phrase>
@@ -5716,7 +5719,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Show when multiple images are loaded</original>
-<translation>打開多個圖像時顯示</translation>
+<translation>打開多張圖像時顯示</translation>
 </phrase>
 
 <phrase>
@@ -6604,12 +6607,15 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Converting monochrome image to grayscale</original>
-<translation>轉換單色圖像到灰度</translation>
+<translation>正在轉換單色圖像到灰階</translation>
 </phrase>
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>像所有的單色到灰度的工具，這個工具會產生一個模糊的圖像。你可以使用效果->銳化->反銳化蒙版的工具來解決這個。（最好的結果是，使用銳化蒙版半徑至少為這個半徑大）</translation>
+<translation>
+與其他單色轉灰階工具一樣，此工具會產生模糊影像。
+您可以使用「特效」->「銳化」->「反銳化遮罩」工具來修復此問題。
+（為獲得最佳效果，請使用至少與此半徑相同的反銳化遮罩半徑。）</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -7875,7 +7881,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>use selection size</original>
-<translation>use selection size</translation>
+<translation>使用選取範圍大小</translation>
 </phrase>
 
 <phrase>
@@ -7996,7 +8002,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation>PhotoDemon不附帶8bf插件，但如果你在網上找到插件，你可以下載它們並將其添加到PhotoDemon中。（PhotoDemon支持大多數32位8bf插件，不支持64位插件）</translation>
+<translation>PhotoDemon不附帶8bf插件，但如果你在網上找到插件，你可以下載它們並將其添加到PhotoDemon中。
+（PhotoDemon支持大多數32位8bf插件，不支持64位插件）</translation>
 </phrase>
 
 <phrase>
@@ -9796,7 +9803,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>attempt to repair video and audio files</original>
-<translation>修復視頻和音頻圖檔</translation>
+<translation>嘗試修復視訊和音訊檔案</translation>
 </phrase>
 
 <phrase>
@@ -10171,7 +10178,8 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
-<translation>歡迎 PhotoDemon 批處理向導。這個工具可以用來同時編輯多個圖像，這就是所謂的「批處理」。</translation>
+<translation>歡迎使用 PhotoDemon 批量處理嚮導。
+這個工具可以用來同時編輯多張圖像，這就是所謂的「批處理」。</translation>
 </phrase>
 
 <phrase>
@@ -10181,7 +10189,9 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>註：「巨集」是一個簡單的照片編輯動作列表。它可以包括任何調整，濾波效果，或在主程序。你可以通過「工具→巨集→錄製新巨集」選單創建一個新的巨集。</translation>
+<translation>注意：「巨集」其實就是一系列照片編輯操作的清單。
+它可以包含主程式中的任何調整、濾鏡或特效。
+您可以使用 PhotoDemon 主視窗選單中的「工具 -> 創建巨集 -> 開始錄製」選單建立新巨集。</translation>
 </phrase>
 
 <phrase>
@@ -10201,7 +10211,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation>1）通過圖像對話框手動添加一個或多個圖像圖檔。</translation>
+<translation>1）通過圖像對話框手動添加一個或多個圖像檔案。</translation>
 </phrase>
 
 <phrase>
@@ -10226,7 +10236,8 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>如果「保持圖像的原始格式」被選中，PhotoDemon將嘗試保存每個圖像的原始格式。如果不支持原始格式，以標準格式（JPEG或PNG，根據顏色深度）將被使用。</translation>
+<translation>如果「保持圖像的原始格式」被選中，PhotoDemon將嘗試保存每個圖像的原始格式。
+如果不支持原始格式，以標準格式（JPEG或PNG，根據顏色深度）將被使用。</translation>
 </phrase>
 
 <phrase>
@@ -10276,7 +10287,8 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation>您可以在任何時候按「取消」按鈕，在右下角取消批處理。如果您選擇取消，任何處理的圖像仍然會出現在輸出資料夾，所以你可能需要手動刪除它們。</translation>
+<translation>您可以在任何時候按「取消」按鈕，在右下角取消批處理。
+如果您選擇取消，任何處理的圖像仍然會出現在輸出資料夾，所以你可能需要手動刪除它們。</translation>
 </phrase>
 
 <phrase>
@@ -10286,7 +10298,8 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
-<translation>您還沒有選擇任何圖像圖檔。請在保存前添加一個或多個圖檔到批處理列表。</translation>
+<translation>您還沒有選擇任何圖像圖檔。
+請在保存前添加一個或多個圖檔到批處理列表。</translation>
 </phrase>
 
 <phrase>
@@ -10341,7 +10354,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>（具體地，JPEG在92％品質為照片，和無損的PNG用於非照片）</translation>
+<translation>（具體來說，攝影照片為 92% 品質的 JPEG 格式，非攝影照片為 無失真 PNG 格式）</translation>
 </phrase>
 
 <phrase>
@@ -10376,7 +10389,8 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation>批量轉換已取消，在  %1 之前取消處理圖像，最後處理的圖像是 "%2"。</translation>
+<translation>批量轉換已取消。
+取消前已處理 %1 張圖像。最後處理的圖像是【%2】。</translation>
 </phrase>
 
 <phrase>
@@ -10699,7 +10713,8 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>有些程序（包括 Windows 應用商店程序）不允許直接螢幕捕獲，如果一個應用程序預覽顯示為黑色，請您需要截取一個完整的桌面截圖，然後手動裁剪所需的視窗區域。</translation>
+<translation>有些程式（包括 Windows 市集應用程式）不允許直接擷取螢幕畫面。
+如果應用程式預覽顯示為黑色方塊，您將需要截取完整的桌面螢幕畫面，然後手動裁切所需的視窗區域。</translation>
 </phrase>
 
 <phrase>
@@ -11444,7 +11459,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
-<translation>注意：調整它在此之前操作將拼合圖像。</translation>
+<translation>注意：此操作將在調整圖像大小之前先拼合圖像。</translation>
 </phrase>
 
 <phrase>
@@ -11466,7 +11481,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>add this to the "Adjustments > Color > Color lookup" tool</original>
-<translation>將此添加到「調整>顏色查找」工具</translation>
+<translation>將此添加到「圖像調整 > 色彩 > 顏色查找」工具</translation>
 </phrase>
 
 <phrase>
@@ -11725,7 +11740,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>以完整貼合方式顯示，必要時加入透明邊框</translation>
+<translation>以完整貼合方式顯示，必要時加入透明邊界</translation>
 </phrase>
 
 <phrase>
@@ -11747,7 +11762,7 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
 <translation>在更改圖像的長寬比時，可能會出現不希望的拉伸。
-PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</translation>
+PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</translation>
 </phrase>
 
 <phrase>
@@ -11845,7 +11860,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 
 <phrase>
 <original>flatten behavior</original>
-<translation>合並操作</translation>
+<translation>合併操作</translation>
 </phrase>
 
 <phrase>
@@ -12189,17 +12204,18 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation>您指定的「安全」的保存方式，這意味著每個省將創建一個新圖檔，圖檔名自動遞增。</translation>
+<translation>您已指定「安全」儲存模式，這表示每次儲存都會建立一個帶有自動遞增檔名的新檔案。</translation>
 </phrase>
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation>使用該快速保存目前圖像的無損複製。無損複製將保存在PDI的格式，在圖像的目前資料夾，使用目前圖檔名（加上一個自動增加的數量，如有）。</translation>
+<translation>使用此功能可快速儲存目前圖像的無失真副本。
+該無失真副本將以 PDI 格式，儲存於圖像的目前資料夾中，並使用目前檔名（必要時加上自動遞增的數字）。</translation>
 </phrase>
 
 <phrase>
 <original>Save lossless copy</original>
-<translation>保存無損複製</translation>
+<translation>保存無失真副本</translation>
 </phrase>
 
 <phrase>
@@ -12590,7 +12606,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation>允許裁切影像邊界外的部分（這將放大影像）。</translation>
+<translation>允許在圖像邊界外進行裁切（這將會放大圖像）。</translation>
 </phrase>
 
 <phrase>
@@ -12872,7 +12888,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 
 <phrase>
 <original>area</original>
-<translation>選擇範圍</translation>
+<translation>區域</translation>
 </phrase>
 
 <phrase>
@@ -12902,12 +12918,12 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Subtract from selection</original>
-<translation>從選區減去</translation>
+<translation>從選取範圍中減去</translation>
 </phrase>
 
 <phrase>
 <original>Intersect with selection</original>
-<translation>與選區相交</translation>
+<translation>與選取範圍相交</translation>
 </phrase>
 
 <phrase>
@@ -12927,7 +12943,7 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 
 <phrase>
 <original>feathered</original>
-<translation>羽化</translation>
+<translation>已羽化</translation>
 </phrase>
 
 <phrase>
@@ -12947,33 +12963,35 @@ PhotoDemon 可以透過加入空白邊框或進行裁切來避免此問題。</t
 
 <phrase>
 <original>This option controls how smoothly selection edges blend with their surroundings.</original>
-<translation>此控制選項決定選區邊線如何平滑地與周圍環境融合。</translation>
+<translation>此選項控制選取範圍邊緣與其周圍環境的融合平滑度。</translation>
 </phrase>
 
 <phrase>
 <original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
-<translation>這些選項控制受選擇的區域。選擇可以修改的畫布上，而所有的這些設置是活動的。對於更進階的選擇進行調整，使用選擇選單。</translation>
+<translation>選取範圍通常會選取其邊界內的區域，但您可以在此修改此行為。
+(如需進階的選取範圍調整，請使用「選取」選單。)</translation>
 </phrase>
 
 <phrase>
 <original>This option adjusts the width of the selection border.</original>
-<translation>此選項調整選區邊框的寬度。</translation>
+<translation>此選項用於調整選取範圍邊界的寬度。</translation>
 </phrase>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>此羽化滑塊就可以立即羽化調整。由於性能的原因，它被限製為小半徑。對於較大的羽化半徑，請使用選擇 - >羽化選單。</translation>
+<translation>此羽化滑桿允許即時調整羽化程度。基於效能考量，它僅限於小半徑。
+如需更大的羽化半徑，請使用「選取」->「羽化」選單。</translation>
 </phrase>
 
 <phrase>
 <original>This option adjusts the roundness of a rectangular selection's corners.</original>
-<translation>此選項調整的一個矩形選區的邊角的圓度。</translation>
+<translation>此選項用於調整矩形選取範圍角落的圓度。</translation>
 </phrase>
 
 <phrase>
 <original>This panel can automatically open when you edit or create a selection.  On smaller screens, this may not be helpful if obscures too much of the canvas, so you can disable this behavior here.</original>
-<translation>此面板可在你編輯或建立選取區時自動開啟。
-在較小的螢幕上，如果面板遮擋了過多畫布，可能會影響操作，因此你可以在此停用此功能。</translation>
+<translation>當您編輯或創建選取範圍時，此面板可自動開啟。
+在較小的螢幕上，如果它遮擋了過多的畫布，可能並無幫助，因此您可以在此停用此行為。</translation>
 </phrase>
 
 <phrase>
@@ -13652,7 +13670,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Create macro from session history</original>
-<translation>從工作階段紀錄史建立巨集</translation>
+<translation>從工作階段記錄史創建巨集</translation>
 </phrase>
 
 <phrase>
@@ -13849,7 +13867,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>與 Windows 7 不相容</translation>
 </phrase>
 
 <phrase>
@@ -14010,7 +14028,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>貼上新圖層後，啟動移動工具</translation>
 </phrase>
 
 <phrase>
@@ -14057,7 +14075,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>當圖像來自外部來源（如 Windows檔案總管）時。</translation>
+<translation>當圖像是從外部來源時（如 Windows檔案總管）。</translation>
 </phrase>
 
 <phrase>
