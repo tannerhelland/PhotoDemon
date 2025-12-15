@@ -2424,7 +2424,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
     ' it can compare its version against this value, to infer if an update occurred.
     PDDebug.LogAction "Writing session data to file..."
-    UserPrefs.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
+    UserPrefs.SetPref_String "Core", "LastRunVersion", Updates.GetPhotoDemonVersionCanonical()
     
     'All core PD functions appear to have terminated correctly, so notify the Autosave handler
     ' that this session was clean.  (One exception to this rule is if this is a system-initiated shutdown,
@@ -2517,10 +2517,10 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 
                 If updateAvailable Then
                     Message "A new version of PhotoDemon is available.  The update is automatically processing in the background..."
-                    PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly Or vbInformation, "PhotoDemon Updates"
                 Else
                     Message "This copy of PhotoDemon is up to date."
-                    PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly Or vbInformation, "PhotoDemon Updates", VBHacks.AppMajor_Safe(), VBHacks.AppMinor_Safe(), VBHacks.AppRevision_Safe()
                 End If
                 
                 'If the update managed to download while the reader was staring at the message box,

@@ -625,7 +625,7 @@ Friend Sub CheckAvailableLanguages()
     m_AvailableLanguages(m_numOfLanguages).LangName = "English (US)"
     m_AvailableLanguages(m_numOfLanguages).LangType = "Default"
     m_AvailableLanguages(m_numOfLanguages).LangStatus = "Complete"
-    m_AvailableLanguages(m_numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
+    m_AvailableLanguages(m_numOfLanguages).langVersion = VBHacks.AppMajor_Safe() & "." & VBHacks.AppMinor_Safe() & "." & VBHacks.AppRevision_Safe()
     m_AvailableLanguages(m_numOfLanguages).IsOfficial = True
     m_numOfLanguages = m_numOfLanguages + 1
     

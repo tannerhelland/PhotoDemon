@@ -363,6 +363,19 @@ Public Function FileGetTimeAsDate(ByRef srcFile As String, Optional ByVal typeOf
     If InitializeFSO Then FileGetTimeAsDate = m_FSO.FileGetTimeAsDate(srcFile, typeOfTime)
 End Function
 
+'Retrieve the version number of an .exe or .dll file.
+' The passed "version index" correlates to 0 = Major, 1 = Minor, 2 = Build, 3 = Revision
+Public Function FileGetVersionAsLong(ByRef srcFile As String, ByVal versionIndex As Long, Optional ByVal getProductVersionInstead As Boolean = True) As Long
+    If InitializeFSO Then
+        If (versionIndex >= 0) And (versionIndex <= 3) Then
+            Dim lVersion(0 To 3) As Long
+            If m_FSO.FileGetVersion(srcFile, lVersion(0), lVersion(1), lVersion(2), lVersion(3), getProductVersionInstead) Then FileGetVersionAsLong = lVersion(versionIndex)
+        Else
+            PDDebug.LogAction "WARNING: Files.FileGetVersionAsLong was passed a bad version index: " & CStr(versionIndex)
+        End If
+    End If
+End Function
+
 Public Function FileLenW(ByRef srcPath As String) As Long
     If InitializeFSO Then FileLenW = m_FSO.FileLenW(srcPath)
 End Function

@@ -135,6 +135,9 @@ Private m_PDIKRef As pdInputKeyboard
 
 Private m_BitFlags(0 To 31) As Long, m_BitFlagsReady As Boolean
 
+'Cached App.Major/Minor/Revision strings; populated upon first access via AppMajor_Fix() and related functions
+Private m_AppMajor As Long, m_AppMinor As Long, m_AppRevision As Long, m_AppVersionRetrieved As Boolean
+
 '"Wrap" an arbitrary VB array at some other arbitrary array.  The new array must *NOT* be initialized
 ' or its memory will leak.
 '
@@ -173,6 +176,33 @@ End Sub
 
 Public Sub Unalias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer)
     PutMem4 VarPtrArray(new2DArray), 0&
+End Sub
+
+'In Dec 2025, I discovered that accessing the App.Major/Minor/Revision properties is enough to crash a VB6 app
+' if the source folder containing the .exe has surrogate pair Unicode chars in its name.  Use these functions
+' to bypass the App object entirely.
+Public Function AppMajor_Safe() As Long
+    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+    AppMajor_Safe = m_AppMajor
+End Function
+
+Public Function AppMinor_Safe() As Long
+    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+    AppMinor_Safe = m_AppMinor
+End Function
+
+Public Function AppRevision_Safe() As Long
+    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+    AppRevision_Safe = m_AppRevision
+End Function
+
+Private Sub AppVersionRetrieve()
+    Dim targetFile As String
+    targetFile = Files.AppPathW() & "\Pho" & "toD" & "em" & "on" & "." & "ex" & "e"
+    m_AppMajor = Files.FileGetVersionAsLong(targetFile, 0, True)
+    m_AppMinor = Files.FileGetVersionAsLong(targetFile, 1, True)
+    m_AppRevision = Files.FileGetVersionAsLong(targetFile, 3, True)
+    m_AppVersionRetrieved = True
 End Sub
 
 'Because we can't use the AddressOf operator inside a class module, timer classes will cheat and AddressOf this

@@ -784,7 +784,7 @@ Private Sub CreateNewPreferencesFile()
         .WriteBlankLine
     
         'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
-        .WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
+        .WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by app version " & Updates.GetPhotoDemonVersionCanonical()
         .WriteBlankLine
         
         'New in v8.0 are auto-constructed assets for various tools.  These are just folders of

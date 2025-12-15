@@ -59,6 +59,9 @@ Private m_UserRequestedRestart As Boolean
 ' and raise a notification accordingly.)
 Private m_UpdateReady As Boolean
 
+'Canonical app version; calculated once, on first access, then cached for subsequent calls
+Private m_CanonicalVersion As String
+
 Public Function GetRestartAfterUpdate() As Boolean
     GetRestartAfterUpdate = m_UserRequestedRestart
 End Function
@@ -694,14 +697,15 @@ Public Function GetPhotoDemonVersion() As String
     
     'Strip exact build numbers from production builds; on all other builds, include a text description
     ' (e.g. "alpha" or "beta") and full build number so I can more easily track bug reports.
-    GetPhotoDemonVersion = CStr(App.Major) & "." & CStr(App.Minor)
-    If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then GetPhotoDemonVersion = GetPhotoDemonVersion & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
+    GetPhotoDemonVersion = CStr(VBHacks.AppMajor_Safe()) & "." & CStr(VBHacks.AppMinor_Safe())
+    If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then GetPhotoDemonVersion = GetPhotoDemonVersion & " " & buildStateString & " (build " & CStr(VBHacks.AppRevision_Safe()) & ")"
     
 End Function
 
 'Retrieve PD's current version witout any appended tags (e.g. "beta"), and with a "0" automatically plugged in for build.
 Public Function GetPhotoDemonVersionCanonical() As String
-    GetPhotoDemonVersionCanonical = Trim$(Str$(App.Major)) & "." & Trim$(Str$(App.Minor)) & ".0." & Trim$(Str$(App.Revision))
+    If (LenB(m_CanonicalVersion) = 0) Then m_CanonicalVersion = Trim$(Str$(VBHacks.AppMajor_Safe())) & "." & Trim$(Str$(VBHacks.AppMinor_Safe())) & ".0." & Trim$(Str$(VBHacks.AppRevision_Safe()))
+    GetPhotoDemonVersionCanonical = m_CanonicalVersion
 End Function
 
 'Given two version numbers, return TRUE if the second version is larger than the first.
