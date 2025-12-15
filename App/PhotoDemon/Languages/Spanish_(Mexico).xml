@@ -9,7 +9,7 @@
 <langversion>9.0.73</langversion>
 <langstatus>completo</langstatus>
 
-<author>Plinio C Garcia, with help from DeepL.com</author>
+<author>Plinio C Garcia, Miguel Chamorro, DeepL.com</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -80,12 +80,12 @@
 
 <phrase>
 <original>Export image</original>
-<translation></translation>
+<translation>Exportar imagen</translation>
 </phrase>
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Exportar capas</translation>
 </phrase>
 
 <phrase>
@@ -2051,7 +2051,7 @@ Esta imagen contiene %2 colores únicos + valores de opacidad (RGBA).</translati
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>Detrás</translation>
 </phrase>
 
 <phrase>
@@ -2731,17 +2731,17 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>La biblioteca libjxl proporciona compatibilidad JPEG XL de código abierto y gratuita. Una copia portátil de libjxl requerirá ~%1 mb de espacio en disco. Una vez descargado, PhotoDemon puede usar libjxl para cargar y guardar imágenes JPEG XL (incluidas animaciones).</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>¿Le gustaría que PhotoDemon descargue libjxl a su carpeta de complementos de PhotoDemon?</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon no descargará libjxl en este momento.</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -3106,12 +3106,12 @@ Description: %2
 
 <phrase>
 <original>last line justify</original>
-<translation></translation>
+<translation>justificar la última línea</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation></translation>
+<translation>contorno en la parte superior</translation>
 </phrase>
 
 <phrase>
@@ -3599,27 +3599,27 @@ Por favor, introduzca un valor numérico.</translation>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>Esta acción depende de un complemento de terceros (%1). Hay disponible una versión actualizada de este complemento.</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>Su versión: %1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>Nueva versión: %1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>¿Le gustaría que PhotoDemon actualice este complemento por usted?</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>Actualización disponible</translation>
 </phrase>
 
 <phrase>
@@ -4963,12 +4963,12 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>Image to file</original>
-<translation></translation>
+<translation>imagen a archivo</translation>
 </phrase>
 
 <phrase>
 <original>Layers to files</original>
-<translation></translation>
+<translation>Capas a archivos</translation>
 </phrase>
 
 <phrase>
@@ -5603,37 +5603,37 @@ El valor final debe estar entre %3 y %4.</translation>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>Mostrar extras</translation>
 </phrase>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>Bordes de capa</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>Guías inteligentes</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>Ajustar</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>Ajustar a</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>Bordes del lienzo</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>Líneas centrales</translation>
 </phrase>
 
 <phrase>
@@ -7252,12 +7252,12 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>importar ajustes</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>información de archivo</translation>
 </phrase>
 
 <phrase>
@@ -7267,22 +7267,22 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>anotaciones</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>tamaño de documento</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>orden de página inverso</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>páginas a importar</translation>
 </phrase>
 
 <phrase>
@@ -7292,7 +7292,7 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>El rango "%1" no es válido.</translation>
 </phrase>
 
 <phrase>
@@ -7302,22 +7302,22 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>páginas</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>renderizado</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>todas las páginas</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(total %1)</translation>
 </phrase>
 
 <phrase>
@@ -7327,12 +7327,12 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>rango personalizado</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>color sólido</translation>
 </phrase>
 
 <phrase>
@@ -7342,27 +7342,27 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>optimizado para pantallas</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>optimizado para impresión</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 páginas</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>tamaño de página: %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>El tamaño de la página varía (la primera página es %1)</translation>
 </phrase>
 
 <phrase>
@@ -7372,12 +7372,12 @@ La actualización se está procesando automáticamente en segundo plano.  Recibi
 
 <phrase>
 <original>%1 cm x %2 cm</original>
-<translation></translation>
+<translation>%1 cm x%2 cm</translation>
 </phrase>
 
 <phrase>
 <original>%1" x %2"</original>
-<translation></translation>
+<translation>%1" x %2"</translation>
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -9619,7 +9619,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>escorzo personalizado (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9860,12 +9860,12 @@ Los archivos reparados se han guardado en la carpeta de destino.  Los archivos n
 
 <phrase>
 <original>when importing vector images</original>
-<translation></translation>
+<translation>al importar imágenes vectoriales</translation>
 </phrase>
 
 <phrase>
 <original>(optional) advanced import settings</original>
-<translation></translation>
+<translation>ajustes avanzados de importación (opcional)</translation>
 </phrase>
 
 <phrase>
@@ -10309,12 +10309,12 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>use embedded size</original>
-<translation></translation>
+<translation>usar tamaño incrustado</translation>
 </phrase>
 
 <phrase>
 <original>use custom size</original>
-<translation></translation>
+<translation>usar tamaño personalizado</translation>
 </phrase>
 
 <phrase>
@@ -10448,7 +10448,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>esfuerzo</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10479,42 +10479,42 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>capas a exportar</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>carpeta destino</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>tipo de archivo</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>Exportando capa %1 de %2</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>todas las capas</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>capas visibles</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>capa actual</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>nombre de capa</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -10904,12 +10904,12 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>sin pérdidas</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>con pérdida</translation>
 </phrase>
 
 <phrase>
@@ -10941,12 +10941,12 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>icono fuente</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>tratar cada capa como un fotograma de icono único</translation>
 </phrase>
 
 <phrase>
@@ -11097,7 +11097,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>esfuerzo de compresión</translation>
 </phrase>
 
 <phrase>
@@ -12765,7 +12765,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>mostrar distancias</translation>
 </phrase>
 
 <phrase>
@@ -13364,7 +13364,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>phrase types</original>
-<translation></translation>
+<translation>tipos de frases</translation>
 </phrase>
 
 <phrase>
@@ -13374,17 +13374,17 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 
 <phrase>
 <original>message boxes</original>
-<translation></translation>
+<translation>cuadros de mensaje</translation>
 </phrase>
 
 <phrase>
 <original>status bar messages</original>
-<translation></translation>
+<translation>mensajes de la barra de estado</translation>
 </phrase>
 
 <phrase>
 <original>tooltips</original>
-<translation></translation>
+<translation>información adicional</translation>
 </phrase>
 
 <phrase>
@@ -13832,7 +13832,7 @@ A ¿Está seguro de que quiere continuar?</translation>
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation></translation>
+<translation>incompatible con Windows XP</translation>
 </phrase>
 
 <phrase>
@@ -13867,7 +13867,7 @@ A ¿Está seguro de que quiere continuar?</translation>
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>a imagen JPEG XL</translation>
 </phrase>
 
 <phrase>
@@ -14142,7 +14142,7 @@ A ¿Está seguro de que quiere continuar?</translation>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>cuando se use "Guardar como"</translation>
 </phrase>
 
 <phrase>
@@ -14197,17 +14197,17 @@ A ¿Está seguro de que quiere continuar?</translation>
 
 <phrase>
 <original>suggest the current filename (standard behavior)</original>
-<translation></translation>
+<translation>sugerir el nombre del archivo actual (comportamiento estándar)</translation>
 </phrase>
 
 <phrase>
 <original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation></translation>
+<translation>sugerir una nueva copia, p.ej. "nombre de archivo (2).jpg" (comportamiento seguro)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation></translation>
+<translation>En la mayoría de los editores de fotografías, el comando "Guardar como" tiene por defecto el nombre de archivo actual. PhotoDemon también proporciona una opción "más segura", donde Guardar como incrementará automáticamente los nombres de los archivos.</translation>
 </phrase>
 
 <!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
@@ -14617,7 +14617,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>ajustar distancia (en píxeles)</translation>
 </phrase>
 
 <phrase>
