@@ -213,19 +213,20 @@ Attribute VB_Exposed = False
 '8bf Plugin Interface Dialog
 'Copyright 2021-2025 by Tanner Helland
 'Created: 08/February/21
-'Last updated: 10/February/21
-'Last update: flesh out user-defined folder(s) feature
+'Last updated: 15/December/25
+'Last update: if no 8bf files exist, avoid calling pspihost to avoid crashes on some systems
+'             (see https://github.com/tannerhelland/PhotoDemon/issues/716)
 '
 'In v9.0, PD gained support for hosting 3rd-party 8bf (Photoshop) filter plugins.
 '
 'These 3rd-party filters represent a problematic workflow, since each plugin's UI is controlled by the
 ' plugins themselves, so PD has no notification of plugin behavior after "execute-plugin" is invoked.
-' (We can sort of infer if OK is pressed if the progress callback is hit, but as you can image this
+' (We can sort of infer if OK is pressed if the progress callback is hit, but as you can imagine this
 ' isn't an ideal place to invoke a bunch of heavy behavior like Undo/Redo flagging.)
 '
 'Anyway, I mention all this because this dialog breaks a lot of PD conventions in how it handles
-' interactions with various program components.  Please do not mimic this behavior elsewhere; it is
-' intentionally specific to this very weird, specific use-case.
+' interactions with various program components.  Please do not mimic this behavior elsewhere;
+' it is intentionally specific to this very weird, specific use-case.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -480,7 +481,7 @@ Private Sub ScanForPlugins()
         pnlOptions(i).Visible = (i = 2)
     Next i
     
-    'Next, we need to build an initial 8bf collection
+    'Next, we need to build an initial 8bf collection.
         
     'Load any previously saved filter databases (TODO)
     
@@ -510,32 +511,50 @@ Private Sub ScanForPlugins()
     ' Note that not all of these may be useable for reasons outside our control (e.g. 64-bit, etc).
     
     'Set the progress bar maximum to the number of 8bf files found
-    prgUpdate.Max = listOfFiles.GetNumOfStrings()
+    Dim num8bfCandidates As Long
+    num8bfCandidates = listOfFiles.GetNumOfStrings()
+    prgUpdate.Max = num8bfCandidates
     
     'Compare filter databases to a quick enumeration of 8bf files in the target folders (TODO).
     ' The goal here is to skip manual enumeration of DLLs we've already seen in the past.
     
     'If no filter database exists, do a first-time enumeration in the default folder.
     
-    'Enumerate plugins in all target folders
+    'UPDATE DEC 2025: previously, I handed off all folders to pspihost here and let it do its thing.
+    ' But per https://github.com/tannerhelland/PhotoDemon/issues/716, some users are seeing crashes
+    ' even when *zero* 8bf files exist in the target folder.
+    '
+    'pspihost's code is thorny and apparently no longer maintained, so rather than mess with it,
+    ' I'm just going to bypass it completely if no candidate 8bf files exist.
     Dim numPlugins As Long
-    For i = 0 To listOfFolders.GetNumOfStrings - 1
-        numPlugins = numPlugins + Plugin_8bf.EnumerateAvailable8bf(listOfFolders.GetString(i), prgUpdate)
-    Next i
-    
-    If (numPlugins > 0) Then
-    
-        'Sort filters alphabetically (first by category, then by filter name)
-        Plugin_8bf.SortAvailable8bf
+    If (num8bfCandidates > 0) Then
         
-    'No plugins found!  An informative link or explanation would be nice...
+        'Enumerate plugins in all target folder(s)
+        For i = 0 To listOfFolders.GetNumOfStrings - 1
+            numPlugins = numPlugins + Plugin_8bf.EnumerateAvailable8bf(listOfFolders.GetString(i), prgUpdate)
+        Next i
+        
+        'Sort filters alphabetically (first by category, then by filter name)
+        If (numPlugins > 0) Then
+            Plugin_8bf.SortAvailable8bf
+            
+        'No plugins found!  An informative link or explanation would be nice...
+        Else
+            'TODO
+        End If
+        
     Else
-        'TODO
+        numPlugins = 0
     End If
     
     'If any plugins exist, retrieve their categories, names, and paths now
     Dim cat8bf As pdStringStack, name8bf As pdStringStack, path8bf As pdStringStack
-    m_numPlugins = Plugin_8bf.GetEnumerationResults(cat8bf, name8bf, path8bf)
+    
+    If (numPlugins > 0) Then
+        m_numPlugins = Plugin_8bf.GetEnumerationResults(cat8bf, name8bf, path8bf)
+    Else
+        m_numPlugins = 0
+    End If
     
     'Prep our internal plugin table to match
     If (m_numPlugins < 0) Then m_numPlugins = 0
