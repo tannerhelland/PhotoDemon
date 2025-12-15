@@ -1580,7 +1580,7 @@ Ja problēma saglabājas, lūdzu, ziņojiet par to PhotoDemon izstrādātājiem,
 
 <phrase>
 <original>Carving image relief</original>
-<translation></translation>
+<translation>Grebšanas attēla reljefs</translation>
 </phrase>
 
 <!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -1783,17 +1783,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>Atpakaļ</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Cilne</translation>
 </phrase>
 
 <phrase>
 <original>Escape</original>
-<translation></translation>
+<translation>Bēgšana</translation>
 </phrase>
 
 <phrase>
@@ -2293,22 +2293,22 @@ Lūdzu, aizveriet šo failu visās citās darbojošās programmās un pēc tam m
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>Šim failam ir paplašinājums "%1", bet patiesībā tas ir formātā "%2".</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>Vai PhotoDemon var pārdēvēt failu ar pareizu paplašinājumu?</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>(Ja izvēlaties "Jā", faila nosaukums tiks mainīts uz "%1")</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>Slikts faila paplašinājums</translation>
 </phrase>
 
 <phrase>
@@ -2351,7 +2351,7 @@ Lūdzu, izmantojiet citu programmu, lai saglabātu šo attēlu vispārīgā form
 
 <phrase>
 <original>Importing %1</original>
-<translation></translation>
+<translation>Importēt %1</translation>
 </phrase>
 
 <phrase>
@@ -2361,7 +2361,7 @@ Lūdzu, izmantojiet citu programmu, lai saglabātu šo attēlu vispārīgā form
 
 <phrase>
 <original>A third-party library (%1) reported the following error</original>
-<translation></translation>
+<translation>Trešās puses bibliotēka (%1) ziņoja par šādu kļūdu</translation>
 </phrase>
 
 <phrase>
@@ -2750,12 +2750,14 @@ Lai iespējotu skenera atbalstu, lūdzu, nokopējiet EZTW32.dll failu (lejupiel�
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation></translation>
+<translation>Trūkst nepieciešamās trešās puses bibliotēkas (%1) vai tā ir atspējota.
+
+Lai iespējotu šo funkciju, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju vai atjaunojiet trūkstošo bibliotēku.</translation>
 </phrase>
 
 <phrase>
 <original>Error: %1</original>
-<translation></translation>
+<translation>Kļūda: %1</translation>
 </phrase>
 
 <phrase>
@@ -3426,7 +3428,7 @@ Lūdzu, ievadiet skaitlisku vērtību.</translation>
 
 <phrase>
 <original>Crop tool</original>
-<translation></translation>
+<translation>Apcirpšanas rīks</translation>
 </phrase>
 
 <!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3812,7 +3814,7 @@ Jums būs nepieciešams manuāli lejupielādēt šo failu, izmantojot interneta 
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
+<translation>Atmiņas izmantošana šķiet augsta; pirms turpināšanas daļa datu tiek saglabāta diskā</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -4332,7 +4334,7 @@ Jums būs nepieciešams manuāli lejupielādēt šo failu, izmantojot interneta 
 
 <phrase>
 <original>Center image in viewport</original>
-<translation></translation>
+<translation>Attēla centrēšana skata logā</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -5533,7 +5535,7 @@ Galīgajai vērtībai jābūt starp %3 un %4.</translation>
 
 <phrase>
 <original>Keyboard shortcuts</original>
-<translation></translation>
+<translation>Tastatūras saīsnes</translation>
 </phrase>
 
 <phrase>
@@ -5553,7 +5555,7 @@ Galīgajai vērtībai jābūt starp %3 un %4.</translation>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>Šīs sesijas atkļūdošanas žurnāla skatīšana</translation>
 </phrase>
 
 <phrase>
@@ -5643,17 +5645,17 @@ Galīgajai vērtībai jābūt starp %3 un %4.</translation>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>90 leņķis</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>45 leņķis</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>30 leņķis</translation>
 </phrase>
 
 <phrase>
@@ -6423,7 +6425,7 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>izmantot mainīgo vidējo</translation>
 </phrase>
 
 <phrase>
@@ -7322,7 +7324,7 @@ Atjaunojums tiek automātiski veikts fonā.  Kad tas tiks pabeigts, jūs saņems
 
 <phrase>
 <original>current page only</original>
-<translation></translation>
+<translation>tikai pašreizējā lapa</translation>
 </phrase>
 
 <phrase>
@@ -12379,32 +12381,32 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 
 <phrase>
 <original>Search tool</original>
-<translation></translation>
+<translation>Meklēšanas rīks</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush size</original>
-<translation></translation>
+<translation>Samazināt otu izmēru</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush size</original>
-<translation></translation>
+<translation>Palielināt otu izmēru</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation></translation>
+<translation>Samazināt suku cietību</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation></translation>
+<translation>Palielināt suku cietību</translation>
 </phrase>
 
 <phrase>
 <original>Toggle brush cursor</original>
-<translation></translation>
+<translation>Pārslēgt suku kursoru</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
@@ -12495,37 +12497,37 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 
 <phrase>
 <original>presets</original>
-<translation></translation>
+<translation>priekšnoteikumi</translation>
 </phrase>
 
 <phrase>
 <original>guides</original>
-<translation></translation>
+<translation>ceļveži</translation>
 </phrase>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>mērķis</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>izcelt apcirpšanas laukumu</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>izdzēst apcirptos pikseļus</translation>
 </phrase>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>ļaut paplašināt</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>piemērot</translation>
 </phrase>
 
 <phrase>
@@ -12540,32 +12542,32 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 
 <phrase>
 <original>resolution (PPI)</original>
-<translation></translation>
+<translation>izšķirtspēja (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>centerlines</original>
-<translation></translation>
+<translation>centrālās līnijas</translation>
 </phrase>
 
 <phrase>
 <original>rule of thirds</original>
-<translation></translation>
+<translation>trešdaļu likums</translation>
 </phrase>
 
 <phrase>
 <original>rule of fifths</original>
-<translation></translation>
+<translation>gaida...</translation>
 </phrase>
 
 <phrase>
 <original>golden ratio</original>
-<translation></translation>
+<translation>zelta attiecība</translation>
 </phrase>
 
 <phrase>
 <original>diagonals</original>
-<translation></translation>
+<translation>diagonāles</translation>
 </phrase>
 
 <phrase>
@@ -12575,34 +12577,34 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>Apmainīt platumu un augstumu</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>Atļaut apgriešanu ārpus attēla robežām (kas palielinās attēlu).</translation>
 </phrase>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation></translation>
+<translation>Izšķirtspēju izmanto, lai reālās pasaules mērījumus pārvērstu pikseļos.  Tā netiek ņemta vērā, ja mērījumi jau ir veikti pikseļos.</translation>
 </phrase>
 
 <phrase>
 <original>You can use this measurement in landscape or portrait orientation.</original>
-<translation></translation>
+<translation>Šo mērījumu var izmantot ainavas vai portreta orientācijā.</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>pielīdzināt pikseļu režģim</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>Šis iestatījums piespiedu kārtā izlīdzina krāsas triepienus ar pikseļu režģa centra punktiem.  Tas uzlabo precizitāti (īpaši pie maziem otas izmēriem), taču otas triepieni var izskatīties mazāk dabiski.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12765,7 +12767,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>rādīt attālumus</translation>
 </phrase>
 
 <phrase>
@@ -13177,132 +13179,132 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 
 <phrase>
 <original>undo all changes</original>
-<translation></translation>
+<translation>atcelt visas izmaiņas</translation>
 </phrase>
 
 <phrase>
 <original>all hotkeys</original>
-<translation></translation>
+<translation>visi karstie taustiņi</translation>
 </phrase>
 
 <phrase>
 <original>undo changes</original>
-<translation></translation>
+<translation>atcelt izmaiņas</translation>
 </phrase>
 
 <phrase>
 <original>try to capture automatically</original>
-<translation></translation>
+<translation>mēģināt automātiski uzņemt</translation>
 </phrase>
 
 <phrase>
 <original>this hotkey</original>
-<translation></translation>
+<translation>šis ātrais taustiņš</translation>
 </phrase>
 
 <phrase>
 <original>restore default</original>
-<translation></translation>
+<translation>atjaunot noklusējuma iestatījumus</translation>
 </phrase>
 
 <phrase>
 <original>export to file</original>
-<translation></translation>
+<translation>eksportēt uz failu</translation>
 </phrase>
 
 <phrase>
 <original>import from file</original>
-<translation></translation>
+<translation>importēt no faila</translation>
 </phrase>
 
 <phrase>
 <original>delete</original>
-<translation></translation>
+<translation>dzēst</translation>
 </phrase>
 
 <phrase>
 <original>restore all defaults</original>
-<translation></translation>
+<translation>atjaunot visus noklusējuma iestatījumus</translation>
 </phrase>
 
 <phrase>
 <original>generate summary</original>
-<translation></translation>
+<translation>ģenerēt kopsavilkumu</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys</original>
-<translation></translation>
+<translation>Ātrie taustiņi</translation>
 </phrase>
 
 <phrase>
 <original>Import hotkeys</original>
-<translation></translation>
+<translation>Importēt ātros taustiņus</translation>
 </phrase>
 
 <phrase>
 <original>Export hotkeys</original>
-<translation></translation>
+<translation>Eksportēt ātros taustiņus</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Hotkeys</original>
-<translation></translation>
+<translation>PhotoDemon ātrie taustiņi</translation>
 </phrase>
 
 <phrase>
 <original>One or more hotkeys is currently assigned to multiple actions.</original>
-<translation></translation>
+<translation>Viens vai vairāki ātrie taustiņi pašlaik ir piešķirti vairākām darbībām vienlaikus.</translation>
 </phrase>
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation></translation>
+<translation>Ja turpināsiet, PhotoDemon saglabās tikai pirmo dublēto ātro taustiņu izmantojumu.</translation>
 </phrase>
 
 <phrase>
 <original>Press OK to proceed.</original>
-<translation></translation>
+<translation>Spiediet OK, lai turpinātu.</translation>
 </phrase>
 
 <phrase>
 <original>Press cancel to keep editing hotkeys.</original>
-<translation></translation>
+<translation>Spiediet Atcelt, lai turpinātu rediģēt ātros taustiņus.</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox tools</original>
-<translation></translation>
+<translation>Instrumentu kastes rīki</translation>
 </phrase>
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation></translation>
+<translation>Lūdzu, izmantojiet šo ātro taustiņu tikai vienai darbībai</translation>
 </phrase>
 
 <phrase>
 <original>(this item)</original>
-<translation></translation>
+<translation>(šis vienums)</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation></translation>
+<translation>Ātriem taustiņiem jābūt unikāliem.</translation>
 </phrase>
 
 <phrase>
 <original>Command</original>
-<translation></translation>
+<translation>Komanda</translation>
 </phrase>
 
 <phrase>
 <original>Hotkey</original>
-<translation></translation>
+<translation>Ātrais taustiņš</translation>
 </phrase>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Tas pārraksta visus ar ātro taustiņu veiktos labojumus.  Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -13696,7 +13698,7 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>Izvēlnes</translation>
 </phrase>
 
 <phrase>
@@ -13716,12 +13718,12 @@ Lai turpinātu, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju no photodemon.
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>Fonti</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>Ievadierīces</translation>
 </phrase>
 
 <phrase>
@@ -13837,7 +13839,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>nesaderīgs ar operētājsistēmu Windows 7</translation>
 </phrase>
 
 <phrase>
@@ -13963,7 +13965,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>reset all "remember my choice" decisions</original>
-<translation></translation>
+<translation>atiestatīt visus "atcerēties manu izvēli" lēmumus</translation>
 </phrase>
 
 <phrase>
@@ -13993,12 +13995,12 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>remember my choice</original>
-<translation></translation>
+<translation>atceries manu izvēli</translation>
 </phrase>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>pēc jauna slāņa ielīmēšanas aktivizēt rīku Pārvietot</translation>
 </phrase>
 
 <phrase>
@@ -14040,7 +14042,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>parādīt uznirstošo ekrānu</translation>
 </phrase>
 
 <phrase>
@@ -14075,7 +14077,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>palaišana</translation>
 </phrase>
 
 <phrase>
@@ -14301,7 +14303,7 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>izmantot iegultos ICC profilus, ja tādi ir pieejami</translation>
 </phrase>
 
 <phrase>
@@ -14346,12 +14348,12 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>failu politikas</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>izmantot formātam specifiskus krāsu pārvaldības datus, ja tādi ir pieejami</translation>
 </phrase>
 
 <phrase>
@@ -14406,12 +14408,12 @@ Vai esat pārliecināts, ka vēlaties turpināt?</translation>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>Iebūvētie ICC profili uzlabo krāsu precizitāti.  Pat ja šis iestatījums ir izslēgts, PhotoDemon joprojām var izmantot ICC profilus dažiem uzdevumiem (piemēram, CMYK datu apstrādei).</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>Daži attēlu formāti atbalsta gan ICC profilus, gan savus krāsu pārvaldības risinājumus.  PhotoDemon vienmēr dod priekšroku ICC profiliem, bet, ja neviens no tiem nav iestrādāts, var izmēģināt citas krāsu pārvaldības pieejas.</translation>
 </phrase>
 
 <!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -14585,34 +14587,34 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>pievienot vēl vienu mapi</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>fontu mapes</translation>
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>interfeisa fonts</translation>
 </phrase>
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>noņemt šo mapi</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>Izmaiņas stāsies spēkā nākamreiz, kad startēsiet PhotoDemon.</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>peles riteņa uzvedība</translation>
 </phrase>
 
 <phrase>
@@ -14622,7 +14624,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>leņķa pagrieziena attālums (grādos)</translation>
 </phrase>
 
 <phrase>
@@ -14632,7 +14634,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>ritiniet</translation>
 </phrase>
 
 <phrase>
@@ -14644,7 +14646,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>displeja piekļuves taustiņi (mnemonikas)</translation>
 </phrase>
 
 <phrase>
@@ -14664,7 +14666,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>Piekļuves taustiņi (mnemonikas) ļauj pārvietoties pa izvēlnēm, izmantojot tastatūru.  "Automātiskajā" režīmā valodās, kurās nav vietējo piekļuves taustiņu, katrai izvēlnei tiks parādīts ASV angļu valodas piekļuves taustiņš.</translation>
 </phrase>
 
 <phrase>
@@ -14681,7 +14683,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>iekraušana</translation>
 </phrase>
 
 <phrase>
@@ -14706,7 +14708,7 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>svārstīties</translation>
 </phrase>
 
 <phrase>
@@ -14748,32 +14750,32 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>mipmaps</translation>
 </phrase>
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>uztveres</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>lēns</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>visi</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>punkts</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>kubiskais</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
