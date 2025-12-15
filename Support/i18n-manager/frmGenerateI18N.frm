@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmMain 
    BackColor       =   &H80000005&
    Caption         =   " PhotoDemon i18n manager"
-   ClientHeight    =   7590
+   ClientHeight    =   9915
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   14535
@@ -16,10 +16,64 @@ Begin VB.Form frmMain
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   506
+   ScaleHeight     =   661
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   969
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton cmdForeignMerge 
+      Caption         =   "3) Replace missing translations in (1) with any matching translations in (2)"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   735
+      Index           =   2
+      Left            =   8280
+      TabIndex        =   17
+      Top             =   8040
+      Width           =   5775
+   End
+   Begin VB.CommandButton cmdForeignMerge 
+      Caption         =   "2) Select XML file to use for missing translations..."
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   735
+      Index           =   1
+      Left            =   4560
+      TabIndex        =   16
+      Top             =   8040
+      Width           =   3255
+   End
+   Begin VB.CommandButton cmdForeignMerge 
+      Caption         =   "1) Select base XML file..."
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   735
+      Index           =   0
+      Left            =   840
+      TabIndex        =   15
+      Top             =   8040
+      Width           =   3255
+   End
    Begin VB.CommandButton cmdMergeAll 
       Caption         =   "2a (Optional) Automatically merge all PhotoDemon localizations against the latest en-US data..."
       BeginProperty Font 
@@ -148,6 +202,27 @@ Begin VB.Form frmMain
       TabIndex        =   1
       Top             =   1920
       Width           =   3015
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "merge two language files together:"
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   315
+      Index           =   2
+      Left            =   480
+      TabIndex        =   14
+      Top             =   7560
+      Width           =   3615
    End
    Begin VB.Label lblWarning 
       Appearance      =   0  'Flat
@@ -334,6 +409,10 @@ Private m_outputText As pdString, outputFile As String
 Private m_AllEnUsText As String, m_OldLanguageText As String, m_NewLanguageText As String
 Private m_OldLanguagePath As String
 
+'Supply missing phrases in a translation with phrases from another, similar translation.
+' (Useful when languages are similar but not identical, e.g. Flemish > Dutch, Spanish-MX > Spanish-ES)
+Private m_Alli18nFile As String, m_Alli18nText As String
+
 'Variables used to build a blacklist of text that does not need to be translated
 Private m_Blacklist As pdStringHash
 
@@ -401,9 +480,174 @@ Private Sub cmdEnUsFile_Click()
     If cDialog.GetOpenFileName(likelyDefaultLocation, , True, False, "XML - PhotoDemon Language File|*.xml", 1, , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
         Files.FileLoadAsString likelyDefaultLocation, m_AllEnUsText, True
         
-        'Remove tabstops, if any exist
+        'Remove tab chars, if any exist
         m_AllEnUsText = Replace$(m_AllEnUsText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
     End If
+    
+End Sub
+
+Private Sub cmdForeignMerge_Click(Index As Integer)
+
+    Dim cDialog As pdOpenSaveDialog
+    Set cDialog = New pdOpenSaveDialog
+    
+    'This project should be located in a sub-path of a normal PhotoDemon install.
+    ' We can use shlwapi's PathCanonicalize function to automatically "guess" at the location of PD's
+    ' base en-US language file.
+    Dim likelyDefaultLocation As String
+    If Files.PathCanonicalize(Files.AppPathW() & "..\..", likelyDefaultLocation) Then likelyDefaultLocation = Files.PathAddBackslash(likelyDefaultLocation)
+    likelyDefaultLocation = likelyDefaultLocation & "App\PhotoDemon\Languages\"
+    
+    Dim srcFile As String
+    
+    Select Case Index
+        
+        'Choose base file
+        Case 0
+            
+            If cDialog.GetOpenFileName(srcFile, , True, False, "XML - PhotoDemon Language File|*.xml", 1, likelyDefaultLocation, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
+                
+                'Load the file and remove tab chars, if any (sometimes added by 3rd-party editors)
+                m_Alli18nFile = srcFile
+                Files.FileLoadAsString srcFile, m_Alli18nText, True
+                m_Alli18nText = Replace$(m_Alli18nText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
+                
+            End If
+            
+        
+        'Choose file that will supply missing translations
+        Case 1
+            
+            If cDialog.GetOpenFileName(srcFile, , True, False, "XML - PhotoDemon Language File|*.xml", 1, likelyDefaultLocation, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
+                
+                'Load the file and remove tab chars, if any (sometimes added by 3rd-party editors)
+                m_OldLanguagePath = srcFile
+                Files.FileLoadAsString srcFile, m_OldLanguageText, True
+                m_OldLanguageText = Replace$(m_OldLanguageText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
+                
+            End If
+        
+        'Replace any missing translations in [base file] with matching translations in [other file]
+        Case 2
+                
+            'Make sure I selected two files
+            If (LenB(m_Alli18nText) = 0) Or (LenB(m_OldLanguageText) = 0) Then
+                MsgBox "One or more source files are missing.  Supply those before attempting a merge."
+                Exit Sub
+            End If
+            
+            'Start by copying the contents of the master file into the destination string.
+            ' We will use that as our base, and update it with the old translations as we go.
+            m_NewLanguageText = m_Alli18nText
+            
+            Dim origText As String, translatedText As String
+            Dim findText As String, replaceText As String
+            
+            Dim phrasesProcessed As Long, phrasesFound As Long, phrasesMissed As Long
+            phrasesProcessed = 0
+            phrasesFound = 0
+            phrasesMissed = 0
+            
+            'Find the first occurence of a <phrase> tag
+            Dim sPos As Long, sPosTranslation As Long
+            sPos = InStr(1, m_NewLanguageText, XML_PHRASE_OPEN, vbBinaryCompare)
+            sPosTranslation = 1
+            
+            'Start parsing the base text for <phrase> tags
+            Do
+            
+                phrasesProcessed = phrasesProcessed + 1
+                
+                'Retrieve the original text associated with this phrase tag
+                Const ORIG_TEXT_TAG As String = "original"
+                origText = GetTextBetweenTags(m_Alli18nText, ORIG_TEXT_TAG, sPos)
+                
+                'Attempt to retrieve a translation for this phrase using the old language file.
+                translatedText = GetTranslationTagFromCaption_CustomFile(origText, m_Alli18nText, sPosTranslation)
+                
+                'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
+                If (LenB(translatedText) = 0) Then
+                    If (InStr(1, origText, vbCrLf) > 0) Then
+                        translatedText = GetTranslationTagFromCaption_CustomFile(Replace$(origText, vbCrLf, vbLf), m_Alli18nText)
+                    End If
+                End If
+                
+                'If we still didn't find a translation, try to pull it from the backup file
+                If (LenB(translatedText) = 0) Then
+                    
+                    'Attempt to retrieve a translation for this phrase using the old language file.
+                    translatedText = GetTranslationTagFromCaption_CustomFile(origText, m_OldLanguageText, sPosTranslation)
+                    
+                    If (LenB(translatedText) <> 0) Then
+                        
+                        findText = XML_ORIGINAL_OPEN & origText & XML_ORIGINAL_CLOSE & vbCrLf & XML_TRANSLATION_PAIR
+                        replaceText = XML_ORIGINAL_OPEN & origText & XML_ORIGINAL_CLOSE & vbCrLf & "<translation>" & translatedText & "</translation>"
+                        m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText)
+                        
+                        phrasesFound = phrasesFound + 1
+                        
+                    Else
+                        Debug.Print "Couldn't find translation for: " & origText
+                        phrasesMissed = phrasesMissed + 1
+                    End If
+                    
+                Else
+                    'Translation already exists; do nothing
+                End If
+            
+                'Find the next occurrence of a <phrase> tag
+                sPos = InStr(sPos + 1, m_Alli18nText, XML_PHRASE_OPEN, vbBinaryCompare)
+                
+                If ((phrasesProcessed And 15) = 0) Then
+                    Message phrasesProcessed & " phrases processed.  (" & phrasesFound & " found, " & phrasesMissed & " missed)"
+                End If
+                
+            Loop While sPos > 0
+            
+            '(This next code block is copied verbatim from cmdMergeAll.  It has only been tested *there*.)
+            
+            'Finally, look for any language-specific text+translation pairs.  This (optional) segment can be used
+            ' to map phrases with identical English text (e.g. Color > Invert vs Selection > Invert) to unique
+            ' phrases in a given translation.
+            Dim posSpecialBlock As Long
+            posSpecialBlock = InStrRev(m_Alli18nText, "<special-translations>", -1, vbBinaryCompare)
+            If (posSpecialBlock > 0) Then
+            
+                'Copy over the entire <special-translations> XML block as-is.
+                Const END_SPECIAL_BLOCK As String = "</special-translations>"
+                Dim posSpecialBlockEnd As Long
+                posSpecialBlockEnd = InStr(posSpecialBlock, m_Alli18nText, END_SPECIAL_BLOCK, vbBinaryCompare)
+                If (posSpecialBlockEnd > posSpecialBlock) Then
+                    
+                    Dim insertPosition As Long
+                    insertPosition = InStrRev(m_NewLanguageText, "</pdData>", -1, vbBinaryCompare)
+                    If (insertPosition > 0) Then m_NewLanguageText = Replace$(m_NewLanguageText, "</pdData>", Mid$(m_Alli18nText, posSpecialBlock, (posSpecialBlockEnd - posSpecialBlock) + Len(END_SPECIAL_BLOCK)) & vbCrLf & vbCrLf & "</pdData>")
+                    
+                End If
+                
+            End If
+            
+            'Prompt the user to save the results
+            Dim fPath As String
+            fPath = m_Alli18nFile
+            
+            If cDialog.GetSaveFileName(fPath, , True, "XML - PhotoDemon Language File|*.xml", 1, , "Save the merged language file (XML)", "xml", Me.hWnd) Then
+                
+                'Worried about breaking something?  Enable strict overwrite checking:
+                'If Files.FileExists(fPath) Then
+                '    MsgBox "File already exists!  Too dangerous to overwrite - please perform the merge again."
+                '    Exit Sub
+                'End If
+                
+                'Use pdXML to write out a UTF-8 encoded XML file
+                m_XML.LoadXMLFromString m_NewLanguageText
+                m_XML.WriteXMLToFile fPath, True
+                
+            End If
+            
+            MsgBox "Merge complete." & vbCrLf & vbCrLf & phrasesProcessed & " phrases processed. " & phrasesFound & " translations found. " & phrasesMissed & " translations missing."
+    
+    End Select
     
 End Sub
 
@@ -560,6 +804,37 @@ Private Function GetPhraseTagLocation(ByRef srcString As String, Optional ByVal 
 
 End Function
 
+'Given a string, return the location of the <phrase> tag enclosing said string
+Private Function GetPhraseTagLocation_CustomFile(ByRef srcString As String, ByRef srcFullText As String, Optional ByVal startPos As Long = 1) As Long
+    
+    GetPhraseTagLocation_CustomFile = 0
+    
+    Dim sLocation As Long
+    sLocation = InStr(startPos, srcFullText, srcString, vbBinaryCompare)
+    
+    'If the source string was found, work backward to find the phrase tag location
+    If (sLocation > 0) Then
+        sLocation = InStrRev(srcFullText, "<phrase>", sLocation, vbBinaryCompare)
+        If (sLocation > 0) Then GetPhraseTagLocation_CustomFile = sLocation
+    
+    'If given a start location, try searching again from that location, but backward
+    Else
+        
+        If (startPos > 1) Then
+            
+            sLocation = InStrRev(srcFullText, srcString, startPos, vbBinaryCompare)
+        
+            If (sLocation > 0) Then
+                sLocation = InStrRev(srcFullText, "<phrase>", sLocation, vbBinaryCompare)
+                If (sLocation > 0) Then GetPhraseTagLocation_CustomFile = sLocation
+            End If
+            
+        End If
+        
+    End If
+
+End Function
+
 'Given the original caption of a message or control, return the matching translation from the active translation file
 Private Function GetTranslationTagFromCaption(ByVal origCaption As String, Optional ByRef inOutWhereToStartSearch As Long = 1) As String
     
@@ -578,6 +853,31 @@ Private Function GetTranslationTagFromCaption(ByVal origCaption As String, Optio
         'Retrieve the <translation> tag inside this phrase tag
         Const TRANSLATION_TAG_NAME As String = "translation"
         GetTranslationTagFromCaption = GetTextBetweenTags(m_OldLanguageText, TRANSLATION_TAG_NAME, phraseLocation)
+        inOutWhereToStartSearch = phraseLocation
+    Else
+        inOutWhereToStartSearch = 1
+    End If
+
+End Function
+
+'Given the original caption of a message or control, return the matching translation from the active translation file
+Private Function GetTranslationTagFromCaption_CustomFile(ByVal origCaption As String, ByRef srcFullText As String, Optional ByRef inOutWhereToStartSearch As Long = 1) As String
+    
+    GetTranslationTagFromCaption_CustomFile = vbNullString
+    
+    'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
+    PreprocessText origCaption
+    origCaption = XML_ORIGINAL_OPEN & origCaption & XML_ORIGINAL_CLOSE
+    
+    Dim phraseLocation As Long
+    phraseLocation = GetPhraseTagLocation_CustomFile(origCaption, srcFullText, inOutWhereToStartSearch)
+    
+    'Make sure a phrase tag was found
+    If (phraseLocation > 0) Then
+        
+        'Retrieve the <translation> tag inside this phrase tag
+        Const TRANSLATION_TAG_NAME As String = "translation"
+        GetTranslationTagFromCaption_CustomFile = GetTextBetweenTags(srcFullText, TRANSLATION_TAG_NAME, phraseLocation)
         inOutWhereToStartSearch = phraseLocation
     Else
         inOutWhereToStartSearch = 1
@@ -1055,7 +1355,7 @@ Private Sub cmdOldLanguage_Click()
         
         m_OldLanguagePath = tmpLangFile
         
-        'Load the language file and strip tabstops from it
+        'Load the language file and strip tab chars from it
         Files.FileLoadAsString tmpLangFile, m_OldLanguageText, True
         m_OldLanguageText = Replace$(m_OldLanguageText, vbTab, vbNullString, 1, -1, vbBinaryCompare)
         
