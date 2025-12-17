@@ -422,7 +422,7 @@ Private Sub Form_Load()
     'Retrieve the user's default plugin folder:
     hypPlugins.Caption = UserPrefs.Get8bfPath()
     hypPlugins.AssignTooltip "click to open this folder in Windows Explorer"
-        
+    
     'Load any UI resources
     Dim btnImgSize As Long
     btnImgSize = Interface.FixDPI(24)
@@ -528,6 +528,10 @@ Private Sub ScanForPlugins()
     ' I'm just going to bypass it completely if no candidate 8bf files exist.
     Dim numPlugins As Long
     If (num8bfCandidates > 0) Then
+        
+        'DEC 2025: test our own iterator!  Maybe someday it will be robust enough that we don't need
+        ' pspihost at all...
+        Plugin_8bf.EnumeratePlugins_PD listOfFiles
         
         'Enumerate plugins in all target folder(s)
         For i = 0 To listOfFolders.GetNumOfStrings - 1

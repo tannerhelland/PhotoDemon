@@ -31,6 +31,9 @@ Attribute VB_Name = "Plugin_8bf"
 
 Option Explicit
 
+'Verbose debug logging; turn OFF is production builds
+Private Const PS_DEBUG_VERBOSE As Boolean = True
+
 Private Enum PSPI_Result
     PSPI_OK = 0
     PSPI_ERR_FILTER_NOT_LOADED = 1
@@ -153,6 +156,66 @@ Private m_MaskCopy() As Byte
 'When enumerating plugins, the user can pass an (optional) progress bar.  We'll update the bar as plugins
 ' are found and loaded.
 Private m_EnumProgressBar As pdProgressBar
+
+'DEC 2025: APIs for manually enumerating and handling 8bf filters
+Private Declare Function EnumResourceNamesW Lib "kernel32" (ByVal hModule As Long, ByVal lpType As Long, ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
+Private Declare Function FindResourceW Lib "kernel32" (ByVal hModule As Long, ByVal lpName As Long, ByVal lpType As Long) As Long
+Private Declare Function LoadResource Lib "kernel32" (ByVal hModule As Long, ByVal hResInfo As Long) As Long
+Private Declare Function LockResource Lib "kernel32" (ByVal hResData As Long) As Long
+Private Declare Function SizeofResource Lib "kernel32" (ByVal hModule As Long, ByVal hResInfo As Long) As Long
+
+'Photoshop SDK code follows
+Private Type PiPLResource
+    resSignature As Integer
+    resVersion As Long
+    resCount As Long
+    resPData As Long
+End Type
+
+' /** Definition of a PiPL property. Plug-in property structures (or properties) are
+' * the basic units of information stored in a property list. Properties are variable
+' * length data structures, which are uniquely identified by a vendor code, property key,
+' * and ID number. PiPL properties are stored in a list.  See \c PIPropertyList.
+' */
+Public Type PIProperty
+
+    '/** The vendor defining this property type. This allows vendors to define
+    '* their own properties in a way that does not conflict with either Adobe or other
+    '* vendors. It is recommended that a registered application creator code be used
+    '* for the vendorID to ensure uniqueness. All Photoshop properties use the vendorID
+    '* '8BIM'.
+    '*/
+    vendorID As String * 4
+    
+    '/// Identification key for this property type. See @ref PiPLKeys "Property Keys".
+    propertyKey As String * 4
+    
+    '/// Index within this property type. Must be unique for properties of
+    '/// a given type in a PiPL.
+    propertyID As Long
+    
+    '/// Length of propertyData. Does not include any padding bytes
+    '/// to achieve four byte alignment. May be zero.
+    propertyLength As Long
+    
+    '/// Variable length field containing contents of this property.
+    '/// Any values may be contained. Must be padded to achieve four
+    '/// byte alignment.
+    pPropertyData() As Byte
+    
+    'For PD only: textual properties (like name, category) will store their processed string name here
+    propertyAsString As String
+
+End Type
+
+'Properties of the current file
+Private m_numProperties As Long, m_Properties() As PIProperty
+
+'Current plugin file being scanned
+Private m_CurrentPluginFilename As String
+
+'Array of plugin objects.  These will (someday) launch the actual plugins involved.
+Private m_numSafePlugins As Long, m_SafePlugins() As pd8bf
 
 'Returns the number of discovered 8bf plugins; 0 means no plugins found.  Note that you can call this
 ' function back-to-back with different folders, and it will just keep appending discoveries to a central list.
@@ -539,3 +602,243 @@ Private Sub InternalError(ByRef errFuncName As String, ByRef errDescription As S
     PDDebug.LogAction "WARNING!  Problem in Plugin_8bf." & errFuncName & ": " & errDescription
     If (errNum <> 0) Then PDDebug.LogAction "  (If it helps, an error number was also reported: #" & errNum & ")"
 End Sub
+
+'******************************************************
+' UPDATE DEC 2025: due to ongoing stability issues, I want to reimplement as much of this plugin's behavior
+' myself as I can.
+'
+'First up: enumerating plugin categories and names.  This function returns the number of valid plugins found.
+' Inputs:
+'   - srcListOfFiles (stack containing a list of candidate 8bf files)
+Public Function EnumeratePlugins_PD(ByRef srcListOfFiles As pdStringStack) As Long
+    
+    EnumeratePlugins_PD = 0
+    m_numSafePlugins = 0
+    ReDim m_SafePlugins(0) As pd8bf
+    
+    If (srcListOfFiles Is Nothing) Then Exit Function
+    If (srcListOfFiles.GetNumOfStrings <= 0) Then Exit Function
+    
+    Dim targetFile As String
+    Do While srcListOfFiles.PopString(targetFile)
+        
+        'Failsafe check to ensure we weren't passed bad files (yes, this syntax is how you do this in VB6)
+        If (Not Files.FileExists(targetFile)) Then GoTo ContinueWithNextFile
+        
+        If PS_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting PiPL reads for " & targetFile
+        m_CurrentPluginFilename = targetFile
+        
+        'TODO: reject incompatible architectures here (e.g. x64)
+        
+        'Attempt to load the library.  (We must pass the returned handle to the resource enumerator.)
+        ' Note that we're not going to execute any code in the library on this pass - we simply want to
+        ' query plugin properties.  To improve performance, load the data as a read-only data resource.
+        Const LOAD_LIBRARY_AS_DATAFILE As Long = &H2&
+        Const LOAD_LIBRARY_AS_IMAGE_RESOURCE As Long = &H20&        'Not supported until Vista, so disallow on XP
+        
+        'Per MSDN (https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryexw):
+        ' "If this value is used, the system maps the file into the calling process's virtual address space
+        '  as if it were a data file. Nothing is done to execute or prepare to execute the mapped file.
+        '  Therefore, you cannot call functions like GetModuleFileName, GetModuleHandle or GetProcAddress with
+        '  this DLL. Using this value causes writes to read-only memory to raise an access violation. Use this
+        '  flag when you want to load a DLL only to extract messages or resources from it."
+        Dim dwFlags As Long
+        dwFlags = LOAD_LIBRARY_AS_DATAFILE
+        
+        'Per MSDN (https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryexw):
+        ' "If this value is used, the system maps the file into the process's virtual address space as an image file.
+        '  However, the loader does not load the static imports or perform the other usual initialization steps.
+        '  Use this flag when you want to load a DLL only to extract messages or resources from it.  Unless the
+        '  application depends on the file having the in-memory layout of an image, this value should be used with
+        '  either LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE or LOAD_LIBRARY_AS_DATAFILE.  Windows Server 2003 and Windows XP:
+        '  This value is not supported until Windows Vista."
+        If OS.IsVistaOrLater Then dwFlags = dwFlags Or LOAD_LIBRARY_AS_IMAGE_RESOURCE
+        
+        'Attempt loading the plugin as a data resource only
+        Dim hLib As Long
+        hLib = VBHacks.LoadLibExW(targetFile, dwFlags)
+        If (hLib = 0) Then GoTo ContinueWithNextFile
+        
+        'Next we want to pull the resource block and "walk" resources, querying as we go.
+        ' (NOTE: the enumerator callback may be called multiple times, if multiple filters exist
+        '  inside a single plugin.)
+        Dim resName As String
+        resName = "PiPL"
+        If (EnumResourceNamesW(hLib, StrPtr(resName), AddressOf EnumResNameProcW, 0&) <> 0) Then
+            
+            'The enumeration returned successfully.
+            
+            
+            'TODO: how do we return these results to the caller?  What data do we retain here,
+            ' and what do we give them?
+            
+        End If
+        
+        'Make sure we free the library before continuing!
+        VBHacks.FreeLib hLib
+        hLib = 0
+        
+        'EnumResourceNamesW
+ContinueWithNextFile:
+    Loop
+    
+End Function
+
+'Callback for the EnumResourceNamesW API
+Private Function EnumResNameProcW(ByVal hModule As Long, ByVal lpType As Long, ByVal lpName As Long, ByVal lUserParam As Long) As Long
+    
+    Const FUNC_NAME As String = "EnumResNameProcW"
+    
+    'Failsafes for bad data
+    If (hModule = 0) Or (lpType = 0) Or (lpName = 0) Then
+        EnumResNameProcW = 0
+        Exit Function
+    End If
+    
+    'Next, we want to Find -> Load -> Size -> Lock the target PiPL resource.
+    ' Note that (per MSDN) resources are returned as hGlobals for backwards compatibility, but they must not
+    ' be accessed or freed using Global* calls.  The data is auto-freed when the target library is freed.
+    Dim hResource As Long
+    hResource = FindResourceW(hModule, lpName, lpType)
+    If (hResource = 0) Then
+        EnumResNameProcW = 0
+        Exit Function
+    End If
+    
+    Dim hGlobalNotReally As Long
+    hGlobalNotReally = LoadResource(hModule, hResource)
+    If (hGlobalNotReally = 0) Then
+        EnumResNameProcW = 0
+        Exit Function
+    End If
+    
+    'As a failsafe, grab resource size in case the plugin is malformed
+    Dim resSize As Long
+    resSize = SizeofResource(hModule, hResource)
+    If (resSize = 0) Then
+        EnumResNameProcW = 0
+        Exit Function
+    End If
+    
+    'Lock the resource, then we can access it!
+    Dim hLocked As Long
+    hLocked = LockResource(hGlobalNotReally)
+    If (hLocked = 0) Then
+        EnumResNameProcW = 0
+        Exit Function
+    End If
+    
+    'With the resource ready, we can now "walk" it, noting properties as we go.
+    
+    'Start by pointing a stream at the target resource.  This simplifies reading arbitrary data types
+    ' from an arbitrary pointer in VB6.
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, resSize, hLocked) Then
+    
+        Dim thisResource As PiPLResource
+        
+        'Load the resource header
+        thisResource.resSignature = cStream.ReadInt()
+        thisResource.resVersion = cStream.ReadLong()
+        thisResource.resCount = cStream.ReadLong()
+        
+        'The first property starts here!  Don't read it yet; VB6 limitations mean we want to leave the
+        ' stream pointer where it is, and we'll manually load struct members.
+        'thisResource.resPData = cStream.ReadLong()
+        
+        'Validate the header.  The signature is typically "1" (I don't enforce this because I don't
+        ' think it matters) but what we really care about is the version being "0".  This is a hard
+        ' requirement by PS.  From the SDK:
+        '/// Current Plug-in Property List version
+        Const kCurrentPiPLVersion As Long = 0
+        If (thisResource.resVersion <> kCurrentPiPLVersion) Then
+            InternalError FUNC_NAME, m_CurrentPluginFilename & " bad PiPL version: " & thisResource.resVersion
+            EnumResNameProcW = 1
+            Exit Function
+        End If
+        
+        'Zero-count resource lists are useless to us
+        If (thisResource.resCount <= 0) Then
+            EnumResNameProcW = 1
+            Exit Function
+        End If
+        
+        'With the header pulled, we can now walk through individual properties
+        If PS_DEBUG_VERBOSE Then PDDebug.LogAction "Walking " & thisResource.resCount & " resources..."
+        
+        'Reset the module-level property tracker
+        m_numProperties = thisResource.resCount
+        ReDim m_Properties(0 To m_numProperties - 1) As PIProperty
+        
+        'Iterate properties one-by-one.  As always, use a stream to help.
+        Dim i As Long
+        For i = 0 To m_numProperties - 1
+        
+            Dim initOffset As Long
+            initOffset = cStream.GetPosition()
+            
+            'Pull the prop header out of the stream
+            With m_Properties(i)
+                
+                'Some struct members are 4-byte strings, but because of endianness we're going to first read them
+                ' to a temporary int, *then* read them as a string
+                Dim tmpKey As Long
+                tmpKey = cStream.ReadLong_BE()
+                .vendorID = Strings.StringFromCharPtr(VarPtr(tmpKey), False, 4, True)
+                
+                tmpKey = cStream.ReadLong_BE()
+                .propertyKey = Strings.StringFromCharPtr(VarPtr(tmpKey), False, 4, True)
+                
+                'ID and length are just uints
+                .propertyID = cStream.ReadLong()
+                .propertyLength = cStream.ReadLong()
+                
+                'Also pull the property data in; these tend to be small (< 100 bytes) and their
+                ' data may be useful to the initializer
+                ReDim .pPropertyData(0 To .propertyLength - 1) As Byte
+                cStream.ReadBytesToBarePointer VarPtr(.pPropertyData(0)), .propertyLength
+                Debug.Print .vendorID, .propertyKey, .propertyID, .propertyLength
+            End With
+            
+            'Property length is always reported as-is, but must be manually padded to 4-byte alignment
+            ' before advancing to the next property.
+            Dim paddedPropLength As Long
+            paddedPropLength = (m_Properties(i).propertyLength + 3) And &H7FFFFFFC
+            
+            'Advance the pointer to the next property.  The hard-coded 16& is the size of the
+            ' property header (not included in the property length value).
+            cStream.SetPosition initOffset + 16& + paddedPropLength, FILE_BEGIN
+            
+        Next i
+        
+        'Turn off the stream before exiting, or it will crash on class termination
+        cStream.StopStream
+        
+        'All properties in this file have now been read and cached at module-level.
+        
+        'Next, we need to validate this plugin's properties before displaying it to the user.
+        ' (Maybe it only operates on weird color spaces, or it's actually a 64-bit DLL, etc.)
+        '
+        'Instantiate a new plugin class for this file+action combination, and note that the
+        ' initializer will return TRUE if the plugin is compatible with PD.
+        If (m_numSafePlugins > UBound(m_SafePlugins)) Then ReDim Preserve m_SafePlugins(0 To m_numSafePlugins * 2 - 1) As pd8bf
+        Set m_SafePlugins(m_numSafePlugins) = New pd8bf
+        If m_SafePlugins(m_numSafePlugins).Initialize8bf_FromFile(m_CurrentPluginFilename, m_numProperties, m_Properties) Then
+            m_numSafePlugins = m_numSafePlugins + 1
+        Else
+            If PS_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: initialization failed for " & m_CurrentPluginFilename
+        End If
+        
+        'We are done processing this plugin file, but this function may get called again for a
+        ' different plugin in the same file (files can contain multiple plugins).
+            
+    Else
+        EnumResNameProcW = 1
+        Exit Function
+    End If
+    
+    'Return success before exiting (return type is a BOOL)
+    EnumResNameProcW = 1
+    
+End Function
