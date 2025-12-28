@@ -42,8 +42,123 @@ Private Const DEBUG_VERBOSE As Boolean = True
 Private m_numProperties As Long, m_Properties() As PIProperty
 
 'Some properties are frequently accessed; we cache them at initialization time
+Private m_Filename As String
 Private m_Name As String, m_Category As String, m_VersionMajor As Long, m_VersionMinor As Long
-Private m_EntryPoint As String
+Private m_EntryPoint As String, m_pEntryPoint As Long
+
+'Rather than allocate new memory on each DispCallFunc invoke, just reuse a set of temp arrays declared
+' to a maximum relevant size.
+Private Declare Function DispCallFunc Lib "oleaut32" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+
+Private Const MAX_PARAM_COUNT As Long = 8
+Private m_vType() As Integer, m_vPtr() As Long
+
+'Photoshop types follow
+'/** Acquires a function suite. Loads the suite if necessary,
+'        and increments its reference count. For example:
+'    @code
+'SPErr error;
+'SPBasicSuite *sBasic = message->d.basic;
+'AIRandomSuite *sRandom;
+'sBasic->AcquireSuite( kAIRandomSuite, kAIRandomVersion, &sRandom );
+'    @endcode
+'            @param name The suite name.
+'            @param version The suite version number.
+'            @param suite [out] A buffer in which to return the suite pointer.
+'            @see \c #SPSuitesSuite::AcquireSuite()
+'        */
+Private Type SPBasicSuite
+    
+    'SPAPI SPErr (*AcquireSuite)( const char *name, int32 version, const void **suite );
+    '/** Decrements the reference count of a suite and unloads it when the
+    '    reference count reaches 0.
+    '        @param name The suite name.
+    '        @param version The suite version number.
+    '    */
+    pAcquireSuite As Long
+    
+    'SPAPI SPErr (*ReleaseSuite)( const char *name, int32 version );
+    '/** Compares two strings for equality.
+    '        @param token1 The first null-terminated string.
+    '        @param token2 The second null-terminated string.
+    '        @return True if the strings are the same, false otherwise.
+    '    */
+    pReleaseSuite As Long
+    
+    'SPAPI SPBoolean (*IsEqual)( const char *token1, const char *token2 );
+    '/** Allocates a block of memory.
+    '        @param size The number of bytes.
+    '        @param block [out] A buffer in which to return the block pointer.
+    '        @see \c #SPBlocksSuite::AllocateBlock()
+    '    */
+    pIsEqual As Long
+    
+    'SPAPI SPErr (*AllocateBlock)( size_t size, void **block );
+    '/** Frees a block of memory allocated with \c #AllocateBlock().
+    '        @param block The block pointer.
+    '        @see \c #SPBlocksSuite::FreeBlock()
+    '    */
+    pAllocateBlock As Long
+    
+    'SPAPI SPErr (*FreeBlock)( void *block );
+    '/** Reallocates a block previously allocated with \c #AllocateBlock().
+    '    Increases the size without changing the location, if possible.
+    '        @param block The block pointer.
+    '        @param newSize The new number of bytes.
+    '        @param newblock [out] A buffer in which to return the new block pointer.
+    '        @see \c #SPBlocksSuite::ReallocateBlock()
+    '    */
+    pFreeBlock As Long
+    
+    'SPAPI SPErr (*ReallocateBlock)( void *block, size_t newSize, void **newblock );
+    '/** A function pointer for unloaded suites. This is a protective measure
+    '    against other plug-ins that may mistakenly use the suite after they have
+    '    released it.
+    '
+    '    A plug-in that exports a suite should unload the suite's procedure pointers
+    '    when it is unloaded, and restore them when the plug-in is reloaded.
+    '    \li On unload, replace the suite's procedure pointers
+    '        with the address of this function.
+    '    \li On reload, restore the suite's procedure
+    '        pointers with the updated addresses of their functions.
+    '
+    '    For example:
+    '@code
+    '    SPErr UnloadSuite( MySuite *mySuite, SPAccessMessage *message ) {
+    '        mySuite->functionA = (void *) message->d.basic->Undefined;
+    '        mySuite->functionB = (void *) message->d.basic->Undefined;
+    '    }
+    '
+    '
+    '    SPErr ReloadSuite( MySuite *mySuite, SPAccessMessage *message ) {
+    '        mySuite->functionA = functionA;
+    '        mySuite->functionB = functionB;
+    '    }
+    '@endcode
+    '    */
+    pReallocateBlock As Long
+    
+    'SPAPI SPErr (*Undefined)( void );
+    pSpErr As Long
+
+End Type
+
+Private Type AboutRecord
+    
+    'void *      platformData;       /**< Platform specific information. See PlatformData in PITypes.h. */
+    pPlatformDataHwnd As Long   'pointer to platform-specific data; on Windows, this is an hWnd of the owner window
+    
+    'SPBasicSuite *sSPBasic;         /**< PICA basic suite */
+    pSPBasicSuite As Long
+    
+    'void        *plugInRef;         /**< Plug-in reference used by PICA */
+    pPluginRef As Long
+    
+    'char        reserved [244];     /**< Reserved bytes. Set to zero */
+    pReserved(0 To 243) As Byte
+    
+End Type
 
 'Given a list of raw PiPL properties (and the target file from which they came), initialize this class.
 ' Returns TRUE if the property list is valid and compatible with PD; FALSE otherwise.  The plugin should
@@ -51,6 +166,7 @@ Private m_EntryPoint As String
 Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numProperties As Long, ByRef arrayOfProperties() As PIProperty) As Boolean
     
     Initialize8bf_FromFile = False
+    m_Filename = srcFile
     
     'Ensure at least 2 properties were retrieved (technically we need more than this,
     ' but at a *minimum* we need a name and category to display)
@@ -70,7 +186,7 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
     
     'Further processing is made much simpler by a stream object
     Dim lenPascalString As Byte, tmpLong As Long
-    Dim kindOK As Boolean, versionOK As Boolean
+    Dim kindOK As Boolean, versionOK As Boolean, entryPointOK As Long
     
     Dim cStream As pdStream
     Set cStream = New pdStream
@@ -137,7 +253,10 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
                     Debug.Print "entry point: " & m_EntryPoint
                 End If
                 
-            
+                'The target DLL isn't actually loaded right now; we'll formally validate the entry point
+                ' IFF the user actually interacts with this plugin
+                entryPointOK = (LenB(m_EntryPoint) <> 0)
+                
             'Next are non-code properties
             
             '// 'vers' \<int32\> Major\<int16\>.Minor\<int16\> version number:
@@ -246,3 +365,98 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
     Next i
     
 End Function
+
+'Returns TRUE if the plugin has a valid About dialog interface (as far as we can tell)
+Friend Function IsAboutDialogAvailable() As Boolean
+        
+    Const FUNC_NAME As String = "IsAboutDialogAvailable"
+        
+    'Ensure this entry point actually exists in the target file; if it does, retrieve a pointer to it.
+    ' TODO: plugins don't *have* to define an About dialog interface; we can check this flag at load-time
+    ' and should use it here, prior to looking for the entry point
+    If (LenB(m_EntryPoint) <> 0) Then
+        
+        'Load the DLL
+        'TODO: check bitness during load to ensure we're not attempting to load a 64-bit lib
+        Dim hLib As Long
+        hLib = VBHacks.LoadLib(m_Filename)
+        If (hLib <> 0) Then
+            
+            'Attempt to retrieve the entry point self-defined by the plugin
+            m_pEntryPoint = GetProcAddress(hLib, m_EntryPoint)
+            IsAboutDialogAvailable = (m_pEntryPoint <> 0)
+            If DEBUG_VERBOSE And (Not IsAboutDialogAvailable) Then InternalError FUNC_NAME, "GetProcAddress failed"
+            
+        Else
+            If DEBUG_VERBOSE Then InternalError FUNC_NAME, "LoadLibrary failed"
+            IsAboutDialogAvailable = False
+        End If
+        
+    End If
+    
+End Function
+
+'Show the About dialog associated with this plugin.  Returns TRUE if (as far as we know)
+' the dialog was accessed successfully.
+Friend Function ShowAboutDialog(ByVal srcHostHWnd As Long) As Boolean
+    
+    ShowAboutDialog = False
+    
+    'Ensure we have an entry point to use for the dialog display
+    If (Not Me.IsAboutDialogAvailable()) Then Exit Function
+    
+    'Failsafe only; previous step should have validated this
+    If (m_pEntryPoint = 0) Then Exit Function
+    
+    'Prep the basic structs required for About display
+    Dim tmpAboutRecord As AboutRecord
+    tmpAboutRecord.pPlatformDataHwnd = VarPtr(srcHostHWnd)
+    
+    'Everything else in this struct can left be uninitialized/0
+    
+    'Results are returned via pointer to a 2-byte int
+    Dim adobeReturn As Integer
+    adobeReturn = 0
+    
+    
+End Function
+
+'DispCallFunc wrapper originally by Olaf Schmidt, with a few minor modifications; see the top of this class
+' for a link to his original, unmodified version
+Private Function CallCDeclW(ByVal pEntryPoint As Long, ByVal fRetType As VbVarType, ParamArray pa() As Variant) As Variant
+
+    Dim i As Long, vTemp() As Variant, hResult As Long
+    
+    Dim numParams As Long
+    If (UBound(pa) < LBound(pa)) Then numParams = 0 Else numParams = UBound(pa) + 1
+    
+    If IsMissing(pa) Then
+        ReDim vTemp(0) As Variant
+    Else
+        vTemp = pa 'make a copy of the params, to prevent problems with VT_Byref-Members in the ParamArray
+    End If
+    
+    For i = 0 To numParams - 1
+        If VarType(pa(i)) = vbString Then vTemp(i) = StrPtr(pa(i))
+        m_vType(i) = VarType(vTemp(i))
+        m_vPtr(i) = VarPtr(vTemp(i))
+    Next i
+    
+    Const CC_CDECL As Long = 1
+    hResult = DispCallFunc(0, pEntryPoint, CC_CDECL, fRetType, i, m_vType(0), m_vPtr(0), CallCDeclW)
+    
+End Function
+
+Private Sub Class_Initialize()
+
+    'Initialize all module-level arrays used for DispCallFunc interop
+    ReDim m_vType(0 To MAX_PARAM_COUNT - 1) As Integer
+    ReDim m_vPtr(0 To MAX_PARAM_COUNT - 1) As Long
+        
+End Sub
+
+Private Sub InternalError(ByRef errFuncName As String, ByRef errDescription As String, Optional ByVal errNum As Long = 0)
+    PDDebug.LogAction "WARNING!  Problem in pd8bf." & errFuncName & ": " & errDescription
+    If (errNum <> 0) Then PDDebug.LogAction "  (If it helps, an error number was also reported: #" & errNum & ")"
+End Sub
+
