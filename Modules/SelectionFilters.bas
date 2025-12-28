@@ -99,12 +99,13 @@ Public Sub Selection_Invert()
         'Lock in this selection
         PDImages.GetActiveImage.MainSelection.LockIn
         PDImages.GetActiveImage.SetSelectionActive True
-            
+        
         'Draw the new selection to the screen
         Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
     'No selection pixels exist.  Unload any active selection data.
     Else
+        PDDebug.LogAction "No bounds found; removing selection."
         Selections.RemoveCurrentSelection
     End If
 
@@ -169,6 +170,7 @@ Public Sub Selection_Blur(ByVal displayDialog As Boolean, Optional ByVal feather
         
         'No selection pixels exist.  Unload any active selection data.
         Else
+            PDDebug.LogAction "No bounds found; removing selection."
             Selections.RemoveCurrentSelection
         End If
 
@@ -288,6 +290,7 @@ Public Sub Selection_Sharpen(ByVal displayDialog As Boolean, Optional ByVal shar
         
         'No selection pixels exist.  Unload any active selection data.
         Else
+            PDDebug.LogAction "No bounds found; removing selection."
             Selections.RemoveCurrentSelection
         End If
     
@@ -355,6 +358,7 @@ Public Sub Selection_Grow(ByVal displayDialog As Boolean, Optional ByVal growSiz
         
         'No selection pixels exist.  Unload any active selection data.
         Else
+            PDDebug.LogAction "No bounds found; removing selection."
             Selections.RemoveCurrentSelection
         End If
 
@@ -424,6 +428,7 @@ Public Sub Selection_Shrink(ByVal displayDialog As Boolean, Optional ByVal shrin
         
         'No selection pixels exist.  Unload any active selection data.
         Else
+            PDDebug.LogAction "No bounds found; removing selection."
             Selections.RemoveCurrentSelection
         End If
 
@@ -462,25 +467,34 @@ Public Sub Selection_ConvertToBorder(ByVal displayDialog As Boolean, Optional By
         Dim srcArray() As Byte
         DIBs.RetrieveTransparencyTable PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcArray
         
+        'To ensure correct edge behavior (particularly on Select > All), null-pad the array with a blank
+        ' row/column of pixels on all sides.
+        Dim srcArrayPadded() As Byte
+        Filters_ByteArray.PadByteArray_NoClamp srcArray, arrWidth, arrHeight, srcArrayPadded, 1, 1
+        
         'Next, generate a shrink (erode) pass
         Dim shrinkBytes() As Byte
-        ReDim shrinkBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
-        Filters_ByteArray.Erode_ByteArray borderRadius, PDPRS_Circle, srcArray, shrinkBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth * 2
+        ReDim shrinkBytes(0 To arrWidth + 1, 0 To arrHeight + 1) As Byte
+        Filters_ByteArray.Erode_ByteArray borderRadius, PDPRS_Circle, srcArrayPadded, shrinkBytes, arrWidth + 2, arrHeight + 2, False, arrWidth * 2
         
         'Generate a grow (dilate) pass
         Dim growBytes() As Byte
-        ReDim growBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
-        Filters_ByteArray.Dilate_ByteArray borderRadius, PDPRS_Circle, srcArray, growBytes, arrWidth, arrHeight, False, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth * 2, PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.GetDIBWidth
+        ReDim growBytes(0 To arrWidth + 1, 0 To arrHeight + 1) As Byte
+        Filters_ByteArray.Dilate_ByteArray borderRadius, PDPRS_Circle, srcArrayPadded, growBytes, arrWidth + 2, arrHeight + 2, False, arrWidth * 2, arrWidth + 1
         
         'Finally, XOR those results together: that's our border!
         Dim x As Long, y As Long
-        For y = 0 To arrHeight - 1
-        For x = 0 To arrWidth - 1
-            srcArray(x, y) = shrinkBytes(x, y) Xor growBytes(x, y)
+        For y = 0 To arrHeight + 1
+        For x = 0 To arrWidth + 1
+            srcArrayPadded(x, y) = shrinkBytes(x, y) Xor growBytes(x, y)
         Next x
         Next y
         
-        'Reconstruct the target DIB from our final array
+        'Unpad the final array back to original dimensions (removing the blank row/column on all edges)
+        ReDim srcArray(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
+        Filters_ByteArray.UnPadByteArray srcArray, arrWidth, arrHeight, srcArrayPadded, 1, 1, True
+        
+        'Reconstruct the target DIB from the final array
         DIBs.Construct32bppDIBFromByteMap PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB, srcArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the
@@ -502,12 +516,13 @@ Public Sub Selection_ConvertToBorder(ByVal displayDialog As Boolean, Optional By
             'Lock in this selection
             PDImages.GetActiveImage.MainSelection.LockIn
             PDImages.GetActiveImage.SetSelectionActive True
-                
+            
             'Draw the new selection to the screen
             Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
         
         'No selection pixels exist.  Unload any active selection data.
         Else
+            PDDebug.LogAction "No bounds found; removing selection."
             Selections.RemoveCurrentSelection
         End If
         

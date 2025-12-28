@@ -4692,7 +4692,6 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     
     'Point a standard int array at the selection mask
     Dim x As Long, y As Long
-    
     Dim selMaskData() As Long, selMaskSA As SafeArray2D, selMaskSA1D As SafeArray1D
     
     'While here, grab a baseline DIB pointer and stride, so we can quickly wrap individual lines
@@ -4729,7 +4728,7 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
         If (Not boundFound) And (y >= maskHeight) Then
-            'Debug.Print "No top boundary found - is mask blank?"
+            PDDebug.LogAction "FindNewBoundsManually found no bounds"
             boundFound = True
             m_CornersLocked.Top = 0
             m_Bounds.Top = m_CornersLocked.Top
