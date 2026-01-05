@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.34</langversion>
+<langversion>1.0.35</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -2896,15 +2896,6 @@ Nahlaste prosím tuto chybu prostřednictvím nabídky Nápověda -> Odeslat zpr
 </phrase>
 
 <phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Zadaný soubor nelze najít.  Pokud byl umístěn na vyměnitelném médiu, znovu vložte správnou disketu, CD nebo přenosnou jednotku.  Pokud soubor není umístěn na přenosném médiu, ujistěte se, že:
-1) soubor nebyl smazán a...
-2) umístění souboru poskytnuté PhotoDemon je správné.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -3225,7 +3216,7 @@ Po dokončení klikněte na tlačítko Odeslat nové vydání.  Děkuju!</transl
 <translation>Instrukce pro hlášení chyby</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -5760,12 +5751,6 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
-<original>Third-party libraries</original>
-<translation>Knihovny třetích stran
-</translation>
-</phrase>
-
-<phrase>
 <original>Developers</original>
 <translation>Vývojáři</translation>
 </phrase>
@@ -6028,6 +6013,12 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 <phrase>
 <original>PhotoDemon website</original>
 <translation>Web PhotoDemon
+</translation>
+</phrase>
+
+<phrase>
+<original>Third-party libraries</original>
+<translation>Knihovny třetích stran
 </translation>
 </phrase>
 
@@ -15416,12 +15407,14 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
+<!-- Dialog_InputBox.frm contains 24 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2794</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12099 total words. -->
+<!-- As of this build, PhotoDemon contains 6000 phrases. -->
+<!-- 3206 are duplicates, so only 2794 unique phrases have been written to file. -->
+<!-- These 2794 phrases contain approximately 12049 total words. -->
 
 </pdData>
