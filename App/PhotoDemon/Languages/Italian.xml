@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.9</langversion>
+<langversion>2025.4.10</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -4197,6 +4197,18 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<phrase>
+<original>Enter password</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This file is password-protected.  Please enter a password</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -14770,14 +14782,12 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-<!-- Dialog_InputBox.frm contains 24 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2794</phrasecount>
+<phrasecount>2796</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6000 phrases. -->
-<!-- 3206 are duplicates, so only 2794 unique phrases have been written to file. -->
-<!-- These 2794 phrases contain approximately 12049 total words. -->
+<!-- As of this build, PhotoDemon contains 5980 phrases. -->
+<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
+<!-- These 2796 phrases contain approximately 12059 total words. -->
 
 </pdData>

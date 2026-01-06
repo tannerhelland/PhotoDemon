@@ -197,6 +197,11 @@ Private Sub cmdCancel_Click()
     HandleCancelButton
 End Sub
 
+'See dialog_InputBox for a use-case for this function
+Public Sub ClickCancelForMe()
+    HandleCancelButton
+End Sub
+
 Private Sub HandleCancelButton()
 
     'The user may have Cancel actions they want to apply - let them do that
@@ -221,6 +226,11 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
+    HandleOKButton
+End Sub
+
+'See dialog_InputBox for a use-case for this function
+Public Sub ClickOKForMe()
     HandleOKButton
 End Sub
 

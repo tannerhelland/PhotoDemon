@@ -397,6 +397,23 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
 
 End Function
 
+'Present a generic input box (single edit box for user entry).
+' Text passed to this function *should already be localized*.
+Public Function PromptInputBox(ByRef dlgTitle As String, ByRef dlgPrompt As String, ByRef inOutInputText As String) As VbMsgBoxResult
+
+    Load dialog_InputBox
+    Interface.FixPopupWindow dialog_InputBox.hWnd, True
+    dialog_InputBox.ShowDialog dlgTitle, dlgPrompt, inOutInputText
+    
+    PromptInputBox = dialog_InputBox.DialogResult
+    inOutInputText = dialog_InputBox.UserEnteredText
+    Interface.FixPopupWindow dialog_InputBox.hWnd, False
+    
+    Unload dialog_InputBox
+    Set dialog_InputBox = Nothing
+
+End Function
+
 'Present an "add new preset" dialog box to the user.
 Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef srcCommandBar As pdCommandBar, ByRef parentForm As Form) As VbMsgBoxResult
 

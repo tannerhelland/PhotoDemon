@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Individual Adobe PDF File Interface (via pdfium)
 'Copyright 2024-2025 by Tanner Helland
 'Created: 23/February/24
-'Last updated: 27/February/24
-'Last update: finish work on initial import prototype
+'Last updated: 06/January/26
+'Last update: add support for importing password-protected PDFs
 '
 'PhotoDemon uses the pdfium library (https://pdfium.googlesource.com/pdfium/) for all PDF features.
 ' pdfium is provided under BSD-3 and Apache 2.0 licenses (https://pdfium.googlesource.com/pdfium/+/main/LICENSE).
@@ -210,8 +210,9 @@ Friend Function HasPDF() As Boolean
     HasPDF = (m_hPDF <> 0)
 End Function
 
-'Test if an arbitrary file is a valid PDF.
-Friend Function IsFilePDF(ByRef srcFile As String, Optional ByRef passwordRequired As Boolean = False, Optional ByVal leaveHandleOpen As Boolean = True) As Boolean
+'Test if an arbitrary file is a valid PDF.  Note that this function will return *FALSE* if the file *is* a PDF
+' but the file is also password-protected but the user doesn't supply a valid password.
+Friend Function IsFilePDF(ByRef srcFile As String, Optional ByVal leaveHandleOpen As Boolean = True) As Boolean
     
     IsFilePDF = False
     
@@ -221,12 +222,9 @@ Friend Function IsFilePDF(ByRef srcFile As String, Optional ByRef passwordRequir
     'Reset the validation tracker
     m_lastValidatedFile = vbNullString
     
-    'Attempt to load the file, and check for password requirements (loading without supplying the
-    ' correct password will cause a load failure, but the file is actually a PDF - the user just
-    ' needs to be prompted for the password first).
-    passwordRequired = False
-    IsFilePDF = LoadPDFFromFile(srcFile, passwordRequired)
-    If (Not IsFilePDF) Then IsFilePDF = passwordRequired
+    'Attempt to load the file.  As mentioned above, if the file requires a password but the user does not
+    ' supply a valid one, this function will return FALSE.
+    IsFilePDF = LoadPDFFromFile(srcFile)
     
     'If the caller doesn't want us to keep the file open for further processing, close it before exiting
     If (m_hPDF <> 0) Then
@@ -297,19 +295,14 @@ Friend Function LoadPage(ByVal idxPage As Long) As Boolean
     'Load the new page.
     m_hPage = CallCDeclW(FPDF_LoadPage, vbLong, m_hPDF, idxPage)
     LoadPage = (m_hPage <> 0)
+    If (Not LoadPage) Then InternalError FUNC_NAME, "FPDF_GetLastError: " & GetLastPDFiumError()
     
 End Function
 
 'Attempt to load a PDF from file.  Returns a non-null handle if successful.
-'
-'If the function FAILS, you can query outPasswordRequired to see if the file failed due to password requirements;
-' otherwise, it's safe to assume the file is not a valid PDF.
-'
-'If a password is known in advance (or if the previous load failed due to no password supplied),
-' you can supply a password (as a string) via inPassword and this function will use that password
-' to try and open the file.
-Friend Function LoadPDFFromFile(ByRef srcFile As String, Optional ByRef outPasswordRequired As Boolean = False, Optional ByRef inPassword As String = vbNullString) As Long
+Friend Function LoadPDFFromFile(ByRef srcFile As String) As Long
     
+    Const FUNC_NAME As String = "LoadPDFFromFile"
     LoadPDFFromFile = False
     
     'If the required 3rd-party library isn't available, bail
@@ -363,7 +356,11 @@ Friend Function LoadPDFFromFile(ByRef srcFile As String, Optional ByRef outPassw
     Strings.UTF8FromString srcFile, utf8Bytes, utf8Len
     If (utf8Len > 0) Then ptrFile = VarPtr(utf8Bytes(0))
     
-    'If a password was supplied, convert that to UTF-8 too
+    'If a password was supplied, convert that to UTF-8 too.
+    ' (First, we'll always try *without* a password.)
+    Dim inPassword As String
+    
+TryAgainWithNewPassword:
     Dim ptrPassword As Long
     ptrPassword = 0
     If (LenB(inPassword) <> 0) Then
@@ -379,10 +376,100 @@ Friend Function LoadPDFFromFile(ByRef srcFile As String, Optional ByRef outPassw
     End If
     
     'If the PDF is password-protected, we can prompt the user for a password and try again
-    If (m_hPDF = 0) Then outPasswordRequired = (GetLastPDFiumError() = FPDF_ERR_PASSWORD)
+    Dim lastErr As FPDF_ErrorCodes
+    lastErr = FPDF_ERR_SUCCESS
+    If (m_hPDF = 0) Then
+        lastErr = GetLastPDFiumError()
+        InternalError FUNC_NAME, "FPDF_GetLastError: " & lastErr
+    End If
+    
+    'As of Jan 2026, pdfium is unreliable about returning ERR_PASSWORD when a file is password-protected,
+    ' so we'll need an alternate way to determine if a password prompt should be presented to the user.
+    ' (Note that password input is *always* disabled during batch processes.)
+    Dim passwordRequired As Boolean
+    passwordRequired = (m_hPDF = 0) And (lastErr = FPDF_ERR_PASSWORD)
+    If (Not passwordRequired) Then
+        passwordRequired = (m_hPDF = 0) And IsFileEncrypted(srcFile)
+        If passwordRequired Then PDDebug.LogAction "PDF is encrypted; user needs to supply a password..."
+    End If
+    
+    'Prompt the user for a password and if one is supplied, attempt import again.
+    ' (If *no* password is supplied, simply quit and report failure.)
+    If passwordRequired And (Macros.GetMacroStatus() <> MacroBATCH) Then
+        
+        Dim dlgTitle As String, dlgText As String
+        If (Not g_Language Is Nothing) Then
+            dlgTitle = g_Language.TranslateMessage("Enter password")
+            dlgText = g_Language.TranslateMessage("This file is password-protected.  Please enter a password:")
+        End If
+        
+        If (Dialogs.PromptInputBox(dlgTitle, dlgText, inPassword) = vbOK) Then
+            If (LenB(inPassword) > 0) Then GoTo TryAgainWithNewPassword
+        End If
+        
+    End If
     
     'Return success if a non-null handle was generated
     LoadPDFFromFile = (m_hPDF <> 0)
+    
+End Function
+
+'Non-PDFium way to see if a PDF file is encrypted.  If a PDF file *is* encrypted and the file fails to load,
+' we'll prompt the user for a password.
+'
+'Note that encryption and password-protection do *not* correlate 1:1; for example, a file can be encrypted solely
+' to prevent modifications (but no password is required for opening).
+'
+'I added this function to PD because as of Jan 2026, FPDF_GetLastError() in x86 builds always reports 0 for reasons
+' currently unknown.  While I track down that bug, this provides a "reasonably" good way to distinguish between
+' "failed to load PDF because file is malformed" and "failed to load PDF because password is potentially required".
+Private Function IsFileEncrypted(ByRef srcFile As String) As Boolean
+    
+    IsFileEncrypted = False
+    
+    'Open a stream on the target file.
+    Dim cStream As pdStream
+    Set cStream = New pdStream
+    If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcFile) Then
+        
+        'Load the last ~1 MB of the file as a string.  (We probably need *way* less than that, but this is a safe amount.)
+        Const ABOUT_1_MB As Long = 1024000
+        
+        Dim pos1MBfromEnd As Long, sizeToLoad As Long
+        pos1MBfromEnd = PDMath.Max2Int(0, cStream.GetStreamSize() - ABOUT_1_MB)
+        sizeToLoad = cStream.GetStreamSize() - pos1MBfromEnd
+        cStream.SetPosition pos1MBfromEnd
+        
+        Dim strTest As String
+        strTest = cStream.ReadString_ASCII(sizeToLoad)
+        
+        'With our test string loaded, we can release the source file
+        cStream.StopStream True
+        
+        'Search backward in the string, looking for the text "/ntrailer".
+        ' (PDFs can use Lf or CrLf as line-endings, so it would be extra work to search for the more useful "/ntrailer/n"
+        Dim strSearch As String, strPos As Long
+        strSearch = vbLf & "trailer"
+        strPos = InStrRev(strTest, strSearch)
+        If (strPos > 0) Then
+        
+            'Starting from the trailer and moving forward, look for an /Encrypt entry
+            strSearch = "/Encrypt "
+            Dim posEncrypt As Long
+            posEncrypt = InStr(strPos, strTest, strSearch)
+            
+            'A file with an encryption tag is encrypted.
+            IsFileEncrypted = (posEncrypt > 0)
+            
+            'If you wanted to further see if encryption is tied to a user-supplied password,
+            ' you could do so following the ideas at this link:
+            ' https://stackoverflow.com/questions/35594240/how-to-check-if-pdf-is-password-protected-using-static-tools
+            '
+            '...but that's overkill for PD at present.
+        
+        End If
+        
+    End If
     
 End Function
 
@@ -440,7 +527,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-        
+    
     'Close the current page, if any
     If (m_hPage <> 0) Then CloseCurrentPage
     
@@ -459,7 +546,9 @@ Private Function GetLastPDFiumError() As FPDF_ErrorCodes
     '  function is not defined. This function only works in conjunction
     '  with APIs that mention FPDF_GetLastError() in their documentation."
     'FPDF_EXPORT unsigned long FPDF_CALLCONV FPDF_GetLastError();
-    GetLastPDFiumError = CallCDeclW(FPDF_GetLastError, vbLong)
+    Dim tmpReturn As Long
+    tmpReturn = CallCDeclW(FPDF_GetLastError, vbLong)
+    GetLastPDFiumError = tmpReturn
     
 End Function
 

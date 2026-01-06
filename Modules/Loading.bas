@@ -845,13 +845,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
         Case "PDF"
-            Dim cPDF As pdPDF
-            Set cPDF = New pdPDF
-            If cPDF.IsFilePDF(imagePath, False, True) Then
+            If Plugin_PDF.IsFileLikelyPDF(imagePath) Then
                 loadSuccessful = ImageImporter.LoadPDF(imagePath, tmpPDImage, targetDIB, True)
                 If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             End If
-            cPDF.ClosePDF
             
         Case "PNG", "APNG"
             Dim cPNG As pdPNG
