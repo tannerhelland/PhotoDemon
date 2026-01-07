@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_PDF"
 '***************************************************************************
 'Adobe PDF Interface (via pdfium)
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 23/February/24
 'Last updated: 25/March/25
 'Last update: delay-load the library to improve performance

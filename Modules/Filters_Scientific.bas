@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Scientific"
 '***************************************************************************
 'Scientific Filter Collection
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 25/November/19
 'Last updated: 25/November/19
 'Last update: initial build

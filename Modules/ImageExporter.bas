@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageExporter"
 '***************************************************************************
 'Low-level image export interfaces
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 12/November/25
 'Last update: rewrite JPEG-2000 export against OpenJPEG

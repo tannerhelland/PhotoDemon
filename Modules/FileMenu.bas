@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileMenu"
 '***************************************************************************
 'File Menu Handler
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 15/Apr/01
 'Last updated: 06/March/25
 'Last update: in "Save As", correctly detect weird edge-case of mismatched file extension and file type in

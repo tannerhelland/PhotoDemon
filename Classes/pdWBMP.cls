@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Wireless Application Protocol Bitmap (WBMP) Decoder
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 19/March/24
 'Last updated: 19/March/24
 'Last update: initial build, heavily derived from PD's just-written XBM parser

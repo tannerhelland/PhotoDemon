@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 '3rd-Party Library Manager
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 19/September/25
 'Last update: add OpenJPEG as standalone library
@@ -74,7 +74,7 @@ Private Const EXPECTED_LIBJXL_VERSION As String = "0.11.1"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_OPENJPEG_VERSION As String = "2.5"
-Private Const EXPECTED_PDFIUM_VERSION As String = "145.0.7568"
+Private Const EXPECTED_PDFIUM_VERSION As String = "145.0.7616"
 Private Const EXPECTED_PDHELPER_VERSION As String = "1.3.0"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_RESVG_VERSION As String = "0.45.0"

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Viewport"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 20/November/24
 'Last update: add switch for crop tool UI rendering

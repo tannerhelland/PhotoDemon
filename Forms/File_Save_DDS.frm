@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'DDS Export Dialog
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 14/May/25
 'Last updated: 14/May/25
 'Last update: initial build

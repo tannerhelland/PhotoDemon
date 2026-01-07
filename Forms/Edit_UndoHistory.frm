@@ -66,7 +66,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo History dialog
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 22/May/16
 'Last update: overhaul UI to use new owner-drawn pdListBox

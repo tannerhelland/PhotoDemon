@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 12/November/25
 'Last update: clean up final work on JPEG-2000 via OpenJPEG import path
@@ -1723,23 +1723,10 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'If the user requests "preview only" mode, set the "noUI" mode to match
     If previewOnly Then noUI = True
     
-    'pdPDF handles all the dirty work for us
+    'pdPDF handles all the dirty work for us, including prompting the user for a password as necessary.
     Dim cPDF As pdPDF
     Set cPDF = New pdPDF
-    
-    'Validate the potential PDF file
-    Dim passwordRequired As Boolean
-    LoadPDF = cPDF.IsFilePDF(srcFile, passwordRequired, True)
-    
-    'If a password is required, ask for it now
-    Dim pdfPassword As String
-    If (LoadPDF And passwordRequired) Then
-        'TODO: retrieve password and attempt load again
-        'LoadPDF = cPDF.LoadPDFFromFile(srcFile, True, pdfPassword)
-    Else
-        pdfPassword = vbNullString
-        LoadPDF = cPDF.LoadPDFFromFile(srcFile, False, pdfPassword)
-    End If
+    LoadPDF = cPDF.LoadPDFFromFile(srcFile)
     
     'In the future, more complex validation could be performed here, but for now,
     ' let's just double-confirm that the PDF object is happy with the loaded PDF.

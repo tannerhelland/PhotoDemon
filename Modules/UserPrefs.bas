@@ -1,7 +1,7 @@
 Attribute VB_Name = "UserPrefs"
 '***************************************************************************
 'PhotoDemon User Preferences Manager
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 06/October/25
 'Last update: perform additional validation when loading the user preferences file (count for matched tags),

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
 'PhotoDemon Menu Manager
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 11/January/17
 'Last updated: 08/January/25
 'Last update: move the Tools > Test menu to the Developer submenu

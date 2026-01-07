@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PD Object List Manager
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 18/August/17
 'Last updated: 27/October/21
 'Last update: catch (and report) window maximize/restore events, in case we add availability to more tool windows

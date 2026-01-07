@@ -115,7 +115,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pan (offset) and Zoom Effect Interface
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 28/May/13
 'Last updated: 18/February/20
 'Last update: change horizontal/vertical offsets to ratios; this simplifies a "50%" value for

@@ -75,7 +75,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fade Previous Action Dialog
-'Copyright 2000-2025 by Tanner Helland
+'Copyright 2000-2026 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 08/August/17
 'Last update: migrate to XML params

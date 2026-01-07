@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 24/July/23
 'Last update: enforce integer coordinates on incoming mouse events
@@ -4692,7 +4692,6 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     
     'Point a standard int array at the selection mask
     Dim x As Long, y As Long
-    
     Dim selMaskData() As Long, selMaskSA As SafeArray2D, selMaskSA1D As SafeArray1D
     
     'While here, grab a baseline DIB pointer and stride, so we can quickly wrap individual lines
@@ -4729,7 +4728,7 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         
         'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
         If (Not boundFound) And (y >= maskHeight) Then
-            'Debug.Print "No top boundary found - is mask blank?"
+            PDDebug.LogAction "FindNewBoundsManually found no bounds"
             boundFound = True
             m_CornersLocked.Top = 0
             m_Bounds.Top = m_CornersLocked.Top

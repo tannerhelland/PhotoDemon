@@ -1,7 +1,7 @@
 Attribute VB_Name = "LittleCMS"
 '***************************************************************************
 'LittleCMS Interface
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 21/April/16
 'Last updated: 28/August/25
 'Last update: add wrapper for creating custom RGB profiles via custom tone curves

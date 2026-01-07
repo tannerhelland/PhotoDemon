@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 3D LUT I/O class
-'Copyright 2020-2025 by Tanner Helland
+'Copyright 2020-2026 by Tanner Helland
 'Created: 23/October/20
 'Last updated: 01/June/22
 'Last update: new support for resizing LUT dimensions on-the-fly

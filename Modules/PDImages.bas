@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDImages"
 '***************************************************************************
 'Image Canvas Handler (formerly Image Window Handler)
-'Copyright 2002-2025 by Tanner Helland
+'Copyright 2002-2026 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 10/March/25
 'Last update: new "StrategicMemoryReduction" function to reduce memory when multiple images are loaded

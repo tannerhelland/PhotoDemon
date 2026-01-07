@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Manager class
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 04/March/25
 'Last update: improve saving/restoring window location for child windows

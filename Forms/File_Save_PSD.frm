@@ -107,7 +107,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Adobe Photoshop (PSD) Export Dialog
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 18/February/19
 'Last updated: 19/February/19
 'Last update: wrap up initial build

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ComplexNumbers"
 '***************************************************************************
 'Complex Number math and interfaces
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 24/August/21
 'Last updated: 25/August/21
 'Last update: add Float versions; in PD, the precision vs performance trade-off often tilts toward perf

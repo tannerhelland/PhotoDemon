@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_8bf"
 '***************************************************************************
 '8bf Plugin Interface
-'Copyright 2021-2025 by Tanner Helland
+'Copyright 2021-2026 by Tanner Helland
 'Created: 07/February/21
 'Last updated: 10/February/21
 'Last update: add better UI support (progress bar tracking) during plugin enumeration

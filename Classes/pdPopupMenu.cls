@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pop-up Menu Manager
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 29/May/19
 'Last updated: 16/December/23
 'Last update: total overhaul (added submenu support and refactored pretty much everything)

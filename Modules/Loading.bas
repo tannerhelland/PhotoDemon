@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'General-purpose image and data import interface
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 18/November/25
 'Last update: expand QuickLoad support for recent format support enhancements
@@ -845,13 +845,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
         Case "PDF"
-            Dim cPDF As pdPDF
-            Set cPDF = New pdPDF
-            If cPDF.IsFilePDF(imagePath, False, True) Then
+            If Plugin_PDF.IsFileLikelyPDF(imagePath) Then
                 loadSuccessful = ImageImporter.LoadPDF(imagePath, tmpPDImage, targetDIB, True)
                 If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             End If
-            cPDF.ClosePDF
             
         Case "PNG", "APNG"
             Dim cPNG As pdPNG

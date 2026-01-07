@@ -481,7 +481,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gradient Editor Dialog
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
 'Last updated: 13/April/22
 'Last update: replace lingering picture boxes with pdPictureBox

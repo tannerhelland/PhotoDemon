@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.8</langversion>
+<langversion>2025.4.10</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -2824,15 +2824,6 @@ Per favore, segnala questo bug tramite il menù Aiuto -> Invia segnalazione di b
 </phrase>
 
 <phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Il file specificato non è stato trovato. Se era memorizzato in un supporto rimovibile, per favore reinserisci il corretto dischetto, CD o drive. Se il file non si trova su un supporto rimovibile assicurati che:
-1) non sia stato cancellato, rinominato o spostato
-2) il percorso fornito a PhotoDemon sia corretto.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -3134,7 +3125,7 @@ Quando hai finito, clicca sul pulsante "Submit New Issue".  Grazie!</translation
 <translation>Istruzioni per la segnalazione di bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -4206,6 +4197,18 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<phrase>
+<original>Enter password</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This file is password-protected.  Please enter a password</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -5543,11 +5546,6 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
-<original>Third-party libraries</original>
-<translation>Librerie di terzi</translation>
-</phrase>
-
-<phrase>
 <original>Developers</original>
 <translation>Sviluppatori</translation>
 </phrase>
@@ -5785,6 +5783,11 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 <phrase>
 <original>PhotoDemon website</original>
 <translation>Visita il sito web di PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>Third-party libraries</original>
+<translation>Librerie di terzi</translation>
 </phrase>
 
 <phrase>
@@ -14781,10 +14784,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2796</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12099 total words. -->
+<!-- As of this build, PhotoDemon contains 5980 phrases. -->
+<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
+<!-- These 2796 phrases contain approximately 12059 total words. -->
 
 </pdData>

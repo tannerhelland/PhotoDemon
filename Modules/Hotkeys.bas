@@ -1,7 +1,7 @@
 Attribute VB_Name = "Hotkeys"
 '***************************************************************************
 'PhotoDemon Custom Hotkey handler
-'Copyright 2015-2025 by Tanner Helland and contributors
+'Copyright 2015-2026 by Tanner Helland and contributors
 'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon)
 'Last updated: 31/October/24
 'Last update: many changes to allow interop with FormHotkeys (for user-edited hotkeys)

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_OpenJPEG"
 '***************************************************************************
 'OpenJPEG (JPEG-2000) Library Interface
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 19/September/25
 'Last updated: 11/November/25
 'Last update: finalize write support

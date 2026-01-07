@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Paintbrush tool interface
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 1/November/16
 'Last updated: 28/January/25
 'Last update: again provide a floating-point line interpolator (and give users a toggle for strict vs loose pixel alignment)

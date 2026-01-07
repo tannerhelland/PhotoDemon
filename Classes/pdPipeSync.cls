@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Synchronous Pipe Interface
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 24/October/17
 'Last updated: 08/September/23
 'Last update: split out from pdPipeAsync, and simplify for synchronous use only (this is preferable for some plugins)

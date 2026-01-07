@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Owner-Drawn Treeview control
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 05/September/24
 'Last updated: 05/September/24
 'Last update: continued migrating code from the default list box to this instance

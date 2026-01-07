@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box control
-'Copyright 2015-2025 by Tanner Helland
+'Copyright 2015-2026 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 28/December/15
 'Last update: continued work on initial build

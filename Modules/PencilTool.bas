@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Pencil"
 '***************************************************************************
 'Pencil tool interface
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 1/November/16
 'Last updated: 29/January/25
 'Last update: add "align to pixel grid" setting, and allow the user to toggle at their leisure.

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Crop"
 '***************************************************************************
 'Crop tool interface
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 12/November/24
 'Last updated: 25/February/25
 'Last update: implement "target image" vs "target layer" setting

@@ -159,7 +159,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 08/June/13
 'Last updated: 17/April/20
 'Last update: minor perf improvements

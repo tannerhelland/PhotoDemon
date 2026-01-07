@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Chunk Manager (companion to the pdPNG class)
-'Copyright 2018-2025 by Tanner Helland
+'Copyright 2018-2026 by Tanner Helland
 'Created: 12/April/18
 'Last updated:28/August/25
 'Last update: add coverage for masking high tRNS byte on non-16-bits-per-channel data (2025 spec revision; see comments)

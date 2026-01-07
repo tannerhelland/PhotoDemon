@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Fill"
 '***************************************************************************
 'PhotoDemon Bucket Fill Manager
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 30/August/17
 'Last updated: 22/May/24
 'Last update: automatically redirect "sample from layer" to "sample from image" when the cursor is off-layer

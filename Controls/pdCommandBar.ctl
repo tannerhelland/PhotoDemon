@@ -134,7 +134,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tool Dialog Command Bar custom control
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 04/November/24
 'Last update: allow owner to cancel reset actions (for example, if the user declines a "want to proceed?" prompt)
