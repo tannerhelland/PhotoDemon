@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Polar Coordinate Conversion Tool
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 14/January/13
 'Last updated: 28/July/17
 'Last update: performance improvements, migrate to XML params

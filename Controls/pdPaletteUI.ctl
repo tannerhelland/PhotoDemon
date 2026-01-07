@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Palette-based Color Selector
-'Copyright 2018-2025 by Tanner Helland
+'Copyright 2018-2026 by Tanner Helland
 'Created: 14/February/18
 'Last updated: 16/April/19
 'Last update: add option for displaying alpha in palette entries; this isn't always wanted, but in the

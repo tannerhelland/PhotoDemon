@@ -1,7 +1,7 @@
 Attribute VB_Name = "Colors"
 '***************************************************************************
 'Miscellaneous Color Functions
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 28/February/19
 'Last update: add support for retrieving colors by SVG color name

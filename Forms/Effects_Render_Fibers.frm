@@ -189,7 +189,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Render Fibers Effect
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 01/August/19
 'Last updated: 01/August/19
 'Last update: initial build

@@ -135,7 +135,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tools > Options > Metadata panel
-'Copyright 2002-2025 by Tanner Helland
+'Copyright 2002-2026 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 08/April/25
 'Last update: combine metadata options from other panels into this standalone panel

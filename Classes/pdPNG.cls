@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Container and Parser
-'Copyright 2018-2025 by Tanner Helland
+'Copyright 2018-2026 by Tanner Helland
 'Created: 12/April/18
 'Last updated: 28/August/25
 'Last update: add coverage for new cICP HDR chunk (see https://w3c.github.io/png/Implementation_Report_3e/)

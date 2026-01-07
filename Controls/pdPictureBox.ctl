@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PictureBox Replacement control (lightweight non-interactive version)
-'Copyright 2018-2025 by Tanner Helland
+'Copyright 2018-2026 by Tanner Helland
 'Created: 21/March/18
 'Last updated: 12/November/20
 'Last update: new event after a window resize has occurred; the owner may need to perform a special redraw

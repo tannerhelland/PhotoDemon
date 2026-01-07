@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 07/October/21
 'Last update: move output message callback here, and rewrite it to use internal PD objects for better perf

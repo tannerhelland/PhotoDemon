@@ -1,7 +1,7 @@
 Attribute VB_Name = "Actions"
 '***************************************************************************
 'Action Handler
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 07/October/21
 'Last updated: 19/August/22
 'Last update: build a rudimentary "action database" at run-time, which stores action names and corresponding

@@ -227,7 +227,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Customizable hotkeys dialog
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 09/September/24
 'Last updated: 05/November/24
 'Last update: final touches!  Almost ready to launch this feature!

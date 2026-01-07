@@ -211,7 +211,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '8bf Plugin Interface Dialog
-'Copyright 2021-2025 by Tanner Helland
+'Copyright 2021-2026 by Tanner Helland
 'Created: 08/February/21
 'Last updated: 15/December/25
 'Last update: if no 8bf files exist, avoid calling pspihost to avoid crashes on some systems

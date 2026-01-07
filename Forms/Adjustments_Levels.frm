@@ -233,7 +233,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright 2006-2025 by Tanner Helland
+'Copyright 2006-2026 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 15/October/20
 'Last update: migrate remaining UI to elements to PD's internal toolkit

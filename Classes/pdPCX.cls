@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PCX (ZSoft "PiCture eXchange") Image Decoder
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 02/January/25
 'Last updated: 24/February/25
 'Last update: tweak importer to fix recovery of 4-bpp, 4-plane data, but as I only have one test image

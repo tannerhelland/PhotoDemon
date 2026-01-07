@@ -107,7 +107,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Selection Stroke Dialog
-'Copyright 2022-2025 by Tanner Helland
+'Copyright 2022-2026 by Tanner Helland
 'Created: 04/May/22
 'Last updated: 05/May/22
 'Last update: wrap up initial build

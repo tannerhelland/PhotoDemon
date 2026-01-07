@@ -94,7 +94,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Burn" Fire FX Form
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: some time 2001
 'Last updated: 03/August/17
 'Last update: migrate to XML params, performance improvements

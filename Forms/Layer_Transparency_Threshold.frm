@@ -99,7 +99,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Threshold alpha dialog
-'Copyright 2020-2025 by Tanner Helland
+'Copyright 2020-2026 by Tanner Helland
 'Created: 15/May/20
 'Last updated: 15/May/20
 'Last update: initial build

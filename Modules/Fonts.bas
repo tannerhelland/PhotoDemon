@@ -1,7 +1,7 @@
 Attribute VB_Name = "Fonts"
 '***************************************************************************
 'PhotoDemon Font Manager
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 31/May/13
 'Last updated: 07/April/25
 'Last update: add support for rendering from custom user font files (never installed!) at run-time

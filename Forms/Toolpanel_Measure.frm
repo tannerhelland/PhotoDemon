@@ -322,7 +322,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Measurement Tool Panel
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 11/July/18
 'Last updated: 28/May/24
 'Last update: support for percent as a measurement unit

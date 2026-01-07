@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Central Language and Translation Handler
-'Copyright 2012-2025 by Frank Donckers and Tanner Helland
+'Copyright 2012-2026 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
 'Last updated: 28/September/23
 'Last update: new "assign translation by object ID instead of caption" feature (see https://github.com/tannerhelland/PhotoDemon/issues/491)

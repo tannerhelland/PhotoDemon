@@ -1,7 +1,7 @@
 Attribute VB_Name = "Layers"
 '***************************************************************************
 'Layer Interface
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 24/March/14
 'Last updated: 14/November/23
 'Last update: new support for adding multiple layers from file at once (Layers > Add > from File...)

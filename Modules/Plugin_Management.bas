@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 '3rd-Party Library Manager
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 19/September/25
 'Last update: add OpenJPEG as standalone library

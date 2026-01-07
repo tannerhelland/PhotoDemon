@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Display Device Manager (child class)
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 18/September/15
 'Last update: add additional failsafes just in case core display APIs fail

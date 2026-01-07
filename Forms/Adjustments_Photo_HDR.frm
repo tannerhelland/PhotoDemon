@@ -79,7 +79,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Imitation HDR Tool
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 09/July/14
 'Last updated: 20/July/17
 'Last update: migrate to XML params, minor performance improvements

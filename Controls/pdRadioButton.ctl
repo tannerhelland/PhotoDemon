@@ -33,7 +33,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Radio Button control
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 28/January/13
 'Last updated: 15/February/16
 'Last update: finalize theming support

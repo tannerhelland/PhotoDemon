@@ -99,7 +99,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Replace color dialog
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 29/October/13
 'Last updated: 27/April/20
 'Last update: perf improvements; tool is 2x faster now!

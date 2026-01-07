@@ -123,7 +123,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Right-side ("Layers") Toolbar
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 08/October/21
 'Last update: fix the way the form is initialized on large screens (ensure saved panel positions are loaded correctly,

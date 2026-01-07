@@ -1,7 +1,7 @@
 Attribute VB_Name = "SelectionFilters"
 '***************************************************************************
 'Selection Tools: Filters
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 05/May/22
 'Last update: new stroke, fill, and content-aware fill features

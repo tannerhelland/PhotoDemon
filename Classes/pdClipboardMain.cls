@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Clipboard Interface
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 08/April/25
 'Last update: fix behavior when copy+pasting internal data formats (like layers with active affine transforms)

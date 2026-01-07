@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 32-bit-float-per-channel surface
-'Copyright 2023-2025 by Tanner Helland
+'Copyright 2023-2026 by Tanner Helland
 'Created: 08/January/23
 'Last updated: 10/January/23
 'Last update: continue building out feature set

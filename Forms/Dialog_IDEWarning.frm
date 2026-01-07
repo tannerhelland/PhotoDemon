@@ -110,7 +110,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'IDE Warning Dialog
-'Copyright 2011-2025 by Tanner Helland
+'Copyright 2011-2026 by Tanner Helland
 'Created: 15/December/12
 'Last updated: 07/March/20
 'Last update: remove translation wrappers for text; it's fine for these warnings to appear

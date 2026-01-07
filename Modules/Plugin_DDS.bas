@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_DDS"
 '***************************************************************************
 'DirectXTex (DDS) Interface
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 28/April/25
 'Last updated: 22/May/25
 'Last update: continued workarounds for lack of output file parameters in texconv

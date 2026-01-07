@@ -315,7 +315,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Basic Text Tool Panel
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 09/March/22
 'Last update: new checkbox for auto-dropping text entry field after creating a new text layer

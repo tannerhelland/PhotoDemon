@@ -162,7 +162,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tools > Options > Performance panel
-'Copyright 2002-2025 by Tanner Helland
+'Copyright 2002-2026 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 02/April/25
 'Last update: split this panel into a standalone form

@@ -1,7 +1,7 @@
 Attribute VB_Name = "VBHacks"
 '***************************************************************************
 'Misc VB6 Hacks
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 24/March/25
 'Last update: add "LargeAllocationIncoming()" function for compressing and/or suspending to disk

@@ -326,7 +326,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Clone Stamp Tool Panel
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 31/October/16
 'Last updated: 01/December/21
 'Last update: update UI to new flyout design

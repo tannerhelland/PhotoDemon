@@ -128,7 +128,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright 2006-2025 by Tanner Helland
+'Copyright 2006-2026 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 03/March/25
 'Last update: add blend mode and opacity support; change luminance to scaling (instead of fixing)

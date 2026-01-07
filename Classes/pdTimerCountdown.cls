@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Countdown Timer (modified wrapper around pdTimer, targeting precise countdowns)
-'Copyright 2020-2025 by Tanner Helland
+'Copyright 2020-2026 by Tanner Helland
 'Created: 24/July/20
 'Last updated: 24/July/20
 'Last update: split off from pdTimer.  That class should stay as lightweight as possible.

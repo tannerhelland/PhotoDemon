@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon OpenRaster Container and Parser
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 08/January/19
 'Last updated: 05/January/23
 'Last update: update to latest cZipArchive; minor changes to match

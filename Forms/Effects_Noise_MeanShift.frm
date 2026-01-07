@@ -88,7 +88,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Mean Shift Effect Tool
-'Copyright 2015-2025 by Tanner Helland
+'Copyright 2015-2026 by Tanner Helland
 'Created: 02/October/15
 'Last updated: 25/June/20
 'Last update: minor perf improvements

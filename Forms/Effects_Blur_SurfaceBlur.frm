@@ -83,7 +83,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Surface Blur (bilateral filter)
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 28/October/20
 'Last update: modify event behavior to fix potentially lost ESC keypresses

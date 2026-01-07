@@ -33,7 +33,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Generic Control Container
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 13/June/16
 'Last updated: 18/February/17
 'Last update: report size changes back to our parent window

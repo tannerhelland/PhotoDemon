@@ -202,7 +202,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Merge images into single multi-layered image dialog
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 31/August/19
 'Last updated: 03/September/19
 'Last update: wrap up initial build

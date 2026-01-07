@@ -1,7 +1,7 @@
 Attribute VB_Name = "Zoom"
 '***************************************************************************
 'PhotoDemon Zoom Handler - calculates and tracks zoom values for a given image
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 11/September/25
 'Last update: add 150% zoom as a preset value (see https://github.com/tannerhelland/PhotoDemon/issues/666)

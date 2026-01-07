@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Automatic Localization Helper
-'Copright 2013-2025 by Tanner Helland
+'Copright 2013-2026 by Tanner Helland
 'Created: 19/February/13
 'Last updated: 27/June/22
 'Last update: rewrite class against the official DeepL.com REST API; note that users must supply their own (free) DeepL API key

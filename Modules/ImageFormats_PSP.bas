@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageFormats_PSP"
 '***************************************************************************
 'PhotoDemon PSP (PaintShop Pro) Container and Parser
-'Copyright 2020-2025 by Tanner Helland
+'Copyright 2020-2026 by Tanner Helland
 'Created: 30/December/20
 'Last updated: 03/February/21
 'Last update: wrap up finishing touches on export support

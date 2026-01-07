@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Move"
 '***************************************************************************
 'PhotoDemon Move/Size Tool Manager
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 24/May/14
 'Last updated: 06/May/24
 'Last update: move rendering layer boundaries to universal "View > Show" menu; start work on new
