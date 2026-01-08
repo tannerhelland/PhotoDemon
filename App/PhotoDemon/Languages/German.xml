@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2025.4 Alpha - Build 143.4</langversion>
+<langversion>2025.12 Alpha - Build 35</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -4201,12 +4201,12 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>Passwort eingeben</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>Diese Datei ist passwortgeschützt. Bitte geben Sie ein Passwort ein.</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
