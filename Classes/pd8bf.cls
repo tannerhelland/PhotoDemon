@@ -54,6 +54,69 @@ Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, B
 Private Const MAX_PARAM_COUNT As Long = 8
 Private m_vType() As Integer, m_vPtr() As Long
 
+'Error codes come from PIGeneral.h (Adobe plugin SDK).
+' Note that these are returned via *short int* not *long int*
+Private Enum PS_8bfErrorCodes
+
+    ps_Success = 0
+    
+    '//-------------------------------------------------------------------------------
+    '//  Defines -- General plug-in error codes.
+    '//-------------------------------------------------------------------------------
+
+    '/** Indicates that the plug-in requires services not provided by this host. */
+    errPlugInHostInsufficient = -30900
+    
+    '/** Indicates that a requested property could not be found. */
+    errPlugInPropertyUndefined = -30901
+    
+    '/**
+    '* Indicates that an image processing operation does not support colBytes values
+    '* other than 1. Message is "The plug-in requires services not provided by this host."
+    '*/
+    errHostDoesNotSupportColStep = -30902
+
+    '/**
+    '* For the Color Services callback, during the operation plugIncolorServicesSamplePoint,
+    '* indicates that the is not in the image window.
+    '*/
+    errInvalidSamplePoint = -30903
+             
+    '/**
+    '* When a plug-in returns with \c result=errReportString, the
+    '* host reports the \c errorString value from the plug-in's parameter block.
+    '*/
+    errReportString = -30904
+    
+    '//-------------------------------------------------------------------------------
+    '//  Defines -- Channel Port error codes.
+    '//-------------------------------------------------------------------------------
+    
+    errUnknownPort = -30910                        '/**< Unknown Channel Port. */
+    errUnsupportedRowBits = -30911                 '/**< Host does not support value provided in
+                                                   '            @ref PixelMemoryDesc::rowBits. */
+    
+    errUnsupportedColBits = -30912                 '/**< Host does not support value provided in
+                                                   '            @ref PixelMemoryDesc::colBits. */
+    
+    errUnsupportedBitOffset = -30913               '/**< Host does not support value provided in
+                                                   '            @ref PixelMemoryDesc::bitOffset. */
+    
+    errUnsupportedDepth = -30914                   '/**< Host does not support value provided in
+                                                   '            @ref PixelMemoryDesc::depth. */
+    
+    errUnsupportedDepthConversion = -30915         '/**< Host does not provide conversion for the depth
+                                                   '            provided in @ref PixelMemoryDesc::depth. */
+    
+
+    '/* Error return values. The plug-in module may also return standard Macintosh
+    '   operating system error codes, or report its own errors, in which case it
+    '   can return any positive integer. */
+    filterBadParameters = -30100  '/**< The filter module had a problem with the filter module interface. */
+    filterBadMode = -30101        '/**< The filter module does not support \<mode\> images. */
+    
+End Enum
+
 'Photoshop types follow
 '/** Acquires a function suite. Loads the suite if necessary,
 '        and increments its reference count. For example:
@@ -160,6 +223,33 @@ Private Type AboutRecord
     
 End Type
 
+Private Enum PS_FilterSelector
+    fs_About = 0
+    fs_Parameters = 1
+    fs_Prepare = 2
+    fs_Start = 3
+    fs_Continue = 4
+    fs_Finish = 5
+End Enum
+
+#If False Then
+    Private Const fs_About = 0, fs_Parameters = 1, fs_Prepare = 2, fs_Start = 3, fs_Continue = 4, fs_Finish = 5
+#End If
+
+'If the underlying library is loaded (via LoadLibrary), this handle will be non-0.  Note that LoadLibrary itself
+' refcounts Load/Free calls, so we don't need to worry about multiple classes loading the same DLL.  (And really,
+' FreeLibrary is mostly done to satisfy my OCD - the OS auto-frees loaded libraries when the base .exe terminates.)
+' My bigger concern is memory usage if the user touches a ton of 8bf files in a single session; in that case,
+' especially given that safe memory management is *not* guaranteed by a lot of 8bf files - unloading plugins
+' post-usage can provide a non-trivial stability and resource-reclaiming benefit.
+Private m_hLib As Long
+
+'Filename of the underlying plugin.  Note that this is *not* unique per-plugin, as a single plugin file
+' can expose multiple plugin interfaces.
+Friend Function GetFilename() As String
+    GetFilename = m_Filename
+End Function
+
 'Given a list of raw PiPL properties (and the target file from which they came), initialize this class.
 ' Returns TRUE if the property list is valid and compatible with PD; FALSE otherwise.  The plugin should
 ' not be exposed to the user if FALSE is returned.
@@ -167,6 +257,9 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
     
     Initialize8bf_FromFile = False
     m_Filename = srcFile
+    
+    'If this class already holds a plugin instance, free it
+    UnloadPlugin
     
     'Ensure at least 2 properties were retrieved (technically we need more than this,
     ' but at a *minimum* we need a name and category to display)
@@ -364,35 +457,24 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
         
     Next i
     
+    'This plugin can be exposed to the user if...
+    ' 1) It's actually an 8bf plugin
+    ' 2) It exposes a valid entrypoint
+    ' 3) It has a name
+    ' 4) It has a category
+    Initialize8bf_FromFile = kindOK And entryPointOK And (LenB(m_Name) <> 0) And (LenB(m_Category) <> 0)
+    
 End Function
 
 'Returns TRUE if the plugin has a valid About dialog interface (as far as we can tell)
-Friend Function IsAboutDialogAvailable() As Boolean
+Friend Function IsAboutDialogPossiblyAvailable() As Boolean
         
-    Const FUNC_NAME As String = "IsAboutDialogAvailable"
-        
-    'Ensure this entry point actually exists in the target file; if it does, retrieve a pointer to it.
-    ' TODO: plugins don't *have* to define an About dialog interface; we can check this flag at load-time
-    ' and should use it here, prior to looking for the entry point
-    If (LenB(m_EntryPoint) <> 0) Then
-        
-        'Load the DLL
-        'TODO: check bitness during load to ensure we're not attempting to load a 64-bit lib
-        Dim hLib As Long
-        hLib = VBHacks.LoadLib(m_Filename)
-        If (hLib <> 0) Then
-            
-            'Attempt to retrieve the entry point self-defined by the plugin
-            m_pEntryPoint = GetProcAddress(hLib, m_EntryPoint)
-            IsAboutDialogAvailable = (m_pEntryPoint <> 0)
-            If DEBUG_VERBOSE And (Not IsAboutDialogAvailable) Then InternalError FUNC_NAME, "GetProcAddress failed"
-            
-        Else
-            If DEBUG_VERBOSE Then InternalError FUNC_NAME, "LoadLibrary failed"
-            IsAboutDialogAvailable = False
-        End If
-        
-    End If
+    Const FUNC_NAME As String = "IsAboutDialogPossiblyAvailable"
+    
+    'It's impossible to know if an About dialog is available in advance.  Instead, you have to call the
+    ' main entry point with the "About dialog ID", then check the return value.
+    ' Of course, a lot of plugins *don't* show an About dialog and then return "success", so YMMV.
+    IsAboutDialogPossiblyAvailable = EnsureLibLoaded()
     
 End Function
 
@@ -402,13 +484,14 @@ Friend Function ShowAboutDialog(ByVal srcHostHWnd As Long) As Boolean
     
     ShowAboutDialog = False
     
-    'Ensure we have an entry point to use for the dialog display
-    If (Not Me.IsAboutDialogAvailable()) Then Exit Function
+    'Ensure we have an entry point to use for the About dialog display request
+    If (Not EnsureLibLoaded) Then Exit Function
+    If (Not Me.IsAboutDialogPossiblyAvailable()) Then Exit Function
     
     'Failsafe only; previous step should have validated this
     If (m_pEntryPoint = 0) Then Exit Function
     
-    'Prep the basic structs required for About display
+    'Prep the basic structs required for About display.  (These are very simple.)
     Dim tmpAboutRecord As AboutRecord
     tmpAboutRecord.pPlatformDataHwnd = VarPtr(srcHostHWnd)
     
@@ -418,6 +501,62 @@ Friend Function ShowAboutDialog(ByVal srcHostHWnd As Long) As Boolean
     Dim adobeReturn As Integer
     adobeReturn = 0
     
+    'Plugin data for the caller (?)
+    Dim pPluginData As Long
+    pPluginData = 0
+    
+    If DEBUG_VERBOSE Then PDDebug.LogAction "Showing About dialog for " & m_Filename
+    CallCDeclW m_pEntryPoint, vbEmpty, fs_About, VarPtr(tmpAboutRecord), VarPtr(pPluginData), VarPtr(adobeReturn)
+    ShowAboutDialog = (adobeReturn = ps_Success)
+    If DEBUG_VERBOSE And (Not ShowAboutDialog) Then PDDebug.LogAction "entry point return: " & adobeReturn
+    
+End Function
+
+'Before touching any function calls in the 8bf file, call this function to ensure LoadLibrary has been called.
+Private Function EnsureLibLoaded() As Boolean
+    
+    Const FUNC_NAME As String = "EnsureLibLoaded"
+    EnsureLibLoaded = False
+    
+    If (m_hLib <> 0) Then
+        EnsureLibLoaded = True
+        Exit Function
+    End If
+    
+    'If we're still here, the library has not been loaded yet.  Attempt to load it.
+    ' Note that m_Filename *MUST* be set before calling this function (i.e. you must have called
+    ' Initialize8bf_FromFile() and the plugin must have passed initial validation).
+    If (LenB(m_Filename) = 0) Then
+        InternalError FUNC_NAME, "no filename"
+        Exit Function
+    End If
+    
+    'Load the DLL
+    'TODO: check bitness during load to ensure we're not attempting to load a 64-bit lib
+    '      (probably needs to happen during validation, not here)
+    m_hLib = VBHacks.LoadLib(m_Filename)
+    If (m_hLib <> 0) Then
+        
+        'Attempt to retrieve the entry point self-defined by the plugin
+        m_pEntryPoint = GetProcAddress(m_hLib, m_EntryPoint)
+        EnsureLibLoaded = (m_pEntryPoint <> 0)
+        If DEBUG_VERBOSE And (Not EnsureLibLoaded) Then InternalError FUNC_NAME, "GetProcAddress failed"
+        
+    Else
+        If DEBUG_VERBOSE Then InternalError FUNC_NAME, "LoadLibrary failed"
+        Exit Function
+    End If
+    
+End Function
+
+Friend Function UnloadPlugin() As Boolean
+    
+    m_numProperties = 0
+    Erase m_Properties
+    
+    'The most important step of unloading a plugin is freeing the underlying library
+    If (m_hLib <> 0) Then VBHacks.FreeLib m_hLib
+    UnloadPlugin = (m_hLib = 0)
     
 End Function
 
@@ -460,3 +599,6 @@ Private Sub InternalError(ByRef errFuncName As String, ByRef errDescription As S
     If (errNum <> 0) Then PDDebug.LogAction "  (If it helps, an error number was also reported: #" & errNum & ")"
 End Sub
 
+Private Sub Class_Terminate()
+    UnloadPlugin
+End Sub

@@ -34,6 +34,10 @@ Option Explicit
 'Verbose debug logging; turn OFF is production builds
 Private Const PS_DEBUG_VERBOSE As Boolean = True
 
+'During the transitionary period (from pspihost to native code), I've added a toggle to switch
+' between pspihost and our own native code when triggering plugin behavior(s).
+Private Const USE_NATIVE_INTERFACE As Boolean = True
+
 Private Enum PSPI_Result
     PSPI_OK = 0
     PSPI_ERR_FILTER_NOT_LOADED = 1
@@ -185,7 +189,7 @@ Public Type PIProperty
     '* for the vendorID to ensure uniqueness. All Photoshop properties use the vendorID
     '* '8BIM'.
     '*/
-    vendorID As String * 4
+    VendorId As String * 4
     
     '/// Identification key for this property type. See @ref PiPLKeys "Property Keys".
     propertyKey As String * 4
@@ -457,6 +461,7 @@ End Sub
 
 Public Sub ResetPluginCollection()
     m_numPlugins = 0
+    m_numSafePlugins = 0
 End Sub
 
 'Short-hand function for automatically setting the plugin image to PD's active working image.  Note that
@@ -523,18 +528,47 @@ Public Sub ShowAboutDialog(ByRef fullPathToPlugin As String, Optional ByVal owne
     Const funcName As String = "ShowAboutDialog"
     If (ownerHwnd = 0) Then ownerHwnd = FormMain.hWnd
     
-    If Plugin_8bf.Load8bf(fullPathToPlugin) Then
+    'Native VB6
+    If USE_NATIVE_INTERFACE Then
         
-        'Display about dialog.  Note that this function may return "dummy proc" which is expected and OK
-        Dim retPspi As PSPI_Result
-        retPspi = pspiPlugInAbout(FormMain.hWnd)
-        If (retPspi <> PSPI_OK) And (retPspi <> PSPI_ERR_FILTER_DUMMY_PROC) Then
-            InternalError funcName, "couldn't show About dialog", retPspi
+        If (m_numSafePlugins <= 0) Then Exit Sub
+        
+        'Find the matching plugin object
+        Dim idxTarget As Long
+        idxTarget = -1
+        
+        Dim i As Long
+        For i = 0 To m_numSafePlugins - 1
+            If (Not m_SafePlugins(i) Is Nothing) Then
+                If Strings.StringsEqual(m_SafePlugins(i).GetFilename, fullPathToPlugin, True) Then
+                    idxTarget = i
+                    Exit For
+                End If
+            End If
+        Next i
+        
+        If (idxTarget >= 0) Then
+            Dim retShow As Boolean
+            retShow = m_SafePlugins(i).ShowAboutDialog(ownerHwnd)
         End If
         
-        'Free the plugin
-        Plugin_8bf.Free8bf
-    
+    'pspihost
+    Else
+        
+        If Plugin_8bf.Load8bf(fullPathToPlugin) Then
+            
+            'Display about dialog.  Note that this function may return "dummy proc" which is expected and OK
+            Dim retPspi As PSPI_Result
+            retPspi = pspiPlugInAbout(FormMain.hWnd)
+            If (retPspi <> PSPI_OK) And (retPspi <> PSPI_ERR_FILTER_DUMMY_PROC) Then
+                InternalError funcName, "couldn't show About dialog", retPspi
+            End If
+            
+            'Free the plugin
+            Plugin_8bf.Free8bf
+        
+        End If
+        
     End If
     
 End Sub
@@ -785,7 +819,7 @@ Private Function EnumResNameProcW(ByVal hModule As Long, ByVal lpType As Long, B
                 ' to a temporary int, *then* read them as a string
                 Dim tmpKey As Long
                 tmpKey = cStream.ReadLong_BE()
-                .vendorID = Strings.StringFromCharPtr(VarPtr(tmpKey), False, 4, True)
+                .VendorId = Strings.StringFromCharPtr(VarPtr(tmpKey), False, 4, True)
                 
                 tmpKey = cStream.ReadLong_BE()
                 .propertyKey = Strings.StringFromCharPtr(VarPtr(tmpKey), False, 4, True)
@@ -798,7 +832,7 @@ Private Function EnumResNameProcW(ByVal hModule As Long, ByVal lpType As Long, B
                 ' data may be useful to the initializer
                 ReDim .pPropertyData(0 To .propertyLength - 1) As Byte
                 cStream.ReadBytesToBarePointer VarPtr(.pPropertyData(0)), .propertyLength
-                Debug.Print .vendorID, .propertyKey, .propertyID, .propertyLength
+                Debug.Print .VendorId, .propertyKey, .propertyID, .propertyLength
             End With
             
             'Property length is always reported as-is, but must be manually padded to 4-byte alignment
