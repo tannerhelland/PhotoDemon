@@ -32,7 +32,7 @@ Attribute VB_Name = "Plugin_8bf"
 Option Explicit
 
 'Verbose debug logging; turn OFF is production builds
-Private Const PS_DEBUG_VERBOSE As Boolean = True
+Private Const PS_DEBUG_VERBOSE As Boolean = False
 
 'During the transitionary period (from pspihost to native code), I've added a toggle to switch
 ' between pspihost and our own native code when triggering plugin behavior(s).
@@ -884,7 +884,10 @@ Private Function EnumResNameProcW(ByVal hModule As Long, ByVal lpType As Long, B
                 ' data may be useful to the initializer
                 ReDim .pPropertyData(0 To .propertyLength - 1) As Byte
                 cStream.ReadBytesToBarePointer VarPtr(.pPropertyData(0)), .propertyLength
-                Debug.Print .VendorId, .propertyKey, .propertyID, .propertyLength
+                
+                'Want to see the data?  Dump it to debug here:
+                'Debug.Print .VendorId, .propertyKey, .propertyID, .propertyLength
+                
             End With
             
             'Property length is always reported as-is, but must be manually padded to 4-byte alignment

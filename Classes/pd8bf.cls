@@ -36,7 +36,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Toggle verbose debug logging.  Set to FALSE in production builds.
-Private Const DEBUG_VERBOSE As Boolean = True
+Private Const DEBUG_VERBOSE As Boolean = False
 
 'Local copy of PiPL properties
 Private m_numProperties As Long, m_Properties() As PIProperty
@@ -358,7 +358,7 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
                 'unsigned char fEntryName[1];
                 If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_Properties(i).propertyLength, VarPtr(m_Properties(i).pPropertyData(0))) Then
                     m_EntryPoint = Trim$(Strings.TrimNull(cStream.ReadString_ASCII(m_Properties(i).propertyLength)))
-                    Debug.Print "entry point: " & m_EntryPoint
+                    If DEBUG_VERBOSE Then PDDebug.LogAction "entry point: " & m_EntryPoint
                 End If
                 
                 'The target DLL isn't actually loaded right now; we'll formally validate the entry point
@@ -372,7 +372,7 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
                 If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_Properties(i).propertyLength, VarPtr(m_Properties(i).pPropertyData(0))) Then
                     m_VersionMinor = cStream.ReadIntUnsigned()
                     m_VersionMajor = cStream.ReadIntUnsigned()
-                    Debug.Print "version: " & m_VersionMajor & "." & m_VersionMinor
+                    If DEBUG_VERBOSE Then PDDebug.LogAction "version: " & m_VersionMajor & "." & m_VersionMinor
                 End If
                 
                 'TODO: validate versionOK here
@@ -426,7 +426,7 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
                 If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_Properties(i).propertyLength, VarPtr(m_Properties(i).pPropertyData(0))) Then
                     lenPascalString = cStream.ReadByte()
                     m_Category = cStream.ReadString_ASCII(PDMath.Min2Int(lenPascalString, m_Properties(i).propertyLength))
-                    Debug.Print "category: " & m_Category
+                    If DEBUG_VERBOSE Then PDDebug.LogAction "category: " & m_Category
                 End If
                 
             ''zcat' \<PString\> Category name that appears on top level menu:
@@ -439,7 +439,7 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
                 If cStream.StartStream(PD_SM_ExternalPtrBacked, PD_SA_ReadOnly, vbNullString, m_Properties(i).propertyLength, VarPtr(m_Properties(i).pPropertyData(0))) Then
                     lenPascalString = cStream.ReadByte()
                     m_Name = cStream.ReadString_ASCII(PDMath.Min2Int(lenPascalString, m_Properties(i).propertyLength))
-                    Debug.Print "name: " & m_Name
+                    If DEBUG_VERBOSE Then PDDebug.LogAction "name: " & m_Name
                 End If
                 
             ''znam' \<PString\> Menu name:
