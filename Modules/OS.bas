@@ -691,6 +691,60 @@ Public Function GetSystemTimeAsCurrency() As Currency
     GetSystemTimeAsFileTime GetSystemTimeAsCurrency
 End Function
 
+'Returns 32 or 64 for 32-bit or 64-bit libraries, respectively.  0 means failure (PE parsing failed).
+Public Function GetDLLBitness(ByRef srcLibPath As String) As Long
+    
+    GetDLLBitness = 0
+    
+    If Files.FileExists(srcLibPath) Then
+    
+        'We're about to do a quick-and-dirty walk of the basic PE format, just enough to retrieve
+        ' the bitness of the underlying library.
+        
+        'First, perform basic validation on the header
+        Dim cStream As pdStream
+        Set cStream = New pdStream
+        If cStream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadOnly, srcLibPath) Then
+            
+            'Note that the underlying stream does *not* need to be manually freed, so we can simply
+            ' bail whenever we hit a non-validating condition.
+            Const DOS_HEADER_SIMPLE As String = "MZ"
+            If Strings.StringsNotEqual(cStream.ReadString_ASCII(2), DOS_HEADER_SIMPLE, False) Then Exit Function
+            
+            'Still here?  The DOS stub is intact.  Look at a magic offset for another PE flag.
+            ' (Address comes from https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#ms-dos-stub-image-only )
+            Dim nextOffset As Long
+            
+            If (Not cStream.SetPosition(&H3C&, FILE_BEGIN)) Then Exit Function
+            nextOffset = cStream.ReadLong()
+            If (Not cStream.SetPosition(nextOffset, FILE_BEGIN)) Then Exit Function
+            Const PE_ID_SIMPLE As String = "PE"
+            If Strings.StringsNotEqual(cStream.ReadString_ASCII(2), PE_ID_SIMPLE, False) Then Exit Function
+            If (cStream.ReadIntUnsigned() <> 0) Then Exit Function
+            
+            'The PE header validates.  The *next two bytes* are a hardcoded machine type flag
+            ' (https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#machine-types).
+            Dim mtFlag As Long
+            mtFlag = cStream.ReadIntUnsigned()
+            
+            'We have everything we need; close the stream
+            cStream.StopStream True
+            
+            'Magic numbers follow!  See above link for details.
+            If (mtFlag = &H8664&) Then
+                GetDLLBitness = 64
+            ElseIf (mtFlag = &H14C&) Then
+                GetDLLBitness = 32
+            Else
+                GetDLLBitness = 0
+            End If
+            
+        End If
+    
+    End If
+    
+End Function
+
 'Is Aero enabled (requires Vista+ and classic theme must *not* be in use)
 Public Function IsAeroAvailable(ByVal srcHWnd As Long) As Boolean
     
