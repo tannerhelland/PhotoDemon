@@ -54,6 +54,15 @@ Begin VB.Form FormEffects8bf
       Width           =   10095
       _ExtentX        =   17806
       _ExtentY        =   9128
+      Begin PhotoDemon.pdTreeviewOD tvPlugins 
+         Height          =   4335
+         Left            =   0
+         TabIndex        =   9
+         Top             =   0
+         Width           =   9975
+         _ExtentX        =   17595
+         _ExtentY        =   7646
+      End
       Begin PhotoDemon.pdLabel lblNoPlugins 
          Height          =   4095
          Left            =   0
@@ -68,7 +77,7 @@ Begin VB.Form FormEffects8bf
       Begin PhotoDemon.pdButton cmdRescan 
          Height          =   615
          Left            =   120
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   4440
          Width           =   4575
          _ExtentX        =   8070
@@ -78,7 +87,7 @@ Begin VB.Form FormEffects8bf
       Begin PhotoDemon.pdHyperlink hypAbout 
          Height          =   495
          Left            =   5280
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   4560
          Visible         =   0   'False
          Width           =   4695
@@ -87,16 +96,6 @@ Begin VB.Form FormEffects8bf
          Alignment       =   1
          Caption         =   "about this plugin"
          RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdListBox lstPlugins 
-         Height          =   4335
-         Left            =   0
-         TabIndex        =   5
-         Top             =   0
-         Width           =   10095
-         _ExtentX        =   17806
-         _ExtentY        =   7858
-         Caption         =   "available plugins:"
       End
    End
    Begin PhotoDemon.pdContainer pnlOptions 
@@ -130,7 +129,7 @@ Begin VB.Form FormEffects8bf
       Begin PhotoDemon.pdHyperlink hypPlugins 
          Height          =   375
          Left            =   0
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   600
          Width           =   10095
          _ExtentX        =   17806
@@ -185,7 +184,7 @@ Begin VB.Form FormEffects8bf
       Begin PhotoDemon.pdProgressBar prgUpdate 
          Height          =   495
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   720
          Width           =   9855
          _ExtentX        =   17383
@@ -213,9 +212,9 @@ Attribute VB_Exposed = False
 '8bf Plugin Interface Dialog
 'Copyright 2021-2026 by Tanner Helland
 'Created: 08/February/21
-'Last updated: 15/December/25
-'Last update: if no 8bf files exist, avoid calling pspihost to avoid crashes on some systems
-'             (see https://github.com/tannerhelland/PhotoDemon/issues/716)
+'Last updated: 12/January/26
+'Last update: switch a native-VB6 solution for plugin iteration and About dialog query+display;
+'             rebuild UI against a treeview instead of list.
 '
 'In v9.0, PD gained support for hosting 3rd-party 8bf (Photoshop) filter plugins.
 '
@@ -235,17 +234,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Number of available plugins (as returned by the 8bf plugin interface), and their categories and
-' names (each in their own string stack).  These exist for UI purposes only.
-Private Type PD_8bf
-    plgCategory As String
-    plgCategoryIndex As Long
-    plgName As String
-    plgNameIndex As Long
-    plgPath As String
-End Type
+'During the transitionary period (from pspihost to native code), I've added a toggle to switch
+' between pspihost and our own native code when triggering plugin behavior(s).  Note that a similar
+' switch exists in the Plugin_8bf module.  Both switches should be toggled in unison.
+Private Const USE_NATIVE_INTERFACE As Boolean = True
 
-Private m_numPlugins As Long, m_Plugins() As PD_8bf
+Private m_numPlugins As Long
 
 'If we have attempted to execute a plugin, this will be set to TRUE
 Private m_PluginLive As Boolean
@@ -256,6 +250,27 @@ Private m_PluginCanceled As Boolean
 'When the form is first activated, we start building an 8bf collection.  We wait until the form is
 ' active so that we can display a progress bar.
 Private m_FormHasBeenActivated As Boolean
+
+'Height of each list item in the custom-drawn treeview, in pixels, at 96 DPI
+Private Const BLOCKHEIGHT As Long = 26
+
+'Two font objects; one for treeview items that are clickable (plugins), and one for items that are not
+' (plugins *categories*).
+Private m_FontPlugin As pdFont, m_FontCategory As pdFont
+
+'All rendering is suspended until the form is loaded
+Private m_RenderingOK As Boolean
+
+'PD's treeviews are currently only owner-drawn (a byproduct of being designed for the hotkey editor,
+' which has unique rendering needs).  This requires the caller to maintain their own mapping between
+' list entries and whatever the original source of the data is.  We use this struct
+Private Type PD_8bfNew
+    filterPath As String
+    filterCategory As String
+    filterName As String
+End Type
+
+Private m_8bfList() As PD_8bfNew, m_numListItems As Long
 
 Public Function RestoreDialog() As Boolean
     RestoreDialog = m_PluginCanceled
@@ -276,10 +291,11 @@ Private Sub cmdBar_OKClick()
     m_PluginCanceled = False
     
     'When OK is clicked, load the selected plugin, then attempt to execute it
-    If (lstPlugins.ListIndex >= 0) Then
+    If (tvPlugins.ListIndex >= 0) Then
+    If (LenB(m_8bfList(tvPlugins.ListIndex).filterName) <> 0) Then
         
         Dim targetPluginPath As String
-        targetPluginPath = m_Plugins(lstPlugins.ListIndex).plgPath
+        targetPluginPath = m_8bfList(tvPlugins.ListIndex).filterPath
         
         If Plugin_8bf.Load8bf(targetPluginPath) Then
             
@@ -355,6 +371,7 @@ Private Sub cmdBar_OKClick()
     
     'No plugin selected
     End If
+    End If
     
 End Sub
 
@@ -429,6 +446,19 @@ Private Sub Form_Load()
     cmdFolders(0).AssignImage "file_close", Nothing, btnImgSize, btnImgSize
     cmdFolders(1).AssignImage "generic_add", Nothing, btnImgSize, btnImgSize
     
+    'Initialize font renderers for the custom treeview
+    Set m_FontPlugin = New pdFont
+    m_FontPlugin.SetFontBold False
+    m_FontPlugin.SetFontSize 11
+    m_FontPlugin.CreateFontObject
+    m_FontPlugin.SetTextAlignment vbLeftJustify
+    
+    Set m_FontCategory = New pdFont
+    m_FontCategory.SetFontBold True
+    m_FontCategory.SetFontSize 11
+    m_FontCategory.CreateFontObject
+    m_FontCategory.SetTextAlignment vbLeftJustify
+    
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
@@ -446,9 +476,9 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub hypAbout_Click()
-    Dim targetPluginPath As String
-    targetPluginPath = m_Plugins(lstPlugins.ListIndex).plgPath
-    If (lstPlugins.ListIndex >= 0) Then Plugin_8bf.ShowAboutDialog targetPluginPath
+    If (tvPlugins.ListIndex >= 0) Then
+        Plugin_8bf.ShowAboutDialog m_8bfList(tvPlugins.ListIndex).filterPath, Me.hWnd
+    End If
 End Sub
 
 Private Sub hypPlugins_Click()
@@ -462,14 +492,10 @@ Private Sub lstFolders_Click()
     cmdFolders(0).Enabled = (lstFolders.ListIndex >= 0)
 End Sub
 
-Private Sub lstPlugins_Click()
-    hypAbout.Visible = (lstPlugins.ListIndex >= 0)
-End Sub
-
 Private Sub ScanForPlugins()
     
     'Clear all existing plugin collections
-    lstPlugins.Clear
+    tvPlugins.Clear
     Plugin_8bf.ResetPluginCollection
     
     'Switch the UI to "loading" mode
@@ -517,8 +543,11 @@ Private Sub ScanForPlugins()
     
     'Compare filter databases to a quick enumeration of 8bf files in the target folders (TODO).
     ' The goal here is to skip manual enumeration of DLLs we've already seen in the past.
-    
+    '
     'If no filter database exists, do a first-time enumeration in the default folder.
+    '
+    'TODO: test timing here with our new, native 8bf iterator - it may be fast enough that
+    ' there's no point to maintaining a database between sessions.
     
     'UPDATE DEC 2025: previously, I handed off all folders to pspihost here and let it do its thing.
     ' But per https://github.com/tannerhelland/PhotoDemon/issues/716, some users are seeing crashes
@@ -531,12 +560,18 @@ Private Sub ScanForPlugins()
         
         'DEC 2025: test our own iterator!  Maybe someday it will be robust enough that we don't need
         ' pspihost at all...
-        Plugin_8bf.EnumeratePlugins_PD listOfFiles
+        If USE_NATIVE_INTERFACE Then
+            numPlugins = Plugin_8bf.EnumeratePlugins_PD(listOfFiles, prgUpdate)
         
-        'Enumerate plugins in all target folder(s)
-        For i = 0 To listOfFolders.GetNumOfStrings - 1
-            numPlugins = numPlugins + Plugin_8bf.EnumerateAvailable8bf(listOfFolders.GetString(i), prgUpdate)
-        Next i
+        'Code that follows is pspihost-specific
+        Else
+            
+            'Enumerate plugins in all target folder(s)
+            For i = 0 To listOfFolders.GetNumOfStrings - 1
+                numPlugins = numPlugins + Plugin_8bf.EnumerateAvailable8bf(listOfFolders.GetString(i), prgUpdate)
+            Next i
+            
+        End If
         
         'Sort filters alphabetically (first by category, then by filter name)
         If (numPlugins > 0) Then
@@ -554,6 +589,7 @@ Private Sub ScanForPlugins()
     'If any plugins exist, retrieve their categories, names, and paths now
     Dim cat8bf As pdStringStack, name8bf As pdStringStack, path8bf As pdStringStack
     
+    'TODO: retrieving enumeration results could be much simpler once pspihost is gone
     If (numPlugins > 0) Then
         m_numPlugins = Plugin_8bf.GetEnumerationResults(cat8bf, name8bf, path8bf)
     Else
@@ -562,42 +598,74 @@ Private Sub ScanForPlugins()
     
     'Prep our internal plugin table to match
     If (m_numPlugins < 0) Then m_numPlugins = 0
-    ReDim m_Plugins(0 To m_numPlugins) As PD_8bf
+    
+    Dim lastCategory As String, newCategory As String
+    
+    Const INIT_PLUGIN_SIZE As Long = 8
+    ReDim m_8bfList(0 To INIT_PLUGIN_SIZE - 1) As PD_8bfNew
+    m_numListItems = 0
     
     If (m_numPlugins > 0) Then
+    
         For i = 0 To m_numPlugins - 1
-            m_Plugins(i).plgCategory = cat8bf.GetString(i)
-            m_Plugins(i).plgName = name8bf.GetString(i)
-            m_Plugins(i).plgPath = path8bf.GetString(i)
-        Next i
-    End If
-    
-    'Populate the list of available plugins
-    If (m_numPlugins > 0) Then
-        
-        Dim addSeparator As Boolean
-        
-        For i = 0 To numPlugins - 1
-            If (i < numPlugins - 1) Then
-                addSeparator = Strings.StringsNotEqual(m_Plugins(i).plgCategory, m_Plugins(i + 1).plgCategory, True)
-            Else
-                addSeparator = False
+            
+            'When categories change, add the (blank) category to our tracking list; these are rendered
+            ' as top-level nodes in the treeview, but they cannot be used to initiate a
+            newCategory = cat8bf.GetString(i)
+            If Strings.StringsNotEqual(newCategory, lastCategory) Then
+                If (m_numListItems > UBound(m_8bfList)) Then ReDim Preserve m_8bfList(0 To m_numListItems * 2 - 1) As PD_8bfNew
+                With m_8bfList(m_numListItems)
+                    .filterCategory = newCategory
+                    .filterName = vbNullString
+                    .filterPath = vbNullString
+                End With
+                lastCategory = newCategory
+                m_numListItems = m_numListItems + 1
             End If
-            lstPlugins.AddItem m_Plugins(i).plgCategory & " > " & Replace$(m_Plugins(i).plgName, "&&", "&"), i, addSeparator
+            
+            If (m_numListItems > UBound(m_8bfList)) Then ReDim Preserve m_8bfList(0 To m_numListItems * 2 - 1) As PD_8bfNew
+            With m_8bfList(m_numListItems)
+                .filterCategory = newCategory
+                .filterName = name8bf.GetString(i)
+                .filterPath = path8bf.GetString(i)
+            End With
+            m_numListItems = m_numListItems + 1
+            
         Next i
         
     End If
     
-    'Regardless of plugin count, hide the "loading" panel and restore the deafult one
+    'Populate the UI with available plugins
+    If (m_numListItems > 0) Then
+        
+        'Turn off automatic redraws in the treeview object
+        tvPlugins.SetAutomaticRedraws False
+        tvPlugins.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
+        
+        For i = 0 To m_numListItems - 1
+            If (LenB(m_8bfList(i).filterName) <> 0) Then
+                tvPlugins.AddItem m_8bfList(i).filterCategory & "-" & m_8bfList(i).filterName, m_8bfList(i).filterPath, m_8bfList(i).filterCategory & "-"
+            Else
+                tvPlugins.AddItem m_8bfList(i).filterCategory & "-", m_8bfList(i).filterCategory, vbNullString, True
+            End If
+        Next i
+            
+        '*Now* allow the treeview to render itself
+        m_RenderingOK = True
+        tvPlugins.SetAutomaticRedraws True, True
+        
+    End If
+    
+    'Regardless of plugin count, hide the "loading" panel and restore the default one
     pnlOptions(2).Visible = False
     UpdatePanelVisibility
-    lstPlugins.Visible = (m_numPlugins > 0)
+    tvPlugins.Visible = (m_numPlugins > 0)
     lblNoPlugins.Visible = (m_numPlugins <= 0)
     
     'If no plugins were found, hide the plugin selector and give the user info on how to proceed
-    If (m_numPlugins <= 0) Then
+    If (m_numListItems <= 0) Then
     
-        lstPlugins.Visible = False
+        tvPlugins.Visible = False
         
         Dim fullCaption As pdString
         Set fullCaption = New pdString
@@ -688,6 +756,56 @@ Private Sub UpdateSavedFolderList()
         cStream.StopStream
     Else
         PDDebug.LogAction "WARNING: couldn't save 8bf paths to file"
+    End If
+    
+End Sub
+
+Private Sub tvPlugins_Click()
+    If (tvPlugins.ListIndex >= 0) Then
+        hypAbout.Visible = (LenB(m_8bfList(tvPlugins.ListIndex).filterName) <> 0)
+    End If
+End Sub
+
+'Render an item into the treeview
+Private Sub tvPlugins_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemID As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToItemRectF As Long, ByVal ptrToCaptionRectF As Long, ByVal ptrToControlRectF As Long)
+
+    If (bufferDC = 0) Then Exit Sub
+    If (Not m_RenderingOK) Then Exit Sub
+    
+    'Retrieve the boundary region for this list entry
+    Dim tmpRectF As RectF
+    CopyMemoryStrict VarPtr(tmpRectF), ptrToCaptionRectF, 16&
+    
+    Dim offsetY As Single, offsetX As Single
+    offsetX = tmpRectF.Left
+    offsetY = tmpRectF.Top + Interface.FixDPI(1)
+    
+    'If this item has been selected, draw the background with the system's current selection color
+    Dim entryIsCategory As Boolean
+    entryIsCategory = (LenB(m_8bfList(itemIndex).filterName) = 0)
+    
+    Dim curFont As pdFont
+    If entryIsCategory Then Set curFont = m_FontCategory Else Set curFont = m_FontPlugin
+    
+    If itemIsSelected Then
+        curFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+    Else
+        curFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+    End If
+    
+    'Prepare the rendering text
+    Dim drawString As String
+    If entryIsCategory Then
+        drawString = m_8bfList(itemIndex).filterCategory
+    Else
+        drawString = m_8bfList(itemIndex).filterName
+    End If
+    
+    'Render the text
+    If (LenB(drawString) <> 0) Then
+        curFont.AttachToDC bufferDC
+        curFont.FastRenderTextWithClipping offsetX, offsetY + Interface.FixDPI(4), tmpRectF.Width, tmpRectF.Height, drawString, True, False, False
+        curFont.ReleaseFromDC
     End If
     
 End Sub

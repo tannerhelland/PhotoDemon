@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_8bf"
 '8bf Plugin Interface
 'Copyright 2021-2026 by Tanner Helland
 'Created: 07/February/21
-'Last updated: 10/February/21
-'Last update: add better UI support (progress bar tracking) during plugin enumeration
+'Last updated: 09/January/26
+'Last update: switch to a native-VB6 implementation of plugin scanning and About dialog query+display
 '
 '8bf files are 3rd-party Adobe Photoshop plugins that implement one or more "filters".  These are
 ' basically DLL files with special interfaces for communicating with a parent Photoshop instance.
@@ -16,7 +16,7 @@ Attribute VB_Name = "Plugin_8bf"
 ' MIT-licensed and available from GitHub (link good as of Feb 2020):
 ' https://github.com/spetric/Photoshop-Plugin-Host/blob/master/LICENSE
 '
-'Thank you to Sinisa for their great work.
+'Thank you to Sinisa for their work.
 '
 'Note that the pspihost library must be modified to work with a VB6 project like PhotoDemon.
 ' VB6 only understands stdcall calling convention, particularly with callbacks (which are used
@@ -133,7 +133,7 @@ Private Declare Function pspiReleaseAllImages Lib "pspiHost.dll" Alias "_pspiRel
 Private Type PD_Plugin8bf
     plugCategory As String
     plugName As String
-    plugEntryPoint As String
+    'plugEntryPoint As String
     plugLocationOnDisk As String
     plugSortKey As String
 End Type
@@ -284,7 +284,7 @@ Private Sub Enumerate8bfCallback(ByVal ptrCategoryA As Long, ByVal ptrNameA As L
     
         .plugCategory = Strings.StringFromCharPtr(ptrCategoryA, False)
         .plugName = Strings.StringFromCharPtr(ptrNameA, False)
-        .plugEntryPoint = Strings.StringFromCharPtr(ptrEntryPointA, False)
+        '.plugEntryPoint = Strings.StringFromCharPtr(ptrEntryPointA, False)
         .plugLocationOnDisk = Strings.StringFromCharPtr(ptrLocationW, True)
         
         'Prep a convenient sort key
@@ -644,7 +644,14 @@ End Sub
 'First up: enumerating plugin categories and names.  This function returns the number of valid plugins found.
 ' Inputs:
 '   - srcListOfFiles (stack containing a list of candidate 8bf files)
-Public Function EnumeratePlugins_PD(ByRef srcListOfFiles As pdStringStack) As Long
+' Returns:
+'   - the net count of 32-bit, validation-passed 8bf plugins we found.
+'
+'To retrieve the actual list of validated failes, call GetEnumerationResults() after this function returned
+' a non-zero value.
+Public Function EnumeratePlugins_PD(ByRef srcListOfFiles As pdStringStack, Optional ByRef prgUpdate As pdProgressBar) As Long
+    
+    Const FUNC_NAME As String = "EnumeratePlugins_PD"
     
     EnumeratePlugins_PD = 0
     m_numSafePlugins = 0
@@ -653,22 +660,32 @@ Public Function EnumeratePlugins_PD(ByRef srcListOfFiles As pdStringStack) As Lo
     If (srcListOfFiles Is Nothing) Then Exit Function
     If (srcListOfFiles.GetNumOfStrings <= 0) Then Exit Function
     
-    Dim targetFile As String
+    Dim targetFile As String, numFilesExamined As Long
     Do While srcListOfFiles.PopString(targetFile)
+        
+        numFilesExamined = numFilesExamined + 1
+        If (Not prgUpdate Is Nothing) Then
+            prgUpdate.Value = numFilesExamined
+        End If
         
         'Failsafe check to ensure we weren't passed bad files (yes, this syntax is how you do this in VB6)
         If (Not Files.FileExists(targetFile)) Then GoTo ContinueWithNextFile
         
+        'Prior to loading, ensure the plugin is...
+        ' 1) a DLL, and
+        ' 2) ...a 32-bit x86 DLL (64-bit is unsupported until a TB version of PD matures)
+        If (OS.GetDLLBitness(targetFile) <> 32) Then
+            If PS_DEBUG_VERBOSE Then InternalError FUNC_NAME, "not 32-bit: " & targetFile
+            GoTo ContinueWithNextFile
+        End If
+        
         If PS_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting PiPL reads for " & targetFile
         m_CurrentPluginFilename = targetFile
-        
-        'TODO: reject incompatible architectures here (e.g. x64)
         
         'Attempt to load the library.  (We must pass the returned handle to the resource enumerator.)
         ' Note that we're not going to execute any code in the library on this pass - we simply want to
         ' query plugin properties.  To improve performance, load the data as a read-only data resource.
         Const LOAD_LIBRARY_AS_DATAFILE As Long = &H2&
-        Const LOAD_LIBRARY_AS_IMAGE_RESOURCE As Long = &H20&        'Not supported until Vista, so disallow on XP
         
         'Per MSDN (https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibraryexw):
         ' "If this value is used, the system maps the file into the calling process's virtual address space
@@ -686,26 +703,21 @@ Public Function EnumeratePlugins_PD(ByRef srcListOfFiles As pdStringStack) As Lo
         '  application depends on the file having the in-memory layout of an image, this value should be used with
         '  either LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE or LOAD_LIBRARY_AS_DATAFILE.  Windows Server 2003 and Windows XP:
         '  This value is not supported until Windows Vista."
+        Const LOAD_LIBRARY_AS_IMAGE_RESOURCE As Long = &H20&
         If OS.IsVistaOrLater Then dwFlags = dwFlags Or LOAD_LIBRARY_AS_IMAGE_RESOURCE
         
-        'Attempt loading the plugin as a data resource only
+        'Attempt loading the plugin, again as a READ-ONLY data resource
         Dim hLib As Long
         hLib = VBHacks.LoadLibExW(targetFile, dwFlags)
         If (hLib = 0) Then GoTo ContinueWithNextFile
         
-        'Next we want to pull the resource block and "walk" resources, querying as we go.
+        'Next we want to pull the resource block and "walk" individual resources, querying as we go.
         ' (NOTE: the enumerator callback may be called multiple times, if multiple filters exist
         '  inside a single plugin.)
         Dim resName As String
         resName = "PiPL"
         If (EnumResourceNamesW(hLib, StrPtr(resName), AddressOf EnumResNameProcW, 0&) <> 0) Then
-            
             'The enumeration returned successfully.
-            
-            
-            'TODO: how do we return these results to the caller?  What data do we retain here,
-            ' and what do we give them?
-            
         End If
         
         'Make sure we free the library before continuing!
@@ -715,6 +727,46 @@ Public Function EnumeratePlugins_PD(ByRef srcListOfFiles As pdStringStack) As Lo
         'EnumResourceNamesW
 ContinueWithNextFile:
     Loop
+    
+    'TODO - TEMPORARY SOLUTION:
+    '
+    'While we're stuck with this weird half-us-half-pspihost solution, just copy over our enumeration results
+    ' into the structs used for the old pspihost interface.  This code can be rewritten once pspihost is excised.
+    
+    'Ensure at least one plugin was found
+    If (m_numSafePlugins <= 0) Then
+        m_numPlugins = 0
+        EnumeratePlugins_PD = 0
+        Exit Function
+    
+    'Still here?  Attempt to retrieve source strings.
+    Else
+        
+        m_numPlugins = m_numSafePlugins
+        ReDim Preserve m_Plugins(0 To m_numSafePlugins - 1) As PD_Plugin8bf
+        
+        Dim i As Long
+        For i = 0 To m_numSafePlugins - 1
+            
+            With m_Plugins(i)
+            
+                .plugCategory = m_SafePlugins(i).Get8bfCategory()
+                .plugName = m_SafePlugins(i).Get8bfName()
+                .plugLocationOnDisk = m_SafePlugins(i).GetFilename()
+                
+                'Prep a convenient sort key
+                .plugSortKey = m_SafePlugins(i).Get8bfSortKey()
+                
+                'Curious about contents?  See 'em here:
+                'Debug.Print .plugCategory, .plugName, .plugLocationOnDisk
+                
+            End With
+            
+        Next i
+        
+        EnumeratePlugins_PD = m_numSafePlugins
+        
+    End If
     
 End Function
 

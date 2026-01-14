@@ -250,6 +250,21 @@ Friend Function GetFilename() As String
     GetFilename = m_Filename
 End Function
 
+'Filename of the underlying plugin.  Note that this is *not* unique per-plugin, as a single plugin file
+' can expose multiple plugin interfaces.
+Friend Function Get8bfCategory() As String
+    Get8bfCategory = m_Category
+End Function
+
+Friend Function Get8bfName() As String
+    Get8bfName = m_Name
+End Function
+
+'Used internally to sort category/name entries alphabetically (first by category, second by plugin name)
+Friend Function Get8bfSortKey() As String
+    Get8bfSortKey = m_Category & "-" & m_Name
+End Function
+
 'Given a list of raw PiPL properties (and the target file from which they came), initialize this class.
 ' Returns TRUE if the property list is valid and compatible with PD; FALSE otherwise.  The plugin should
 ' not be exposed to the user if FALSE is returned.
@@ -531,9 +546,16 @@ Private Function EnsureLibLoaded() As Boolean
         Exit Function
     End If
     
+    'Prior to actual loading, ensure the plugin is 32-bit (64-bit is unsupported until a TB version of PD matures).
+    ' (Note that inside PD this is technically redundant, as we check bitness at enumeration-time, and we forcibly
+    '  withhold 64-bit plugins from being returned by the enumerator - so I've commented this out for now.
+    '  See the implementation in Plugin_8bf.EnumeratePlugins_PD to see where this is currently handled.)
+    'If (OS.GetDLLBitness(targetFile) <> 32) Then
+    '    If PS_DEBUG_VERBOSE Then InternalError FUNC_NAME, "not 32-bit x86 code: " & targetFile
+    '    GoTo ContinueWithNextFile
+    'End If
+    
     'Load the DLL
-    'TODO: check bitness during load to ensure we're not attempting to load a 64-bit lib
-    '      (probably needs to happen during validation, not here)
     m_hLib = VBHacks.LoadLib(m_Filename)
     If (m_hLib <> 0) Then
         
@@ -543,7 +565,7 @@ Private Function EnsureLibLoaded() As Boolean
         If DEBUG_VERBOSE And (Not EnsureLibLoaded) Then InternalError FUNC_NAME, "GetProcAddress failed"
         
     Else
-        If DEBUG_VERBOSE Then InternalError FUNC_NAME, "LoadLibrary failed"
+        If DEBUG_VERBOSE Then InternalError FUNC_NAME, "LoadLibrary failed; last DLL error: " & Err.LastDllError
         Exit Function
     End If
     
