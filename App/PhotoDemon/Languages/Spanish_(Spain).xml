@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.48</langversion>
+<langversion>9.0.49</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -7931,11 +7931,6 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>plugins disponibles</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>añadir carpeta</translation>
 </phrase>
@@ -8000,7 +7995,7 @@ Si desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar" y l
 <translation>Después de descargar uno o más archivos 8bf, utilice el botón de configuración (arriba) para decirle a PhotoDemon dónde encontrarlos.  PhotoDemon los añadirá a su colección de Efectos</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14783,10 +14778,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2796</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5980 phrases. -->
-<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
-<!-- These 2796 phrases contain approximately 12059 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

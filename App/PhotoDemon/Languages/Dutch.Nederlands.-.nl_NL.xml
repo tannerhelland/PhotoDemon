@@ -6,7 +6,7 @@
 
 <langid>nl-NL</langid>
 <langname>Dutch (Nederlands)</langname>
-<langversion>2025.12.2</langversion>
+<langversion>2025.12.3</langversion>
 <langstatus>99% complete</langstatus>
 
 <author>Rudi Klein</author>
@@ -7935,11 +7935,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>beschikbare plugins</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>map toevoegen</translation>
 </phrase>
@@ -8004,7 +7999,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Nadat u een of meer 8bf-bestanden hebt gedownload, gebruikt u de knop Instellingen (hierboven) om PhotoDemon te vertellen waar u ze kunt vinden. PhotoDemon voegt ze dan toe aan uw Effectenverzameling.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14787,10 +14782,10 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2796</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5980 phrases. -->
-<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
-<!-- These 2796 phrases contain approximately 12059 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

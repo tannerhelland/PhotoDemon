@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（2025.4 build 130）</langname>
-<langversion>2025.10.30</langversion>
+<langversion>2025.10.31</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Oct 24, 2025</author>
@@ -7928,11 +7928,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>可用插件</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>添加文件夹</translation>
 </phrase>
@@ -7997,7 +7992,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>下载一个或多个8bf文件后，使用设置按钮（上图）告诉PhotoDemon在哪里可以找到它们，PhotoDemon会将它们添加到您的预置特效中。</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14780,11 +14775,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2796</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5980 phrases. -->
-<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
-<!-- These 2796 phrases contain approximately 12059 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 <special-translations>
 

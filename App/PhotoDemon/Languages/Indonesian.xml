@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>8.9.1764</langversion>
+<langversion>8.9.1765</langversion>
 <langstatus>Terselesaikan</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -7931,11 +7931,6 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>plugin yang tersedia</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>tambah Folder</translation>
 </phrase>
@@ -8000,7 +7995,7 @@ Jika Anda ingin menyimpannya dengan nama file yang berbeda, silakan pilih 'Batal
 <translation>Setelah mengunduh satu atau lebih file 8bf, gunakan tombol Pengaturan (di atas) untuk memberi tahu Photodemon di mana menemukannya.Photodemon kemudian akan menambahkannya ke koleksi efek Anda.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14783,10 +14778,10 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2796</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5980 phrases. -->
-<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
-<!-- These 2796 phrases contain approximately 12059 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

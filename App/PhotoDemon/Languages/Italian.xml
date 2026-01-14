@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.10</langversion>
+<langversion>2025.4.11</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -7932,11 +7932,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>plugin disponibili</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>aggiungi cartella</translation>
 </phrase>
@@ -8001,7 +7996,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Dopo aver scaricato uno o più file 8bf, usa il pulsante impostazioni (sopra) per dire a PhotoDemon dovre trovarli.  PhotoDemon li aggiungerà alla tua raccolta di effetti.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14784,10 +14779,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2796</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5980 phrases. -->
-<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
-<!-- These 2796 phrases contain approximately 12059 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>
