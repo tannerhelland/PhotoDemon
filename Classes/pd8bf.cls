@@ -294,7 +294,7 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
     
     'Further processing is made much simpler by a stream object
     Dim lenPascalString As Byte, tmpLong As Long
-    Dim kindOK As Boolean, versionOK As Boolean, entryPointOK As Long
+    Dim kindOK As Boolean, entryPointOK As Long
     
     Dim cStream As pdStream
     Set cStream = New pdStream
@@ -375,7 +375,7 @@ Friend Function Initialize8bf_FromFile(ByRef srcFile As String, ByVal numPropert
                     If DEBUG_VERBOSE Then PDDebug.LogAction "version: " & m_VersionMajor & "." & m_VersionMinor
                 End If
                 
-                'TODO: validate versionOK here
+                'TODO: validate versionOK here??
             
             ''prty' \<int32\> Load order priority:
             'Also used to control the order in which items with the same name
@@ -483,8 +483,6 @@ End Function
 
 'Returns TRUE if the plugin has a valid About dialog interface (as far as we can tell)
 Friend Function IsAboutDialogPossiblyAvailable() As Boolean
-        
-    Const FUNC_NAME As String = "IsAboutDialogPossiblyAvailable"
     
     'It's impossible to know if an About dialog is available in advance.  Instead, you have to call the
     ' main entry point with the "About dialog ID", then check the return value.

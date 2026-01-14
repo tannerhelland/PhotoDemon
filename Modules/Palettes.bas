@@ -4255,7 +4255,7 @@ Public Function SortPaletteByPopularity_RGB(ByRef srcDIB As pdDIB, ByRef srcPale
     ' searching for contiguous matching colors.
     Dim lastColor As Long: lastColor = -1
     Dim lastAlpha As Long: lastAlpha = -1
-    Dim r As Long, g As Long, b As Long, a As Long
+    Dim r As Long, g As Long, b As Long
     
     Dim tmpQuad As RGBQuad, palIndex As Long, lastPalIndex As Long
     

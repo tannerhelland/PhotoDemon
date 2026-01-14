@@ -239,9 +239,6 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
                 
             End If
             
-            'You can also report errors directly to the user here:
-            'If (Macros.GetMacroStatus <> MacroBATCH) And allowErrorPopups Then PluginManager.GenericLibraryError CCP_DirectXTex, cShell.GetStdErrDataAsString()
-            
         End If
         
     Else

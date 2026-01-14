@@ -229,19 +229,6 @@ Public Sub GenericLibraryMissingError(ByVal pluginID As PD_PluginCore)
     Message "Error: %1", PluginManager.GetPluginName(pluginID)
 End Sub
 
-'...Similarly, if an external library throws some kind of error message and it might help the user to see
-' that message, send the plugin ID and error message here, and we'll display the message for you.
-'
-'(As with other library error messages, *all* popups are disabled during batch processes.)
-Public Sub GenericLibraryError(ByVal pluginID As PD_PluginCore, ByRef pluginMsg As String)
-    Dim fullErrMsg As pdString: Set fullErrMsg = New pdString
-    fullErrMsg.AppendLine g_Language.TranslateMessage("A third-party library (%1) reported the following error:", PluginManager.GetPluginName(pluginID))
-    fullErrMsg.AppendLineBreak
-    fullErrMsg.Append pluginMsg
-    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox fullErrMsg.ToString(), vbExclamation Or vbOKOnly, "Error"
-    Message "Error: %1", pluginMsg
-End Sub
-
 'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include
 ' helper files, like README or LICENSE files - just the core DLL or EXE for the plugin.
 Public Function GetPluginFilename(ByVal pluginEnumID As PD_PluginCore) As String

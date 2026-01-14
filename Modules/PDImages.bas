@@ -357,13 +357,3 @@ Public Sub StrategicMemoryReduction()
     End If
     
 End Sub
-
-'Given an ID in the pdImages collection, suspend all layers (and other high-memory objects) inside that image.
-' This is a non-destructive process.  Necessary resources will be automatically unsuspended when those resources
-' are requested.  Note, however, that like any large-scale data transfer, there is a perf cost associated with
-' doing this.  Typically, suspending an image should be saved for things like switching to a new active image
-' (and the old image gets suspended), or opening a high-resource-usage tool and the background image won't be
-' accessible for awhile.
-Public Sub SuspendImage(ByVal imgID As Long, Optional ByVal suspendToDisk As Boolean = False)
-    If PDImages.IsImageNonNull(imgID) Then m_PDImages(imgID).SuspendImage suspendToDisk
-End Sub
