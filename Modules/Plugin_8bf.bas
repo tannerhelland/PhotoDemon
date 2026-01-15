@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_8bf"
 '8bf Plugin Interface
 'Copyright 2021-2026 by Tanner Helland
 'Created: 07/February/21
-'Last updated: 09/January/26
-'Last update: switch to a native-VB6 implementation of plugin scanning and About dialog query+display
+'Last updated: 15/January/26
+'Last update: start purging pspihost code that's no longer needed (because we've implemented it natively)
 '
 '8bf files are 3rd-party Adobe Photoshop plugins that implement one or more "filters".  These are
 ' basically DLL files with special interfaces for communicating with a parent Photoshop instance.
@@ -32,7 +32,7 @@ Attribute VB_Name = "Plugin_8bf"
 Option Explicit
 
 'Verbose debug logging; turn OFF is production builds
-Private Const PS_DEBUG_VERBOSE As Boolean = False
+Private Const DEBUG_VERBOSE As Boolean = False
 
 'During the transitionary period (from pspihost to native code), I've added a toggle to switch
 ' between pspihost and our own native code when triggering plugin behavior(s).
@@ -74,37 +74,22 @@ End Enum
     Private Const PSPI_IMG_TYPE_BGR = 0, PSPI_IMG_TYPE_BGRA = 1, PSPI_IMG_TYPE_RGB = 2, PSPI_IMG_TYPE_RGBA = 3, PSPI_IMG_TYPE_GRAY = 4, PSPI_IMG_TYPE_GRAYA = 5
 #End If
 
-'Windows uses bottom-up DIBs by default, so it's helpful to have a toggle for scanline orientation
-Private Enum PSPI_ImgOrientation
-    PSPI_IMG_ORIENTATION_ASIS = 0
-    PSPI_IMG_ORIENTATION_INVERT
-End Enum
-
-#If False Then
-    Private Const PSPI_IMG_ORIENTATION_ASIS = 0, PSPI_IMG_ORIENTATION_INVERT = 1
-#End If
-
 'Initialization
 Private Declare Function pspiGetVersion Lib "pspiHost.dll" Alias "_pspiGetVersion@0" () As Long
 Private Declare Function pspiSetPath Lib "pspiHost.dll" Alias "_pspiSetPath@4" (ByVal strPtrFilterFolder As Long) As PSPI_Result
 
 'Callbacks
-Private Declare Function pspiPlugInEnumerate Lib "pspiHost.dll" Alias "_pspiPlugInEnumerate@8" (ByVal addressOfCallback As Long, Optional ByVal bRecurseSubFolders As Long = 1) As PSPI_Result
+'Private Declare Function pspiPlugInEnumerate Lib "pspiHost.dll" Alias "_pspiPlugInEnumerate@8" (ByVal addressOfCallback As Long, Optional ByVal bRecurseSubFolders As Long = 1) As PSPI_Result
 Private Declare Function pspiSetProgressCallBack Lib "pspiHost.dll" Alias "_pspiSetProgressCallBack@4" (ByVal addressOfCallback As Long) As PSPI_Result
-
-'TODO:
-'Private Declare Function pspiSetColorPickerCallBack Lib "pspiHost.dll" Alias "_pspiSetcolorPickerCallBack@4" (ByVal addressOfCallback As Long) As PSPI_Result
 
 'Execute various plugin functions
 Private Declare Function pspiPlugInLoad Lib "pspiHost.dll" Alias "_pspiPlugInLoad@4" (ByVal ptrStrFilterPath As Long) As PSPI_Result
-Private Declare Function pspiPlugInAbout Lib "pspiHost.dll" Alias "_pspiPlugInAbout@4" (ByVal ownerHwnd As Long) As PSPI_Result
+'Private Declare Function pspiPlugInAbout Lib "pspiHost.dll" Alias "_pspiPlugInAbout@4" (ByVal ownerHwnd As Long) As PSPI_Result
 Private Declare Function pspiPlugInExecute Lib "pspiHost.dll" Alias "_pspiPlugInExecute@4" (ByVal ownerHwnd As Long) As PSPI_Result
 
 'Prep plugin features and image access
 'Plugins support a "region of interest" in the source image
 Private Declare Function pspiSetRoi Lib "pspiHost.dll" Alias "_pspiSetRoi@16" (Optional ByVal roiTop As Long = 0, Optional ByVal roiLeft As Long = 0, Optional ByVal roiBottom As Long = 0, Optional ByVal roiRight As Long = 0) As PSPI_Result
-'// set image orientation
-'Private Declare Function pspiSetImageOrientation Lib "pspiHost.dll" Alias "_pspiSetImageOrientation@4" (ByVal newOrientation As PSPI_ImgOrientation) As PSPI_Result
 '// set image using contiguous memory buffer pointer
 '// note: source image is shared - do not destroy source image in your host program before plug-in is executed
 Private Declare Function pspiSetImage Lib "pspiHost.dll" Alias "_pspiSetImage@28" (ByVal tImgType As PSPI_ImgType, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal ptrImageBuffer As Long, ByVal imgStride As Long, Optional ByVal ptrAlphaBuffer As Long = 0, Optional ByVal ptrAlphaStride As Long = 0) As PSPI_Result
@@ -115,16 +100,6 @@ Private Declare Function pspiSetImage Lib "pspiHost.dll" Alias "_pspiSetImage@28
 '  and source image. Calling pspiSetMask without parameters releases mask (internal scanline pointers). This holds
 '  also when mask is set by scanline addition."
 Private Declare Function pspiSetMask Lib "pspiHost.dll" Alias "_pspiSetMask@20" (Optional ByVal maskWidth As Long = 0, Optional ByVal maskHeight As Long = 0, Optional ByVal ptrMaskBuffer As Long = 0, Optional ByVal maskStride As Long = 0, Optional ByVal bPluginCanUseMask As Long = 0) As PSPI_Result
-'// block for adding image scanlines (possibly non-contiguous image)
-'// note: source image is shared - do not destroy source image in your host program before plug-in is executed
-'private declare function pspiStartImageSL Lib "pspiHost.dll" Alias "" (TImgType type, int width, int height, bool externalAlpha = false) As PSPI_Result
-'private declare function pspiAddImageSL Lib "pspiHost.dll" Alias "" (void *imageScanLine, void *alphaScanLine = 0) As PSPI_Result
-'private declare function pspiFinishImageSL Lib "pspiHost.dll" Alias "" (int imageStride = 0, int alphaStride = 0) As PSPI_Result
-'// block dor addding mask scanlines  Lib "pspiHost.dll" Alias "" (possibly non-contiguous mask)
-'// note: source mask is shared - do not destroy source maske in your host program before plug-in is executed
-'private declare function pspiStartMaskSL Lib "pspiHost.dll" Alias "" (int width, int height, bool useMaskByPi = true) As PSPI_Result
-'private declare function pspiAddMaskSL Lib "pspiHost.dll" Alias "" (void *maskScanLine) As PSPI_Result
-'private declare function pspiFinishMaskSL Lib "pspiHost.dll" Alias "" (int maskStride = 0) As PSPI_Result
 '// release all images - all image buffers including mask are released when application is closed, but sometimes
 ' it's necessary to free memory (big images)
 Private Declare Function pspiReleaseAllImages Lib "pspiHost.dll" Alias "_pspiReleaseAllImages@0" () As PSPI_Result
@@ -155,7 +130,7 @@ Private m_HasSeenProgressEvent As Boolean, m_LastProgressAmount As Long, m_TimeO
 Private m_FirstTimeStamp As Currency
 
 'Selection mask contents, if any
-Private m_MaskCopy() As Byte
+'Private m_MaskCopy() As Byte
 
 'When enumerating plugins, the user can pass an (optional) progress bar.  We'll update the bar as plugins
 ' are found and loaded.
@@ -221,87 +196,6 @@ Private m_CurrentPluginFilename As String
 'Array of plugin objects.  These will (someday) launch the actual plugins involved.
 Private m_numSafePlugins As Long, m_SafePlugins() As pd8bf
 
-'Returns the number of discovered 8bf plugins; 0 means no plugins found.  Note that you can call this
-' function back-to-back with different folders, and it will just keep appending discoveries to a central list.
-' This makes it convenient to do a single list sort before calling GetEnumerateResults(), below.
-Public Function EnumerateAvailable8bf(ByVal srcPath As String, Optional ByRef dstProgressBar As pdProgressBar = Nothing) As Long
-    
-    Const funcName As String = "EnumerateAvailable8bf"
-    
-    'Failsafes
-    If (Not m_LibAvailable) Then Exit Function
-    If (LenB(srcPath) = 0) Then Exit Function
-    
-    Dim retPspi As PSPI_Result
-    
-    'Ensure path exists
-    srcPath = Files.PathAddBackslash(srcPath)
-    If Files.PathExists(srcPath, False) Then
-        retPspi = pspiSetPath(StrPtr(srcPath))
-        If (retPspi <> PSPI_OK) Then
-            InternalError funcName, "pspiSetPath error: " & srcPath, retPspi
-            Exit Function
-        End If
-    Else
-        InternalError funcName, "path doesn't exist: " & srcPath
-        Exit Function
-    End If
-    
-    'Prepare a default size for the enum array
-    Const INIT_COLLECTION_SIZE As Long = 16
-    If (m_numPlugins = 0) Then ReDim m_Plugins(0 To INIT_COLLECTION_SIZE - 1) As PD_Plugin8bf
-    
-    'We will report the number of new plugins added in this enumeration, only
-    Dim numPluginsAtStart As Long
-    numPluginsAtStart = m_numPlugins
-    
-    'Note the target progress bar, if any
-    Set m_EnumProgressBar = dstProgressBar
-    
-    'Call the enumerator and hope for the best
-    retPspi = pspiPlugInEnumerate(AddressOf Enumerate8bfCallback, 1)
-    If (retPspi = PSPI_OK) Then
-        EnumerateAvailable8bf = m_numPlugins - numPluginsAtStart
-    Else
-        InternalError funcName, "pspi failed", retPspi
-    End If
-    
-End Function
-
-Private Sub Enumerate8bfCallback(ByVal ptrCategoryA As Long, ByVal ptrNameA As Long, ByVal ptrEntryPointA As Long, ByVal ptrLocationW As Long)
-    
-    Const funcName As String = "Enumerate8bfCallback"
-    
-    'Failsafe checks
-    If (ptrCategoryA = 0) Or (ptrNameA = 0) Or (ptrEntryPointA = 0) Or (ptrLocationW = 0) Then
-        InternalError funcName, "bad char *"
-        Exit Sub
-    End If
-    
-    'Still here?  Attempt to retrieve source strings.
-    If (m_numPlugins > UBound(m_Plugins)) Then ReDim Preserve m_Plugins(0 To m_numPlugins * 2 - 1) As PD_Plugin8bf
-    With m_Plugins(m_numPlugins)
-    
-        .plugCategory = Strings.StringFromCharPtr(ptrCategoryA, False)
-        .plugName = Strings.StringFromCharPtr(ptrNameA, False)
-        '.plugEntryPoint = Strings.StringFromCharPtr(ptrEntryPointA, False)
-        .plugLocationOnDisk = Strings.StringFromCharPtr(ptrLocationW, True)
-        
-        'Prep a convenient sort key
-        .plugSortKey = .plugCategory & "_" & .plugName
-        
-        'Curious about contents?  See 'em here:
-        'Debug.Print .plugCategory, .plugName, .plugEntryPoint, .plugLocationOnDisk
-        
-    End With
-    
-    m_numPlugins = m_numPlugins + 1
-    
-    'Update the target progress bar (if one exists)
-    If (Not m_EnumProgressBar Is Nothing) Then m_EnumProgressBar.Value = m_numPlugins
-    
-End Sub
-
 Public Function Execute8bf(ByVal ownerHwnd As Long, ByRef pluginCanceled As Boolean, Optional ByVal catchProgress As Boolean = True) As Boolean
     
     Const funcName As String = "Execute8bf"
@@ -339,7 +233,7 @@ End Sub
 
 Public Sub FreeImageResources()
     pspiSetMask 0, 0, 0, 0, 0   'See documentation; null parameters frees mask pointers and associated resources
-    Erase m_MaskCopy
+    'Erase m_MaskCopy            'Mask is no longer passed to pspihost; it frequently misuses it and crashes
     pspiReleaseAllImages        'pspi will auto-free upon close, but PD also needs to free unsafe pointers to temporary structs
 End Sub
 
@@ -462,6 +356,7 @@ End Sub
 Public Sub ResetPluginCollection()
     m_numPlugins = 0
     m_numSafePlugins = 0
+    Erase m_SafePlugins     'Force free any underlying 8bf classes
 End Sub
 
 'Short-hand function for automatically setting the plugin image to PD's active working image.  Note that
@@ -494,35 +389,39 @@ Public Function SetImage_CurrentWorkingImage(Optional ByVal pspiMaskOK As Boolea
     
 End Function
 
-'Short-hand function for automatically setting the plugin mask to PD's active selection.  Note that
-' the mask is *shared* with the plugin (but we actually host it), so we must not free our mask copy
-' until the appropriate plugin shutdown functions are called.
-Public Function SetMask_CurrentSelectionMask() As Boolean
-    
-    Const funcName As String = "SetMask_CurrentSelectionMask"
-    
-    'Make sure we're being called correctly
-    If PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
-    
-        'Retrieve a copy of the mask
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB()
-        
-        'Retrieve just the alpha channel
-        DIBs.RetrieveSingleChannel tmpDIB, m_MaskCopy, 0
-        
-        'Notify pspi
-        Dim retPspi As PSPI_Result
-        retPspi = pspiSetMask(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, VarPtr(m_MaskCopy(0, 0)), tmpDIB.GetDIBWidth, 1)
-        SetMask_CurrentSelectionMask = (retPspi = PSPI_OK)
-        If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetMask failed", retPspi
-        
-    '/no mask; do nothing
-    End If
+'JAN 2026: this function has been marked for removal, since it doesn't work 90+% of the time.
+' (Full removal will take place after I've produced a working version in native VB6 code.)
+''Short-hand function for automatically setting the plugin mask to PD's active selection.  Note that
+'' the mask is *shared* with the plugin (but we actually host it), so we must not free our mask copy
+'' until the appropriate plugin shutdown functions are called.
+'Public Function SetMask_CurrentSelectionMask() As Boolean
+'
+'    Const funcName As String = "SetMask_CurrentSelectionMask"
+'
+'    'Make sure we're being called correctly
+'    If PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
+'
+'        'Retrieve a copy of the mask
+'        Dim tmpDIB As pdDIB
+'        Set tmpDIB = PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB()
+'
+'        'Retrieve just the alpha channel
+'        DIBs.RetrieveSingleChannel tmpDIB, m_MaskCopy, 0
+'
+'        'Notify pspi
+'        Dim retPspi As PSPI_Result
+'        retPspi = pspiSetMask(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, VarPtr(m_MaskCopy(0, 0)), tmpDIB.GetDIBWidth, 1)
+'        SetMask_CurrentSelectionMask = (retPspi = PSPI_OK)
+'        If (retPspi <> PSPI_OK) Then InternalError funcName, "pspiSetMask failed", retPspi
+'
+'    '/no mask; do nothing
+'    End If
+'
+'End Function
 
-End Function
-
-'Experimental only; show a plugin's About dialog
+'Show an 8bf plugin's About dialog.  Note that not all plugins expose an About dialog, and they'll often
+' return "success" even though they do nothing.  There's no way to circumvent this behavior, alas -
+' so calling this function is basically the tech equivalent of a prayer and a wish.
 Public Sub ShowAboutDialog(ByRef fullPathToPlugin As String, Optional ByVal ownerHwnd As Long = 0)
     
     Const funcName As String = "ShowAboutDialog"
@@ -552,23 +451,23 @@ Public Sub ShowAboutDialog(ByRef fullPathToPlugin As String, Optional ByVal owne
             retShow = m_SafePlugins(i).ShowAboutDialog(ownerHwnd)
         End If
         
-    'pspihost
+    'pspihost (disabled for now)
     Else
-        
-        If Plugin_8bf.Load8bf(fullPathToPlugin) Then
-            
-            'Display about dialog.  Note that this function may return "dummy proc" which is expected and OK
-            Dim retPspi As PSPI_Result
-            retPspi = pspiPlugInAbout(FormMain.hWnd)
-            If (retPspi <> PSPI_OK) And (retPspi <> PSPI_ERR_FILTER_DUMMY_PROC) Then
-                InternalError funcName, "couldn't show About dialog", retPspi
-            End If
-            
-            'Free the plugin
-            Plugin_8bf.Free8bf
-        
-        End If
-        
+'
+'        If Plugin_8bf.Load8bf(fullPathToPlugin) Then
+'
+'            'Display about dialog.  Note that this function may return "dummy proc" which is expected and OK
+'            Dim retPspi As PSPI_Result
+'            retPspi = pspiPlugInAbout(FormMain.hWnd)
+'            If (retPspi <> PSPI_OK) And (retPspi <> PSPI_ERR_FILTER_DUMMY_PROC) Then
+'                InternalError funcName, "couldn't show About dialog", retPspi
+'            End If
+'
+'            'Free the plugin
+'            Plugin_8bf.Free8bf
+'
+'        End If
+'
     End If
     
 End Sub
@@ -590,7 +489,8 @@ ShowDialogAgain:
     'If the plugin was canceled, show the dialog again
     If tmpForm.RestoreDialog() Then GoTo ShowDialogAgain
     
-    'TEMPORARY FIX UNTIL CACHING IS IMPLEMENTED:
+    'Because pspihost is buggy, I've found improved reliability from forcibly freeing any loaded plugins
+    ' (regardless of what happened with this dialog) after user interaction.
     Plugin_8bf.ResetPluginCollection
     
     Unload tmpForm
@@ -598,10 +498,10 @@ ShowDialogAgain:
     
 End Sub
 
-'Produce a sorted list (by category, then function name)
+'Produce a sorted list of 8bf plugins (sorted by category, then function name; path is not considered)
 Public Sub SortAvailable8bf()
     
-    'Failsafe checks
+    'Failsafe check for null/single plugin lists
     If (m_numPlugins < 2) Then Exit Sub
     
     'Given the number of plugins a typical user has (asymptotically approaching 0 lol),
@@ -675,11 +575,11 @@ Public Function EnumeratePlugins_PD(ByRef srcListOfFiles As pdStringStack, Optio
         ' 1) a DLL, and
         ' 2) ...a 32-bit x86 DLL (64-bit is unsupported until a TB version of PD matures)
         If (OS.GetDLLBitness(targetFile) <> 32) Then
-            If PS_DEBUG_VERBOSE Then InternalError FUNC_NAME, "not 32-bit: " & targetFile
+            If DEBUG_VERBOSE Then InternalError FUNC_NAME, "not 32-bit: " & targetFile
             GoTo ContinueWithNextFile
         End If
         
-        If PS_DEBUG_VERBOSE Then PDDebug.LogAction "Attempting PiPL reads for " & targetFile
+        If DEBUG_VERBOSE Then PDDebug.LogAction "Attempting PiPL reads for " & targetFile
         m_CurrentPluginFilename = targetFile
         
         'Attempt to load the library.  (We must pass the returned handle to the resource enumerator.)
@@ -770,7 +670,7 @@ ContinueWithNextFile:
     
 End Function
 
-'Callback for the EnumResourceNamesW API
+'Callback for the EnumResourceNamesW API (used to pull data from 8bf files)
 Private Function EnumResNameProcW(ByVal hModule As Long, ByVal lpType As Long, ByVal lpName As Long, ByVal lUserParam As Long) As Long
     
     Const FUNC_NAME As String = "EnumResNameProcW"
@@ -851,7 +751,7 @@ Private Function EnumResNameProcW(ByVal hModule As Long, ByVal lpType As Long, B
         End If
         
         'With the header pulled, we can now walk through individual properties
-        If PS_DEBUG_VERBOSE Then PDDebug.LogAction "Walking " & thisResource.resCount & " resources..."
+        If DEBUG_VERBOSE Then PDDebug.LogAction "Walking " & thisResource.resCount & " resources..."
         
         'Reset the module-level property tracker
         m_numProperties = thisResource.resCount
@@ -916,7 +816,7 @@ Private Function EnumResNameProcW(ByVal hModule As Long, ByVal lpType As Long, B
         If m_SafePlugins(m_numSafePlugins).Initialize8bf_FromFile(m_CurrentPluginFilename, m_numProperties, m_Properties) Then
             m_numSafePlugins = m_numSafePlugins + 1
         Else
-            If PS_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: initialization failed for " & m_CurrentPluginFilename
+            If DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: initialization failed for " & m_CurrentPluginFilename
         End If
         
         'We are done processing this plugin file, but this function may get called again for a

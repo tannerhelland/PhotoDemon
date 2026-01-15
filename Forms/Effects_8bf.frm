@@ -352,6 +352,10 @@ Private Sub cmdBar_OKClick()
                 ' Report time taken manually.
                 If g_DisplayTimingReports Then Processor.ReportProcessorTimeTaken Plugin_8bf.GetInitialEffectTimestamp()
                 
+                'Free any remaining image and/or plugin resources
+                Plugin_8bf.FreeImageResources   'Pointers to our images and/or internal 8bf image structs
+                Plugin_8bf.Free8bf              'Plugin itself
+                
                 'Unload this dialog
                 Unload Me
                 
@@ -371,11 +375,11 @@ Private Sub cmdBar_OKClick()
                     
                 End If
                 
+                'Free any remaining image and/or plugin resources
+                Plugin_8bf.FreeImageResources   'Pointers to our images and/or internal 8bf image structs
+                Plugin_8bf.Free8bf              'Plugin itself
+                
             End If
-            
-            'Free any remaining image and/or plugin resources
-            Plugin_8bf.FreeImageResources   'Pointers to our images and/or internal 8bf image structs
-            Plugin_8bf.Free8bf              'Plugin itself
             
         Else
             'Warn the user?
@@ -572,15 +576,7 @@ Private Sub ScanForPlugins()
         'JAN 2026: our own iterator works great, is much faster, validates some use-cases pspihost does not,
         ' and shouldn't ever crash (knock on wood).  I'm switching to it ASAP in production to help with
         ' https://github.com/tannerhelland/PhotoDemon/issues/716
-        If USE_NATIVE_INTERFACE Then
-            numPlugins = Plugin_8bf.EnumeratePlugins_PD(listOfFiles, prgUpdate)
-        
-        'old pspihost implementation:
-        Else
-            For i = 0 To listOfFolders.GetNumOfStrings - 1
-                numPlugins = numPlugins + Plugin_8bf.EnumerateAvailable8bf(listOfFolders.GetString(i), prgUpdate)
-            Next i
-        End If
+        numPlugins = Plugin_8bf.EnumeratePlugins_PD(listOfFiles, prgUpdate)
         
         'After scanning, sort filters alphabetically (first by category, then by filter name).
         If (numPlugins > 0) Then Plugin_8bf.SortAvailable8bf Else numPlugins = 0

@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 '8bf Plugin Instance Handler
 'Copyright 2025-2025 by Tanner Helland
 'Created: 17/December/25
-'Last updated: 17/December/25
-'Last update: initial build (as part of a larger project to replace pspihost with our own 8bf implementation)
+'Last updated: 15/January/26
+'Last update: initial release to public; only plugin enumeration and "About" dialog is implemented here (for now);
+'             full 8bf execution still requires pspihost
 '
 '8bf files are 3rd-party Adobe Photoshop plugins that implement one or more "filters".  These are
 ' basically DLL files with special interfaces for communicating with a parent Photoshop instance.
@@ -241,7 +242,7 @@ End Enum
 ' FreeLibrary is mostly done to satisfy my OCD - the OS auto-frees loaded libraries when the base .exe terminates.)
 ' My bigger concern is memory usage if the user touches a ton of 8bf files in a single session; in that case,
 ' especially given that safe memory management is *not* guaranteed by a lot of 8bf files - unloading plugins
-' post-usage can provide a non-trivial stability and resource-reclaiming benefit.
+' post-usage can provide non-trivial stability and resource-reclamation benefits.
 Private m_hLib As Long
 
 'Filename of the underlying plugin.  Note that this is *not* unique per-plugin, as a single plugin file
@@ -250,12 +251,12 @@ Friend Function GetFilename() As String
     GetFilename = m_Filename
 End Function
 
-'Filename of the underlying plugin.  Note that this is *not* unique per-plugin, as a single plugin file
-' can expose multiple plugin interfaces.
+'Category of the underlying plugin.
 Friend Function Get8bfCategory() As String
     Get8bfCategory = m_Category
 End Function
 
+'Name of the underlying plugin.
 Friend Function Get8bfName() As String
     Get8bfName = m_Name
 End Function
@@ -544,14 +545,9 @@ Private Function EnsureLibLoaded() As Boolean
         Exit Function
     End If
     
-    'Prior to actual loading, ensure the plugin is 32-bit (64-bit is unsupported until a TB version of PD matures).
-    ' (Note that inside PD this is technically redundant, as we check bitness at enumeration-time, and we forcibly
-    '  withhold 64-bit plugins from being returned by the enumerator - so I've commented this out for now.
-    '  See the implementation in Plugin_8bf.EnumeratePlugins_PD to see where this is currently handled.)
-    'If (OS.GetDLLBitness(targetFile) <> 32) Then
-    '    If PS_DEBUG_VERBOSE Then InternalError FUNC_NAME, "not 32-bit x86 code: " & targetFile
-    '    GoTo ContinueWithNextFile
-    'End If
+    'Previously we checked bitness here, but I've since offloaded that to the Plugin_8bf module
+    ' which already loads the DLL and "walks" it to retrieve properties - it's easier to check bitness there,
+    ' and simply *not* forward any wrong-bitness libraries here in the first place.
     
     'Load the DLL
     m_hLib = VBHacks.LoadLib(m_Filename)
@@ -569,6 +565,8 @@ Private Function EnsureLibLoaded() As Boolean
     
 End Function
 
+'Unloading the plugin doesn't just erase local properties - it also releases the associated library handle.
+' (This is important as some plugins self-manage memory allocations, which can be *huge* depending on image size.)
 Friend Function UnloadPlugin() As Boolean
     
     m_numProperties = 0
