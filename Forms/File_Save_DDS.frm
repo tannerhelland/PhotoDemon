@@ -413,7 +413,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             ' and the resulting file is stored in m_PreviewImagePath.)
             
             'Start by generating temporary filenames for intermediary files
-            Dim tmpFilenameBase As String, tmpFilenameIntermediary As String, tmpFilenameDDS As String
+            Dim tmpFilenameIntermediary As String, tmpFilenameDDS As String
 
             'Pull a format name from the list box
             Dim ddsFormatName As String

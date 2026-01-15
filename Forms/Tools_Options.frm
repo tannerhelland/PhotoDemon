@@ -395,8 +395,6 @@ Private Sub Form_Load()
     
     m_ActivePanel = OP_None
     
-    Dim i As Long
-    
     'Prep the category button strip
     With btsvCategory
         

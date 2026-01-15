@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).42</langversion>
+<langversion>2028.8 Alfa (Build 25).43</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -7933,11 +7933,6 @@ Ja vēlaties to saglabāt ar citu faila nosaukumu, izvēlieties "Atcelt" un pēc
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>pieejamie spraudņi</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>pievienot mapi</translation>
 </phrase>
@@ -8002,7 +7997,7 @@ Ja vēlaties to saglabāt ar citu faila nosaukumu, izvēlieties "Atcelt" un pēc
 <translation>Pēc viena vai vairāku 8bf failu lejupielādes izmantojiet iestatījumu pogu (iepriekš), lai norādītu PhotoDemon, kur tos atrast.  PhotoDemon tos pievienos jūsu efektu kolekcijai.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14785,10 +14780,10 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2796</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5980 phrases. -->
-<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
-<!-- These 2796 phrases contain approximately 12059 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

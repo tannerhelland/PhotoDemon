@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.8</langversion>
+<langversion>1.0.9</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -7942,11 +7942,6 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>Plugin-uri disponibile</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>Adaugă folder</translation>
 </phrase>
@@ -8011,7 +8006,7 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 <translation>După descărcarea unuia sau mai multor fișiere 8bf, utilizați butonul Setări (de mai sus) pentru a spune PhotoDemon unde să le găsească.  PhotoDemon le va adăuga apoi la colecția dvs. de efecte.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14794,10 +14789,10 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2796</phrasecount>
+<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5980 phrases. -->
-<!-- 3184 are duplicates, so only 2796 unique phrases have been written to file. -->
-<!-- These 2796 phrases contain approximately 12059 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

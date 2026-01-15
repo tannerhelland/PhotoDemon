@@ -96,6 +96,8 @@ Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function LoadLibraryW Lib "kernel32" (ByVal lpLibFileName As Long) As Long
+Private Declare Function LoadLibraryExW Lib "kernel32" (ByVal lpLibFileName As Long, ByVal hFile As Long, ByVal dwFlags As Long) As Long
+
 Private Declare Function lstrlenW Lib "kernel32" (ByVal ptrToFirstChar As Long) As Long
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -524,6 +526,10 @@ End Function
 
 Public Function LoadLib(ByRef libPathAndName As String) As Long
     LoadLib = LoadLibraryW(StrPtr(libPathAndName))
+End Function
+
+Public Function LoadLibExW(ByRef libPathAndName As String, ByVal dwFlags As Long) As Long
+    LoadLibExW = LoadLibraryExW(StrPtr(libPathAndName), 0&, dwFlags)
 End Function
 
 Public Function SendMsgW(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long

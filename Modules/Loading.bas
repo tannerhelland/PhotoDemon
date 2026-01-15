@@ -1207,7 +1207,6 @@ Private Sub ShowFailedLoadMsgBox(ByRef srcFilesBroken As pdStringStack)
         idxMatch = tplFilenames.ContainsString(srcFilesBroken.GetString(i), True)
         If (idxMatch >= 0) Then
             listOfFiles.Append Space$(4) & "("
-            'Do not change this error text; it is mirrored in PluginManager.GenericLibraryError()
             listOfFiles.Append g_Language.TranslateMessage("A third-party library (%1) reported the following error:", tplNames.GetString(idxMatch))
             listOfFiles.Append " "
             listOfFiles.Append Strings.ForceSingleLine(Trim$(tplMsgs.GetString(idxMatch)))

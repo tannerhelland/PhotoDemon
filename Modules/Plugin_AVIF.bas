@@ -152,9 +152,6 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
             'Store any problems in the central plugin error tracker
             PluginManager.NotifyPluginError CCP_libavif, avifStdErr, Files.FileGetName(srcFile, False)
             
-            'You can also report errors directly to the user here:
-            'If (Macros.GetMacroStatus <> MacroBATCH) And allowErrorPopups Then PluginManager.GenericLibraryError CCP_libavif, cShell.GetStdErrDataAsString()
-            
         End If
         
     Else
