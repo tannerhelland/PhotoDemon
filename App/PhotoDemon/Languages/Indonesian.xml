@@ -290,7 +290,7 @@
 
 <phrase>
 <original>Flip image vertically</original>
-<translation></translation>
+<translation>Balik Gambar Secara Vertikal</translation>
 </phrase>
 
 <phrase>
@@ -2695,7 +2695,7 @@ Untuk mengaktifkan dukungan pemindai, salin berkas EZTW32.dll (tersedia untuk di
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation></translation>
+<translation>Kesalahan akses berkas sementara.  Ini dapat disebabkan saat berjalan pada sistem dengan hak akses terbatas.  Harap aktifkan hak admin dan coba lagi.</translation>
 </phrase>
 
 <phrase>
@@ -3662,7 +3662,7 @@ Harap masukkan nilai numerik.</translation>
 
 <phrase>
 <original>Toolbox panels close automatically, but you can pin one to keep it open.  (Pinned panels still close when switching tools or opening new panels.)</original>
-<translation></translation>
+<translation>Panel kotak alat menutup secara otomatis, tetapi Anda dapat menyematkan satu agar tetap terbuka.  (Panel yang disematkan tetap menutup saat beralih alat atau membuka panel baru.)</translation>
 </phrase>
 
 <phrase>
@@ -4335,7 +4335,7 @@ Anda perlu mengunduh berkas ini secara manual menggunakan peramban Internet Anda
 
 <phrase>
 <original>Center image in viewport</original>
-<translation></translation>
+<translation>Pusatkan gambar di dalam viewport</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -12107,7 +12107,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation></translation>
+<translation>Alat Batalkan/Ulangi: kembalikan perubahan yang dibuat pada gambar atau lapisan</translation>
 </phrase>
 
 <phrase>
