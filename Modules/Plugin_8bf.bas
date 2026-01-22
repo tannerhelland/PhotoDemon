@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_8bf"
 '8bf Plugin Interface
 'Copyright 2021-2026 by Tanner Helland
 'Created: 07/February/21
-'Last updated: 15/January/26
-'Last update: start purging pspihost code that's no longer needed (because we've implemented it natively)
+'Last updated: 22/January/26
+'Last update: continued hardening against run-time errors
 '
 '8bf files are 3rd-party Adobe Photoshop plugins that implement one or more "filters".  These are
 ' basically DLL files with special interfaces for communicating with a parent Photoshop instance.
@@ -198,14 +198,19 @@ Private m_numSafePlugins As Long, m_SafePlugins() As pd8bf
 
 Public Function Execute8bf(ByVal ownerHwnd As Long, ByRef pluginCanceled As Boolean, Optional ByVal catchProgress As Boolean = True) As Boolean
     
-    Const funcName As String = "Execute8bf"
+    Const FUNC_NAME As String = "Execute8bf"
+    
+    If (Not m_LibAvailable) Then
+        InternalError FUNC_NAME, "pspihost unavailable"
+        Exit Function
+    End If
     
     Dim retPspi As PSPI_Result
     
     'Before executing a plugin, we want to queue up a progress callback
     If catchProgress Then
         retPspi = pspiSetProgressCallBack(AddressOf Plugin_8bf.Progress8bfCallback)
-        If (retPspi <> PSPI_OK) Then InternalError funcName, "couldn't set progress callback", retPspi
+        If (retPspi <> PSPI_OK) Then InternalError FUNC_NAME, "couldn't set progress callback", retPspi
         m_HasSeenProgressEvent = False
     End If
     
@@ -214,7 +219,7 @@ Public Function Execute8bf(ByVal ownerHwnd As Long, ByRef pluginCanceled As Bool
     pluginCanceled = (retPspi = PSPI_ERR_FILTER_CANCELED)
     
     If (Not Execute8bf) And (Not pluginCanceled) Then
-        InternalError funcName, "plugin execution failed", retPspi
+        InternalError FUNC_NAME, "plugin execution failed", retPspi
     End If
     
 End Function
@@ -226,15 +231,33 @@ End Sub
 'This is a hacky way to "free" a loaded plugin, but it ensures that FreeLibrary gets called on the
 ' currently loaded 8bf (if any)
 Public Sub Free8bf()
+    
+    Const FUNC_NAME As String = "Free8bf"
+    
+    If (Not m_LibAvailable) Then
+        InternalError FUNC_NAME, "pspihost unavailable"
+        Exit Sub
+    End If
+    
     m_Active8bf = vbNullString
     Dim retPspi As PSPI_Result
     retPspi = pspiPlugInLoad(StrPtr(""))    'Cannot be null string, must be *empty* string!
+    
 End Sub
 
 Public Sub FreeImageResources()
+    
+    Const FUNC_NAME As String = "FreeImageResources"
+    
+    If (Not m_LibAvailable) Then
+        InternalError FUNC_NAME, "pspihost unavailable"
+        Exit Sub
+    End If
+    
     pspiSetMask 0, 0, 0, 0, 0   'See documentation; null parameters frees mask pointers and associated resources
     'Erase m_MaskCopy            'Mask is no longer passed to pspihost; it frequently misuses it and crashes
     pspiReleaseAllImages        'pspi will auto-free upon close, but PD also needs to free unsafe pointers to temporary structs
+    
 End Sub
 
 'Return value is the number of plugins found by this enumeration instance (e.g. the set produced by the
@@ -265,23 +288,42 @@ Public Function GetInitialEffectTimestamp() As Currency
 End Function
 
 Public Function GetPspiVersion() As String
-    If (m_LibHandle <> 0) And m_LibAvailable Then
-        Dim ptrVersion As Long
-        ptrVersion = pspiGetVersion()
-        If (ptrVersion <> 0) Then GetPspiVersion = Strings.StringFromCharPtr(ptrVersion, False, 3, True) & ".0"
+    
+    Const FUNC_NAME As String = "GetPspiVersion"
+    
+    If (Not m_LibAvailable) Then
+        InternalError FUNC_NAME, "pspihost unavailable"
+        Exit Function
     End If
+    
+    Dim ptrVersion As Long
+    ptrVersion = pspiGetVersion()
+    If (ptrVersion <> 0) Then GetPspiVersion = Strings.StringFromCharPtr(ptrVersion, False, 3, True) & ".0"
+    
 End Function
 
 Public Function InitializeEngine(ByRef pathToDLLFolder As String) As Boolean
-
+    
+    Const FUNC_NAME As String = "InitializeEngine"
+    
     Dim strLibPath As String
     strLibPath = pathToDLLFolder & "pspiHost.dll"
+    
+    'Ensure the plugin exists before attempting further load steps
+    If (Not Files.FileExists(strLibPath)) Then
+        m_LibHandle = 0
+        m_LibAvailable = False
+        InitializeEngine = False
+        InternalError FUNC_NAME, "pspihost.dll missing"
+        Exit Function
+    End If
+    
     m_LibHandle = VBHacks.LoadLib(strLibPath)
     m_LibAvailable = (m_LibHandle <> 0)
     InitializeEngine = m_LibAvailable
     
     If (Not InitializeEngine) Then
-        PDDebug.LogAction "WARNING!  LoadLibraryW failed to load pspiHost.  Last DLL error: " & Err.LastDllError
+        InternalError FUNC_NAME, "LoadLibraryW failed: " & Err.LastDllError
     End If
     
 End Function
@@ -292,10 +334,23 @@ End Function
 
 Public Function Load8bf(ByRef fullPathToPlugin As String) As Boolean
     
-    Const funcName As String = "Load8bf"
+    Const FUNC_NAME As String = "Load8bf"
     Load8bf = False
     
-    If (LenB(fullPathToPlugin) = 0) Then Exit Function
+    If (Not m_LibAvailable) Then
+        InternalError FUNC_NAME, "pspihost unavailable"
+        Exit Function
+    End If
+    
+    If (LenB(fullPathToPlugin) = 0) Then
+        InternalError FUNC_NAME, "null plugin path"
+        Exit Function
+    End If
+    
+    If (Not Files.FileExists(fullPathToPlugin)) Then
+        InternalError FUNC_NAME, "bad plugin path: " & fullPathToPlugin
+        Exit Function
+    End If
     
     Dim retPspi As PSPI_Result
     retPspi = pspiPlugInLoad(StrPtr(fullPathToPlugin))
@@ -305,7 +360,7 @@ Public Function Load8bf(ByRef fullPathToPlugin As String) As Boolean
         m_Active8bf = fullPathToPlugin
     Else
         m_Active8bf = vbNullString
-        InternalError funcName, "couldn't load plugin", retPspi
+        InternalError FUNC_NAME, "couldn't load plugin", retPspi
     End If
     
 End Function
@@ -365,6 +420,11 @@ End Sub
 Public Function SetImage_CurrentWorkingImage(Optional ByVal pspiMaskOK As Boolean = False) As Boolean
     
     Const funcName As String = "SetImage_CurrentWorkingImage"
+    
+    If (Not m_LibAvailable) Then
+        InternalError funcName, "pspihost unavailable"
+        Exit Function
+    End If
     
     'Failsafes
     If (LenB(m_Active8bf) = 0) Then Exit Function
@@ -479,7 +539,7 @@ Public Sub ShowPluginDialog()
     Set tmpForm = New FormEffects8bf
     
 ShowDialogAgain:
-    ShowPDDialog vbModal, tmpForm, True
+    Interface.ShowPDDialog vbModal, tmpForm, True
     
     'Regardless of what happened, free the progress bar and restore default UI behavior
     ProgressBars.ReleaseProgressBar

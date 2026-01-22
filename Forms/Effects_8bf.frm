@@ -478,7 +478,7 @@ Private Sub Form_Load()
     m_FontCategory.SetTextAlignment vbLeftJustify
     
     'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -551,9 +551,13 @@ Private Sub ScanForPlugins()
     'Next, we want to get a quick count of how many 8bf files exist in the target folder(s).
     ' This gives us a useful max value for our scan progress bar.
     Dim listOfFiles As pdStringStack
-    For i = 0 To listOfFolders.GetNumOfStrings - 1
-        Files.RetrieveAllFiles listOfFolders.GetString(i), listOfFiles, True, False, "8bf"
-    Next i
+    Set listOfFiles = New pdStringStack
+    
+    If (listOfFolders.GetNumOfStrings > 0) Then
+        For i = 0 To listOfFolders.GetNumOfStrings - 1
+            Files.RetrieveAllFiles listOfFolders.GetString(i), listOfFiles, True, False, "8bf"
+        Next i
+    End If
     
     'We now have a (rough) estimate of how many 8bf files we expect to see in the final result.
     ' Note that not all of these may be useable for reasons outside our control (e.g. 64-bit on a 32-bit host).
@@ -561,7 +565,6 @@ Private Sub ScanForPlugins()
     'Set the progress bar max to the total number of 8bf files found
     Dim num8bfCandidates As Long
     num8bfCandidates = listOfFiles.GetNumOfStrings()
-    prgUpdate.Max = num8bfCandidates
     
     'UPDATE DEC 2025: previously, I handed off all folders to pspihost here and let it do its thing.
     ' But per https://github.com/tannerhelland/PhotoDemon/issues/716, some users are seeing crashes
@@ -571,6 +574,8 @@ Private Sub ScanForPlugins()
     ' I'm just going to bypass it completely if no candidate 8bf files exist.
     Dim numPlugins As Long
     If (num8bfCandidates > 0) Then
+        
+        prgUpdate.Max = num8bfCandidates
         
         'DEC 2025: test our own iterator!
         'JAN 2026: our own iterator works great, is much faster, validates some use-cases pspihost does not,
