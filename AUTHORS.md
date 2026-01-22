@@ -15,6 +15,7 @@ Super Patrons:
 Patrons:
 
 * Frank Reibold
+* Heiner Dietz
 * Jim Schmidt
 
 ### 3rd-party libraries

@@ -308,6 +308,7 @@ Private Sub Form_Load()
     End If
     
     GeneratePatron "Frank Reibold"
+    GeneratePatron "Heiner Dietz"
     GeneratePatron "Jim Schmidt"
     
     GeneratePatron vbNullString
