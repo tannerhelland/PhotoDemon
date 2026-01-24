@@ -4215,8 +4215,8 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 </phrase>
 
 <phrase>
-<original>Ce fichier est protégé par un mot de passe. Veuillez saisir un mot de passe.</original>
-<translation></translation>
+<original>This file is password-protected.  Please enter a password</original>
+<translation>Ce fichier est protégé par un mot de passe. Veuillez saisir un mot de passe.</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
