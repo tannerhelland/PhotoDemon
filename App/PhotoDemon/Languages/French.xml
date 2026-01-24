@@ -461,7 +461,7 @@ Need74 (need74@free.fr)</author>
 
 <phrase>
 <original>Hide only this layer</original>
-<translation>Cacher le calque selectionné</translation>
+<translation>Cacher le calque sélectionné</translation>
 </phrase>
 
 <phrase>
@@ -2294,7 +2294,7 @@ Veuillez fermer ce fichier dans tout autre programme l'utilisant et essayez à n
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation>Ce fichier a l'extension "%1", mais est actuellement en format "%2".</translation>
+<translation>Ce fichier a l'extension '%1', mais est actuellement en format '%2'.</translation>
 </phrase>
 
 <phrase>
@@ -2304,7 +2304,7 @@ Veuillez fermer ce fichier dans tout autre programme l'utilisant et essayez à n
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation>(si vous choisissez "Oui", le fichier sera renommé en "%1")</translation>
+<translation>(si vous choisissez 'Oui', le fichier sera renommé en '%1')</translation>
 </phrase>
 
 <phrase>
@@ -2370,7 +2370,7 @@ Veuillez utiliser un autre programme afin d'enregistrer l'image dans un format g
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>>Malheureusement, PhotoDemon est dans l'incapacité de charger la ou les image(s) suivante(s) :
+<translation>Malheureusement, PhotoDemon est dans l'incapacité de charger la ou les image(s) suivante(s) :
 
 %1
 Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est supporté (tel JPEG ou PNG). Merci !</translation>
@@ -2428,7 +2428,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Warning: last chance to save macro</original>
-<translation>Attention : dernière chance pour Enregistrer la macro</translation>
+<translation>Attention : dernière chance pour enregistrer la macro</translation>
 </phrase>
 
 <phrase>
@@ -2621,7 +2621,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>To manually enable AVIF support, you can download the latest copies of the free "%1" and "%2" programs and place them into your PhotoDemon plugin folder</original>
-<translation>Pour activer manuellement la prise en charge d'AVIF, vous pouvez télécharger les copies les plus récentes des programmes gratuits "%1" et "%2" et les placer dans le dossier plugin de PhotoDemon.</translation>
+<translation>Pour activer manuellement la prise en charge d'AVIF, vous pouvez télécharger les copies les plus récentes des programmes gratuits '%1' et '%2' et les placer dans le dossier plugin de PhotoDemon.</translation>
 </phrase>
 
 <phrase>
@@ -2810,9 +2810,9 @@ Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoD
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
-<translation>Requete inconnue transmise au processeur : %1
+<translation>Requête inconnue transmise au processeur : %1
 
-Merci d'envoyer le rapport de bug via le menu Aide -> Soumettre un rapport de bug.</translation>
+Merci d'envoyer le rapport de bug via le menu « Aide -> Soumettre un rapport de bug ».</translation>
 </phrase>
 
 <phrase>
@@ -2830,15 +2830,15 @@ Merci d'envoyer le rapport de bug via le menu Aide -> Soumettre un rapport de bu
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
 <translation>Le fichier spécifié est introuvable.Si il était situé sur un support amovible, veuillez ré- insérez la disquette appropriée, CD ou disque dur portable. Si le fichier ne se trouve pas sur un support portable, assurez-vous que : 
- 1) le fichier n'a pas été supprimé 
- 2) et que l'emplacement du fichier fourni à PhotoDemon est correcte.</translation>
+ 1) le fichier n'a pas été supprimé...
+ 2) que l'emplacement du fichier fourni à PhotoDemon est correcte.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon ne peut pas trouver d'informations supplémentaires pour cette erreur. Cela induit probablement que cette erreur est un bogue, et cela a besoin d'être réparé ! 
+<translation>PhotoDemon ne peut pas trouver d'informations supplémentaires pour cette erreur. Cela induit probablement que cette erreur est un bogue, et cela a besoin d'être réparé !
  Voulez-vous soumettre un rapport de bogue ? (Cela prend moins d'une minute, et aide tous ceux qui utilisent le logiciel.)</translation>
 </phrase>
 
@@ -3195,12 +3195,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu Aide > Soumettre un rapport de bogue</translation>
+En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu « Aide > Soumettre un rapport de bogue ».</translation>
 </phrase>
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Format de sortie non reconnu. Enregistrement abandonné. Veuillez utiliser le menu Aide -> Envoyer un Rapport de bogue pour signaler l'incident.</translation>
+<translation>Format de sortie non reconnu. Enregistrement abandonné. Veuillez utiliser le menu « Aide -> Envoyer un rapport de bogue pour signaler l'incident ».</translation>
 </phrase>
 
 <phrase>
@@ -3457,7 +3457,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Touche Maj : Préserver le rapport d'aspect du calque</translation>
+<translation>Touche Maj : préserver le rapport d'aspect du calque</translation>
 </phrase>
 
 <phrase>
@@ -3582,7 +3582,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Initialisation de mise à jour du logiciel (cette fonction peut être désactivée dans le menu Configuration -> Options)</translation>
+<translation>Initialisation de mise à jour du logiciel (cette fonction peut être désactivée dans le menu « Configuration -> Options »)</translation>
 </phrase>
 
 <phrase>
@@ -4208,6 +4208,18 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<phrase>
+<original>Enter password</original>
+<translation>Entrer un mot de passe</translation>
+</phrase>
+
+<phrase>
+<original>Ce fichier est protégé par un mot de passe. Veuillez saisir un mot de passe.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -4866,8 +4878,8 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <phrase>
 <original>"%1" produces an out of range result (%2).
 The final value must be between %3 and %4.</original>
-<translation>"%1" produit un résultat hors limite (%2).
-La valeur finale doit être entre  %3 and %4.</translation>
+<translation>'%1' produit un résultat hors limite (%2).
+La valeur finale doit être entre '%3' et '%4'.</translation>
 </phrase>
 
 <phrase>
@@ -5790,6 +5802,11 @@ La valeur finale doit être entre  %3 and %4.</translation>
 </phrase>
 
 <phrase>
+<original>Third-party libraries</original>
+<translation>Bibliothèques tierces</translation>
+</phrase>
+
+<phrase>
 <original>About</original>
 <translation>À Propos</translation>
 </phrase>
@@ -5803,7 +5820,7 @@ La valeur finale doit être entre  %3 and %4.</translation>
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation>Une nouvelle version de PhotoDemon est disponible ! 
+<translation>Une nouvelle version de PhotoDemon est disponible !
 
 La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une nouvelle notification quand elle sera achevée.</translation>
 </phrase>
@@ -6182,7 +6199,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation>Votre collection LUT est stockée dans le dossier "%1"</translation>
+<translation>Votre collection LUT est stockée dans le dossier '%1'</translation>
 </phrase>
 
 <phrase>
@@ -6401,7 +6418,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>(Note: move the mouse over the histogram to calculate these values)</original>
-<translation>(REMARQUE : Déplacez la souris sur l'histogramme pour calculer les valeurs)</translation>
+<translation>(REMARQUE : déplacez la souris sur l'histogramme pour calculer les valeurs.)</translation>
 </phrase>
 
 <phrase>
@@ -6736,7 +6753,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Split-toning image</original>
-<translation>>séparation tonale de l'image</translation>
+<translation>séparation tonale de l'image</translation>
 </phrase>
 
 <!-- Adjustments_Photo_SplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -7111,7 +7128,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>Un dégradé avec le nom "%1" existe déjà dans votre collection . Voulez vous enregister par dessus et l'écraser ?</translation>
+<translation>Un dégradé avec le nom '%1' existe déjà dans votre collection . Voulez vous enregister par dessus et l'écraser ?</translation>
 </phrase>
 
 <phrase>
@@ -7151,7 +7168,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
-<translation>Malhaureusement, le fichier de dégradé %1 se semble pas être un fichier de dégradé valide</translation>
+<translation>Malhaureusement, le fichier de dégradé '%1' se semble pas être un fichier de dégradé valide</translation>
 </phrase>
 
 <phrase>
@@ -7201,7 +7218,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>Votre collection de dégradés est stockée dans le dossier %1</translation>
+<translation>Votre collection de dégradés est stockée dans le dossier '%1'</translation>
 </phrase>
 
 <phrase>
@@ -7295,7 +7312,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation>la quantité %1 n'est pas valide</translation>
+<translation>la quantité '%1' n'est pas valide</translation>
 </phrase>
 
 <phrase>
@@ -7605,12 +7622,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation>Vous pouvez modifier les paramètres de la langue et du thème à tout moment à partir du menu Outils.</translation>
+<translation>Vous pouvez modifier les paramètres de la langue et du thème à tout moment à partir du menu « Outils ».</translation>
 </phrase>
 
 <phrase>
 <original>Additional interface customizations are available in the Window menu.</original>
-<translation>Des personnalisations supplémentaires de l'interface sont disponibles dans le menu Fenêtre.</translation>
+<translation>Des personnalisations supplémentaires de l'interface sont disponibles dans le menu « Fenêtre ».</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -7651,7 +7668,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>REMARQUE : si vous cliquez sur 'Enregistrer', PhotoDemon sauvegardera cette image (et ses changements) en utilisant son nom de fichier actuel. 
 
- Si vous voulez l'enregistrer sous un autre nom de fichier, (et conserver le fichier initial), veuillez sélectionner 'Annuler', puis utilisez le menu fichier -> 'Enregistrer sous'.</translation>
+ Si vous voulez l'enregistrer sous un autre nom de fichier, (et conserver le fichier initial), veuillez sélectionner 'Annuler', puis utilisez le menu « Fichier -> Enregistrer sous ».</translation>
 </phrase>
 
 <phrase>
@@ -7997,7 +8014,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>Après avoir téléchargé un ou plusieurs fichiers 8bf, utilisez le bouton de réglage (ci-dessus) pour indiquer à PhotoDemon où les trouver.  PhotoDemon les ajoutera alors à votre collection d'Effets.</translation>
+<translation>Après avoir téléchargé un ou plusieurs fichiers 8bf, utilisez le bouton de réglage (ci-dessus) pour indiquer à PhotoDemon où les trouver.  PhotoDemon les ajoutera alors à votre collection d'effets.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -9711,7 +9728,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.</original>
-<translation>Pour agrandir la zone de travail afin de l'adapter à l'image pivotée, utilisez plutôt le menu Image -> Rotation -> rotation paramétrée.</translation>
+<translation>Pour agrandir la zone de travail afin de l'adapter à l'image pivotée, utilisez plutôt le menu « Image -> Rotation -> rotation paramétrée ».</translation>
 </phrase>
 
 <!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10177,7 +10194,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>REMARQUE : une "macro" est tout simplement un enregistrement d'une suite d'actions d'édition photo. Elle peut inclure tout ajustement, filtre, ou un effet appliqué à l'image. Vous pouvez créer une nouvelle macro en utilisant le menu "Configuration -> Créer une macro -> Début de l'Enregistrement " dans la fenêtre principale PhotoDemon.</translation>
+<translation>REMARQUE : une « macro » est tout simplement un enregistrement d'une suite d'actions d'édition photo. Elle peut inclure tout ajustement, filtre, ou un effet appliqué à l'image. Vous pouvez créer une nouvelle macro en utilisant le menu « Configuration -> Créer une macro -> Début de l'Enregistrement » dans la fenêtre principale PhotoDemon.</translation>
 </phrase>
 
 <phrase>
@@ -10372,7 +10389,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation>Conversion par lots annulée. %1 image(s) ont été traitées avant annulation. La dernière image traitée est "%2"</translation>
+<translation>Conversion par lots annulée. %1 image(s) a(ont) été traitée(s) avant annulation. La dernière image traitée est '%2'</translation>
 </phrase>
 
 <phrase>
@@ -10601,7 +10618,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>Les fichiers Adobe Swatch Exchange (ASE) peuvent contenir plusieurs palettes en un seul ficheir.  Si vous sélectionnez l'option "ajout" PhotoDemon mettra cette palette dans votre fichier ASE existant. Les palettes déjà présentes dans le fichier ne seront pas modifiées.</translation>
+<translation>Les fichiers Adobe Swatch Exchange (ASE) peuvent contenir plusieurs palettes en un seul ficheir.  Si vous sélectionnez l'option « Ajout » PhotoDemon mettra cette palette dans votre fichier ASE existant. Les palettes déjà présentes dans le fichier ne seront pas modifiées.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10749,7 +10766,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>L'image est imprimée avec succès. (REMARQUE : en fonction de l'imprimante apparaissent des écrans de confirmation supplémentaires).</translation>
+<translation>L'image est imprimée avec succès. (REMARQUE : en fonction de votre imprimante des écrans de confirmation supplémentaires peuvent apparaître.)</translation>
 </phrase>
 
 <phrase>
@@ -11341,7 +11358,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>(You can become a patron, too!  Click here to learn more.)</original>
-<translation>(Vous pouvez devenir un Patron, vous aussi ! Cliquez ici pour en savoir plus).</translation>
+<translation>(Vous pouvez devenir un patron, vous aussi ! Cliquez ici pour en savoir plus.)</translation>
 </phrase>
 
 <!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -11987,7 +12004,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Click: show the "New layer" dialog</original>
-<translation>Clic : montre la boite de dialogue "nouveau calque"</translation>
+<translation>Clic : montre la boite de dialogue « nouveau calque »</translation>
 </phrase>
 
 <phrase>
@@ -12007,12 +12024,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation>Clic : Monter ce calque en haut de la pile</translation>
+<translation>Clic : monter ce calque en haut de la pile</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation>Maj + Clic : Fusionner ce calque avec le calque en dessus</translation>
+<translation>Maj + Clic : fusionner ce calque avec le calque en dessus</translation>
 </phrase>
 
 <phrase>
@@ -12037,7 +12054,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Click: add a duplicate of this layer</original>
-<translation>Clic : Dupliquer ce calque</translation>
+<translation>Clic : dupliquer ce calque</translation>
 </phrase>
 
 <!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -12137,8 +12154,8 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Cette option permet de créer une image vide. Un autre moyen de créer des images est d'utiliser une image existante et de la modifier. Pour cela passer par le menu Fichier -> Importer. 
-(Pensez à ensuite "enregistrer sous" pour donner un nouveau nom à cette image si vous la modifiez et que vous désirez garder l'image originale)</translation>
+<translation>Cette option permet de créer une image vide. Un autre moyen de créer des images est d'utiliser une image existante et de la modifier. Pour cela passer par le menu « Fichier -> Importer ». 
+(Pensez à ensuite « Enregistrer sous » pour donner un nouveau nom à cette image si vous la modifiez et que vous désirez garder l'image originale)</translation>
 </phrase>
 
 <phrase>
@@ -12173,7 +12190,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
-<translation>ATTENTION : ceci va écraser le fichier de l'image actuelle. Pour enregistrer dans un fichier différent, utilisez l'icone ou l'option "Enregistrer sous" .</translation>
+<translation>ATTENTION : ceci va écraser le fichier de l'image actuelle. Pour enregistrer dans un fichier différent, utilisez l'icone ou l'option « Enregistrer sous » .</translation>
 </phrase>
 
 <phrase>
@@ -12946,7 +12963,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Selections normally select the area inside their boundaries, but you can modify this behavior here.  (For advanced selection area adjustments, use the Select menu.)</original>
-<translation>Ces options contrôlent la zone touchée par une sélection. La sélection peut être modifiée sur cette zone alors que ces paramètres sont actifs. Pour des réglages plus avancés du mode sélection, utilisez le menu Sélection.</translation>
+<translation>Ces options contrôlent la zone touchée par une sélection. La sélection peut être modifiée sur cette zone alors que ces paramètres sont actifs. Pour des réglages plus avancés du mode sélection, utilisez le menu « Sélection ».</translation>
 </phrase>
 
 <phrase>
@@ -12956,7 +12973,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>Ce curseur d'adoucissement permet des ajustements immédiats pour adoucir la frange en bordure. Pour des raisons de performances, il est limité à de petits rayons. Pour de plus grands rayons d'adoucissement, veuillez utiliser la Selection -> Menu Adoucissement.</translation>
+<translation>Ce curseur d'adoucissement permet des ajustements immédiats pour adoucir la frange en bordure. Pour des raisons de performances, il est limité à de petits rayons. Pour de plus grands rayons d'adoucissement, veuillez utiliser le menu « Sélection -> Adoucissement ».</translation>
 </phrase>
 
 <phrase>
@@ -13364,7 +13381,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation>(REMARQUE : Ctrl+Entrée sauvegarde automatiquement et va à la phrase suivante)</translation>
+<translation>(REMARQUE : Ctrl+Entrée sauvegarde automatiquement et va à la phrase suivante.)</translation>
 </phrase>
 
 <phrase>
@@ -13659,7 +13676,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation>ATTENTION : ceci n'est pas une macro valide. Vous devez inclure au moins une action qui modifie l'image</translation>
+<translation>ATTENTION : ceci n'est pas une macro valide. Vous devez inclure au moins une action qui modifie l'image.</translation>
 </phrase>
 
 <phrase>
@@ -14182,7 +14199,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>La plupart des éditeurs photo utilisent le format de l'image en cours. Pour les flux de travail nécessitant de charger l'image dans un format (par ex : RAW) mais de la sauvegarder dans un autre format (par ex : JPEG), indiquez "dernier format d'image utilisé" pour gagner du temps</translation>
+<translation>La plupart des éditeurs photo utilisent le format de l'image en cours. Pour les flux de travail nécessitant de charger l'image dans un format (par ex : RAW) mais de la sauvegarder dans un autre format (par ex : JPEG), indiquez « dernier format d'image utilisé » pour gagner du temps.</translation>
 </phrase>
 
 <phrase>
@@ -14674,12 +14691,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation>Les clés d'accès (mnémoniques) vous permettent de naviguer dans les menus avec le clavier. En mode "auto", les langues sans clés d'accès natives seront affichées par des clés d'accès en Anglais U.S pour chaque menu.</translation>
+<translation>Les clés d'accès (mnémoniques) vous permettent de naviguer dans les menus avec le clavier. En mode « auto », les langues sans clés d'accès natives seront affichées par des clés d'accès en Anglais U.S pour chaque menu.</translation>
 </phrase>
 
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>La largeur du menu "Fichiers récents" est limitée par Windows. Pour éviter que ce menu ne déborde, PhotoDemon peut afficher les noms d'image seulement au lieu du chemin complet des images.</translation>
+<translation>La largeur du menu « Fichiers récents » est limitée par Windows. Pour éviter que ce menu ne déborde, PhotoDemon peut afficher les noms d'image seulement au lieu du chemin complet des images.</translation>
 </phrase>
 
 <!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
