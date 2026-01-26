@@ -1,17 +1,17 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<pdData>
+	<pdData>
 
-<pdDataType>Translation</pdDataType>
+		<pdDataType>Translation</pdDataType>
 
-<langid>fr-FR</langid>
-<langname>Français</langname>
-<langversion>2025.12.1</langversion>
-<langstatus>Complète</langstatus>
+		<langid>fr-FR</langid>
+		<langname>Français</langname>
+		<langversion>2026.1.52</langversion>
+		<langstatus>Complète</langstatus>
 
-<author>Need74 (need74@free.fr), Jean Jacques Piedfort, Frank Donckers</author>
+		<author>Need74 (need74@free.fr), Jean Jacques Piedfort, Frank Donckers</author>
 
-<!-- BEGIN AUTOMATIC TEXT GENERATION -->
+		<!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
 <phrase>
 <original>New image</original>
@@ -1333,14 +1333,14 @@
 <translation>Effacer la liste des images récentes</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+		<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
 <translation>[image sans titre]</translation>
 </phrase>
 
-<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
@@ -1352,7 +1352,7 @@
 <translation>La sauvegarde automatique ne peut être complètement éffectuée. Une reconstruction partielle est tentée.</translation>
 </phrase>
 
-<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+		<!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>Unloading image %1 of %2</original>
@@ -1369,7 +1369,7 @@
 <translation>Terminé.</translation>
 </phrase>
 
-<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+		<!-- CanvasManager.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>ICC profile</original>
@@ -1386,7 +1386,7 @@
 <translation>Profil exporté avec succès.</translation>
 </phrase>
 
-<!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>How would you like to load this image?</original>
@@ -1418,9 +1418,9 @@
 <translation>Déposer comme image ou calque.</translation>
 </phrase>
 
-<!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- DialogManager.bas contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+		<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>ExifTool could not be started.  Metadata unavailable for this session.</original>
@@ -1447,7 +1447,7 @@
 <translation>Cette image ne contient pas de métadonnées.</translation>
 </phrase>
 
-<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Plugin_ExifTool.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Open an image</original>
@@ -1517,7 +1517,7 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 <translation>Image trop grande</translation>
 </phrase>
 
-<!-- FileMenu.bas contains 27 phrases. 15 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- FileMenu.bas contains 27 phrases. 15 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
@@ -1559,7 +1559,7 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 <translation>Auto-Renforcement couleur et lumière</translation>
 </phrase>
 
-<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+		<!-- Filters_Color.bas contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying %1 filter</original>
@@ -1576,14 +1576,14 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 <translation>Application d'un flou tramé</translation>
 </phrase>
 
-<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+		<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Carving image relief</original>
 <translation>Sculpture relief de l'image</translation>
 </phrase>
 
-<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+		<!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
@@ -1604,7 +1604,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</translation>
 </phrase>
 
-<!-- Filters_Misc.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
+		<!-- Filters_Misc.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>random</original>
@@ -1671,14 +1671,14 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>circulaire</translation>
 </phrase>
 
-<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+		<!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Time taken</original>
 <translation>Temps passé</translation>
 </phrase>
 
-<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- Filters_Scientific.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing image</original>
@@ -1740,7 +1740,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Découpage de l'image</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Filters_Transform.bas contains 29 phrases. 17 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Loading page %1 of %2</original>
@@ -1757,14 +1757,14 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Enregistrement terminé.</translation>
 </phrase>
 
-<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+		<!-- GDIPlus.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Stretching histogram</original>
 <translation>Développer l'histogramme</translation>
 </phrase>
 
-<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- Histograms.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Enter</original>
@@ -1811,7 +1811,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Maj</translation>
 </phrase>
 
-<!-- Hotkeys.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Hotkeys.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -1823,7 +1823,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>L'enregistrement de %1 a échoué. Veuillez signaler cette erreur via Aide -> Envoyer le rapport de bogue.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -1835,7 +1835,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Tous les fichiers</translation>
 </phrase>
 
-<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- ImageFormats.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>An error has occurred (#%1 - %2).  PDI load abandoned.</original>
@@ -1847,7 +1847,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Page %1</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- ImageLoader.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Repeat</original>
@@ -2134,7 +2134,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>aperçu non disponible</translation>
 </phrase>
 
-<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
+		<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2246,7 +2246,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Cadre %1</translation>
 </phrase>
 
-<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+		<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>Loading image</original>
@@ -2390,7 +2390,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 <translation>Duplication d'image terminée.</translation>
 </phrase>
 
-<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+		<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -2475,7 +2475,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 <translation>Macro en cours</translation>
 </phrase>
 
-<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+		<!-- BatchProcessor.bas contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>empty</original>
@@ -2487,7 +2487,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 <translation>Effacer la liste récente des macros</translation>
 </phrase>
 
-<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -2584,14 +2584,14 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 <translation>Atkinson / Macintosh_Classic</translation>
 </phrase>
 
-<!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+		<!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <phrase>
 <original>Applying plugin</original>
 <translation>Application du plugin</translation>
 </phrase>
 
-<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+		<!-- Plugin_8bf.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
@@ -2633,7 +2633,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 <translation>Téléchargement annulé</translation>
 </phrase>
 
-<!-- Plugin_AVIF.bas contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Plugin_AVIF.bas contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Scanner successfully enabled</original>
@@ -2713,16 +2713,16 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 <translation>Le scanner a renvoyé un code d'erreur qui n'a pas été spécifié dans la documentation EZTW32.dll (Error #%1). Veuillez visiter http://www.eztwain.com pour plus d'informations.</translation>
 </phrase>
 
-<!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- Plugin_EZTwain.bas contains 32 phrases. 18 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Applying tone-mapping</original>
 <translation>Application de la carte de tonalité</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Plugin_FreeImage.bas contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Plugin_heif.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
@@ -2745,7 +2745,7 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 <translation>PhotoDemon ne va pas télécharger libjxl à ce moment.</translation>
 </phrase>
 
-<!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>A necessary third-party library (%1) is missing or disabled.
@@ -2791,7 +2791,7 @@ Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoD
 <translation>LGPL license</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -2803,7 +2803,7 @@ Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoD
 <translation>Image envoyée avec succès à l'imprimante photo Windows.</translation>
 </phrase>
 
-<!-- Printing.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+		<!-- Printing.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>Unknown processor request submitted: %1
@@ -3116,7 +3116,7 @@ Description : %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon a automatiquement ouvert une page de rapport de bogue pour vous . Veuillez cliquer le bouton « New issue » puis selectionner « bug report » . Répondez aux questions du mieux que vous pouvez et inclure SVP le numero d'erreur quelque part dans votre rapport : %1
+<translation>PhotoDemon a automatiquement ouvert une page de rapport de bogue pour vous . Veuillez cliquer le bouton « Nouvelle issue »" puis selectionner « Rapport de bogue » . Répondez aux questions du mieux que vous pouvez et merci d'inclure le numero d'erreur quelque part dans votre rapport : %1
 
 Une fois terminé, cliquez sur le bouton « Soumettre un nouveau problème ». Merci !</translation>
 </phrase>
@@ -3126,7 +3126,7 @@ Une fois terminé, cliquez sur le bouton « Soumettre un nouveau problème ». M
 <translation>Instructions pour les rapports de bogues</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+		<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3173,7 +3173,7 @@ Une fois terminé, cliquez sur le bouton « Soumettre un nouveau problème ». M
 <translation>convolution cubique</translation>
 </phrase>
 
-<!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Resampling.bas contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>An error occurred when attempting to save this image.  The FreeImage plugin reported the following error details: 
@@ -3181,11 +3181,11 @@ Une fois terminé, cliquez sur le bouton « Soumettre un nouveau problème ». M
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation>Une erreur s'est produite lors de la tentative de sauvegarder cette image. Le plugin FreeImage rapporte les détails d'erreur suivants : 
+<translation>Une erreur s'est produite lors de la tentative de sauvegarder cette image. Le plugin « FreeImage » rapporte les détails d'erreur suivants : 
 
 %1
 
-En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu « Aide > Soumettre un rapport de bogue ».</translation>
+En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu « Aide -> Soumettre un rapport de bogue ».</translation>
 </phrase>
 
 <phrase>
@@ -3213,7 +3213,7 @@ En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous 
 <translation>Vous pouvez lancer le processus, mais l'image sauvegardée sera fixe, pas une image animée.</translation>
 </phrase>
 
-<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -3235,7 +3235,7 @@ En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous 
 <translation>Options de capture d'écran</translation>
 </phrase>
 
-<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>This action requires an active selection.  Please create a selection before continuing.</original>
@@ -3287,7 +3287,7 @@ En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous 
 <translation>Une erreur inconnue s'est produite. Sélection non sauvegardée. Veuillez essayer de nouveau.</translation>
 </phrase>
 
-<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Selection inversion complete.</original>
@@ -3329,9 +3329,9 @@ En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous 
 <translation>Recherche des contours de la sélection</translation>
 </phrase>
 
-<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
-<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+		<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>Create selection</original>
@@ -3358,9 +3358,9 @@ En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous 
 <translation>Cliquez sur le premier point pour terminer la sélection polygonale</translation>
 </phrase>
 
-<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>%1 is not a valid entry.
@@ -3381,7 +3381,7 @@ Please enter a numeric value.</original>
 Veuillez entrer une valeur numérique.</translation>
 </phrase>
 
-<!-- TextSupport.bas contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- TextSupport.bas contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Resize layer (on-canvas)</original>
@@ -3403,7 +3403,7 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>Déplacer le calque</translation>
 </phrase>
 
-<!-- Tools.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+		<!-- Tools.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
@@ -3415,30 +3415,30 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>Tampon de clonage</translation>
 </phrase>
 
-<!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+		<!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Crop tool</original>
 <translation>Recadrage</translation>
 </phrase>
 
-<!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Fill tool</original>
 <translation>Outil de remplissage</translation>
 </phrase>
 
-<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- FillTool.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Gradient tool</original>
 <translation>Outil de dégradé.</translation>
 </phrase>
 
-<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
-<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- MeasureTool.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Ctrl+click to move the active layer here</original>
@@ -3465,21 +3465,21 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>(aucun)</translation>
 </phrase>
 
-<!-- MoveTool.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- MoveTool.bas contains 12 phrases. 7 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Paint stroke</original>
 <translation>Trait de peinture</translation>
 </phrase>
 
-<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- Paintbrush.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Pencil stroke</original>
 <translation>Trait de crayon</translation>
 </phrase>
 
-<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- PencilTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>(enter text here)</original>
@@ -3491,7 +3491,7 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>Nouveau calque de texte</translation>
 </phrase>
 
-<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- TextTools.bas contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>px</original>
@@ -3558,7 +3558,7 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>picas</translation>
 </phrase>
 
-<!-- Units.bas contains 40 phrases. 27 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+		<!-- Units.bas contains 40 phrases. 27 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
@@ -3620,7 +3620,7 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>Vous avez placé PhotoDemon dans un dossier système dont les droits sont limités.  PhotoDemon ne disposant pas d'un accès administrateur, ne peut donc pas télécharger de fichiers pour vous.  Veuillez déplacer PhotoDemon dans un dossier sans droits limités et réessayez.</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
@@ -3672,7 +3672,7 @@ Veuillez entrer une valeur numérique.</translation>
 <translation>Génération d'une nouvelle serie aléatoire de nombres.</translation>
 </phrase>
 
-<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>This image does not contain any GPS metadata.</original>
@@ -3738,7 +3738,7 @@ You will need to manually download this file using your Internet browser.</origi
 Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateur Internet.</translation>
 </phrase>
 
-<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fit width</original>
@@ -3755,16 +3755,16 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>À l'image</translation>
 </phrase>
 
-<!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Zoom.bas contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Unnamed gradient</original>
 <translation>Dégradé sans nom</translation>
 </phrase>
 
-<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+		<!-- pdCBZ.cls contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
@@ -3801,14 +3801,14 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Image importée</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- pdClipboardMain.cls contains 31 phrases. 24 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
 <translation>L'usage de la mémoire semble élevé; suspendez certaines données du disque avant de continuer</translation>
 </phrase>
 
-<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+		<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Unknown adapter</original>
@@ -3820,14 +3820,14 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Affichage inconnu</translation>
 </phrase>
 
-<!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Please select a folder</original>
 <translation>Sélectionner un dossier</translation>
 </phrase>
 
-<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- pdFSO.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
@@ -3844,21 +3844,21 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Finalisation de l'image</translation>
 </phrase>
 
-<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+		<!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Repainting selected regions</original>
 <translation>Repeindre les régions sélectionnées</translation>
 </phrase>
 
-<!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+		<!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>New layer</original>
 <translation>Nouveau calque</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- pdLayer.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Building color lookup</original>
@@ -3875,16 +3875,16 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Sélectionner un fichier LUT</translation>
 </phrase>
 
-<!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-<!-- pdMakeTexture.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- pdMakeTexture.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Layer %1</original>
 <translation>Calque %1</translation>
 </phrase>
 
-<!-- pdMBM.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- pdMBM.cls contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>ExifTool plugin missing.  Metadata import abandoned.</original>
@@ -4176,7 +4176,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Intégration de métadonnées</translation>
 </phrase>
 
-<!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
+		<!-- pdMetadata.cls contains 121 phrases. 63 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
@@ -4188,16 +4188,16 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Chargement annulé</translation>
 </phrase>
 
-<!-- pdOpenSaveDialog.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- pdOpenSaveDialog.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>palette exported by PhotoDemon %1</original>
 <translation>palette exportée par PhotoDemon %1</translation>
 </phrase>
 
-<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Enter password</original>
@@ -4209,14 +4209,14 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Ce fichier est protégé par un mot de passe. Veuillez saisir un mot de passe.</translation>
 </phrase>
 
-<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
 <translation>Analyse de l'image de l'animation  %1 sur %2</translation>
 </phrase>
 
-<!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>%1 (Channel %2)</original>
@@ -4228,16 +4228,16 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Arrière plan</translation>
 </phrase>
 
-<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- pdPSDLayer.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Composite image</original>
 <translation>Image composite</translation>
 </phrase>
 
-<!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- pdPSP.cls contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Reconstructing image</original>
@@ -4249,7 +4249,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Image restaurée avec succès.</translation>
 </phrase>
 
-<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+		<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>hexagon</original>
@@ -4276,9 +4276,9 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>lambeaux</translation>
 </phrase>
 
-<!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- pdVoronoi.cls contains 22 phrases. 17 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- pdWebP.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- pdWebP.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>quick start</original>
@@ -4340,14 +4340,14 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>caption</original>
 <translation>légende</translation>
 </phrase>
 
-<!-- pdCheckBox.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+		<!-- pdCheckBox.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>compositing color</original>
@@ -4434,7 +4434,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>aucune</translation>
 </phrase>
 
-<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+		<!-- pdColorDepth.ctl contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>RGB(%1, %2, %3)</original>
@@ -4461,7 +4461,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Couleur sélectionnée à l'écran principal</translation>
 </phrase>
 
-<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Current color</original>
@@ -4528,9 +4528,9 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Diminuer le rouge</translation>
 </phrase>
 
-<!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+		<!-- pdColorVariants.ctl contains 28 phrases. 15 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
-<!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- pdColorWheel.ctl contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>OK</original>
@@ -4572,9 +4572,9 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Soumettez un bug, un commentaire, une suggestion</translation>
 </phrase>
 
-<!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+		<!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
-<!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- pdCommandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>before</original>
@@ -4596,9 +4596,9 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>vue globale</translation>
 </phrase>
 
-<!-- pdFxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+		<!-- pdFxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
-<!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+		<!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
@@ -4615,9 +4615,9 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Survolez une vignette de l'image pour voir son nom et l'emplacement du fichier actuel.</translation>
 </phrase>
 
-<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+		<!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
-<!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+		<!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>Show this layer</original>
@@ -4644,7 +4644,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Réorganiser les calques</translation>
 </phrase>
 
-<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- pdLayerListInner.ctl contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>general metadata settings</original>
@@ -4681,7 +4681,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Paramètres spécifiques au format JPEG</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Current frame: %1 of %2</original>
@@ -4693,7 +4693,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>%1 sur %2</translation>
 </phrase>
 
-<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- pdNavigator.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>new</original>
@@ -4705,7 +4705,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>original</translation>
 </phrase>
 
-<!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>RGBA(%1, %2, %3, %4)</original>
@@ -4717,9 +4717,9 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>index %1</translation>
 </phrase>
 
-<!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- pdPaletteUI.ctl contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+		<!-- pdRadioButton.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>resolution</original>
@@ -4791,7 +4791,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>%1, était %2</translation>
 </phrase>
 
-<!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- pdResize.ctl contains 38 phrases. 24 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Scroll here</original>
@@ -4858,7 +4858,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <translation>Faire défiler vers le bas</translation>
 </phrase>
 
-<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+		<!-- pdScrollBar.ctl contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>%1 = %2</original>
@@ -4877,7 +4877,7 @@ La valeur finale doit être entre '%3' et '%4'.</translation>
 <translation>PhotoDemon ne comprend pas l'expression : %1</translation>
 </phrase>
 
-<!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- pdSpinner.ctl contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>size</original>
@@ -4909,7 +4909,7 @@ La valeur finale doit être entre '%3' et '%4'.</translation>
 <translation>Changer l'unité de taille de l'image (affichée à gauche de cette boîte)</translation>
 </phrase>
 
-<!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- pdStatusBar.ctl contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
@@ -5859,7 +5859,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+		<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5911,7 +5911,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Conversion de l'image en bichromie</translation>
 </phrase>
 
-<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
+		<!-- Adjustments_BlackAndWhite.frm contains 11 phrases.  One was a duplicate of an existing phrase, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>model</original>
@@ -5948,7 +5948,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>hérité</translation>
 </phrase>
 
-<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>red</original>
@@ -5995,7 +5995,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Mélange des canaux de couleurs</translation>
 </phrase>
 
-<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>color space</original>
@@ -6042,7 +6042,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Isolation du canal %1</translation>
 </phrase>
 
-<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>new balance</original>
@@ -6054,7 +6054,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Réglage de la balance des couleurs</translation>
 </phrase>
 
-<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Adjustments_ColorBalance.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>saturation</original>
@@ -6081,7 +6081,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>au choix</translation>
 </phrase>
 
-<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>number of gray shades</original>
@@ -6133,7 +6133,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>maximum</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>Adjust HSL</original>
@@ -6155,7 +6155,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Réglage teinte, saturation et valeurs de luminosité</translation>
 </phrase>
 
-<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>available LUTs</original>
@@ -6192,7 +6192,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>cliquer pour ouvrir ce dossier dans l'Explorateur Windows</translation>
 </phrase>
 
-<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>replace threshold</original>
@@ -6214,7 +6214,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Remplacement de couleur</translation>
 </phrase>
 
-<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Adjustments_Color_ReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>strength</original>
@@ -6226,7 +6226,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Passage à la mode vintage pour la conversion sépia</translation>
 </phrase>
 
-<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Adjustments_Color_Sepia.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Color temperature</original>
@@ -6283,7 +6283,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>avancé</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+		<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>tint</original>
@@ -6295,7 +6295,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Re-teinte d'image</translation>
 </phrase>
 
-<!-- Adjustments_Color_Tint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Adjustments_Color_Tint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>vibrance</original>
@@ -6307,7 +6307,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Réglage de l'éclat des couleurs</translation>
 </phrase>
 
-<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Adjustments_Color_Vibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>display</original>
@@ -6379,7 +6379,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>sortie</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- Adjustments_Curves.frm contains 31 phrases. 17 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>use logarithmic values</original>
@@ -6441,7 +6441,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Mise à jour de l'histogramme</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_DisplayHistogram.frm contains 41 phrases. 29 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Adjustments_Histogram_DisplayHistogram.frm contains 41 phrases. 29 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>radius</original>
@@ -6483,7 +6483,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>local</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>set levels automatically</original>
@@ -6515,7 +6515,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Redéfinition des nouveaux niveaux de l'image</translation>
 </phrase>
 
-<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>foreground</original>
@@ -6532,7 +6532,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Retrait de la brume de l'image.</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Adjustments_Lighting_Dehaze.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>exposure compensation (stops)</original>
@@ -6554,7 +6554,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Réglage de l'exposition de l'image</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>keep all colors in sync</original>
@@ -6571,7 +6571,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Ajustement des valeurs de gamma</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Adjustments_Lighting_Gamma.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>gradient type</original>
@@ -6588,7 +6588,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Application du placage de dégradé</translation>
 </phrase>
 
-<!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Adjustments_Map_Gradient.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>advice from the experts</original>
@@ -6610,7 +6610,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Comme tous les outils de monochrome à niveaux de gris, cet outil va produire une image floue. Vous pouvez utiliser les effets -> Netteté -> Outil de masque flou pour résoudre ce problème. (Pour obtenir les meilleurs résultats, utilisez un rayon de Masque flou au moins aussi grand que ce rayon.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>quality</original>
@@ -6622,7 +6622,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Génération de la carte HDR pour l'image</translation>
 </phrase>
 
-<!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Adjustments_Photo_HDR.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>filter</original>
@@ -6714,7 +6714,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Application du filtre photo</translation>
 </phrase>
 
-<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+		<!-- Adjustments_Photo_PhotoFilters.frm contains 49 phrases. 31 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>balance</original>
@@ -6741,7 +6741,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>séparation tonale de l'image</translation>
 </phrase>
 
-<!-- Adjustments_Photo_SplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Adjustments_Photo_SplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>shadows</original>
@@ -6768,9 +6768,9 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Réglage des tons foncés, moyens et clairs</translation>
 </phrase>
 
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- Adjustments_WhiteBalance.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Adjustments_WhiteBalance.frm contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Autosave data detected</original>
@@ -6807,7 +6807,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Attention : les données de sauvegarde automatique seront supprimées</translation>
 </phrase>
 
-<!-- Dialog_AutosaveFound.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- Dialog_AutosaveFound.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Color panel settings</original>
@@ -6834,7 +6834,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>palette</translation>
 </phrase>
 
-<!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Dialog_ColorPanel.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Change color</original>
@@ -6846,7 +6846,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>HTML / CSS</translation>
 </phrase>
 
-<!-- Dialog_ColorSelector.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Dialog_ColorSelector.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Saved presets</original>
@@ -6908,7 +6908,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>éditer les paramètres actuels</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fill settings</original>
@@ -6965,7 +6965,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>rectangle</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+		<!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>Yes</original>
@@ -6977,7 +6977,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Non</translation>
 </phrase>
 
-<!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+		<!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Please wait a moment</original>
@@ -6989,7 +6989,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Veuillez attendre</translation>
 </phrase>
 
-<!-- Dialog_GenericWait.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+		<!-- Dialog_GenericWait.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>Gradient editor</original>
@@ -7241,7 +7241,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>veuillez sélectionner un noeud</translation>
 </phrase>
 
-<!-- Dialog_GradientEditor.frm contains 79 phrases. 29 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+		<!-- Dialog_GradientEditor.frm contains 79 phrases. 29 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
@@ -7253,7 +7253,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Ne plus afficher à nouveau cet avertissement</translation>
 </phrase>
 
-<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+		<!-- Dialog_IDEWarning.frm contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <phrase>
 <original>import settings</original>
@@ -7385,9 +7385,9 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>%1" x %2"</translation>
 </phrase>
 
-<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+		<!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
-<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Dialog_MsgBox.frm contains 16 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>Outline settings</original>
@@ -7449,9 +7449,9 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>biseau</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Dialog_OutlineSettings.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
-<!-- Dialog_SVGImport.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Dialog_SVGImport.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>HDR image identified</original>
@@ -7528,7 +7528,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>spectre complet</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+		<!-- Dialog_ToneMapping.frm contains 26 phrases. 11 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Theme and language</original>
@@ -7615,7 +7615,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Des personnalisations supplémentaires de l'interface sont disponibles dans le menu « Fenêtre ».</translation>
 </phrase>
 
-<!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+		<!-- Dialog_UITheme.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>Unsaved changes</original>
@@ -7691,7 +7691,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Répétez l'opération pour chacune des images non enregistrées</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Update ready</original>
@@ -7748,7 +7748,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Appliquer la mise à jour plus tard</translation>
 </phrase>
 
-<!-- Dialog_UpdateAvailable.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+		<!-- Dialog_UpdateAvailable.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>use merged image</original>
@@ -7770,7 +7770,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bitmap</translation>
 </phrase>
 
-<!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>above</original>
@@ -7837,7 +7837,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>intérieur vers l'extérieur</translation>
 </phrase>
 
-<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+		<!-- Edit_ContentAwareFill.frm contains 16 phrases. 3 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Fading previous action (%1)</original>
@@ -7849,7 +7849,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Effacement terminé.</translation>
 </phrase>
 
-<!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Edit_Fade.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>brush</original>
@@ -7881,7 +7881,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>utiliser une taille combinée (union)</translation>
 </phrase>
 
-<!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>pen</original>
@@ -7898,7 +7898,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>étendre pour adapter au tracé (si nécessaire)</translation>
 </phrase>
 
-<!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Edit_Stroke.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>* current image state</original>
@@ -7920,7 +7920,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>forme de sélection visible</translation>
 </phrase>
 
-<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>scan for new plugins</original>
@@ -7997,7 +7997,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Après avoir téléchargé un ou plusieurs fichiers 8bf, utilisez le bouton de réglage (ci-dessus) pour indiquer à PhotoDemon où les trouver.  PhotoDemon les ajoutera alors à votre collection d'effets.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+		<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -8039,14 +8039,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>calque de premier plan</translation>
 </phrase>
 
-<!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>speed modifier</original>
 <translation>modificateur de vitese</translation>
 </phrase>
 
-<!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>tip radius</original>
@@ -8078,7 +8078,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Graphite</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>brush smoothing</original>
@@ -8120,7 +8120,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>fort</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Effects_Artistic_ComicBook.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>if pixels lie outside the image</original>
@@ -8147,7 +8147,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Projection de l'image à travers un verre simulé</translation>
 </phrase>
 
-<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Effects_Artistic_FiguredGlass.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>shadow cut-off</original>
@@ -8179,7 +8179,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Demande d'aide à Sam Spade</translation>
 </phrase>
 
-<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>curvature</original>
@@ -8191,7 +8191,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Génération de carreaux de verre</translation>
 </phrase>
 
-<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Artistic_GlassTiles.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>number of mirrors</original>
@@ -8238,7 +8238,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>vitesse</translation>
 </phrase>
 
-<!-- Effects_Artistic_Kaleidoscope.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Effects_Artistic_Kaleidoscope.frm contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>horizontal strength</original>
@@ -8255,7 +8255,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application des techniques de l'art moderne</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>detail</original>
@@ -8267,7 +8267,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Repeindre l'image à la peinture à l'huile</translation>
 </phrase>
 
-<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>smoothness</original>
@@ -8294,7 +8294,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Envelopper l'image de plastique</translation>
 </phrase>
 
-<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Effects_Artistic_PlasticWrap.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>adaptive coloring</original>
@@ -8321,9 +8321,9 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Postérisation de l'image</translation>
 </phrase>
 
-<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Effects_Artistic_Posterize.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
-<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Effects_Artistic_Relief.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>cell size</original>
@@ -8385,7 +8385,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Chebyshev (échiquier)</translation>
 </phrase>
 
-<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Effects_Artistic_StainedGlass.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>box width</original>
@@ -8407,7 +8407,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application du flou sur l'image</translation>
 </phrase>
 
-<!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>iterations</original>
@@ -8449,14 +8449,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Diffusion anisotropique (Alvarez-Mazorra)</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Effects_Blur_GaussianBlur.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Applying Kuwahara filter</original>
 <translation>Application du filtre Kuwahara</translation>
 </phrase>
 
-<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>blur symmetrically</original>
@@ -8478,7 +8478,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>gaussien</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Applying radial blur</original>
@@ -8490,28 +8490,28 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>précision</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Generating symmetric pixel pairs</original>
 <translation>Génération de paires de pixels symétriques</translation>
 </phrase>
 
-<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying surface blur</original>
 <translation>Application d'un flou de surface</translation>
 </phrase>
 
-<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Blur_SurfaceBlur.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying zoom blur</original>
 <translation>Application d'un flou par zoom</translation>
 </phrase>
 
-<!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Blur_ZoomBlur.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>automatically normalize divisor and offset</original>
@@ -8528,14 +8528,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>convolution de matrice</translation>
 </phrase>
 
-<!-- Effects_CustomFilter.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_CustomFilter.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Projecting image through simulated lens</original>
 <translation>Projection de l'image à travers une lentille simulée</translation>
 </phrase>
 
-<!-- Effects_Distort_ApplyLens.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Distort_ApplyLens.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>correction type</original>
@@ -8582,7 +8582,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Correction de la distorsion d'image</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 13 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>initial angle</original>
@@ -8604,7 +8604,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Et un nouveau beignet pour Omer !</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -8626,7 +8626,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>M.C Escher à la rescousse</translation>
 </phrase>
 
-<!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Miscellaneous distorts</original>
@@ -8678,7 +8678,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>trou de ver</translation>
 </phrase>
 
-<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- Effects_Distort_Miscellaneous.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>whirl angle</original>
@@ -8695,14 +8695,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Tourbillon et pincement de l'image</translation>
 </phrase>
 
-<!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Poking image</original>
 <translation>Calcul de la poussée sur l'image</translation>
 </phrase>
 
-<!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Distort_Poke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>height of ripples (amplitude)</original>
@@ -8724,21 +8724,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Simulation de rides à la surface de l'image</translation>
 </phrase>
 
-<!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Distort_Ripple.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Squeezing image</original>
 <translation>Pression sur l'image</translation>
 </phrase>
 
-<!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Swirling image round and round</original>
 <translation>Mouvement tourbillonnant sur l'image</translation>
 </phrase>
 
-<!-- Effects_Distort_Swirl.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Distort_Swirl.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>horizontal wavelength</original>
@@ -8765,7 +8765,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Immersion de l'image dans la vague virtuelle</translation>
 </phrase>
 
-<!-- Effects_Distort_Waves.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Effects_Distort_Waves.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>base color</original>
@@ -8777,7 +8777,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Estampage de l'image</translation>
 </phrase>
 
-<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Edge_Emboss.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>edge detection technique</original>
@@ -8849,7 +8849,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Croix de Roberts</translation>
 </phrase>
 
-<!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>use black background</original>
@@ -8861,7 +8861,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Contours de l'image avec un pinceau virtuel</translation>
 </phrase>
 
-<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 23 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Edge_FindEdges.frm contains 25 phrases. 23 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>background color and opacity</original>
@@ -8913,7 +8913,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>statique</translation>
 </phrase>
 
-<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize search radius</original>
@@ -8935,7 +8935,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Recherche de chaque gamme de pixels pour les contours</translation>
 </phrase>
 
-<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>apply contour smoothing</original>
@@ -8947,14 +8947,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Tracé du contour de l'image</translation>
 </phrase>
 
-<!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Illuminating image with imaginary blacklight</original>
 <translation>Éclairage de la photo par une lumière noire imaginaire</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_BlackLight.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_LightAndShadow_BlackLight.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>ambient light</original>
@@ -8966,7 +8966,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Génération du placage de relief</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>spokes</original>
@@ -8983,7 +8983,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application du filtre inter-écran</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>saturation boost</original>
@@ -8995,7 +8995,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Remplissage par d'étincelants arc-en-ciels</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Rainbow.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_LightAndShadow_Rainbow.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>randomize</original>
@@ -9022,21 +9022,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Génération de faisceaux lumineux</translation>
 </phrase>
 
-<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Effects_LightAndShadow_Sunshine.frm contains 14 phrases. 9 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Creating artificial atmosphere</original>
 <translation>Création d'une atmosphère artificielle</translation>
 </phrase>
 
-<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Nature_Atmosphere.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Generating artificial fog</original>
 <translation>Génération de brouillard artificiel</translation>
 </phrase>
 
-<!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Nature_Fog.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color intensity</original>
@@ -9053,21 +9053,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Embrasement de l'image par le feu</translation>
 </phrase>
 
-<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Nature_Ignite.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Exploding imaginary volcano</original>
 <translation>Éruption volcanique imaginaire</translation>
 </phrase>
 
-<!-- Effects_Nature_Lava.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Nature_Lava.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Pouring smoldering metal onto image</original>
 <translation>Verser du métal en fusion sur l'image</translation>
 </phrase>
 
-<!-- Effects_Nature_Metal.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Nature_Metal.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>wind</original>
@@ -9079,7 +9079,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Tombe la neige, Tombe la neige, Tombe la neige</translation>
 </phrase>
 
-<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Nature_Snow.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>color shift</original>
@@ -9091,7 +9091,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Immersion de l'image</translation>
 </phrase>
 
-<!-- Effects_Nature_Water.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Nature_Water.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>appearance</original>
@@ -9113,7 +9113,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>uniforme</translation>
 </phrase>
 
-<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Noise_AddRGBNoise.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>directionality</original>
@@ -9155,7 +9155,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>lisser</translation>
 </phrase>
 
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>luminance only</original>
@@ -9167,7 +9167,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Fixation de poussière et rayures</translation>
 </phrase>
 
-<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Generating film grain texture</original>
@@ -9179,21 +9179,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Adoucissement du grain de film</translation>
 </phrase>
 
-<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Noise_FilmGrain.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Applying harmonic mean filter</original>
 <translation>Application du filtre moyen harmonique</translation>
 </phrase>
 
-<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Applying mean shift filter</original>
 <translation>Application du filtre de décalage moyen</translation>
 </phrase>
 
-<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>percentile</original>
@@ -9215,7 +9215,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application du filtre médian</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>cyan angle</original>
@@ -9237,14 +9237,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Impression d'une image sur une surface en mi-teinte numérique</translation>
 </phrase>
 
-<!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Crystallizing image</original>
 <translation>Cristallisation de l'image</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Crystallize.frm contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Pixelate_Crystallize.frm contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>number of fragments</original>
@@ -9261,7 +9261,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>manuel</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Pixelate_Fragment.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>type</original>
@@ -9308,7 +9308,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>fin</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Mezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- Effects_Pixelate_Mezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>synchronize block size</original>
@@ -9330,14 +9330,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application de mosaïque</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Splattering canvas with paint</original>
 <translation>Éclaboussure de la zone de travail à la peinture</translation>
 </phrase>
 
-<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>generator</original>
@@ -9354,7 +9354,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>simple</translation>
 </phrase>
 
-<!-- Effects_Render_Clouds.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Render_Clouds.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>length</original>
@@ -9371,7 +9371,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Rendu des fibres</translation>
 </phrase>
 
-<!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Truchet tiles</original>
@@ -9383,9 +9383,9 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Rendu des tuiles Truchet</translation>
 </phrase>
 
-<!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
-<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>amount</original>
@@ -9397,7 +9397,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application d'un masque flou (étape %1 de %2)</translation>
 </phrase>
 
-<!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Sharpen_UnsharpMask.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>color fade</original>
@@ -9419,7 +9419,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Envoi de l'image dans le temps</translation>
 </phrase>
 
-<!-- Effects_Stylize_Antique.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Stylize_Antique.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>wrap edge values</original>
@@ -9431,7 +9431,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Simulation d'une vaste explosion de l'image</translation>
 </phrase>
 
-<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>edge type</original>
@@ -9443,7 +9443,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Génération du contour d'image</translation>
 </phrase>
 
-<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>use Lab color space</original>
@@ -9530,7 +9530,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>ATTENTION ! Fichier de palette invalide.</translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+		<!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>glow radius</original>
@@ -9557,14 +9557,14 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>subtil</translation>
 </phrase>
 
-<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>Solarizing image</original>
 <translation>Solarisation de l'image</translation>
 </phrase>
 
-<!-- Effects_Stylize_Solarize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Effects_Stylize_Solarize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>orientation</original>
@@ -9576,7 +9576,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Génération de la symétrie</translation>
 </phrase>
 
-<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Stylize_Twins.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Applying vignetting</original>
@@ -9593,7 +9593,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>circulaire</translation>
 </phrase>
 
-<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 12 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>horizontal offset</original>
@@ -9615,7 +9615,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Application d'effet de panoramique et de zoom (Ken Burns)</translation>
 </phrase>
 
-<!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Effects_Transform_PanZoom.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
@@ -9667,7 +9667,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>coin bas à gauche</translation>
 </phrase>
 
-<!-- Effects_Transform_Perspective.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- Effects_Transform_Perspective.frm contains 22 phrases. 12 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>swap x and y coordinates</original>
@@ -9699,7 +9699,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Inversion polaire</translation>
 </phrase>
 
-<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Effects_Transform_PolarCoords.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Rotating area</original>
@@ -9711,7 +9711,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Pour agrandir la zone de travail afin de l'adapter à l'image pivotée, utilisez plutôt le menu « Image -> Rotation -> rotation paramétrée ».</translation>
 </phrase>
 
-<!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>horizontal angle</original>
@@ -9728,7 +9728,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Cisaillement de l'image</translation>
 </phrase>
 
-<!-- Effects_Transform_Shear.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Transform_Shear.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>area outside sphere</original>
@@ -9745,7 +9745,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>rayons de lumière</translation>
 </phrase>
 
-<!-- Effects_Transform_Sphere.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Effects_Transform_Sphere.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Batch repair</original>
@@ -9841,7 +9841,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 <translation>Aucun fichier trouvé</translation>
 </phrase>
 
-<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+		<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <phrase>
 <original>Previous</original>
@@ -10382,7 +10382,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Estimation du temps restant</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
+		<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -10444,21 +10444,21 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>intervale d'image pour les calques non définis (en ms)</translation>
 </phrase>
 
-<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>effort</original>
 <translation>effort</translation>
 </phrase>
 
-<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression level</original>
 <translation>niveau de compression</translation>
 </phrase>
 
-<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- File_Export_AnimatedPNG.frm contains 18 phrases. 17 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>compression</original>
@@ -10475,7 +10475,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>meilleur</translation>
 </phrase>
 
-<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- File_Export_AnimatedWebP.frm contains 22 phrases. 19 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>layers to export</original>
@@ -10517,7 +10517,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>nom du calque</translation>
 </phrase>
 
-<!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>description</original>
@@ -10539,7 +10539,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>extrême</translation>
 </phrase>
 
-<!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- File_Export_LUT.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Palette export options</original>
@@ -10601,7 +10601,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Les fichiers Adobe Swatch Exchange (ASE) peuvent contenir plusieurs palettes en un seul ficheir.  Si vous sélectionnez l'option « Ajout » PhotoDemon mettra cette palette dans votre fichier ASE existant. Les palettes déjà présentes dans le fichier ne seront pas modifiées.</translation>
 </phrase>
 
-<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Download image</original>
@@ -10643,7 +10643,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>En attente d'une action de l'utilisateur</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
+		<!-- File_Import_FromInternet.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
@@ -10705,7 +10705,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Veuillez en sélectionner un autre.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>black</original>
@@ -10722,7 +10722,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>couleur personnalisée</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- File_New.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>copies</original>
@@ -10769,7 +10769,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>paysage</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+		<!-- File_PrintXP.frm contains 18 phrases. 9 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <phrase>
 <original>preview quality changes</original>
@@ -10796,7 +10796,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>La compression est très gourmande en ressources de calcul.  Sur les PC plus anciens ou plus lents, vous pouvez désactiver les aperçus en direct.</translation>
 </phrase>
 
-<!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- File_Save_AVIF.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>restrict palette size</original>
@@ -10873,7 +10873,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>1-bpp</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+		<!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
@@ -10895,7 +10895,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>par couleur</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- File_Save_GIF.frm contains 20 phrases. 16 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>page format</original>
@@ -10922,7 +10922,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>multipage (une page par calque)</translation>
 </phrase>
 
-<!-- File_Save_HEIF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- File_Save_HEIF.frm contains 16 phrases. 11 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>icon purpose</original>
@@ -10984,7 +10984,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>utiliser les paramètres originaux du fichier</translation>
 </phrase>
 
-<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>image compression ratio</original>
@@ -11021,7 +11021,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Ratio personnalisé (%1)</translation>
 </phrase>
 
-<!-- File_Save_JP2.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- File_Save_JP2.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>compression method</original>
@@ -11093,7 +11093,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>noir et blanc (8-bpp)</translation>
 </phrase>
 
-<!-- File_Save_JPG.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- File_Save_JPG.frm contains 29 phrases. 15 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>compression effort</original>
@@ -11110,14 +11110,14 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>lent, fichier plus petit</translation>
 </phrase>
 
-<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- File_Save_JXL.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>use progressive encoding</original>
 <translation>utiliser le codage progressif</translation>
 </phrase>
 
-<!-- File_Save_JXR.frm contains 22 phrases. 21 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- File_Save_JXR.frm contains 22 phrases. 21 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>change file extension to match color model</original>
@@ -11144,7 +11144,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -11206,21 +11206,21 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Les fichiers PNG supporttent différentes stratégies de compression (appelées "filtres").  Une selection plus fine produit une meilleure compression. Utilisez le paramétrage automatique pour que PhotoDemon teste différentes stratégies et sélectionne automatiquement celle qui produit la meilleure compression.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
 <translation>maximiser la compatibilité</translation>
 </phrase>
 
-<!-- File_Save_PSD.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- File_Save_PSD.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>target version</original>
 <translation>version cible</translation>
 </phrase>
 
-<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- File_Save_PSP.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>color compression</original>
@@ -11232,7 +11232,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>compression monochrome</translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- File_Save_TIFF.frm contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>image type</original>
@@ -11269,7 +11269,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>icône</translation>
 </phrase>
 
-<!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>About PhotoDemon</original>
@@ -11341,21 +11341,21 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>(Vous pouvez devenir un patron, vous aussi ! Cliquez ici pour en savoir plus.)</translation>
 </phrase>
 
-<!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- Help_About.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>animation enabled for this image</original>
 <translation>activer l'animation  (nécessite 2 calques ou plus)</translation>
 </phrase>
 
-<!-- Image_Animation.frm contains 28 phrases. 27 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Image_Animation.frm contains 28 phrases. 27 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>anchor position</original>
 <translation>position d'ancrage</translation>
 </phrase>
 
-<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Compare images</original>
@@ -11432,7 +11432,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Comparaison d'image</translation>
 </phrase>
 
-<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+		<!-- Image_Compare.frm contains 29 phrases. 14 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
@@ -11449,7 +11449,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Application du redimensionnement sensible au contenu</translation>
 </phrase>
 
-<!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Create color lookup table (LUT)</original>
@@ -11466,7 +11466,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>image et calque modifiés</translation>
 </phrase>
 
-<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>tools</original>
@@ -11688,7 +11688,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>liste de %1, une entrée par ligne</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
+		<!-- Image_Metadata.frm contains 116 phrases. 72 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
 
 <phrase>
 <original>preview changes</original>
@@ -11750,7 +11750,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Redimensionnement du calque</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Image_Resize.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>border regions</original>
@@ -11787,7 +11787,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Rotation du calque</translation>
 </phrase>
 
-<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- Image_Rotate.frm contains 21 phrases. 14 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Straightening image</original>
@@ -11804,7 +11804,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Redressement effectué</translation>
 </phrase>
 
-<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Image_Straighten.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>make the new layer the active layer</original>
@@ -11831,7 +11831,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>calque inférieur de la pile</translation>
 </phrase>
 
-<!-- Layer_Add_RasterLayer.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Layer_Add_RasterLayer.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>flatten behavior</original>
@@ -11848,7 +11848,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>supprimer la transparence</translation>
 </phrase>
 
-<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>after importing source images</original>
@@ -11915,7 +11915,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>fermer les images sans demander</translation>
 </phrase>
 
-<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+		<!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>Make color transparent</original>
@@ -11937,7 +11937,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Ajout d'un nouveau canal alpha à l'image</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Generate mask from luminance</original>
@@ -11959,23 +11959,23 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>le gris est transparent</translation>
 </phrase>
 
-<!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+		<!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Removing transparency</original>
 <translation>Supprimer la transparence</translation>
 </phrase>
 
-<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Layer_Transparency_RemoveTransparency.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>Converting alpha channel</original>
 <translation>Conversion du canal alpha</translation>
 </phrase>
 
-<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
-<!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Layerpanel_Colors.frm contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>blend</original>
@@ -12037,21 +12037,21 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Clic : dupliquer ce calque</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+		<!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Selection options</original>
 <translation>Options de sélection</translation>
 </phrase>
 
-<!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
+		<!-- Select_GenericModification.frm contains 21 phrases. 20 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <phrase>
 <original>version %1</original>
 <translation>version %1</translation>
 </phrase>
 
-<!-- Startup_Splash.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+		<!-- Startup_Splash.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>search</original>
@@ -12068,9 +12068,9 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>calques</translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+		<!-- Toolbar_Layers.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
-<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+		<!-- Toolbar_ToolOptionsContainer.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <phrase>
 <original>file</original>
@@ -12409,7 +12409,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Commuter le curseur de brosse</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+		<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -12466,7 +12466,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>répartir et renverser dans les deux sens</translation>
 </phrase>
 
-<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+		<!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
@@ -12493,7 +12493,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>n/a</translation>
 </phrase>
 
-<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Toolpanel_ColorPicker.frm contains 45 phrases. 40 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>presets</original>
@@ -12595,7 +12595,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Vous pouvez utiliser ces mesures en orientation portrait ou paysage</translation>
 </phrase>
 
-<!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+		<!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
@@ -12607,7 +12607,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Ce paramétrage force l'alignement des tracés de peinture sur les points centraux de la grille de pixels. Ceci augmente la précision (particulièrement pour les petites tailles de brosses), mais le tracé de la brosse peut paraïtre moins naturel.</translation>
 </phrase>
 
-<!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+		<!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
@@ -12674,7 +12674,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Cette option contrôle la façon dont les pixels sont analysés lors de leur ajout au remplissage.</translation>
 </phrase>
 
-<!-- Toolpanel_Fill.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+		<!-- Toolpanel_Fill.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <phrase>
 <original>center offset</original>
@@ -12706,7 +12706,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>spirale</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -12748,7 +12748,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>utiliser les mesures pour</translation>
 </phrase>
 
-<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+		<!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>lock aspect ratio</original>
@@ -12830,11 +12830,11 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Rendre les transformations de calque en cours (taille, angle et cisaillement) permanentes. Cette action n'est jamais requise, mais si le rendu de la fenêtre d'affichage est lent, cela peut améliorer les performances.</translation>
 </phrase>
 
-<!-- Toolpanel_MoveSize.frm contains 28 phrases. 12 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+		<!-- Toolpanel_MoveSize.frm contains 28 phrases. 12 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
-<!-- Toolpanel_Paintbrush.frm contains 11 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Toolpanel_Paintbrush.frm contains 11 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
-<!-- Toolpanel_Pencil.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+		<!-- Toolpanel_Pencil.frm contains 7 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <phrase>
 <original>animate</original>
@@ -12996,7 +12996,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Cette option contrôle quels critères utilise la baguette magique pour déterminer si un pixel doit être ajouté à la sélection actuelle.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 75 phrases. 43 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+		<!-- Toolpanel_Selections.frm contains 75 phrases. 43 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <phrase>
 <original>click to edit text</original>
@@ -13048,7 +13048,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Cliquer ici pour convertir ce calque pour le texte basique.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -13175,7 +13175,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Cliquer ici pour convertir en calque de texte avancé</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+		<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -13307,7 +13307,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <translation>Ceci va réécrire toute combinaison de raccourci éditée.Êtes vous sûr de continuer ?</translation>
 </phrase>
 
-<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+		<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -13637,7 +13637,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 <translation>(sauvegarde automatique sur %1)</translation>
 </phrase>
 
-<!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
+		<!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
@@ -13674,7 +13674,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 <translation>Votre macro finale contient %1 action(s)</translation>
 </phrase>
 
-<!-- Tools_MacroSession.frm contains 19 phrases. 12 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+		<!-- Tools_MacroSession.frm contains 19 phrases. 12 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>PhotoDemon Options</original>
@@ -13750,7 +13750,7 @@ Voulez-vous vraiment continuer ?</translation>
 <translation>Réinitialiser PhotoDemon</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- Tools_Options.frm contains 16 phrases. 2 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>Reset all library options</original>
@@ -13882,7 +13882,7 @@ Voulez-vous vraiment continuer ?</translation>
 <translation>Si vous interagissez avec %1, PhotoDemon vous proposera de télécharger et configuer cette bibliothèque pour vous.</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+		<!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>Select capture area</original>
@@ -13909,7 +13909,7 @@ Voulez-vous vraiment continuer ?</translation>
 <translation>Enregistrement - %1:%2 @ %3 fps</translation>
 </phrase>
 
-<!-- Tools_ScreenVideo.frm contains 37 phrases. 32 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+		<!-- Tools_ScreenVideo.frm contains 37 phrases. 32 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
@@ -13961,7 +13961,7 @@ Voulez-vous vraiment continuer ?</translation>
 <translation>curseur et clics</translation>
 </phrase>
 
-<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+		<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>reset all "remember my choice" decisions</original>
@@ -14038,7 +14038,7 @@ Voulez-vous vraiment continuer ?</translation>
 <translation>grand</translation>
 </phrase>
 
-<!-- Options_Interface.frm contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+		<!-- Options_Interface.frm contains 30 phrases. 15 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>display splash screen</original>
@@ -14100,7 +14100,7 @@ Voulez-vous vraiment continuer ?</translation>
 <translation>si votre PC reboote pendant l'utilisation de PhotoDemon, PhotoDemon peut restaurer automatiquement votre session précédente.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+		<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14212,7 +14212,7 @@ Voulez-vous vraiment continuer ?</translation>
 <translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. PhotoDemon fournit pour plus de sureté une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
 </phrase>
 
-<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+		<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14300,7 +14300,7 @@ Voulez-vous vraiment continuer ?</translation>
 la compression forte requiert moins d'espace disque, mais les opération annuler/refaire seront plus lentes. les données d'annulation sont effacées quand l'image est fermée, donc ce paramètre affecte l'espace disque seulement durant le temps où les images sont éditées</translation>
 </phrase>
 
-<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+		<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
@@ -14417,7 +14417,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 <translation>Certains formats d'image supportent à la fois les profils ICC et leur propre solution de gestion des couleurs. PhotoDemon préfère toujours les profils ICC, mais quand aucun n'est inclus, les autres solutions de gestion des couleurs peuvent ëtre essayées</translation>
 </phrase>
 
-<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+		<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <phrase>
 <original>(disclaimer populated at run-time)</original>
@@ -14516,7 +14516,7 @@ Si des versions mises à jour sont trouvées, et que les préférences de l'util
 Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter photodemon.org de temps en temps pour vérifier les nouvelles versions.</translation>
 </phrase>
 
-<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+		<!-- Options_Updates.frm contains 19 phrases. 2 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <phrase>
 <original>reset all program settings</original>
@@ -14588,7 +14588,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>Ce bouton réinitialise tous les paramètres de PhotoDemon. Si le programme a un comportement inattendu, cela peut résoude le problème.</translation>
 </phrase>
 
-<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+		<!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>add another folder</original>
@@ -14615,7 +14615,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>Les changements prendront effet au redemarrage de PhotoDemon.</translation>
 </phrase>
 
-<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+		<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
@@ -14647,7 +14647,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>Lorsque vous utilisez le Bureau à distance ou une VM (machine virtuelle), l'entrée de la souris à haute résolution peut ne pas fonctionner correctement. C'est un bug Windows de longue date. Dans ces situations, vous pouvez utiliser ce paramètre pour restaurer le comportement correct de la souris.</translation>
 </phrase>
 
-<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>display access keys (mnemonics)</original>
@@ -14679,7 +14679,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>La largeur du menu « Fichiers récents » est limitée par Windows. Pour éviter que ce menu ne déborde, PhotoDemon peut afficher les noms d'image seulement au lieu du chemin complet des images.</translation>
 </phrase>
 
-<!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
@@ -14751,7 +14751,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>La spécification EXIF demande aux programmes de correctement s'identifier en tant que logiciel d'origine lors de l'export des images. Pour augmenter la confidentialité, vous pouvez suspendre ce comportement.</translation>
 </phrase>
 
-<!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
+		<!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
 <phrase>
 <original>mipmaps</original>
@@ -14783,14 +14783,14 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <translation>cubique</translation>
 </phrase>
 
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+		<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-<!-- Automatic text generation complete. -->
+		<!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+		<phrasecount>2795</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+	<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+	<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
+	<!-- These 2795 phrases contain approximately 12057 total words. -->
 
-</pdData>
+	</pdData>
