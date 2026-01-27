@@ -262,21 +262,32 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
                 Dim ourCmdLine As pdStringStack
                 If OS.CommandW(ourCmdLine, True) Then
                     
-                    'Write out a dummy value (for full packet size)
+                    'Write out a dummy value (for full packet size; we'll return and fill this value
+                    ' with the actual packet length, once we've written the whole thing)
                     cArgStack.WriteLong 0&
                     
-                    '...as well as the total number of arguments
+                    'Next, write the total number of embedded arguments
                     cArgStack.WriteLong ourCmdLine.GetNumOfStrings()
                     
                     'Extract the stack into a list of arguments and commands
-                    Dim i As Long
-                    For i = 0 To ourCmdLine.GetNumOfStrings - 1
-                        cArgStack.WriteLong LenB(ourCmdLine.GetString(i))
-                        cArgStack.WriteString_UTF8 ourCmdLine.GetString(i), False
+                    Dim i As Long, sToWrite As String
+                    For i = 0 To ourCmdLine.GetNumOfStrings() - 1
+                        
+                        'Pull the next command-line argument and strip any leading or trailing nulls.
+                        ' (Trailing null-char behavior appears to be different when dragging onto an .exe vs
+                        '  vs launching from a batch file - see https://github.com/tannerhelland/PhotoDemon/issues/729.
+                        '  It's also entirely possible this behavior differs in pre-Win-10 versions, but forcibly
+                        '  stripping *any* preceding or trailing nulls should cover all possible variations.)
+                        sToWrite = Strings.TrimNull(ourCmdLine.GetString(i))
+                        
+                        'Write the trimmed string out to file (and IMPORTANTLY, auto-preface each string
+                        ' with its length, in bytes, when converted to UTF-8).
+                        cArgStack.WriteString_UTF8 sToWrite, True
+                        
                     Next i
                     
                     'Retreat to the start of the stream and write out the total stream size
-                    cArgStack.SetPosition 0
+                    cArgStack.SetPosition 0, FILE_BEGIN
                     cArgStack.WriteLong cArgStack.GetStreamSize() - 4
                     
                 Else

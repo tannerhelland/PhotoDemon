@@ -2673,7 +2673,10 @@ End Sub
 ' The other session will forward any "open this image" requests passed on its command line.
 Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)
     
+    'Failsafe checks only
     If g_ProgramShuttingDown Then Exit Sub
+    If (m_SessionStream Is Nothing) Then Exit Sub
+    If (Not m_SessionStream.IsOpen()) Then Exit Sub
     
     'This pipe is used by other PD sessions to forward their command-line contents to us,
     ' if the user has enabled single-session mode.  We do not want to retrieve the pipe's
@@ -2684,14 +2687,14 @@ Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal
     
     'If at least four bytes are available, retrieve them; they're the size of the command line placed
     ' into the pipe buffer.
-    If (m_SessionStream.GetStreamSize >= 4) Then
+    If (m_SessionStream.GetStreamSize() >= 4) Then
         
         Dim msgSize As Long
         msgSize = m_SessionStream.ReadLong()
         
         'If the stream has received the full pipe message, retrieve all data, then blank out
         ' the stream.
-        If (m_SessionStream.GetStreamSize >= msgSize + 4) Then
+        If (m_SessionStream.GetStreamSize() >= msgSize + 4) Then
             
             'If arguments were passed, extract them to a string stack
             If (msgSize > 0) Then
