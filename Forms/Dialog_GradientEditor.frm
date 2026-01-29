@@ -507,8 +507,8 @@ Private m_userAnswer As VbMsgBoxResult
 'The original gradient when the dialog was first loaded
 Private m_OldGradient As String
 
-'Gradient strings are generated with the help of PD's core gradient class.  Please note that within this dialog, the gradient's
-' shape is ignored; only a linear gradient is displayed, to make editing easier.
+'Gradient strings are generated with the help of PD's core gradient class.
+' (NOTE: within this dialog, the gradient's shape is ignored; only a *linear* gradient is displayed, to make editing easier.)
 Private m_NodePreview As pd2DGradient, m_AutoPreview As pd2DGradient
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send gradient updates back
@@ -657,18 +657,18 @@ Private Function GetGradientAsOriginalShape() As String
     Dim tmpGradient As pd2DGradient
     Set tmpGradient = New pd2DGradient
     If (btsEdit.ListIndex = 0) Then
-        tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
+        If (Not m_NodePreview Is Nothing) Then tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
     ElseIf (btsEdit.ListIndex = 1) Then
-        tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
+        If (Not m_NodePreview Is Nothing) Then tmpGradient.CreateGradientFromString m_NodePreview.GetGradientAsString
     ElseIf (btsEdit.ListIndex = 2) Then
-        tmpGradient.CreateGradientFromString m_AutoPreview.GetGradientAsString
+        If (Not m_AutoPreview Is Nothing) Then tmpGradient.CreateGradientFromString m_AutoPreview.GetGradientAsString
     End If
     
     tmpGradient.SetGradientShape initGradient.GetGradientShape
     tmpGradient.SetGradientAngle initGradient.GetGradientAngle
     tmpGradient.SetGradientWrapMode initGradient.GetGradientWrapMode
     
-    GetGradientAsOriginalShape = tmpGradient.GetGradientAsString
+    GetGradientAsOriginalShape = tmpGradient.GetGradientAsString()
     
 End Function
 

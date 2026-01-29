@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,10 +6,10 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>6.7.666</langversion>
-<langstatus>Complete</langstatus>
+<langversion>2026.1.53</langversion>
+<langstatus>Complète</langstatus>
 
-<author>Jean Jacques Piedfort (orig. Frank Donckers)</author>
+<author>Need74 (need74@free.fr), Jean Jacques Piedfort, Frank Donckers</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -2826,15 +2826,6 @@ Merci d'envoyer le rapport de bug via le menu Aide -> Soumettre un rapport de bu
 </phrase>
 
 <phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Le fichier spécifié est introuvable.Si il était situé sur un support amovible, veuillez ré- insérez la disquette appropriée, CD ou disque dur portable. Si le fichier ne se trouve pas sur un support portable, assurez-vous que: 
- 1) le fichier n'a pas été supprimé, et que ... 
- 2) l'emplacement du fichier fourni à PhotoDemon est correcte.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -3126,7 +3117,9 @@ Description: %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>Photodemon a automatiquement ouvert une page de rapport de bogue pour vous . Veuillez cliquer le bouton "New issue" puis selectionner "bug report" . Répondez aux questions du mieux que vous pouvez et inclure SVP le numero d'erreur quelque part dans votre rapport :%1</translation>
+<translation>PhotoDemon a automatiquement ouvert une page de rapport de bogue pour vous . Veuillez cliquer le bouton "Nouvelle issue" puis selectionner "Rapport de bogue" . Répondez aux questions du mieux que vous pouvez et merci d'inclure le numero d'erreur quelque part dans votre rapport : %1
+
+Une fois terminé, cliquez sur le bouton "Soumettre un nouveau problème". Merci !</translation>
 </phrase>
 
 <phrase>
@@ -3134,7 +3127,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Instructions pour les rapports de bogues</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3189,11 +3182,11 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation>Une erreur s'est produite lors de la tentative de sauvegarder cette image. Le plugin FreeImage rapporte les détails d'erreur suivants: 
+<translation>Une erreur s'est produite lors de la tentative de sauvegarder cette image. Le plugin "FreeImage" rapporte les détails d'erreur suivants : 
 
 %1
 
-En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu Aide > Soumettre un rapport de bogue</translation>
+En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu "Aide -> Soumettre un rapport de bogue".</translation>
 </phrase>
 
 <phrase>
@@ -3743,7 +3736,9 @@ Veuillez entrer une valeur numérique.</translation>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation>Malheureusement, %1 empêche Photodemon de télécharger ce fichier directement. (Les téléchargements directs sont parfois confondus comme étant des liens redirigés par les serveurs mal configurés.)</translation>
+<translation>Malheureusement, %1 empêche PhotoDemon de télécharger ce fichier directement. (Les téléchargements directs sont parfois confondus comme étant des liens redirigés par les serveurs mal configurés.)
+
+Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateur Internet.</translation>
 </phrase>
 
 <!-- Web.bas contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -5540,11 +5535,6 @@ La valeur finale doit être entre  %3 and %4.</translation>
 <phrase>
 <original>Options</original>
 <translation>Options</translation>
-</phrase>
-
-<phrase>
-<original>Third-party libraries</original>
-<translation>Bibliothèques tierces</translation>
 </phrase>
 
 <phrase>
@@ -7929,11 +7919,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>plugins disponibles</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>ajouter un dossier</translation>
 </phrase>
@@ -7998,7 +7983,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Après avoir téléchargé un ou plusieurs fichiers 8bf, utilisez le bouton de réglage (ci-dessus) pour indiquer à PhotoDemon où les trouver.  PhotoDemon les ajoutera alors à votre collection d'Effets.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14796,6 +14781,6 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- As of this build, PhotoDemon contains 5979 phrases. -->
 <!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12099 total words. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>
