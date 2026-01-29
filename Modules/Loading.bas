@@ -1034,6 +1034,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "FreeImage"
         Case id_CBZParser
             GetDecoderName = "Internal CBZ parser"
+        Case id_HDRParser
+            GetDecoderName = "Internal HDR parser"
         Case id_HGTParser
             GetDecoderName = "Internal HGT parser"
         Case id_ICOParser

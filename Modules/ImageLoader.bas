@@ -23,6 +23,7 @@ Option Explicit
 ' *CANNOT* read most (if any) of these formats.  If you encounter problems with a specific
 ' image format, PLEASE FILE AN ISSUE ON GITHUB.
 Private Const USE_INTERNAL_PARSER_CBZ As Boolean = True
+Private Const USE_INTERNAL_PARSER_HDR As Boolean = True
 Private Const USE_INTERNAL_PARSER_HGT As Boolean = True
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
@@ -1106,6 +1107,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         End If
     End If
     
+    'Seeing a pattern?  FreeImage's HDR coverage is also problematic.  In v2026.1+ I wrote my own HDR parser.
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_HDR Then
+        CascadeLoadGenericImage = LoadHDR(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_HDRParser
+            dstImage.SetOriginalFileFormat PDIF_HDR
+        End If
+    End If
+    
     'If our various internal engines passed on the image, we now want to attempt either FreeImage or GDI+.
     ' (Pre v8.0, we *always* tried FreeImage first, but as time goes by, I realize the library is prone to
     ' a number of esoteric bugs.  It also suffers performance-wise compared to GDI+.  As such, I am now
@@ -1398,6 +1408,39 @@ Public Function LoadDDS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     
 LoadFailed:
     LoadDDS = False
+    
+End Function
+
+Private Function LoadHDR(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadHDR = False
+    
+    'pdHDR handles all the dirty work for us
+    Dim cReader As pdHDR
+    Set cReader = New pdHDR
+    
+    'Validate and (potentially) load the file in one fell swoop
+    LoadHDR = cReader.LoadHDR_FromFile(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadHDR Then
+
+        'Set format flags and reset internal image caches
+        dstImage.SetOriginalFileFormat PDIF_HDR
+        dstImage.NotifyImageChanged UNDO_Everything
+
+        'HDR files are always 96-bpp color (but we may "spruce them up a bit" during loading, for fun)
+        dstImage.SetOriginalColorDepth 24
+        dstImage.SetOriginalGrayscale False
+
+        'HDR files never contain alpha
+        dstImage.SetOriginalAlpha False
+
+        'HDR files contain their own embedded color-space data, which is always parsed and applied during
+        ' the mapping to 24-bpp RGB
+        dstDIB.SetColorManagementState cms_ProfileConverted
+
+    End If
     
 End Function
 

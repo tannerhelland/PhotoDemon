@@ -3,8 +3,8 @@ Attribute VB_Name = "ImageFormats"
 'PhotoDemon Image Format Manager
 'Copyright 2012-2026 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 05/May/25
-'Last update: support DDS export
+'Last updated: 29/January/26
+'Last update: HDR import now handled by native VB6 implementation (not FreeImage)
 '
 'This module determines run-time read/write support for various image formats.
 '
@@ -234,8 +234,7 @@ Public Sub GenerateInputFormats()
     End If
     
     AddInputFormat "GIF - Graphics Interchange Format", "*.gif;*.agif", PDIF_GIF
-    
-    If m_FreeImageEnabled Then AddInputFormat "HDR - High Dynamic Range", "*.hdr", PDIF_HDR
+    AddInputFormat "HDR - Radiance High Dynamic Range", "*.hdr;*.rgbe;*.xyze;*.pic", PDIF_HDR
     
     'HEIF support requires libheif and several additional support libraries
     If Plugin_Heif.IsLibheifEnabled() Then
@@ -646,7 +645,7 @@ Public Function IsExtensionOkayForPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT, ByRef s
         Case PDIF_GIF
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "gif", "agif")
         Case PDIF_HDR
-            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "hdr")
+            IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "hdr", "rgbe", "xyze", "pic")
         Case PDIF_HEIF
             IsExtensionOkayForPDIF = Strings.StringsEqualAny(srcExtension, True, "heif", "heic", "heifs", "heics", "hif")
         Case PDIF_HGT
@@ -805,7 +804,7 @@ Public Function GetPDIFFromExtension(ByVal srcExtension As String, Optional ByVa
             GetPDIFFromExtension = PDIF_FAXG3
         Case "gif", "agif"
             GetPDIFFromExtension = PDIF_GIF
-        Case "hdr"
+        Case "hdr", "rgbe", "xyze", "pic"
             GetPDIFFromExtension = PDIF_HDR
         Case "heif", "heic", "hif"
             GetPDIFFromExtension = PDIF_HEIF
