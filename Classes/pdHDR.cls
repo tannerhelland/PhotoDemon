@@ -100,7 +100,7 @@ Friend Function IsFileHDR(ByRef srcFilename As String, Optional ByVal requireVal
             'Pull the first line from the file.  (Radiance files only use LF not CRLF line-endings.)
             Const ASCII_LF As Long = 10
             Dim posLineEnding As Long
-            posLineEnding = m_Stream.FindByte(ASCII_LF, 0, False, 11)
+            posLineEnding = m_Stream.FindByte(ASCII_LF, 0, False, 1024)
             If (posLineEnding > 0) Then
                 
                 Dim sFirstLine As String
@@ -116,9 +116,17 @@ Friend Function IsFileHDR(ByRef srcFilename As String, Optional ByVal requireVal
                 ElseIf Strings.StringsEqual(Left$(sFirstLine, 6), "#?RGBE", True) Then
                     If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "HDRE header found; HDR format likely."
                     potentialMatch = True
+                
+                'If no valid matches of the "magic ID" were found, there's one last possibility.  If this is
+                ' a very old .pic Radiance file, it may lack a magic number entirely - but we can still look
+                ' for an unambiguous "FORMAT" key+value pair that identifies this file.
+                ElseIf Strings.StringsEqual(Files.FileGetExtension(srcFilename), "pic", True) Then
                     
-                Else
-                    potentialMatch = False
+                    'This is a very old .pic file.  We'll allow the load process to continue, and future lines
+                    ' will look for an unambiguous "FORMAT" line.
+                    potentialMatch = True
+                    If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "No header found, but .pic extension means we'll try to find a header anyway..."
+                    
                 End If
                 
                 'TODO: do any alternate headers exist?  Studying this is TBD.
@@ -251,6 +259,10 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
         ' I ignore it in PD.
         ResetHeaderPrimaries
         
+        'If we don't find an unambiguous FORMAT line, we'll purposely fail the image load
+        Dim formatOK As Boolean
+        formatOK = False
+        
         'Now it's time to iterate header strings and extract information that's useful to us.
         Dim hLine As String
         For i = 0 To m_HeaderLines.GetNumOfStrings - 1
@@ -300,10 +312,13 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
                             'Allow case deviations (unclear if this matters in the real-world, but it doesn't seem to hurt)
                             If Strings.StringsEqual(sValue, "32-bit_rle_rgbe", True) Then
                                 m_Header.rh_isXYZE = False
+                                formatOK = True
                             ElseIf Strings.StringsEqual(sValue, "32-bit_rle_xyze", True) Then
                                 m_Header.rh_isXYZE = True
+                                formatOK = True
                             Else
                                 If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: bad format in file: " & sValue
+                                formatOK = False
                             End If
                         
                         'Per the spec:
@@ -352,6 +367,9 @@ BadLineParse:
         
         'Reset error handling
         On Error GoTo 0
+        
+        'If we failed to find a format ID, bail now
+        If (Not formatOK) Then Exit Function
         
         'Immediately following the empty line marking the end of the header is a (so-called) RESOLUTION string.
         ' This defines image dimensions and orientation.
