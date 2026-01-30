@@ -6,7 +6,7 @@
 
 		<langid>fr-FR</langid>
 		<langname>Français</langname>
-		<langversion>2026.1.52</langversion>
+		<langversion>2026.1.53</langversion>
 		<langstatus>Complète</langstatus>
 
 		<author>Need74 (need74@free.fr), Jean Jacques Piedfort, Frank Donckers</author>
@@ -750,7 +750,7 @@
 
 <phrase>
 <original>Hue and saturation</original>
-<translation>Teinte && Saturation</translation>
+<translation>Teinte && saturation</translation>
 </phrase>
 
 <phrase>
@@ -2825,15 +2825,6 @@ Merci d'envoyer le rapport de bug via le menu "Aide -> Soumettre un rapport de b
 </phrase>
 
 <phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Le fichier spécifié est introuvable.Si il était situé sur un support amovible, veuillez ré- insérez la disquette appropriée, CD ou disque dur portable. Si le fichier ne se trouve pas sur un support portable, assurez-vous que: 
- 1) le fichier n'a pas été supprimé, et que ... 
- 2) l'emplacement du fichier fourni à PhotoDemon est correcte.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -2863,7 +2854,7 @@ Description : %2
 
 <phrase>
 <original>seconds</original>
-<translation>Secondes</translation>
+<translation>secondes</translation>
 </phrase>
 
 <phrase>
@@ -3576,7 +3567,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>unknown</original>
-<translation>inconnu</translation>
+<translation>Inconnu</translation>
 </phrase>
 
 <phrase>
@@ -4829,12 +4820,12 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Page left</original>
-<translation>Page gauche</translation>
+<translation>Marge gauche</translation>
 </phrase>
 
 <phrase>
 <original>Page right</original>
-<translation>Page droite</translation>
+<translation>Marge droite</translation>
 </phrase>
 
 <phrase>
@@ -5877,12 +5868,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>dithering amount</original>
-<translation>taux de diffusion d'erreur</translation>
+<translation>Taux de diffusion d'erreur</translation>
 </phrase>
 
 <phrase>
 <original>dithering</original>
-<translation>diffusion d'erreur</translation>
+<translation>Diffusion d'erreur</translation>
 </phrase>
 
 <phrase>
@@ -5897,7 +5888,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>automatically calculate threshold</original>
-<translation>calcul automatique du seuil</translation>
+<translation>Seuil calculé automatiquement</translation>
 </phrase>
 
 <phrase>
@@ -5907,12 +5898,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>do not modify</original>
-<translation>ne pas modifier</translation>
+<translation>Ne pas modifier</translation>
 </phrase>
 
 <phrase>
 <original>remove from image</original>
-<translation>retirer de l'image</translation>
+<translation>Retirer de l'image</translation>
 </phrase>
 
 <phrase>
@@ -5924,22 +5915,22 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>model</original>
-<translation>modèle</translation>
+<translation>Modèle</translation>
 </phrase>
 
 <phrase>
 <original>sample image for true contrast (slower but more accurate)</original>
-<translation>exemple pour le contraste réel (plus lent mais plus précis)</translation>
+<translation>Exemple pour le contraste réel (plus lent mais plus précis)</translation>
 </phrase>
 
 <phrase>
 <original>brightness</original>
-<translation>luminosité</translation>
+<translation>Luminosité</translation>
 </phrase>
 
 <phrase>
 <original>contrast</original>
-<translation>contraste</translation>
+<translation>Contraste</translation>
 </phrase>
 
 <phrase>
@@ -5949,7 +5940,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>modern</original>
-<translation>moderne</translation>
+<translation>Moderne</translation>
 </phrase>
 
 <phrase>
@@ -6008,7 +5999,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>color space</original>
-<translation>espace de couleurs</translation>
+<translation>Espace de couleurs</translation>
 </phrase>
 
 <phrase>
@@ -6087,19 +6078,19 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>custom</original>
-<translation>au choix</translation>
+<translation>Au choix</translation>
 </phrase>
 
 		<!-- Adjustments_Color_Colorize.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>number of gray shades</original>
-<translation>nombre de nuances de gris</translation>
+<translation>Nombre de nuances de gris</translation>
 </phrase>
 
 <phrase>
 <original>style</original>
-<translation>style</translation>
+<translation>Style</translation>
 </phrase>
 
 <phrase>
@@ -6134,12 +6125,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>minimum</original>
-<translation>minimum</translation>
+<translation>Minimum</translation>
 </phrase>
 
 <phrase>
 <original>maximum</original>
-<translation>maximum</translation>
+<translation>Maximum</translation>
 </phrase>
 
 		<!-- Adjustments_Color_Grayscale.frm contains 17 phrases. 7 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -6151,17 +6142,17 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>hue</original>
-<translation>teinte</translation>
+<translation>Teinte</translation>
 </phrase>
 
 <phrase>
 <original>lightness</original>
-<translation>luminosité</translation>
+<translation>Luminosité</translation>
 </phrase>
 
 <phrase>
 <original>Adjusting hue, saturation, and luminance values</original>
-<translation>Réglage teinte, saturation et valeurs de luminosité</translation>
+<translation>Valeurs de : réglage de teinte, saturation et  luminosité</translation>
 </phrase>
 
 		<!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6173,12 +6164,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>import LUT file</original>
-<translation>importation du fichier LUT</translation>
+<translation>Importation du fichier LUT</translation>
 </phrase>
 
 <phrase>
 <original>intensity</original>
-<translation>intensité</translation>
+<translation>Intensité</translation>
 </phrase>
 
 <phrase>
@@ -6198,7 +6189,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation>cliquer pour ouvrir ce dossier dans l'Explorateur Windows</translation>
+<translation>Cliquer pour ouvrir ce dossier dans l'Explorateur Windows</translation>
 </phrase>
 
 		<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6864,7 +6855,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation>entrez un nom pour ce réglage prédéfini</translation>
+<translation>Entrer un nom pour ce réglage prédéfini</translation>
 </phrase>
 
 <phrase>
@@ -6874,7 +6865,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>saved presets for this tool</original>
-<translation>réglages prédéfinis sauvegardés pour cet outil</translation>
+<translation>Réglages prédéfinis sauvegardés pour cet outil</translation>
 </phrase>
 
 <phrase>
@@ -7032,7 +7023,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>import / export</original>
-<translation>Importer / Exporter</translation>
+<translation>Importer && exporter</translation>
 </phrase>
 
 <phrase>
@@ -7202,12 +7193,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>filename</original>
-<translation>nom de fichier</translation>
+<translation>Nom de fichier</translation>
 </phrase>
 
 <phrase>
 <original>complexity</original>
-<translation>complexité</translation>
+<translation>Complexité</translation>
 </phrase>
 
 <phrase>
@@ -8381,7 +8372,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>fast</original>
-<translation>rapide</translation>
+<translation>Rapide</translation>
 </phrase>
 
 <phrase>
@@ -8558,22 +8549,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>(a) edges</original>
-<translation>(a) bords</translation>
+<translation>(a) Bords</translation>
 </phrase>
 
 <phrase>
 <original>(b) midpoints</original>
-<translation>(b) points médians</translation>
+<translation>(b) Points médians</translation>
 </phrase>
 
 <phrase>
 <original>(c) whole image</original>
-<translation>(c) image entière</translation>
+<translation>(c) Image entière</translation>
 </phrase>
 
 <phrase>
 <original>(d) zoom</original>
-<translation>(d) zoom</translation>
+<translation>(d) Zoom</translation>
 </phrase>
 
 <phrase>
