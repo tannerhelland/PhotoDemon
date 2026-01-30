@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -685,7 +685,7 @@
 
 <phrase>
 <original>Brightness and contrast</original>
-<translation>Luminosité && Contraste</translation>
+<translation>Luminosité && contraste</translation>
 </phrase>
 
 <phrase>
@@ -2581,7 +2581,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Atkinson / Classic Macintosh</original>
-<translation>Atkinson / Macintosh_Classic</translation>
+<translation>Macintosh Atkinson && classic</translation>
 </phrase>
 
 <!-- Palettes.bas contains 48 phrases. 29 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
@@ -2822,6 +2822,15 @@ Merci d'envoyer le rapport de bug via le menu "Aide -> Soumettre un rapport de b
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Manque de mémoire. Fonction annulée.</translation>
+</phrase>
+
+<phrase>
+<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
+1) the file hasn't been deleted, and...
+2) the file location provided to PhotoDemon is correct.</original>
+<translation>Le fichier spécifié est introuvable.Si il était situé sur un support amovible, veuillez ré- insérez la disquette appropriée, CD ou disque dur portable. Si le fichier ne se trouve pas sur un support portable, assurez-vous que: 
+ 1) le fichier n'a pas été supprimé, et que ... 
+ 2) l'emplacement du fichier fourni à PhotoDemon est correcte.</translation>
 </phrase>
 
 <phrase>
@@ -5547,6 +5556,11 @@ La valeur finale doit être entre '%3' et '%4'.</translation>
 </phrase>
 
 <phrase>
+<original>Third-party libraries</original>
+<translation>Bibliothèques tierces</translation>
+</phrase>
+
+<phrase>
 <original>Developers</original>
 <translation>Développeurs</translation>
 </phrase>
@@ -6152,7 +6166,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Adjusting hue, saturation, and luminance values</original>
-<translation>Valeurs de : réglage de teinte, saturation et  luminosité</translation>
+<translation>Valeurs de réglage de teinte, de saturation et de luminosité</translation>
 </phrase>
 
 <!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6843,7 +6857,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>HTML / CSS</original>
-<translation>HTML / CSS</translation>
+<translation>HTML && CSS</translation>
 </phrase>
 
 <!-- Dialog_ColorSelector.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -7930,6 +7944,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>about this plugin</original>
 <translation>À propos de ce plugin</translation>
+</phrase>
+
+<phrase>
+<original>available plugins</original>
+<translation>Plugins disponibles</translation>
 </phrase>
 
 <phrase>
@@ -9975,7 +9994,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>load / save list</original>
-<translation>Charger / Sauver une liste</translation>
+<translation>Charger && sauver une liste</translation>
 </phrase>
 
 <phrase>
@@ -14791,6 +14810,6 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- As of this build, PhotoDemon contains 5979 phrases. -->
 <!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- These 2795 phrases contain approximately 12099 total words. -->
 
 </pdData>
