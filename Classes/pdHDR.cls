@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon HDR/RGBE (Radiance) Decoder
 'Copyright 2026-2026 by Tanner Helland
 'Created: 27/January/26
-'Last updated: 29/January/26
-'Last update: wrap up initial build
+'Last updated: 30/January/26
+'Last update: add coverage for color-correction, exposure, and XYZE color-space parameters
 '
 'The HDR file format is one of the oldest HDR-compatible image file formats.  It combines a human-readable
 ' header and simple uncompressed or RLE-encoded data streams with a novel 32-bpp floating-point storage
@@ -61,8 +61,9 @@ Private Type PD_RadianceHeader
     rh_Width As Long
     rh_Height As Long
     rh_Orientation As GP_RotateFlip
-    rh_isXYZE As Boolean
     rh_Exposure As Double
+    rh_isXYZE As Boolean
+    rh_PrimariesPresent As Boolean
     rh_Primaries(0 To 7) As Single
 End Type
 
@@ -225,9 +226,10 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
         ParseHeader = (posLineEnd = posLineStart + 1)
         
         'DEBUG ONLY: print out all found lines
+        Dim i As Long
+        
         If HDR_DEBUG_VERBOSE Then
             PDDebug.LogAction "Radiance header follows: "
-            Dim i As Long
             If (m_HeaderLines.GetNumOfStrings > 0) Then
                 For i = 0 To m_HeaderLines.GetNumOfStrings - 1
                     PDDebug.LogAction CStr(i + 1) & ": " & m_HeaderLines.GetString(i)
@@ -235,7 +237,121 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
             End If
         End If
         
-        'TODO: parse header strings for usable information (e.g. exposure)
+        'Set up default header values.  Some of these can accumulate (e.g. there can be multiple exposure strings,
+        ' compounding) so it's critical to start with e.g. 1.0 or 0.0 as appropriate.
+        With m_Header
+            .rh_Orientation = GP_RF_NoneFlipNone
+            .rh_Exposure = 1#
+            .rh_isXYZE = False
+            .rh_PrimariesPresent = False
+        End With
+        
+        'Some apps write gamma, but they do so inconsistently (e.g. 0.454545 and 1.0 typically mean the same correction,
+        ' assuming either technical vs colloquial definitions of 2.2 gamma!).  Because gamma isn't part of the formal spec,
+        ' I ignore it in PD.
+        ResetHeaderPrimaries
+        
+        'Now it's time to iterate header strings and extract information that's useful to us.
+        Dim hLine As String
+        For i = 0 To m_HeaderLines.GetNumOfStrings - 1
+            
+            'We have to do string-to-numeric conversions, which are error-prone and messy.
+            ' PD simply skips malformed lines.
+            On Error GoTo BadLineParse
+            
+            hLine = Trim$(m_HeaderLines.GetString(i))
+            
+            'Ignore comments
+            Const HDR_COMMENT_MARKER As String = "#"
+            If (Left$(hLine, 1) <> HDR_COMMENT_MARKER) Then
+                
+                'Try to separate the line by "=" to obtain a key+value pair
+                 Const HDR_KEYVALUE_SPLIT As String = "="
+                 Dim hSplit() As String
+                 hSplit = Split(hLine, HDR_KEYVALUE_SPLIT)
+                 
+                 Dim dValue As Double, sValue As String, keyValue As String
+                 
+                 'Ignore lines that don't cleanly separate into key+value pairs
+                 If (UBound(hSplit) = 1) Then
+                    
+                    keyValue = UCase$(Trim$(hSplit(0)))
+                    sValue = Trim$(hSplit(1))
+                    
+                    Select Case keyValue
+                        
+                        'Per the spec, exposure is cumulative.  Specifically:
+                        ' "EXPOSURE values are cumulative, so the original pixel values (i.e., radiances in
+                        '  watts/steradian/m^2) must be derived by taking the values in the file and dividing
+                        '  by all the EXPOSURE settings multiplied together."
+                        Case "EXPOSURE"
+                            dValue = Val(sValue)
+                            If (dValue > 0#) Then
+                                m_Header.rh_Exposure = m_Header.rh_Exposure * dValue
+                            Else
+                                If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: bad exposure in file: " & sValue
+                            End If
+                        
+                        'Per the spec there are only two valid format values.  Specifically:
+                        ' "At most one FORMAT line is allowed, and it must be assigned a value of either
+                        '  "32-bit_rle_rgbe" or "32-bit_rle_xyze" to be a valid Radiance picture."
+                        Case "FORMAT"
+                            
+                            'Allow case deviations (unclear if this matters in the real-world, but it doesn't seem to hurt)
+                            If Strings.StringsEqual(sValue, "32-bit_rle_rgbe", True) Then
+                                m_Header.rh_isXYZE = False
+                            ElseIf Strings.StringsEqual(sValue, "32-bit_rle_xyze", True) Then
+                                m_Header.rh_isXYZE = True
+                            Else
+                                If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: bad format in file: " & sValue
+                            End If
+                        
+                        'Per the spec:
+                        ' "The CIE (x,y) chromaticity coordinates of the three (RGB) primaries and the
+                        ' white point used to standardize the picture's Color System."
+                        Case "PRIMARIES"
+                            
+                            'There should be *exactly* eight primaries (2 each for r/g/b/white point).
+                            Dim sPrimaries() As String
+                            sPrimaries = Split(sValue, " ")
+                            If (UBound(sPrimaries) = 7) Then
+                                
+                                m_Header.rh_Primaries(0) = Val(sPrimaries(0))
+                                m_Header.rh_Primaries(1) = Val(sPrimaries(1))
+                                m_Header.rh_Primaries(2) = Val(sPrimaries(2))
+                                m_Header.rh_Primaries(3) = Val(sPrimaries(3))
+                                m_Header.rh_Primaries(4) = Val(sPrimaries(4))
+                                m_Header.rh_Primaries(5) = Val(sPrimaries(5))
+                                m_Header.rh_Primaries(6) = Val(sPrimaries(6))
+                                m_Header.rh_Primaries(7) = Val(sPrimaries(7))
+                                
+                                'Do a quick check to ensure that the values look OK.  Some bad software
+                                ' ("HDR Shop") writes all-zeroes which destroys the image.
+                                With m_Header
+                                    If (.rh_Primaries(0) = 0!) And (.rh_Primaries(1) = 0!) And (.rh_Primaries(2) = 0!) And _
+                                       (.rh_Primaries(3) = 0!) And (.rh_Primaries(4) = 0!) And (.rh_Primaries(5) = 0!) And _
+                                       (.rh_Primaries(6) = 0!) And (.rh_Primaries(7) = 0!) Then
+                                        If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: bad primary values: " & sValue
+                                        .rh_PrimariesPresent = False
+                                        ResetHeaderPrimaries
+                                    Else
+                                        .rh_PrimariesPresent = True
+                                    End If
+                                End With
+                                
+                            End If
+                            
+                    End Select
+                    
+                 End If
+                
+            End If
+            
+BadLineParse:
+        Next i
+        
+        'Reset error handling
+        On Error GoTo 0
         
         'Immediately following the empty line marking the end of the header is a (so-called) RESOLUTION string.
         ' This defines image dimensions and orientation.
@@ -244,23 +360,22 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
         
         Dim sResolution As String
         If (posLineEnd > 0) Then
+            
             sResolution = m_Stream.ReadString_ASCII(posLineEnd - m_Stream.GetPosition())
             If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "Resolution: " & sResolution
-        
+            
             'Advance the stream pointer by 1 (to skip the LF char at the end of the resolution).
             m_Stream.SetPosition 1, FILE_CURRENT
             ParseHeader = True
+            
         Else
             ParseHeader = False
         End If
         
         'The stream now points at the start of the pixel data.
         
-        'If parsing looks OK so far, we next want to pull out any useable data from the recovered strings
+        'If parsing looks OK so far, we next want to pull out any useable data from the resolution string
         If ParseHeader Then
-        
-            'Right now, my primary concern is the resolution string.
-            ' (Exposure, white point, etc can be solved later.)
             
             'The resolution string is always in a format similar to "-Y N +X M", but the x and y can appear
             ' in any order (which corresponds to different orientations).
@@ -521,10 +636,23 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
         
         'Build a LUT for powers of 2.  (This is much faster than exponent calculations on-the-fly,
         ' particularly in VB6 which relies on old x87 float calls.)
-        Dim lutPow2(0 To 255) As Single
+        '
+        'Note that despite stack size implications, we need to use Double due to the ranges involved (2^127).
+        Dim lutPow2(0 To 255) As Double
         For x = 0 To 255
             lutPow2(x) = (2# ^ CDbl(x - 128))
         Next x
+        
+        'If the file embeds exposure data, attempt to use it.
+        ' (In PhotoDemon, this behavior can be toggled by the
+        '  `Tools > Options > Color management > use format-specific color-management data` option.)
+        If ColorManagement.UseEmbeddedLegacyProfiles() Then
+            If (m_Header.rh_Exposure <> 1#) And (m_Header.rh_Exposure <> 0#) Then
+                For x = 0 To 255
+                    lutPow2(x) = lutPow2(x) * m_Header.rh_Exposure
+                Next x
+            End If
+        End If
         
         'Color values will be translated into 32-bit floats first, then downsampled to 8-bit RGBA
         ' (with color management, obviously)
@@ -553,9 +681,9 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
             
             'Transform mantissas by the shared exponent
             Else
-                dstPixelsF(xOffset) = CSng(r) * lutPow2(e)
-                dstPixelsF(xOffset + 1) = CSng(g) * lutPow2(e)
-                dstPixelsF(xOffset + 2) = CSng(b) * lutPow2(e)
+                dstPixelsF(xOffset) = CDbl(r) * lutPow2(e)
+                dstPixelsF(xOffset + 1) = CDbl(g) * lutPow2(e)
+                dstPixelsF(xOffset + 2) = CDbl(b) * lutPow2(e)
             End If
             
             'Alpha is irrelevant; we do not read or write it.
@@ -563,12 +691,26 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
             
         Next x
         
+        'If the files are in XYZE format, we need to do a second pass for XYZ to RGB conversion.
+        Dim fR As Single, fG As Single, fB As Single
+        Dim fX As Single, fY As Single, fZ As Single
+        
+        If m_Header.rh_isXYZE Then
+            
+            For x = 0 To dstWidth - 1
+                xOffset = x * 4
+                fX = dstPixelsF(xOffset)
+                fY = dstPixelsF(xOffset + 1)
+                fZ = dstPixelsF(xOffset + 2)
+                Colors.XYZtosRGB_Float fX, fY, fZ, dstPixelsF(xOffset), dstPixelsF(xOffset + 1), dstPixelsF(xOffset + 2)
+            Next x
+            
+        End If
+        
         'Wrap a pointer around the target line in the destination pixel array.
         dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
         
         'TODO: additional color-management/tone-mapping here, based on embedded color space data
-        
-        Dim fR As Single, fG As Single, fB As Single
         
         'HDR files are always non-gamma-corrected; to match behavior in other software,
         ' we must gamma-correct at 2.2 by default.  (Files can specify their own values but they are *not*
@@ -620,6 +762,84 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
         
     Next y
     
+    'The last bit of post-processing we need to do is applying embedded color corrections, if any.
+    If ColorManagement.UseEmbeddedLegacyProfiles() And m_Header.rh_PrimariesPresent Then
+        
+        If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "Embedded chromaticity data found; applying now..."
+        
+        'This code is adopted from pdPNG; PNG's cHRM chunk works identically.
+        'ResetHeaderPrimaries
+        
+        'Convert the embedded chromaticity values to floating-point
+        Dim wpValues() As Double, rgbValues() As Double
+        ReDim wpValues(0 To 2) As Double
+        ReDim rgbValues(0 To 8) As Double
+        wpValues(0) = m_Header.rh_Primaries(6)
+        wpValues(1) = m_Header.rh_Primaries(7)
+        wpValues(2) = 1#
+        
+        rgbValues(0) = m_Header.rh_Primaries(0)
+        rgbValues(1) = m_Header.rh_Primaries(1)
+        rgbValues(2) = 1#
+        rgbValues(3) = m_Header.rh_Primaries(2)
+        rgbValues(4) = m_Header.rh_Primaries(3)
+        rgbValues(5) = 1#
+        rgbValues(6) = m_Header.rh_Primaries(4)
+        rgbValues(7) = m_Header.rh_Primaries(5)
+        rgbValues(8) = 1#
+        
+        'You might be saying: wait, aren't you double-applying gamma here?  And you'd be correct, we are.
+        ' The reason for this is embedded data always requires a 1/2.2 gamma correction to restore it
+        ' back to linear, but if an app writes color-correction data, my testing shows that the underlying
+        ' data is *always* already linear.  So we must effectively "undo" the previous gamma step here.
+        ' (There is probably some minor precision loss involved in this step, but I'm not overly concerned
+        ' with it as PSNR remains above 99%.)
+        Dim gammaFloat As Double
+        gammaFloat = 2.2
+        
+        'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
+        ' With this, we can use our normal color-management pipeline to color-correct this DIB.
+        Dim srcProfile As pdLCMSProfile
+        Set srcProfile = New pdLCMSProfile
+    
+        'Make sure the chromaticity data passes internal LCMS validation
+        Dim chrmOK As Boolean
+        chrmOK = srcProfile.CreateCustomRGBProfile(VarPtr(wpValues(0)), VarPtr(rgbValues(0)), gammaFloat)
+        If chrmOK Then
+            
+            Dim dstProfile As pdLCMSProfile
+            Set dstProfile = New pdLCMSProfile
+            dstProfile.CreateSRGBProfile
+            
+            'Apply the profile in-place to the current RGB data
+            Dim dstTransform As pdLCMSTransform
+            Set dstTransform = New pdLCMSTransform
+            If dstTransform.CreateInPlaceTransformForDIB(dstDIB, srcProfile, dstProfile, INTENT_PERCEPTUAL, cmsFLAGS_COPY_ALPHA) Then
+                
+                dstTransform.ApplyTransformToPDDib dstDIB
+                Set dstTransform = Nothing
+                
+                'If the transform was successful, let's embed this ICC profile into the destination image.
+                ' This ensures reasonable persistence for the data described by the original cHRM chunk.
+                Dim profHash As String
+                profHash = ColorManagement.AddLCMSProfileToCache(srcProfile, True)
+                dstDIB.SetColorProfileHash profHash
+                dstDIB.SetColorManagementState cms_ProfileConverted
+                
+                'If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original profHash
+                
+            End If
+            
+            'Free the destination LCMS profile before exiting
+            Set dstProfile = Nothing
+            
+        End If
+        
+        'Free the source profile handle, if any
+        Set srcProfile = Nothing
+        
+    End If
+    
     ParsePixels = True
     
 End Function
@@ -641,6 +861,21 @@ Private Function ReadScanline_NoRLE(ByRef srcBytes() As Byte, ByRef idxSrc As Lo
     End If
     
 End Function
+
+'Default values come from the official spec (https://radsite.lbl.gov/radiance/refer/filefmts.pdf):
+' 0.640 0.330 0.290 0.600 0.150 0.060 0.333 0.333
+Private Sub ResetHeaderPrimaries()
+    With m_Header
+        .rh_Primaries(0) = 0.64
+        .rh_Primaries(1) = 0.33
+        .rh_Primaries(2) = 0.29
+        .rh_Primaries(3) = 0.6
+        .rh_Primaries(4) = 0.15
+        .rh_Primaries(5) = 0.06
+        .rh_Primaries(6) = 0.333
+        .rh_Primaries(7) = 0.333
+    End With
+End Sub
 
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
