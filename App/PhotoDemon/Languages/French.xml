@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.1.54</langversion>
+<langversion>2026.1.55</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Need74 (need74@free.fr), Jean Jacques Piedfort, Frank Donckers</author>
@@ -2825,15 +2825,6 @@ Merci d'envoyer le rapport de bug via le menu "Aide -> Soumettre un rapport de b
 </phrase>
 
 <phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Le fichier spécifié est introuvable.Si il était situé sur un support amovible, veuillez ré- insérez la disquette appropriée, CD ou disque dur portable. Si le fichier ne se trouve pas sur un support portable, assurez-vous que: 
- 1) le fichier n'a pas été supprimé, et que ... 
- 2) l'emplacement du fichier fourni à PhotoDemon est correcte.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -5556,11 +5547,6 @@ La valeur finale doit être entre '%3' et '%4'.</translation>
 </phrase>
 
 <phrase>
-<original>Third-party libraries</original>
-<translation>Bibliothèques tierces</translation>
-</phrase>
-
-<phrase>
 <original>Developers</original>
 <translation>Développeurs</translation>
 </phrase>
@@ -7944,11 +7930,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>about this plugin</original>
 <translation>À propos de ce plugin</translation>
-</phrase>
-
-<phrase>
-<original>available plugins</original>
-<translation>Plugins disponibles</translation>
 </phrase>
 
 <phrase>
@@ -14810,6 +14791,6 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- As of this build, PhotoDemon contains 5979 phrases. -->
 <!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12099 total words. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>
