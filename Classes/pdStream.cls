@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2026 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 15/October/21
-'Last update: improve perf when writing unsigned ints
+'Last updated: 27/January/26
+'Last update: relent and implement FindByte for memory-mapped streams
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,
@@ -457,11 +457,17 @@ End Sub
 ' also ask it to move the current pointer to the first-found occurrence - BUT IMPORTANTLY, note that the
 ' pointer *will not be moved* if the target byte isn't found.
 '
-'(BY DESIGN, this feature is not implemented in file-backed streams.  It's too damn slow, so you're better
-' off caching a chunk of the file and searching it manually.)
+'For safety reasons, you may also want to pass a "maxSearchLength" value.  This value is calculated as an
+' offset FROM THE CURRENT POINTER POSITION.  If the default -1 is passed, the search will continue until EOF.
+' (This is especially important when searching a memory-mapped file, as the entire search space will be
+'  mapped into memory.  The caller may want to manually search smaller chunks instead.)
 '
-'RETURNS: value >= 0 where the byte was found; -1 if it was not found (or if your starting position is invalid)
-Friend Function FindByte(ByVal targetByte As Byte, Optional ByVal startPosition As Long = -1, Optional ByVal movePtrToMatch As Boolean = True) As Long
+'BY DESIGN, this feature is not implemented for file-backed streams.  It's too damn slow, so you're better
+' off caching a chunk of the file and searching it manually.  (PhotoDemon almost always uses memory-mapped
+' file interactions, so this isn't relevant there.)
+'
+'RETURNS: position >= 0 where the byte was found; -1 if it was not found (or if your starting position is invalid)
+Friend Function FindByte(ByVal targetByte As Byte, Optional ByVal startPosition As Long = -1, Optional ByVal movePtrToMatch As Boolean = True, Optional ByVal maxSearchLength As Long = -1) As Long
     
     FindByte = -1
     
@@ -470,20 +476,85 @@ Friend Function FindByte(ByVal targetByte As Byte, Optional ByVal startPosition 
         If (startPosition < 0) Then startPosition = Me.GetPosition()
         If (startPosition < m_BufferSize) Then
             
-            'Memory mode is a hell of a lot faster!
+            Dim posFinal As Long
+            
+            'Memory-backed modes are easy
             If (m_StreamMode = PD_SM_MemoryBacked) Or (m_StreamMode = PD_SM_ExternalPtrBacked) Then
+                
+                If (maxSearchLength <= 0) Then
+                    posFinal = m_BufferSize
+                Else
+                    posFinal = startPosition + maxSearchLength
+                    If (posFinal > m_BufferSize) Then posFinal = m_BufferSize
+                End If
                 
                 'TODO: look at wrapping an API for this; it'd potentially be faster
                 Do
                     If (m_MemBuffer(startPosition) = targetByte) Then Exit Do
                     startPosition = startPosition + 1
-                Loop While (startPosition < m_BufferSize)
+                Loop While (startPosition < posFinal)
                 
-                If (startPosition < m_BufferSize) Then
+                If (startPosition < posFinal) Then
                     FindByte = startPosition
                     If movePtrToMatch Then m_Pointer = startPosition
                 End If
             
+            'Jan 2026: okay, okay - I relented and added this version for memory-mapped files.
+            ' (A generic solution like this is never going to be as fast as a custom-built solution
+            '  for a specific task, but this should work "well enough" for most use-cases, provided
+            '  the search surface isn't enormously large.)
+            ElseIf (m_StreamMode = PD_SM_FileMemoryMapped) Then
+                
+                'Failsafe check for valid underlying memory-map interface
+                If (m_FileMM Is Nothing) Then
+                    InternalStreamError "FindByte failed; m_FileMM invalid."
+                    Exit Function
+                End If
+                
+                'Find the correct end-point of the search (may require a large map!)
+                If (maxSearchLength <= 0) Then
+                    posFinal = m_BufferSize
+                Else
+                    posFinal = startPosition + maxSearchLength
+                    If (posFinal > m_BufferSize) Then posFinal = m_BufferSize
+                End If
+                
+                'Failsafe only to ensure a non-null map region
+                Dim searchSize As Long
+                searchSize = posFinal - startPosition
+                If (searchSize <= 0) Then Exit Function
+                
+                'Map the search region into memory
+                Dim srcPtr As Long, srcReadMax As Long, tmpArray() As Byte, tmpArraySA As SafeArray1D
+                srcPtr = 0
+                srcReadMax = 0
+                
+                If m_FileMM.EnsureMapAvailable(startPosition, searchSize, srcPtr, srcReadMax) Then
+                    VBHacks.WrapArrayAroundPtr_Byte tmpArray, tmpArraySA, startPosition + srcPtr, searchSize
+                Else
+                    PDDebug.LogAction "WARNING: FindByte failed due to memory map failure"
+                    Exit Function
+                End If
+                
+                'Instead of searching by actual position, we must search by artificial 0-offset
+                ' into the search region.
+                Dim initPos As Long
+                initPos = 0
+                
+                Do
+                    If (tmpArray(initPos) = targetByte) Then Exit Do
+                    initPos = initPos + 1
+                Loop While (initPos < searchSize)
+                
+                'Always free the temporary array!
+                VBHacks.UnwrapArrayFromPtr_Byte tmpArray
+                
+                'Remember to add the search offset back to the *original* pointer.
+                If (initPos < searchSize) Then
+                    FindByte = startPosition + initPos
+                    If movePtrToMatch Then m_Pointer = FindByte
+                End If
+                
             'Do not use this in file-backed mode(s)!  Manually cache a chunk of the file and perform the
             ' search yourself!
             Else
@@ -557,6 +628,8 @@ Friend Function ReadBytes(ByRef dstBytes() As Byte, Optional ByVal readLength As
         'Rely on the bare pointer function from here
         ReadBytes = ReadBytesToBarePointer(VarPtr(dstBytes(arrLBound)), readLength)
         
+    Else
+        InternalStreamError "stream closed"
     End If
     
 End Function

@@ -300,6 +300,7 @@ Public Enum PD_ImageDecoder
     id_GDIPlus = 0
     id_FreeImage
     id_CBZParser
+    id_HDRParser
     id_HGTParser
     id_ICOParser
     id_MBMParser
@@ -327,7 +328,7 @@ End Enum
 
 #If False Then
     Private Const id_Failure = -1, id_GDIPlus = 0, id_FreeImage = 0
-    Private Const id_CBZParser = 0, id_HGTParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0
+    Private Const id_CBZParser = 0, id_HDRParser = 0, id_HGTParser = 0, id_ICOParser = 0, id_MBMParser = 0, id_ORAParser = 0, id_PDIParser = 0
     Private Const id_PNGParser = 0, id_PSDParser = 0, id_PSPParser = 0, id_QOIParser = 0, id_WBMPParser = 0, id_XBMParser = 0
     Private Const id_XCFParser = 0, id_WIC = 0, id_libavif = 0, id_CharLS = 0, id_libwebp = 0, id_resvg = 0, id_libjxl = 0
     Private Const id_pdfium = 0, id_libheif = 0, id_PCXParser = 0, id_DirectXTex = 0, id_OpenJPEG = 0
