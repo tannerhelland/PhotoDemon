@@ -895,6 +895,231 @@ Private Sub ResetHeaderPrimaries()
     End With
 End Sub
 
+'Export the target pdImage's pixel data to an HDR-format file.  There are currently no export options for this format
+' in PD's UI; however, some toggles may be available via developer settings (for testing only).
+Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As String) As Boolean
+
+    Const FUNC_NAME As String = "SaveHDR_ToFile"
+    SaveHDR_ToFile = False
+    
+    'This exists only as a failsafe; potential encoding errors are explicitly handled via other means
+    On Error GoTo SaveFailed
+    
+    'HDR doesn't support multiple frames.
+    ' As such, grab a composited copy of the current image.
+    Dim compositeDIB As pdDIB
+    srcImage.GetCompositedImage compositeDIB, True
+    compositeDIB.CompositeBackgroundColor 255, 255, 255
+    
+    'Open a stream on the target file
+    Set m_Stream = New pdStream
+    If (Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, compositeDIB.GetDIBWidth * compositeDIB.GetDIBHeight * 2, 0, OptimizeSequentialAccess)) Then
+        InternalError FUNC_NAME, "couldn't start file stream: " & dstFile
+        Exit Function
+    End If
+    
+    'Initialize a progress bar
+    Dim progBarCheck As Long
+    ProgressBars.SetProgBarMax compositeDIB.GetDIBHeight()
+    progBarCheck = ProgressBars.FindBestProgBarValue()
+    
+    'Radiance headers are plain-text, which makes the first part of export extremely easy.
+    Dim cString As pdString
+    Set cString = New pdString
+    
+    'Magic number
+    cString.Append "#?RADIANCE"
+    cString.AppendLineBreakLf
+    
+    'Software (so users know who to blame when export didn't work, ha)
+    cString.Append "SOFTWARE=" & Updates.GetPhotoDemonNameAndVersion()
+    cString.AppendLineBreakLf
+    
+    'PD uses standard exposure values to improve compatibility
+    cString.Append "EXPOSURE=1.0"
+    cString.AppendLineBreakLf
+    
+    'Only RGBE export is used (XYZE support in decoders is rare)
+    cString.Append "FORMAT=32-bit_rle_rgbe"
+    cString.AppendLineBreakLf
+    
+    'A null-line marks the end of the header
+    cString.AppendLineBreakLf
+    
+    'One single line follows, containing image orientation and dimensions
+    cString.Append "-Y " & compositeDIB.GetDIBHeight() & " +X " & compositeDIB.GetDIBWidth()
+    cString.AppendLineBreakLf
+    
+    'Pixel data follows, so dump the header out now; we are finished with it
+    m_Stream.WriteString_ASCII cString.ToString()
+    Set cString = Nothing
+    
+    'Boilerplate for pixel export data
+    Dim x As Long, y As Long
+    Dim srcWidth As Long, srcHeight As Long, srcWidthScanline As Long
+    srcWidth = compositeDIB.GetDIBWidth()
+    srcWidthScanline = srcWidth * 4
+    srcHeight = compositeDIB.GetDIBHeight()
+    
+    'Fast ubyte > float conversion, with 2.2 gamma pre-calculated
+    Dim btof(0 To 255) As Single
+    For x = 0 To 255
+        btof(x) = (CSng(x) / 255!) ^ 2.2!
+    Next x
+    
+    'Floating-point HDR values need to be decomposed into a shared power-of-two exponent
+    ' (used by all three color components) and a per-color 8-byte mantissa.
+    ' VB lacks the necessary low-level calls to do these intrinsically, so we'll need to calculate
+    ' them manually.  Because we are only ever exporting from 8-bit sources, we can precalculate
+    ' LUTs for various values and *hugely* improve export performance.
+    Dim exponent As Long
+    Dim lutExponent(0 To 255) As Byte    '(technically -128 to 127, but VB lacks signed chars)
+    Dim lutMantissa(0 To 255) As Single
+    
+    'These LUTs can skip entry 0 as it causes a DBZ error.  (0 also represents pure black -
+    ' because the LUT is indexed on the MAX channel value for each pixel - and index 0 will never
+    ' trigger on the inner loop because we explicitly branch on that state.)
+    For x = 1 To 255
+        
+        ' In C, for a base-2 calculation this is as simple as calling std::frexp.
+        ' In VB6, we don't have frexp so we need to manually calculate it (sigh).
+        Const LOG_2 As Double = 0.693147180559945
+        exponent = Int(Log(btof(x)) / LOG_2) + 1
+        
+        'Pre-scale the exponent to byte range (to work around a lack of signed char)
+        lutExponent(x) = exponent + 128
+        
+        'Similarly, pre-scale the mantissa to byte range because that's how it is ultimately encoded
+        lutMantissa(x) = (1! / (2 ^ exponent)) * 255!
+        
+    Next x
+    
+    'We have everything we need to start writing pixel data.  HDR files use a novel 4-bytes-per-3-channels
+    ' floating-point representation, where the mantissa of each pixel channel is stored, followed by a
+    ' shared power-of-2 exponent for those 3 mantissas.
+    
+    'First, we'll translate the current byte line into the required floating-point representation
+    Dim dstBytes() As Byte
+    ReDim dstBytes(0 To srcWidth * 4 - 1) As Byte
+    
+    'TODO: additional storage structures for RLE
+    
+    'Because HDR images tend to be large, we can greatly improve performance by batching scanline writes
+    ' before sending them out to file.  As such, we're going to use a temporary in-memory stream to hold
+    ' our results, and then we'll flush those results out to file every [n] lines.  This achieves a nice
+    ' balance between perf and memory usage.
+    Const NUM_LINES_TO_BUFFER As Long = 128
+    
+    Dim bufStream As pdStream
+    Set bufStream = New pdStream
+    If (Not bufStream.StartStream(PD_SM_MemoryBacked, PD_SA_ReadWrite, startingBufferSize:=srcWidth * 4 * NUM_LINES_TO_BUFFER)) Then
+        InternalError FUNC_NAME, "couldn't create output buffer"
+        Exit Function
+    End If
+    
+    'HDR data is handled one scanline at a time
+    For y = 0 To srcHeight - 1
+        
+        'Point an array at the next scanline of source pixels
+        Dim srcPixels() As Byte, srcSA As SafeArray1D
+        compositeDIB.WrapArrayAroundScanline srcPixels, srcSA, y
+        
+        'Iterate pixels, converting as we go
+        For x = 0 To srcWidth - 1
+            
+            'BGRA data means each pixel occupies four neighboring bytes
+            Dim xOffset As Long
+            xOffset = x * 4
+            
+            'Find the maximum channel for this pixel; we'll use its nearest power-of-two value
+            ' as the standard for all channels (in this pixel).
+            Dim b As Long, g As Long, r As Long, bMax As Long
+            b = srcPixels(xOffset)
+            g = srcPixels(xOffset + 1)
+            r = srcPixels(xOffset + 2)
+            If (g > b) Then bMax = g Else bMax = b
+            If (r > bMax) Then bMax = r
+            
+            'If the pixel is pure black, write it as-is
+            If (bMax = 0) Then
+                dstBytes(xOffset) = 0
+                dstBytes(xOffset + 1) = 0
+                dstBytes(xOffset + 2) = 0
+                dstBytes(xOffset + 3) = 0
+                
+            'Not-black
+            Else
+                
+                'We now need to decompose the pixel color triplet into a shared exponent + 3 mantissas.
+                ' Lucky for us, we precalculated all required values before entering this loop!
+                '
+                'Retrieve the mantissa multiplier for the calculated power of two.
+                ' (Remember: this value encompasses a lot of pre-calculated data, like gamma correction,
+                '  power-of-two basing, final scaling, etc.)
+                Dim fixed_pow_2 As Single
+                fixed_pow_2 = lutMantissa(bMax)
+                
+                'Convert the color channels and write them out, followed by the shared exponent (normalized to [0, 255])
+                dstBytes(xOffset) = Int(btof(r) * fixed_pow_2)
+                dstBytes(xOffset + 1) = Int(btof(g) * fixed_pow_2)
+                dstBytes(xOffset + 2) = Int(btof(b) * fixed_pow_2)
+                dstBytes(xOffset + 3) = lutExponent(bMax)
+                
+            End If
+            
+        Next x
+        
+        'Release the unsafe pixel wrapper from the source pixels.
+        compositeDIB.UnwrapArrayFromDIB srcPixels
+        
+        'We now need to RLE-encode this line before dumping it to file.
+        Const USE_RLE_ENCODING As Boolean = False
+        If USE_RLE_ENCODING Then
+            'TODO!
+        Else
+            
+            'Dump these bytes as-is into the buffer stream
+            bufStream.WriteBytesFromPointer VarPtr(dstBytes(0)), srcWidthScanline
+            
+        End If
+        
+        'Periodically dump the memory buffer out to file, resetting the pointer as necessary.
+        If (y And NUM_LINES_TO_BUFFER = 0) Then
+            bufStream.SetPosition 0, FILE_BEGIN
+            m_Stream.WriteBytesFromPointer bufStream.ReadBytes_PointerOnly(bufStream.GetStreamSize()), bufStream.GetStreamSize()
+            bufStream.SetSizeExternally 0
+        End If
+        
+        'Periodically update the progress bar (see top of class for how this increment is determined)
+        If (y And progBarCheck) = 0 Then ProgressBars.SetProgBarVal y
+        
+    Next y
+    
+    'Dump the final buffer bytes (if any) out to disk
+    If (bufStream.GetPosition > 0) Then
+        bufStream.SetPosition 0, FILE_BEGIN
+        m_Stream.WriteBytesFromPointer bufStream.ReadBytes_PointerOnly(bufStream.GetStreamSize()), bufStream.GetStreamSize()
+        Set bufStream = Nothing
+    End If
+    
+    '*Don't* free the progress bar here.  (Freeing is left to the caller; this prevents flicker.)
+    'ProgressBars.ReleaseProgressBar
+    
+    'No trailing bytes are required!  Close the stream and exit.
+    m_Stream.StopStream True
+    SaveHDR_ToFile = True
+    
+    Exit Function
+    
+SaveFailed:
+    InternalError FUNC_NAME, "abandoned save due to critical error"
+    SaveHDR_ToFile = False
+    
+    If (Not m_Stream Is Nothing) Then
+        If m_Stream.IsOpen Then m_Stream.StopStream True
+    End If
+End Function
+
 Private Sub InternalError(ByRef funcName As String, ByRef errDescription As String, Optional ByVal writeDebugLog As Boolean = True)
     If UserPrefs.GenerateDebugLogs Then
         If writeDebugLog Then PDDebug.LogAction "pdHDR." & funcName & "() reported an error: " & errDescription

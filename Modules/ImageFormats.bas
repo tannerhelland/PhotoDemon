@@ -421,7 +421,7 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
     AddOutputFormat "DDS - DirectDraw Surface", "dds", PDIF_DDS
     AddOutputFormat "GIF - Graphics Interchange Format", "gif", PDIF_GIF
-    If m_FreeImageEnabled Then AddOutputFormat "HDR - High Dynamic Range", "hdr", PDIF_HDR
+    AddOutputFormat "HDR - Radiance High Dynamic Range", "hdr", PDIF_HDR
     
     'HEIF support requires libheif and several additional support libraries
     If Plugin_Heif.IsLibheifEnabled() Then
