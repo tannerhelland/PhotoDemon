@@ -95,6 +95,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Leonid Blyakher
 * Liviu Ivanov
 * [LsGeorge](https://github.com/LsGeorge)
+* Marcos Ventura (ƔΞИТƱƦΔ)
 * Manfredi Marceca
 * [Manuel Augusto Santos](https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303)
 * Mariozo
@@ -102,6 +103,7 @@ The current PhotoDemon release includes source code, translations, artwork, or o
 * Miguel Chamorro
 * [Ming](https://ufoym.com/)
 * Mohammad Reza Karimi
+* [Need74](https://github.com/Need74)
 * [Nguyen Van Hùng](https://github.com/vhreal1302)
 * [Olaf Schmidt](http://www.vbrichclient.com)
 * Old Abiquiu Photographic

@@ -387,11 +387,13 @@ Private Sub Form_Load()
     GenerateContributor "LsGeorge", "https://github.com/LsGeorge"
     GenerateContributor "Manfredi Marceca"
     GenerateContributor "Manuel Augusto Santos", "https://github.com/Planet-Source-Code/manuel-augusto-santos-fast-graphics-filters__1-26303"
+    GenerateContributor Strings.StringFromUtf8Base64("TWFyY29zIFZlbnR1cmEgKMaUzp7QmNCixrHGps6UKQ")
     GenerateContributor "Mariozo"
     GenerateContributor "martin19", "https://github.com/martin19"
     GenerateContributor "Miguel Chamorro"
     GenerateContributor "Ming", "https://ufoym.com/"
     GenerateContributor "Mohammad Reza Karimi"
+    GenerateContributor "Need74", "https://github.com/Need74"
     GenerateContributor "Nguyen Van Hung", "https://github.com/vhreal1302"
     GenerateContributor "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/"
     GenerateContributor "Old Abiquiu Photographic"
