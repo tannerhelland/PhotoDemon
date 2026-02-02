@@ -15,26 +15,29 @@ Attribute VB_Exposed = False
 'PhotoDemon HDR/RGBE (Radiance) Decoder
 'Copyright 2026-2026 by Tanner Helland
 'Created: 27/January/26
-'Last updated: 30/January/26
-'Last update: add coverage for color-correction, exposure, and XYZE color-space parameters
+'Last updated: 01/February/26
+'Last update: finish implementing export compression; I now consider this class feature-complete
 '
 'The HDR file format is one of the oldest HDR-compatible image file formats.  It combines a human-readable
-' header and simple uncompressed or RLE-encoded data streams with a novel 32-bpp floating-point storage
-' mechanism.  Both RGBE and XYZE color formats are allowed, but due to a lack of XYZE test data, PhotoDemon
-' only supports RGBE (for now).
+' header and simple RLE-encoded data streams with a novel 32-bpp floating-point storage mechanism.
+' Both RGBE and XYZE color formats are allowed but the format is otherwise quite strict (only 3-channel
+' images are allowed, and only at the single 32-bpp floating-point depth).  This makes support very
+' straightforward compared to other "old" image formats.
 '
-'PhotoDemon previously used the 3rd-party FreeImage library to parse HDR files, but in 2026, I wrote this
+'PhotoDemon previously used the 3rd-party FreeImage library to handle HDR files, but in 2026, I wrote this
 ' novel VB6 implementation from scratch.  FreeImage's implementation makes erroneous assumptions about
 ' color data and header limitations (for example, it limits header lines to 256-characters which causes it
 ' to fail on valid "real world" stacked HDR images - see https://github.com/tannerhelland/PhotoDemon/issues/739)
-' which necessitated this changeover.
+' which necessitated this changeover.  FreeImage also produced buggy HDR files for many years, which prevented
+' them from being read in e.g. GIMP, due to FreeImage manually writing out an "EXPOSURE=0" tag which caused the
+' entire image to appear black in software that respects exposure data.
 '
 'The "official" Radiance spec is the definitive source of information on the HDR format.  I used this PDF,
 ' as linked by Wikipedia (https://en.wikipedia.org/wiki/RGBE_image_format):
 ' https://radsite.lbl.gov/radiance/refer/filefmts.pdf
 '
-'I have not encountered any deviations from the spec in "real-world" test images, so I think that PDF is
-' a comprehensive resource for other developers looking to support HDR data.
+'I have not encountered any deviations from the spec in "real-world" test images, so I believe that PDF is
+' everything other developers need if they want to also support the HDR format.
 '
 'Unless otherwise noted, all source code in this file is shared under a simplified BSD license.
 ' Full license details are available in the LICENSE.md file, or at https://photodemon.org/license/
@@ -47,16 +50,15 @@ Option Explicit
 ' to PD's primary debug log.
 Private Const HDR_DEBUG_VERBOSE As Boolean = False
 
-'Image width/height, in pixels.
-Private m_Width As Long, m_Height As Long
-
 'Byte-by-byte access is provided, as always, by a pdStream instance.
 Private m_Stream As pdStream
 
 'List of human-readable strings in the header, stored in sequential order.
 Private m_HeaderLines As pdStringStack
 
-'Relevant header data only
+'This struct collects header data that's relevant to PD.  (Other header data may exist - for example,
+' "gamma" is a non-standard tag written by some editors, but because its meaning is inconsistent
+' between apps, PD avoids using it.)
 Private Type PD_RadianceHeader
     rh_Width As Long
     rh_Height As Long
@@ -74,8 +76,6 @@ Private m_Header As PD_RadianceHeader
 'In this function, all we want to do is read and verify the *first* line of the file (if one exists)
 ' and look for the proper magic word.
 Friend Function IsFileHDR(ByRef srcFilename As String, Optional ByVal requireValidFileExtension As Boolean = True) As Boolean
-    
-    Const FUNC_NAME As String = "IsFileHDR"
     
     'Ensure target file exists
     Dim potentialMatch As Boolean
@@ -173,11 +173,25 @@ Friend Function LoadHDR_FromFile(ByRef srcFile As String, ByRef dstImage As pdIm
         dstDIB.CreateBlank m_Header.rh_Width, m_Header.rh_Height, 32, vbWhite, 255
         
         'Decode pixel data directly into the destination DIB
-        LoadHDR_FromFile = ParsePixels(dstDIB)
+        LoadHDR_FromFile = ParsePixels(dstDIB, dstImage)
         If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "LoadHDR_FromFile: " & LoadHDR_FromFile
         
-        'The returned data is always premultiplied
+        'The returned data is always premultiplied (HDR does not support alpha)
         If LoadHDR_FromFile Then dstDIB.SetInitialAlphaPremultiplicationState True
+        
+        'If the image specifies a rotation, apply it now.
+        ' (NOTE: I don't have any real-world images to test this behavior with, so it's possible I'm
+        '  handling rotation backwards (e.g. rotating 270 when I should be rotating 90).  I'll revisit
+        '  this as soon as I find compatible test images.  Surprisingly, no other photo editors (in my
+        '  testing) handle orientation at *all*, so who knows if I should do anything here!  I'm just
+        '  trying to follow the spec to a T...
+        If (m_Header.rh_Orientation <> GP_RF_NoneFlipNone) Then
+            If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "Image requires orientation adjustment; applying now..."
+            Dim tmpDIB As pdDIB
+            If GDI_Plus.GDIPlusRotateFlipDIB(dstDIB, tmpDIB, m_Header.rh_Orientation) Then
+                Set dstDIB = tmpDIB
+            End If
+        End If
     
     End If
     
@@ -199,7 +213,7 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
         
         'Next, we want to iterate header lines *until* we encounter an empty line.
         ' (This marks the end of the header.)
-        ' There might be one line in the header or 100.  No guarantees!
+        ' There might be one text line in the header or 100.  No guarantees!
         
         'Max line width is not defined in the spec, but we need some arbitrary upper value as a safety guarantee.
         ' (FreeImage uses 256 chars here, but that fails on some real-world files; we'll use a much larger value
@@ -245,8 +259,8 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
             End If
         End If
         
-        'Set up default header values.  Some of these can accumulate (e.g. there can be multiple exposure strings,
-        ' compounding) so it's critical to start with e.g. 1.0 or 0.0 as appropriate.
+        'Set up default header values.  Some of these can accumulate (e.g. there can be multiple
+        ' exposure strings, compounding) so it's critical to start with e.g. 1.0 or 0.0 as appropriate.
         With m_Header
             .rh_Orientation = GP_RF_NoneFlipNone
             .rh_Exposure = 1#
@@ -254,9 +268,10 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
             .rh_PrimariesPresent = False
         End With
         
-        'Some apps write gamma, but they do so inconsistently (e.g. 0.454545 and 1.0 typically mean the same correction,
-        ' assuming either technical vs colloquial definitions of 2.2 gamma!).  Because gamma isn't part of the formal spec,
-        ' I ignore it in PD.
+        'Some apps write gamma, but they do so inconsistently (e.g. 0.454545 and 1.0 typically mean
+        ' the same correction, assuming either technical vs colloquial definitions of 2.2 gamma!).
+        ' Because gamma isn't part of the formal spec and most apps ignore it if present, I also
+        ' ignore it in PD.
         ResetHeaderPrimaries
         
         'If we don't find an unambiguous FORMAT line, we'll purposely fail the image load
@@ -267,8 +282,8 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
         Dim hLine As String
         For i = 0 To m_HeaderLines.GetNumOfStrings - 1
             
-            'We have to do string-to-numeric conversions, which are error-prone and messy.
-            ' PD simply skips malformed lines.
+            'We have to do a lot of string-to-numeric conversions in this function, which always represent
+            ' a non-zero error potential.  At present, PD simply skips malformed lines.
             On Error GoTo BadLineParse
             
             hLine = Trim$(m_HeaderLines.GetString(i))
@@ -284,7 +299,9 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
                  
                  Dim dValue As Double, sValue As String, keyValue As String
                  
-                 'Ignore lines that don't cleanly separate into key+value pairs
+                 'Ignore lines that don't cleanly separate into key+value pairs.
+                 ' (Some HDR writers write many lines of comments without a prefixed "#";
+                 ' we want to handle these gracefully.)
                  If (UBound(hSplit) = 1) Then
                     
                     keyValue = UCase$(Trim$(hSplit(0)))
@@ -304,7 +321,7 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
                                 If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "WARNING: bad exposure in file: " & sValue
                             End If
                         
-                        'Per the spec there are only two valid format values.  Specifically:
+                        'Per the spec there are only two valid FORMAT values.  Specifically:
                         ' "At most one FORMAT line is allowed, and it must be assigned a value of either
                         '  "32-bit_rle_rgbe" or "32-bit_rle_xyze" to be a valid Radiance picture."
                         Case "FORMAT"
@@ -341,7 +358,8 @@ Private Function ParseHeader(ByRef srcFile As String) As Boolean
                                 m_Header.rh_Primaries(7) = Val(sPrimaries(7))
                                 
                                 'Do a quick check to ensure that the values look OK.  Some bad software
-                                ' ("HDR Shop") writes all-zeroes which destroys the image.
+                                ' ("HDR Shop") writes all-zeroes which will crash if we try to apply it
+                                ' (due to DBZ).
                                 With m_Header
                                     If (.rh_Primaries(0) = 0!) And (.rh_Primaries(1) = 0!) And (.rh_Primaries(2) = 0!) And _
                                        (.rh_Primaries(3) = 0!) And (.rh_Primaries(4) = 0!) And (.rh_Primaries(5) = 0!) And _
@@ -398,7 +416,7 @@ BadLineParse:
             'The resolution string is always in a format similar to "-Y N +X M", but the x and y can appear
             ' in any order (which corresponds to different orientations).
             
-            'Resolution unit should always be upper-case, but better safe than sorry
+            'Resolution units should always be upper-case, but better safe than sorry
             sResolution = UCase$(sResolution)
             
             Dim sResParts() As String
@@ -473,16 +491,18 @@ End Function
 ' 1) DO NOT call this function IF the header didn't validate (it'll crash)
 ' 2) YOU MUST call this function IMMEDIATELY following the header parser; only then is stream pointer
 '    alignment guaranteed correct against the start of the pixel data.
-Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
+Private Function ParsePixels(ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) As Boolean
     
     Const FUNC_NAME As String = "ParsePixels"
     ParsePixels = False
     
-    'HDR files use a simple RLE compression scheme.  Two RLE varieties are used (called "old" and "new"),
-    ' and uncompressed data is also allowed.
+    'HDR files use a simple RLE compression scheme.  Only a single RLE variety is used (there is supposedly
+    ' an "old" RLE scheme in existence, but even ancient .pic files do not use it, so PD doesn't implement
+    ' it at present; I'll revisit if I can actually find an ancient file that uses this!).  Uncompressed lines
+    ' are also allowed (and are supported in all other readers, so we also support them here.)
     '
-    'I have not validated this, but hypothetically individual scanlines can independently use different
-    ' encoding schemes.  (Flags at the beginning of each line determine what scheme is used on that line.)
+    'Importantly, each individual scanline defines its own encoding scheme.  (Specifically, a 4-byte flag at
+    ' the beginning of each line determine what scheme is used on that line.  Flags can vary by line.)
     Dim dstWidth As Long, dstHeight As Long
     dstWidth = m_Header.rh_Width
     dstHeight = m_Header.rh_Height
@@ -516,13 +536,13 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
     
     Dim dstPixels() As Byte, dstSA As SafeArray1D
     
-    'Start iterating image scanlines.
+    'Start iterating scanlines.
     Dim x As Long, y As Long
     For y = 0 To dstHeight - 1
         
         'The second scanline width check here is because the first bit of a 2-byte flag is used to mark
         ' RLE compression.  Images larger than this (which don't really affect PD as a 32-bit app) cannot
-        ' use RLE compression because they will overwrite this flag.
+        ' use RLE compression because they will overwrite this flag when marking scanline width.
         If ((scanlineWidth < 8) Or (scanlineWidth > &H7FFF&)) Then
             
             'Use the "no-compression" loader for this line.
@@ -530,36 +550,41 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
                 Exit Function
             End If
         
-        'Scanline size is RLE-compatible
+        'Scanline size is RLE-compatible, so we need to check flags to see how to decompress this line.
         Else
         
             'Peek the first quad in this scanline.
             CopyMemoryStrict VarPtr(nextQuad), VarPtr(srcBytes(idxSrc)), 4
             
             'Per the spec, RLE compression is marked by the first two bytes each being 2, the high bit
-            ' of the next two bytes being 0, and the remaining 15-bits equaling image width.
+            ' of the 3rd byte being 0, and the remaining 15-bits equaling image width.
             If (nextQuad.Blue <> 2) Or (nextQuad.Green <> 2) Or ((nextQuad.Red And &H80&) <> 0) Then
                 
                 'This line doesn't use modern RLE.  Look for traditional RLE instead, and failing that,
                 ' consider the line uncompressed.
                 
-                If HDR_DEBUG_VERBOSE Then
-                    PDDebug.LogAction "WARNING: this image uses old-style RLE.  It cannot be decompressed yet."
-                End If
+                '"Old-style" RLE requires per-pixel checks, which are cumbersome and greatly impact speed.
+                ' I do not currently plan to support this scheme as no files found "in the wild" use it.
+                ' Even extremely ancient government test files (from 1992! https://radsite.lbl.gov/radiance/pub/pics/index.html)
+                ' use the "modern" RLE scheme, so without test images, I see no reason to support this scheme.
+                'If HDR_DEBUG_VERBOSE Then
+                '    PDDebug.LogAction "WARNING: this image uses old-style RLE.  It cannot be decompressed yet."
+                'End If
                 
-                'TODO: implement old RLE!
+                'Load this scanline as bare float data, no decompression.
                 If (Not ReadScanline_NoRLE(srcBytes, idxSrc, srcByteLen, scanlineWidth, srcBytesUncompressed)) Then
                     Exit Function
                 End If
             
-            'This line is RLE-compressed using the "better" (planar) RLE scheme.
+            'This line is RLE-compressed using the "modern" (planar) RLE scheme.
             Else
                 
                 'Check the last-two bytes, which must equal the image's width (so image width must be <= 32768).
                 Dim slCheck As Long
                 slCheck = CLng(nextQuad.Red) * 256 + CLng(nextQuad.Alpha)
                 
-                'PD checks both width
+                'If the width doesn't match, check the height - images can be stored rotated but PD flags this
+                ' state and swaps width/height before loading to simplify the process.
                 If (slCheck <> dstWidth) Then
                     
                     'If the image is rotated, it *is* OK to match image height here
@@ -570,11 +595,11 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
                     
                 End If
                 
-                'All RLE flags check out!  Advance the source pointer past these flags to the start
+                'All RLE flags check out!  Advance the source pointer past the 4-byte flag to the start
                 ' of the actual pixel data.
                 idxSrc = idxSrc + 4
                 
-                'In this scheme, channels are separated into planar (not interleaved) format,
+                'In this compression scheme, channels are separated into planar (not interleaved) format
                 ' and RLE-compressed in order, starting with the three primaries and then the exponent.
                 ' This obviously produces better compression than interleaved data.
                 
@@ -611,15 +636,19 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
                             If (idxDst < srcBytesPlanarSize) Then
                                 srcBytesPlanar(idxDst) = nextByte
                                 idxDst = idxDst + 1
+                            
+                            'I used this branch to study my own decompression results, but it isn't necessary
+                            ' in production builds - just skip bad runs to salvage the load process.
                             Else
-                                Debug.Print "bad idxDst vs srcBytesPlanarSize: " & idxDst & " vs " & srcBytesPlanarSize
+                                Exit For
+                                'Debug.Print "bad idxDst vs srcBytesPlanarSize: " & idxDst & " vs " & srcBytesPlanarSize
                             End If
                         Next x
                         
                     'High-bit = 0 means COPY [n] bytes directly from source
                     Else
                         
-                        'Copy must have > 0 bytes specified, and not exceed scanline size
+                        'Only copy if > 0 bytes, and if the copy doesn't exceed scanline size
                         If (nextByte > 0) And (idxDst + nextByte <= srcBytesPlanarSize) Then
                             CopyMemoryStrict VarPtr(srcBytesPlanar(idxDst)), VarPtr(srcBytes(idxSrc)), nextByte
                             idxDst = idxDst + nextByte
@@ -638,7 +667,8 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
                 'As long as the destination buffer has room, keep reading bytes from the source
                 Loop While idxDst < srcBytesPlanarSize
                 
-                'We now have all bytes decompressed into planar format.  Swizzle them into interleaved format.
+                'We now have all bytes decompressed into planar format.
+                ' Do another pass to swizzle into interleaved.
                 For x = 0 To dstWidth - 1
                     srcBytesUncompressed(x * 4) = srcBytesPlanar(x)
                     srcBytesUncompressed(x * 4 + 1) = srcBytesPlanar(dstWidth + x)
@@ -661,7 +691,7 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
             lutPow2(x) = (2# ^ CDbl(x - 128))
         Next x
         
-        'If the file embeds exposure data, attempt to use it.
+        'If the file embeds exposure data, use it by building it directly into the LUT.
         ' (In PhotoDemon, this behavior can be toggled by the
         '  `Tools > Options > Color management > use format-specific color-management data` option.)
         If ColorManagement.UseEmbeddedLegacyProfiles() Then
@@ -697,7 +727,7 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
                 dstPixelsF(xOffset + 1) = 0!
                 dstPixelsF(xOffset + 2) = 0!
             
-            'Transform mantissas by the shared exponent
+            'For all other values of e, transform mantissas by the shared exponent
             Else
                 dstPixelsF(xOffset) = CDbl(r) * lutPow2(e)
                 dstPixelsF(xOffset + 1) = CDbl(g) * lutPow2(e)
@@ -728,11 +758,10 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
         'Wrap a pointer around the target line in the destination pixel array.
         dstDIB.WrapArrayAroundScanline dstPixels, dstSA, y
         
-        'TODO: additional color-management/tone-mapping here, based on embedded color space data
-        
         'HDR files are always non-gamma-corrected; to match behavior in other software,
         ' we must gamma-correct at 2.2 by default.  (Files can specify their own values but they are *not*
-        ' guaranteed to work; for example, a gamma of "0.4545" or "1" both theoretically mean "use normal 1/2.2".
+        ' guaranteed to work; for example, a gamma of "0.4545" or "1" could both theoretically mean
+        ' "use normal 1/2.2" - we have no way to distinguish between those interpretations.)
         Const GAMMA_CORRECTION_FACTOR As Double = 1# / 2.2
         Dim lutGamma(0 To 255) As Byte
         For x = 0 To 255
@@ -743,20 +772,15 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
             lutGamma(x) = Int(fR + 0.5!)
         Next x
         
-        'Iterate pixels and convert as-we-go
+        'Iterate pixels and color-convert as-we-go
         For x = 0 To dstWidth - 1
         
             xOffset = x * 4
+            r = Int(dstPixelsF(xOffset))
+            g = Int(dstPixelsF(xOffset + 1))
+            b = Int(dstPixelsF(xOffset + 2))
             
-            fR = dstPixelsF(xOffset)
-            fG = dstPixelsF(xOffset + 1)
-            fB = dstPixelsF(xOffset + 2)
-            
-            r = Int(fR)
-            g = Int(fG)
-            b = Int(fB)
-            
-            'Failsafe only
+            'Failsafe only (to ensure valid lookups into the LUT)
             If (r < 0) Then r = 0
             If (r > 255) Then r = 255
             If (g < 0) Then g = 0
@@ -765,7 +789,7 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
             If (b > 255) Then b = 255
             
             'Apply gamma-correction now.  (It would be higher-quality to do this while the pixel data is
-            ' still in floats, but the perf impact of that is *huge* due to powf performance.)
+            ' still in floats, but the perf impact of that is *huge* due to powf performance in VB6.)
             dstPixels(xOffset) = lutGamma(b)
             dstPixels(xOffset + 1) = lutGamma(g)
             dstPixels(xOffset + 2) = lutGamma(r)
@@ -780,15 +804,14 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
         
     Next y
     
-    'The last bit of post-processing we need to do is applying embedded color corrections, if any.
+    'The last bit of post-processing we need to do is apply embedded color corrections, if any.
     If ColorManagement.UseEmbeddedLegacyProfiles() And m_Header.rh_PrimariesPresent Then
         
         If HDR_DEBUG_VERBOSE Then PDDebug.LogAction "Embedded chromaticity data found; applying now..."
         
-        'This code is adopted from pdPNG; PNG's cHRM chunk works identically.
-        'ResetHeaderPrimaries
+        'The following code is adopted from pdPNG; PNG's cHRM chunk works nearly identically.
         
-        'Convert the embedded chromaticity values to floating-point
+        'Extract the embedded primaries and assign them to standard correction matrices
         Dim wpValues() As Double, rgbValues() As Double
         ReDim wpValues(0 To 2) As Double
         ReDim rgbValues(0 To 8) As Double
@@ -815,11 +838,11 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
         Dim gammaFloat As Double
         gammaFloat = 2.2
         
-        'Our next goal is to assemble an ICC profile that matches the chromaticity and/or gamma data.
+        'Our next goal is to assemble an ICC profile that matches the embedded chromaticity coordinates.
         ' With this, we can use our normal color-management pipeline to color-correct this DIB.
         Dim srcProfile As pdLCMSProfile
         Set srcProfile = New pdLCMSProfile
-    
+        
         'Make sure the chromaticity data passes internal LCMS validation
         Dim chrmOK As Boolean
         chrmOK = srcProfile.CreateCustomRGBProfile(VarPtr(wpValues(0)), VarPtr(rgbValues(0)), gammaFloat)
@@ -838,13 +861,13 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB) As Boolean
                 Set dstTransform = Nothing
                 
                 'If the transform was successful, let's embed this ICC profile into the destination image.
-                ' This ensures reasonable persistence for the data described by the original cHRM chunk.
+                ' This ensures reasonable persistence for the data described by the original chromaticity values.
                 Dim profHash As String
                 profHash = ColorManagement.AddLCMSProfileToCache(srcProfile, True)
                 dstDIB.SetColorProfileHash profHash
                 dstDIB.SetColorManagementState cms_ProfileConverted
                 
-                'If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original profHash
+                If (Not dstImage Is Nothing) Then dstImage.SetColorProfile_Original profHash
                 
             End If
             
@@ -864,7 +887,7 @@ End Function
 
 'Copy a line of bytes from the source buffer into the temporary uncompressed buffer, without considering RLE.
 ' idxSrc will be incremented by scanlineWidth.
-' This function will crash if the source or destination arrays are not initialized to correct sizes.
+' NOTE: this function will crash if the source or destination arrays are not initialized to correct sizes.
 Private Function ReadScanline_NoRLE(ByRef srcBytes() As Byte, ByRef idxSrc As Long, ByVal srcByteLen As Long, ByVal scanlineWidth As Long, ByRef dstBytes() As Byte) As Boolean
     
     Const FUNC_NAME As String = "ReadScanline_NoRLE"
@@ -880,8 +903,9 @@ Private Function ReadScanline_NoRLE(ByRef srcBytes() As Byte, ByRef idxSrc As Lo
     
 End Function
 
-'Default values come from the official spec (https://radsite.lbl.gov/radiance/refer/filefmts.pdf):
-' 0.640 0.330 0.290 0.600 0.150 0.060 0.333 0.333
+'Default values come from the official spec (https://radsite.lbl.gov/radiance/refer/filefmts.pdf).
+' The use of E illuminant (instead of say, D65 ) probably stems from Radiance's history as 3D modeling software,
+' vs a capture device (like a camera).
 Private Sub ResetHeaderPrimaries()
     With m_Header
         .rh_Primaries(0) = 0.64
@@ -895,8 +919,8 @@ Private Sub ResetHeaderPrimaries()
     End With
 End Sub
 
-'Export the target pdImage's pixel data to an HDR-format file.  There are currently no export options for this format
-' in PD's UI; however, some toggles may be available via developer settings (for testing only).
+'Export the target pdImage's pixel data to an HDR-format file.  PD does not display an export UI for this format;
+' however, some toggles may be available via compile-time settings (for testing purposes only).
 Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As String) As Boolean
 
     Const FUNC_NAME As String = "SaveHDR_ToFile"
@@ -911,42 +935,43 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     srcImage.GetCompositedImage compositeDIB, True
     compositeDIB.CompositeBackgroundColor 255, 255, 255
     
-    'Open a stream on the target file
+    'Open a stream (memory-mapped) on the target file
     Set m_Stream = New pdStream
     If (Not m_Stream.StartStream(PD_SM_FileMemoryMapped, PD_SA_ReadWrite, dstFile, compositeDIB.GetDIBWidth * compositeDIB.GetDIBHeight * 2, 0, OptimizeSequentialAccess)) Then
         InternalError FUNC_NAME, "couldn't start file stream: " & dstFile
         Exit Function
     End If
     
-    'Initialize a progress bar
+    'HDR export is very well-optimized so this is gonna be quick, but let's initialize a progress bar anyway.
     Dim progBarCheck As Long
     ProgressBars.SetProgBarMax compositeDIB.GetDIBHeight()
     progBarCheck = ProgressBars.FindBestProgBarValue()
     
-    'Radiance headers are plain-text, which makes the first part of export extremely easy.
+    'Radiance headers are plain-text, which simplifies the first chunk of export work.
     Dim cString As pdString
     Set cString = New pdString
     
-    'Magic number
+    'Start with a magic number
     cString.Append "#?RADIANCE"
     cString.AppendLineBreakLf
     
-    'Software (so users know who to blame when export didn't work, ha)
+    'Software comes next (so users know who to blame when export didn't work, ha)
     cString.Append "SOFTWARE=" & Updates.GetPhotoDemonNameAndVersion()
     cString.AppendLineBreakLf
     
-    'PD uses standard exposure values to improve compatibility
+    'PD uses the standard exposure value to improve compatibility.  (Specifically, importers can ignore
+    ' this value and they'll still obtain a correct image.)
     cString.Append "EXPOSURE=1.0"
     cString.AppendLineBreakLf
     
-    'Only RGBE export is used (XYZE support in decoders is rare)
+    'Only RGBE export is used (I have the code to export in XYZE, but XYZE support in decoders is rare)
     cString.Append "FORMAT=32-bit_rle_rgbe"
     cString.AppendLineBreakLf
     
     'A null-line marks the end of the header
     cString.AppendLineBreakLf
     
-    'One single line follows, containing image orientation and dimensions
+    'One single line of text follows, containing image orientation and dimensions
     cString.Append "-Y " & compositeDIB.GetDIBHeight() & " +X " & compositeDIB.GetDIBWidth()
     cString.AppendLineBreakLf
     
@@ -961,7 +986,11 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     srcWidthScanline = srcWidth * 4
     srcHeight = compositeDIB.GetDIBHeight()
     
-    'Fast ubyte > float conversion, with 2.2 gamma pre-calculated
+    'Fast ubyte > float conversion, with 2.2 gamma pre-calculated.
+    ' (Note: an sRGB gamma ramp would technically be more accurate here given that we're coming from sRGB,
+    '  but in my testing, other HDR loaders *always* assume 2.2 gamma and apply it irreversibly at load,
+    '  regardless of the target color space you specify.  Thus this conversion is most likely to produce
+    '  expected behavior in other software.)
     Dim btof(0 To 255) As Single
     For x = 0 To 255
         btof(x) = (CSng(x) / 255!) ^ 2.2!
@@ -970,18 +999,18 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     'Floating-point HDR values need to be decomposed into a shared power-of-two exponent
     ' (used by all three color components) and a per-color 8-byte mantissa.
     ' VB lacks the necessary low-level calls to do these intrinsically, so we'll need to calculate
-    ' them manually.  Because we are only ever exporting from 8-bit sources, we can precalculate
-    ' LUTs for various values and *hugely* improve export performance.
+    ' them manually.  Because we are (currently) only ever exporting from 8-bit sources, we can
+    ' precalculate LUTs for various values and *hugely* improve export performance.
     Dim exponent As Long
     Dim lutExponent(0 To 255) As Byte    '(technically -128 to 127, but VB lacks signed chars)
     Dim lutMantissa(0 To 255) As Single
     
     'These LUTs can skip entry 0 as it causes a DBZ error.  (0 also represents pure black -
-    ' because the LUT is indexed on the MAX channel value for each pixel - and index 0 will never
-    ' trigger on the inner loop because we explicitly branch on that state.)
+    ' because the LUT is indexed on the MAX channel value for each pixel - and index 0 will
+    ' never trigger on the inner loop because we explicitly branch on that state.)
     For x = 1 To 255
         
-        ' In C, for a base-2 calculation this is as simple as calling std::frexp.
+        'In C, for a base-2 calculation this is as simple as calling std::frexp.
         ' In VB6, we don't have frexp so we need to manually calculate it (sigh).
         Const LOG_2 As Double = 0.693147180559945
         exponent = Int(Log(btof(x)) / LOG_2) + 1
@@ -998,17 +1027,25 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
     ' floating-point representation, where the mantissa of each pixel channel is stored, followed by a
     ' shared power-of-2 exponent for those 3 mantissas.
     
-    'First, we'll translate the current byte line into the required floating-point representation
+    'First, we'll translate the current BGRA line into the required RGB floating-point representation
     Dim dstBytes() As Byte
     ReDim dstBytes(0 To srcWidth * 4 - 1) As Byte
     
-    'TODO: additional storage structures for RLE
+    'RLE compression requires additional buffers for temp storage
+    Dim dstBytesPlanar() As Byte
+    ReDim dstBytesPlanar(0 To srcWidth * 4 - 1) As Byte
+    
+    Dim dstBytesRLE() As Byte
+    ReDim dstBytesRLE(0 To srcWidth * 6 - 1) As Byte    'Worst-case scenario is 1 extra byte for every 127 bytes in,
+                                                        ' so this sizing is way beyond even the worst-case scenario.
     
     'Because HDR images tend to be large, we can greatly improve performance by batching scanline writes
     ' before sending them out to file.  As such, we're going to use a temporary in-memory stream to hold
     ' our results, and then we'll flush those results out to file every [n] lines.  This achieves a nice
-    ' balance between perf and memory usage.
-    Const NUM_LINES_TO_BUFFER As Long = 128
+    ' balance between perf and memory usage, particularly when writing to external storage.
+    '
+    '(This value must always be of the form (2^n)-1 because it's &&'d and compared to 0 on the inner loop)
+    Const NUM_LINES_TO_BUFFER As Long = 127
     
     Dim bufStream As pdStream
     Set bufStream = New pdStream
@@ -1017,7 +1054,11 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         Exit Function
     End If
     
-    'HDR data is handled one scanline at a time
+    'RLE encoding is limited to images with widths on the range [2, 32767]
+    Dim useRLE As Boolean
+    useRLE = (srcWidth >= 2) And (srcWidth <= 32767)
+    
+    'HDR data is encoded one scanline at a time (each scanline starts with a mandatory 4-byte header)
     For y = 0 To srcHeight - 1
         
         'Point an array at the next scanline of source pixels
@@ -1027,12 +1068,12 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         'Iterate pixels, converting as we go
         For x = 0 To srcWidth - 1
             
-            'BGRA data means each pixel occupies four neighboring bytes
+            'BGRA data means each source pixel occupies four neighboring bytes
             Dim xOffset As Long
             xOffset = x * 4
             
             'Find the maximum channel for this pixel; we'll use its nearest power-of-two value
-            ' as the standard for all channels (in this pixel).
+            ' as the exponent for all channels in this pixel.
             Dim b As Long, g As Long, r As Long, bMax As Long
             b = srcPixels(xOffset)
             g = srcPixels(xOffset + 1)
@@ -1073,17 +1114,192 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         compositeDIB.UnwrapArrayFromDIB srcPixels
         
         'We now need to RLE-encode this line before dumping it to file.
-        Const USE_RLE_ENCODING As Boolean = False
-        If USE_RLE_ENCODING Then
-            'TODO!
+        ' (Conversely, the other branch of this statement dumps data in raw, uncompressed form.)
+        If useRLE Then
+            
+            'Before doing *anything* with this scanline, we first need to convert it from
+            ' interleaved (RGBRGBRGB...) to planar (RRRGGGBBB...)
+            For x = 0 To srcWidth - 1
+                xOffset = x * 4
+                dstBytesPlanar(x) = dstBytes(xOffset)
+                dstBytesPlanar(srcWidth + x) = dstBytes(xOffset + 1)
+                dstBytesPlanar(srcWidth * 2 + x) = dstBytes(xOffset + 2)
+                dstBytesPlanar(srcWidth * 3 + x) = dstBytes(xOffset + 3)
+            Next x
+            
+            'Each scanline has to start with a specific 4-byte marker.  These magic numbers come from the spec.
+            Dim idxDst As Long: idxDst = 0
+            dstBytesRLE(0) = 2
+            dstBytesRLE(1) = 2
+            
+            'Width of the image, encoded in two bytes (msb first)
+            dstBytesRLE(2) = srcWidth \ 256
+            dstBytesRLE(3) = srcWidth Mod 256
+            
+            'Actual RLE contents start at offset 4 (byte 5)
+            idxDst = 4
+            
+            'RLE is pretty simple from here on out.  There's a one-byte preface; if >= 128 it indicates
+            ' an [n-128] length run of the next byte.  If < 128 it indicates a copy of the next [n] bytes.
+            ' (Yes, worthless lengths of 0 are allowed by the spec, and do appear in real-world images.)
+            Dim idxSrc As Long: idxSrc = 0
+            
+            '(Also, normally, you'd need to provide special coverage here for 1-pixel images, but we've
+            ' already checked for images with width < 2 and branched above.)
+            
+            'Run and literal lengths are 7-bits long and again, 0 is a valid value (pointless, but valid),
+            ' so we can only encode runs/literals up to 127.  The extra high bit distinguishes run vs literal.
+            Const MAXIMUM_RUN_LENGTH As Long = 127
+            Const MAXIMUM_LITERAL_LENGTH As Long = 127
+            
+            Dim curRunLength As Long: curRunLength = 0
+            Dim targetByte As Byte
+            
+            'We now need to compress each channel separately.
+            ' (Runs cannot extend between channel boundaries, even though flag chunks only appear
+            ' at the start of each *scanline*, NOT each *channel* - I tested this and while it compresses better,
+            ' it breaks a number of 3rd-party decoders, incluing Photoshop.)
+            Dim channelOffset As Long: channelOffset = 0
+            
+            Dim idxChannel As Long
+            For idxChannel = 0 To 3
+                
+                idxSrc = 0
+                
+                'Iterate source pixels until we reach end-of-line
+                Do
+                    
+                    'Previous iterations, if any, will have advanced the source pointer to a new byte, one that does
+                    ' not belong to the previous segment (repeats *or* literals).  Our job is to analyze this byte
+                    ' and its immediate neighbor to determine if we should start a new repeat run or literal run.
+                    
+                    'Start with the special case of "only one byte left in the stream".  This will only occur if
+                    ' we just ended a repeat run, and the last byte in the line is either...
+                    ' 1) another repeat, but the previous run hit the maximum repeat length, or...
+                    ' 2) a unique value that requires its own segment.
+                    '
+                    'To avoid slow EOF checks in the inner loop, we want to cover this as a special case
+                    ' (so the branch predictor can predictably ignore it).
+                    If (idxSrc = srcWidth - 1) Then
+                    
+                        'Write out the final byte as a 1-byte literal
+                        dstBytesRLE(idxDst) = 1
+                        dstBytesRLE(idxDst + 1) = dstBytesPlanar(channelOffset + idxSrc)
+                        idxDst = idxDst + 2
+                        idxSrc = idxSrc + 1
+                        
+                    'We have room to check neighboring pixels for repeats, without worrying about buffer overflow.
+                    Else
+                        
+                        'Compare this byte to its immediate neighbor.  If they match, start a new *repeat* run.
+                        targetByte = dstBytesPlanar(channelOffset + idxSrc)
+                        If (targetByte = dstBytesPlanar(channelOffset + idxSrc + 1)) Then
+                            
+                            'We already know that this byte and its neighbor match, so start the count at 2.
+                            curRunLength = 2
+                            
+                            'Make sure we don't run past the end of the channel.
+                            Dim maxRunLength As Long
+                            If (srcWidth - idxSrc < MAXIMUM_RUN_LENGTH) Then maxRunLength = srcWidth - idxSrc Else maxRunLength = MAXIMUM_RUN_LENGTH
+                            
+                            'Count the number of repeats.
+                            Do While (curRunLength < maxRunLength)
+                                If (dstBytesPlanar(channelOffset + idxSrc + curRunLength) = targetByte) Then
+                                    curRunLength = curRunLength + 1
+                                Else
+                                    Exit Do
+                                End If
+                            Loop
+                            
+                            'curRunLength equals the actual size of the run.
+                            ' Encode it in the destination and advance both pointers (src and dst) to match.
+                            dstBytesRLE(idxDst) = 128 + curRunLength
+                            dstBytesRLE(idxDst + 1) = targetByte
+                            idxDst = idxDst + 2
+                            idxSrc = idxSrc + curRunLength
+                        
+                        'This byte and its neighbor do *not* match.  Start a new literal run.
+                        Else
+                            
+                            'We already know the next two bytes do *not* match, so start the count at 2.
+                            curRunLength = 2
+                            
+                            'Make sure we don't run past the end of the channel
+                            If (srcWidth - idxSrc < MAXIMUM_LITERAL_LENGTH) Then maxRunLength = srcWidth - idxSrc Else maxRunLength = MAXIMUM_LITERAL_LENGTH
+                            
+                            'Count the number of non-repeats that follow these two non-repeating bytes
+                            Do While (curRunLength < maxRunLength)
+                                
+                                'The next byte is also novel
+                                If (dstBytesPlanar(channelOffset + idxSrc + curRunLength - 1) <> dstBytesPlanar(channelOffset + idxSrc + curRunLength)) Then
+                                    curRunLength = curRunLength + 1
+                                
+                                'The next two bytes are identical, which raises the question:
+                                ' should we start a new RLE packet, or simply continue this stretch of literals?
+                                Else
+                                    
+                                    'See if this new repeat run is at least three bytes long.  If it isn't, we usually
+                                    ' *improve* compression by keeping those two matching bytes inside this literal
+                                    ' run, because...
+                                    ' 1) we've already eaten the "cost" of the flag byte for this run, and...
+                                    ' 2) since byte 3 is novel and would just start a new literal run, it would
+                                    '    incur a new flag byte cost - which we can avoid by just keeping the current
+                                    '    run intact!
+                                    '
+                                    ' (We can only do this check if there's space remaining in the channel, however.)
+                                    If (curRunLength + 1 < maxRunLength) Then
+                                        
+                                        If (dstBytesPlanar(channelOffset + idxSrc + curRunLength) = dstBytesPlanar(channelOffset + idxSrc + curRunLength + 1)) Then
+                                            
+                                            'Byte three *does* match, so we should use an RLE packet to encode it.
+                                            Exit Do
+                                        
+                                        'These two bytes are immediately followed by a different byte, so leave them
+                                        ' inside the current literal run.
+                                        Else
+                                            curRunLength = curRunLength + 1
+                                        End If
+                                    
+                                    'We're already at maximum length for this run, so we couldn't extend it even if
+                                    ' we wanted to.
+                                    Else
+                                        Exit Do
+                                    End If
+                                    
+                                End If
+                                
+                            Loop
+                            
+                            'curRunLength now represents the size of this run of non-repeating characters.
+                            ' Encode it in the destination and advance all pointers to match.
+                            dstBytesRLE(idxDst) = curRunLength
+                            CopyMemoryStrict VarPtr(dstBytesRLE(idxDst + 1)), VarPtr(dstBytesPlanar(channelOffset + idxSrc)), curRunLength
+                            idxDst = idxDst + curRunLength + 1  'The +1 is for the flag byte (marking run length)
+                            idxSrc = idxSrc + curRunLength
+                            
+                        End If
+                    
+                    End If
+                    
+                Loop While (idxSrc < srcWidth)
+                
+                'Offset the channel offset into the source by (srcWidth) bytes
+                channelOffset = channelOffset + srcWidth
+                
+            Next idxChannel
+            
+            'Dump the RLE-compressed bytes into the buffer stream
+            bufStream.WriteBytesFromPointer VarPtr(dstBytesRLE(0)), idxDst
+        
+        'This branch writes uncompressed data.  This does produce a valid HDR file but the file will also be huge.
         Else
             
-            'Dump these bytes as-is into the buffer stream
+            'Dump the whole line as-is into the buffer stream
             bufStream.WriteBytesFromPointer VarPtr(dstBytes(0)), srcWidthScanline
             
         End If
         
-        'Periodically dump the memory buffer out to file, resetting the pointer as necessary.
+        'Periodically dump the memory buffer out to file, resetting the buffer's stream pointer as necessary.
         If (y And NUM_LINES_TO_BUFFER = 0) Then
             bufStream.SetPosition 0, FILE_BEGIN
             m_Stream.WriteBytesFromPointer bufStream.ReadBytes_PointerOnly(bufStream.GetStreamSize()), bufStream.GetStreamSize()
@@ -1102,10 +1318,11 @@ Friend Function SaveHDR_ToFile(ByRef srcImage As pdImage, ByRef dstFile As Strin
         Set bufStream = Nothing
     End If
     
-    '*Don't* free the progress bar here.  (Freeing is left to the caller; this prevents flicker.)
+    '*Don't* free the progress bar here.  (Freeing is left to the caller; this prevents flicker if additional
+    ' export steps occur, like copying the file over an already-named instance.)
     'ProgressBars.ReleaseProgressBar
     
-    'No trailing bytes are required!  Close the stream and exit.
+    'No trailing bytes are required after pixel data!  Close the stream and exit.
     m_Stream.StopStream True
     SaveHDR_ToFile = True
     
