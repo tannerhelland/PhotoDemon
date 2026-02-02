@@ -965,7 +965,7 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         tmpFilename = dstFile
     End If
     
-    'Direct OpenJPEG export is preferred
+    'OpenJPEG export is required for export
     If Plugin_OpenJPEG.IsOpenJPEGEnabled() Then
         
         'Open a pdStream object on the target file
@@ -981,35 +981,8 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
         End If
         
-    'As a last resort, we can use the old FreeImage-based JPEG-2000 pathway as a fallback
-    ' (which is more prone to crashes, but should work OK on ).
-    ElseIf ImageFormats.IsFreeImageEnabled Then
-        
-        'To save us some time, auto-convert any non-transparent images to 24-bpp now
-        If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
-        
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
-        
-        If (fi_DIB <> 0) Then
-            
-            Dim fi_Flags As Long: fi_Flags = 0&
-            fi_Flags = fi_Flags Or jp2Quality
-            
-            
-            ExportJP2 = FreeImage_Save(FIF_JP2, fi_DIB, tmpFilename, fi_Flags)
-            If (Not ExportJP2) Then
-                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
-                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-            End If
-            
-        Else
-            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
-            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-            ExportJP2 = False
-        End If
     Else
-        GenericLibraryMissingError CCP_FreeImage
+        GenericLibraryMissingError CCP_OpenJPEG
         ExportJP2 = False
     End If
     
@@ -1718,18 +1691,8 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
     ' and format coverage than either FreeImage or GDI+.
-    If (Not imgSavedOK) Then
-        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-        imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
-    End If
-    
-    'If other mechanisms failed, attempt a failsafe export using GDI+.  (Note that this pathway is *not* preferred,
-    ' as GDI+ forcibly writes problematic color data chunks and it performs no adaptive filtering so file sizes
-    ' are enormous, but hey - it's better than not writing a PNG at all, right?)
-    If (Not imgSavedOK) Then
-        PDDebug.LogAction "WARNING: pdPNG failed!"
-        imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
-    End If
+    PDDebug.LogAction "Using internal PNG encoder for this operation..."
+    imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
     
     'If the original file already existed, attempt to replace it now
     If imgSavedOK And Strings.StringsNotEqual(dstFile, tmpFilename) Then

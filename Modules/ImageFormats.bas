@@ -219,7 +219,8 @@ Public Sub GenerateInputFormats()
     AddInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", PDIF_BMP
     AddInputFormat "CBZ - Comic Book Archive", "*.cbz", PDIF_CBZ
     
-    If m_FreeImageEnabled Or Plugin_DDS.IsDirectXTexAvailable() Then
+    'FreeImage will only be used on 32-bit systems; its DDS support is atrocious but better than nothing
+    If Plugin_DDS.IsDirectXTexAvailable() Or m_FreeImageEnabled Then
         AddInputFormat "DDS - DirectDraw Surface", "*.dds", PDIF_DDS
     End If
         
@@ -251,8 +252,8 @@ Public Sub GenerateInputFormats()
     
     If m_FreeImageEnabled Then AddInputFormat "JNG - JPEG Network Graphics", "*.jng", PDIF_JNG
     
-    'OpenJPEG is preferred for JPEG-2000 handling, but we can fall back to FreeImage as a worst-case option
-    If PluginManager.IsPluginCurrentlyEnabled(CCP_OpenJPEG) Or m_FreeImageEnabled Then
+    'OpenJPEG is used for JPEG-2000 handling
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_OpenJPEG) Then
         AddInputFormat "JP2/J2K - JPEG 2000 File or Codestream", "*.jp2;*.j2k;*.jpt;*.j2c;*.jpc;*.jpx;*.jpf;*.jph", PDIF_JP2
     End If
     
@@ -291,7 +292,6 @@ Public Sub GenerateInputFormats()
         AddInputFormat "PIC/PICT - Macintosh Picture", "*.pict;*.pct;*.pic", PDIF_PICT
     End If
     
-    'We actually have three PNG decoders: an internal one (preferred), FreeImage, and GDI+
     AddInputFormat "PNG/APNG - Portable Network Graphic", "*.png;*.apng", PDIF_PNG
         
     If m_FreeImageEnabled Then
@@ -325,11 +325,8 @@ Public Sub GenerateInputFormats()
     'In v10, I wrote a custom WBMP parser
     AddInputFormat "WBMP - Wireless Bitmap", "*.wbmp;*.wbm;*.wap", PDIF_WBMP
         
-    'libwebp is our preferred handler for WebP files, but if it goes missing,
-    ' we can fall back to FreeImage (albeit with a greatly reduced feature-set).
-    ' Note also that this fallback is not expected or really tested - it only exists
-    ' as an "absolute last resort" for a borked PD install.
-    If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
+    'libwebp is required for WebP files
+    If Plugin_WebP.IsWebPEnabled() Then AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
     
     'I don't know if anyone still uses WMFs, but GDI+ provides support "for free"
     AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
@@ -340,7 +337,6 @@ Public Sub GenerateInputFormats()
     'In v9.0, I wrote a custom XCF parser for PD
     AddInputFormat "XCF - GIMP (GNU Image Manipulation Program)", "*.xcf;*.xcfgz;*.xcf.gz", PDIF_XCF
     
-    'FreeImage supports XPM files (and I may write my own decoder later)
     If m_FreeImageEnabled Then AddInputFormat "XPM - X Pixmap", "*.xpm", PDIF_XPM
     
     'Finish out the list with an obligatory "All files" option
@@ -424,12 +420,10 @@ Public Sub GenerateOutputFormats()
     AddOutputFormat "HDR - Radiance High Dynamic Range", "hdr", PDIF_HDR
     
     'HEIF support requires libheif and several additional support libraries
-    If Plugin_Heif.IsLibheifEnabled() Then
-        AddOutputFormat "HEIC/HEIF - High Efficiency Image File Format", "heic", PDIF_HEIF
-    End If
+    If Plugin_Heif.IsLibheifEnabled() Then AddOutputFormat "HEIC/HEIF - High Efficiency Image File Format", "heic", PDIF_HEIF
     
     AddOutputFormat "ICO - Windows Icon", "ico", PDIF_ICO
-    If m_FreeImageEnabled Then AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
+    If PluginManager.IsPluginCurrentlyEnabled(CCP_OpenJPEG) Then AddOutputFormat "JP2 - JPEG 2000", "jp2", PDIF_JP2
     AddOutputFormat "JPG - Joint Photographic Experts Group", "jpg", PDIF_JPEG
     
     'JPEG XL images require an external plugin, but PD can download it automatically (with permission)
@@ -448,7 +442,7 @@ Public Sub GenerateOutputFormats()
     If m_FreeImageEnabled Then AddOutputFormat "TGA - Truevision (TARGA)", "tga", PDIF_TARGA
     AddOutputFormat "TIFF - Tagged Image File Format", "tif", PDIF_TIFF
     AddOutputFormat "WBMP - Wireless Bitmap", "wbm", PDIF_WBMP
-    If (Plugin_WebP.IsWebPEnabled() Or m_FreeImageEnabled) Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
+    If Plugin_WebP.IsWebPEnabled() Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
     m_numOfOutputFormats = m_curFormatIndex
