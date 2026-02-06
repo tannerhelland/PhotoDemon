@@ -126,7 +126,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Effect > Animation > Add background/foreground
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 26/August/19
 'Last updated: 31/March/22
 'Last update: new options, including first/last frame selection, details on animation slider, and more

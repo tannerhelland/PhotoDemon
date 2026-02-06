@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2025.4 Alpha - Build 143.2</langversion>
+<langversion>2025.12 Alpha - Build 35.1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2824,15 +2824,6 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 </phrase>
 
 <phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Die spezifizierte Datei konnte nicht lokalisiert werden. Wenn diese sich auf einem Wechseldatenträger befunden hat, legen Sie die richtige Floppy-Disk, CD bitte wieder ein oder schließen Sie das portable Laufwerk wieder an. Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
-1) die Datei nicht gelöscht worden ist und ...
-2) der in PhotoDemon angebotene Dateiort korrekt ist.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -3135,7 +3126,7 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 <translation>Bug-Bericht-Instruktionen</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -4207,6 +4198,18 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<phrase>
+<original>Enter password</original>
+<translation>Passwort eingeben</translation>
+</phrase>
+
+<phrase>
+<original>This file is password-protected.  Please enter a password</original>
+<translation>Diese Datei ist passwortgeschützt. Bitte geben Sie ein Passwort ein.</translation>
+</phrase>
+
+<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -5544,11 +5547,6 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 </phrase>
 
 <phrase>
-<original>Third-party libraries</original>
-<translation>Drittanbieter-Bibliotheken</translation>
-</phrase>
-
-<phrase>
 <original>Developers</original>
 <translation>Developer</translation>
 </phrase>
@@ -5786,6 +5784,11 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 <phrase>
 <original>PhotoDemon website</original>
 <translation>PhotoDemon - Website</translation>
+</phrase>
+
+<phrase>
+<original>Third-party libraries</original>
+<translation>Drittanbieter-Bibliotheken</translation>
 </phrase>
 
 <phrase>
@@ -7930,11 +7933,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>Verfügbare Plug-ins</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>Ordner hinzufügen</translation>
 </phrase>
@@ -7999,7 +7997,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Nachdem Sie eine oder mehrere 8bf-Dateien heruntergeladen haben, verwenden Sie den Button "Einstellungen" (oberhalb), um PhotoDemon mitzuteilen, wo diese zu finden sind. PhotoDemon fügt sie dann zu Ihrer Effekte-Kollektion hinzu.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -14784,6 +14782,6 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- As of this build, PhotoDemon contains 5979 phrases. -->
 <!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12099 total words. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

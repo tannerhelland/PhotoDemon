@@ -1,7 +1,7 @@
 Attribute VB_Name = "UserPrefs"
 '***************************************************************************
 'PhotoDemon User Preferences Manager
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 06/October/25
 'Last update: perform additional validation when loading the user preferences file (count for matched tags),
@@ -784,7 +784,7 @@ Private Sub CreateNewPreferencesFile()
         .WriteBlankLine
     
         'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
-        .WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
+        .WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by app version " & Updates.GetPhotoDemonVersionCanonical()
         .WriteBlankLine
         
         'New in v8.0 are auto-constructed assets for various tools.  These are just folders of

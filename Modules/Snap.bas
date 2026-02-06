@@ -1,7 +1,7 @@
 Attribute VB_Name = "Snap"
 '***************************************************************************
 'Snap-to-target Handler
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 16/April/24
 'Last updated: 16/January/25
 'Last update: implement angle snapping for the move/size tool

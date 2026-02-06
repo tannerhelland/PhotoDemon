@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_Heif"
 '***************************************************************************
 'libheif Library Interface
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 16/July/24
 'Last updated: 30/May/25
 'Last update: fix filetype check potentially breaking on tiny (<128b) image files

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "String Stack" Class
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 05/February/15
 'Last updated: 06/January/24
 'Last update: minor hardening against actions like passing null objects

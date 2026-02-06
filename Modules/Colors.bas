@@ -1,7 +1,7 @@
 Attribute VB_Name = "Colors"
 '***************************************************************************
 'Miscellaneous Color Functions
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 28/February/19
 'Last update: add support for retrieving colors by SVG color name
@@ -692,6 +692,13 @@ Public Sub XYZtoLab(ByVal x As Double, ByVal y As Double, ByVal z As Double, ByR
     l = 116# * fXYZ(y) - 16#
     a = 500# * (fXYZ(x / 0.9505) - fXYZ(y))
     b = 200# * (fXYZ(y) - fXYZ(z / 1.089))
+End Sub
+
+'Matrix from http://brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+Public Sub XYZtosRGB_Float(ByVal x As Single, ByVal y As Single, ByVal z As Single, ByRef r As Single, ByRef g As Single, ByRef b As Single)
+    r = (3.2404542 * x + -1.5371385 * y + -0.4985314 * z)
+    g = (-0.969266 * x + 1.8760108 * y + 0.041556 * z)
+    b = (0.0556434 * x + -0.2040259 * y + 1.0572252 * z)
 End Sub
 
 Private Function fXYZ(ByVal t As Double) As Double

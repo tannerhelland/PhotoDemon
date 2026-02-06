@@ -1,7 +1,7 @@
 Attribute VB_Name = "Files"
 '***************************************************************************
 'Comprehensive wrapper for pdFSO (Unicode file and folder functions)
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 18/March/22
 'Last update: add additional pdFSO function wrapper(s)
@@ -361,6 +361,19 @@ End Function
 
 Public Function FileGetTimeAsDate(ByRef srcFile As String, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Date
     If InitializeFSO Then FileGetTimeAsDate = m_FSO.FileGetTimeAsDate(srcFile, typeOfTime)
+End Function
+
+'Retrieve the version number of an .exe or .dll file.
+' The passed "version index" correlates to 0 = Major, 1 = Minor, 2 = Build, 3 = Revision
+Public Function FileGetVersionAsLong(ByRef srcFile As String, ByVal versionIndex As Long, Optional ByVal getProductVersionInstead As Boolean = True) As Long
+    If InitializeFSO Then
+        If (versionIndex >= 0) And (versionIndex <= 3) Then
+            Dim lVersion(0 To 3) As Long
+            If m_FSO.FileGetVersion(srcFile, lVersion(0), lVersion(1), lVersion(2), lVersion(3), getProductVersionInstead) Then FileGetVersionAsLong = lVersion(versionIndex)
+        Else
+            PDDebug.LogAction "WARNING: Files.FileGetVersionAsLong was passed a bad version index: " & CStr(versionIndex)
+        End If
+    End If
 End Function
 
 Public Function FileLenW(ByRef srcPath As String) As Long

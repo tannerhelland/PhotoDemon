@@ -1,7 +1,7 @@
 Attribute VB_Name = "Actions"
 '***************************************************************************
 'Action Handler
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 07/October/21
 'Last updated: 19/August/22
 'Last update: build a rudimentary "action database" at run-time, which stores action names and corresponding
@@ -1260,9 +1260,6 @@ Private Function Launch_ByName_MenuTools(ByRef srcMenuName As String, Optional B
         Case "tools_options"
             ShowPDDialog vbModal, FormOptions
             
-        Case "tools_3rdpartylibs"
-            ShowPDDialog vbModal, FormPluginManager
-            
         Case "tools_developers"
             Case "tools_viewdebuglog"
                 If (UserPrefs.GenerateDebugLogs() And (LenB(PDDebug.GetDebugLogFilename()) <> 0)) Then Web.OpenURL PDDebug.GetDebugLogFilename()
@@ -1508,6 +1505,9 @@ Private Function Launch_ByName_MenuHelp(ByRef srcMenuName As String, Optional By
             
         Case "help_website"
             Web.OpenURL "https://photodemon.org"
+        
+        Case "help_3rdpartylibs"
+            ShowPDDialog vbModal, FormPluginManager
             
         Case "help_about"
             ShowPDDialog vbModal, FormAbout
@@ -2026,7 +2026,6 @@ Public Sub BuildActionDatabase()
     'AddAction "tools_recentmacros"
     AddAction "tools_screenrecord", vbNullString
     AddAction "tools_options", vbNullString
-    AddAction "tools_3rdpartylibs", vbNullString
     'AddAction "tools_developers"
     'AddAction "tools_themeeditor", vbNullString
     'AddAction "tools_themepackage"
@@ -2087,6 +2086,7 @@ Public Sub BuildActionDatabase()
     AddAction "help_license", vbNullString
     AddAction "help_sourcecode", vbNullString
     AddAction "help_website", vbNullString
+    AddAction "help_3rdpartylibs", vbNullString
     AddAction "help_about", vbNullString
     
     'Tool and brush actions follow.  These typically do *not* have corresponding processor actions,

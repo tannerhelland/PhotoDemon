@@ -1,7 +1,7 @@
 Attribute VB_Name = "PDMain"
 '***************************************************************************
 'PhotoDemon Startup Module
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 03/March/14
 'Last updated: 16/September/20
 'Last update: PD can now forward its command-line to an existing PD session then silently terminate,
@@ -262,21 +262,32 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
                 Dim ourCmdLine As pdStringStack
                 If OS.CommandW(ourCmdLine, True) Then
                     
-                    'Write out a dummy value (for full packet size)
+                    'Write out a dummy value (for full packet size; we'll return and fill this value
+                    ' with the actual packet length, once we've written the whole thing)
                     cArgStack.WriteLong 0&
                     
-                    '...as well as the total number of arguments
+                    'Next, write the total number of embedded arguments
                     cArgStack.WriteLong ourCmdLine.GetNumOfStrings()
                     
                     'Extract the stack into a list of arguments and commands
-                    Dim i As Long
-                    For i = 0 To ourCmdLine.GetNumOfStrings - 1
-                        cArgStack.WriteLong LenB(ourCmdLine.GetString(i))
-                        cArgStack.WriteString_UTF8 ourCmdLine.GetString(i), False
+                    Dim i As Long, sToWrite As String
+                    For i = 0 To ourCmdLine.GetNumOfStrings() - 1
+                        
+                        'Pull the next command-line argument and strip any leading or trailing nulls.
+                        ' (Trailing null-char behavior appears to be different when dragging onto an .exe vs
+                        '  vs launching from a batch file - see https://github.com/tannerhelland/PhotoDemon/issues/729.
+                        '  It's also entirely possible this behavior differs in pre-Win-10 versions, but forcibly
+                        '  stripping *any* preceding or trailing nulls should cover all possible variations.)
+                        sToWrite = Strings.TrimNull(ourCmdLine.GetString(i))
+                        
+                        'Write the trimmed string out to file (and IMPORTANTLY, auto-preface each string
+                        ' with its length, in bytes, when converted to UTF-8).
+                        cArgStack.WriteString_UTF8 sToWrite, True
+                        
                     Next i
                     
                     'Retreat to the start of the stream and write out the total stream size
-                    cArgStack.SetPosition 0
+                    cArgStack.SetPosition 0, FILE_BEGIN
                     cArgStack.WriteLong cArgStack.GetStreamSize() - 4
                     
                 Else
@@ -686,12 +697,14 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Prep developer menus"
     LogStartupEvent "Preparing program menus..."
     
-    'In debug modes, certain developer and experimental menus will be enabled.
+    'In alpha-build or IDE modes, Tools > Options > Developer is exposed.
+    ' (Two menus are toggled for this - the first is just a separator bar.)
+    'TODO: when we switch to owner-drawn menus, there is no mechanism for run-time visibility changes.
+    ' These menus will simply need to *not* be created at all.
     Dim debugMenuVisibility As Boolean
-    debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
-    FormMain.MnuTest.Visible = debugMenuVisibility
+    debugMenuVisibility = ((PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)) Or (Not OS.IsProgramCompiled)
+    FormMain.MnuTool(13).Visible = debugMenuVisibility
     FormMain.MnuTool(14).Visible = debugMenuVisibility
-    FormMain.MnuTool(15).Visible = debugMenuVisibility
     
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     perfCheck.MarkEvent "Prep MRU menus"

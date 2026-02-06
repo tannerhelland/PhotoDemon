@@ -1,8 +1,8 @@
 ## Download
 
-| Stable (2025.4) | Nightly | Source code |
+| Stable (2025.12) | Nightly | Source code |
 | :----------: | :-------------: | :---------: |
-| [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2025.4/PhotoDemon-2025.4.zip) | [Download ZIP (20 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (24 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
+| [Download ZIP (22 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/v2025.12/PhotoDemon-2025.12.zip) | [Download ZIP (22 MB)](https://github.com/tannerhelland/PhotoDemon/releases/download/PhotoDemon-nightly/PhotoDemon-nightly.zip) | [Download ZIP (26 MB)](https://github.com/tannerhelland/PhotoDemon/archive/main.zip) |
 
 ## About PhotoDemon
 
@@ -18,7 +18,7 @@ PhotoDemon is a portable photo editor.  It is 100% free and [100% open-source](h
 
 ![Screenshot](https://photodemon.org/media/images/photodemon_9.0.png)
 
-PhotoDemon provides a comprehensive photo editor in an 20 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
+PhotoDemon provides a comprehensive photo editor in a 22 MB download.  It runs on any Windows PC (XP through Win 11) and it *does not* require installation.  You can run it from a USB stick, SD card, or portable drive.
 
 PhotoDemon is open-source and available under a permissive [BSD license](#licensing).  Contributors have translated the program into more than a dozen languages.
 

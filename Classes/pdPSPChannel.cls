@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PSP (PaintShop Pro) Block Container
-'Copyright 2020-2025 by Tanner Helland
+'Copyright 2020-2026 by Tanner Helland
 'Created: 31/December/20
 'Last updated: 05/January/21
 'Last update: add provisional support for HDR images (actual 48-bpp PSP files needed for testing!)

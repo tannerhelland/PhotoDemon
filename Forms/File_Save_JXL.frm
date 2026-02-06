@@ -190,7 +190,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG XL Export Dialog
-'Copyright 2022-2025 by Tanner Helland
+'Copyright 2022-2026 by Tanner Helland
 'Created: 08/November/22
 'Last updated: 10/October/23
 'Last update: rework dialog to reflect new external process approach to jxl handling

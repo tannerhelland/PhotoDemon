@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Comic Book Image Effect
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 02/Feb/13 (ish... I didn't write it down, alas)
 'Last updated: 29/June/20
 'Last update: switch to real-time bilateral filter for huge performance improvements

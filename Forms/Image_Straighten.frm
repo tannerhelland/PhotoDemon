@@ -74,7 +74,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Straightening Interface
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 11/May/14
 'Last updated: 29/April/20
 'Last update: allow user to toggle preview grid; use pd2D for grid rendering

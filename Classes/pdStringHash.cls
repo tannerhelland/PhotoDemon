@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fast String-based collection, using hash-table + separate chaining (linked-list) for collisions
-'Copyright 2022-2025 by Tanner Helland
+'Copyright 2022-2026 by Tanner Helland
 'Created: 07/March/22
 'Last updated: 13/July/22
 'Last update: remove profiling code; this class is plenty fast now!

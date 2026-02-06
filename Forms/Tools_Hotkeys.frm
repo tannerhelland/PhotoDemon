@@ -2,12 +2,12 @@ VERSION 5.00
 Begin VB.Form FormHotkeys 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   BorderStyle     =   5  'Sizable ToolWindow
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Keyboard shortcuts"
    ClientHeight    =   7695
-   ClientLeft      =   120
-   ClientTop       =   465
-   ClientWidth     =   11760
+   ClientLeft      =   45
+   ClientTop       =   390
+   ClientWidth     =   11775
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -24,7 +24,7 @@ Begin VB.Form FormHotkeys
    MinButton       =   0   'False
    ScaleHeight     =   513
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   784
+   ScaleWidth      =   785
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButton cmdAll 
       Height          =   615
@@ -111,8 +111,8 @@ Begin VB.Form FormHotkeys
       Left            =   0
       TabIndex        =   0
       Top             =   6960
-      Width           =   11760
-      _ExtentX        =   20743
+      Width           =   11775
+      _ExtentX        =   20770
       _ExtentY        =   1296
       AutoloadLastPreset=   -1  'True
       DontResetAutomatically=   -1  'True
@@ -227,7 +227,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Customizable hotkeys dialog
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 09/September/24
 'Last updated: 05/November/24
 'Last update: final touches!  Almost ready to launch this feature!
@@ -1018,7 +1018,7 @@ Private Sub Form_Load()
     cmdAll(3).AssignImage "file_saveas", , buttonImgSize, buttonImgSize
     
     'Apply custom themes
-    Interface.ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me, True, False
     
     '*Now* allow the treeview to render itself
     m_RenderingOK = True

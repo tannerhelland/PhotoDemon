@@ -91,7 +91,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tools > Options > Fonts panel
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 04/April/25
 'Last updated: 07/April/25
 'Last update: UI for users to add/remove custom font folders

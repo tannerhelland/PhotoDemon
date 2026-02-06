@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_DDS"
 '***************************************************************************
 'DirectXTex (DDS) Interface
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 28/April/25
 'Last updated: 22/May/25
 'Last update: continued workarounds for lack of output file parameters in texconv
@@ -238,9 +238,6 @@ Public Function ConvertDDStoStandardImage(ByRef srcFile As String, ByRef dstFile
                 PluginManager.NotifyPluginError CCP_DirectXTex, outputString, Files.FileGetName(srcFile, False)
                 
             End If
-            
-            'You can also report errors directly to the user here:
-            'If (Macros.GetMacroStatus <> MacroBATCH) And allowErrorPopups Then PluginManager.GenericLibraryError CCP_DirectXTex, cShell.GetStdErrDataAsString()
             
         End If
         

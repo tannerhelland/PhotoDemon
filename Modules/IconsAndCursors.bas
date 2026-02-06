@@ -1,7 +1,7 @@
 Attribute VB_Name = "IconsAndCursors"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 24/June/12
 'Last updated: 14/December/21
 'Last update: fix cursor hotspot placement bug when creating cursors from resources
@@ -57,7 +57,6 @@ Private Const SM_CXCURSOR As Long = 13
 Private Const SM_CYCURSOR As Long = 14
 Private Const SM_CXSMICON As Long = 49
 Private Const SM_CYSMICON As Long = 50
-Private Const LR_SHARED As Long = &H8000&
 Private Const IMAGE_ICON As Long = 1
 Private Const WM_SETICON As Long = &H80
 Private Const ICON_SMALL As Long = 0

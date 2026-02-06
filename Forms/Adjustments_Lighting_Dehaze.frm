@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Dehazing Tool
-'Copyright 2021-2025 by Tanner Helland
+'Copyright 2021-2026 by Tanner Helland
 'Created: 08/September/21
 'Last updated: 09/September/21
 'Last update: wrap up initial build

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageImporter"
 '***************************************************************************
 'Low-level image import interfaces
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 12/November/25
 'Last update: clean up final work on JPEG-2000 via OpenJPEG import path
@@ -24,6 +24,7 @@ Option Explicit
 ' image format, PLEASE FILE AN ISSUE ON GITHUB.
 Private Const USE_INTERNAL_PARSER_CBZ As Boolean = True
 Private Const USE_INTERNAL_PARSER_FITS As Boolean = True
+Private Const USE_INTERNAL_PARSER_HDR As Boolean = True
 Private Const USE_INTERNAL_PARSER_HGT As Boolean = True
 Private Const USE_INTERNAL_PARSER_ICO As Boolean = True
 Private Const USE_INTERNAL_PARSER_MBM As Boolean = True
@@ -1113,6 +1114,15 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         If CascadeLoadGenericImage Then
             decoderUsed = id_FITSParser
             dstImage.SetOriginalFileFormat PDIF_FITS
+		End If
+	End If
+	
+    'Seeing a pattern?  FreeImage's HDR coverage is also problematic.  In v2026.1+ I wrote my own HDR parser.
+    If (Not CascadeLoadGenericImage) And USE_INTERNAL_PARSER_HDR Then
+        CascadeLoadGenericImage = LoadHDR(srcFile, dstImage, dstDIB)
+        If CascadeLoadGenericImage Then
+            decoderUsed = id_HDRParser
+            dstImage.SetOriginalFileFormat PDIF_HDR
         End If
     End If
     
@@ -1386,13 +1396,9 @@ Public Function LoadDDS(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
             ' in a format we can directly process (currently PNG).
             Dim tmpFile As String
             LoadDDS = Plugin_DDS.ConvertDDStoStandardImage(srcFile, tmpFile, allowErrorPopups)
-            'Debug.Print "DDS load result: " & LoadDDS
-            'Debug.Print "Tmp PNG file: " & tmpFile
-            'Debug.Print Files.FileExists(tmpFile)
             
             'If that worked, load the intermediary image (PNG format) using the relevant decoder
             If LoadDDS Then LoadDDS = LoadPNGOurselves(tmpFile, dstImage, dstDIB, imageHasMultiplePages, numOfPages, True)
-            'Debug.Print "PNG load result: " & LoadDDS
             
             'Regardless of outcome, kill the temp file
             Files.FileDeleteIfExists tmpFile
@@ -1443,6 +1449,39 @@ Private Function LoadFITS(ByRef srcFile As String, ByRef dstImage As pdImage, By
         'FITS files contain raw data (not even *color* representations, technically), so we don't need to color-manage them
         dstDIB.SetColorManagementState cms_ProfileConverted
         
+	End If
+	
+End Function
+
+Private Function LoadHDR(ByRef srcFile As String, ByRef dstImage As pdImage, ByRef dstDIB As pdDIB) As Boolean
+
+    LoadHDR = False
+    
+    'pdHDR handles all the dirty work for us
+    Dim cReader As pdHDR
+    Set cReader = New pdHDR
+    
+    'Validate and (potentially) load the file in one fell swoop
+    LoadHDR = cReader.LoadHDR_FromFile(srcFile, dstImage, dstDIB)
+    
+    'Perform some PD-specific object initialization before exiting
+    If LoadHDR Then
+
+        'Set format flags and reset internal image caches
+        dstImage.SetOriginalFileFormat PDIF_HDR
+        dstImage.NotifyImageChanged UNDO_Everything
+
+        'HDR files are always 96-bpp color (but we may "spruce them up a bit" during loading, for fun)
+        dstImage.SetOriginalColorDepth 24
+        dstImage.SetOriginalGrayscale False
+
+        'HDR files never contain alpha
+        dstImage.SetOriginalAlpha False
+
+        'HDR files contain their own embedded color-space data, which is always parsed and applied during
+        ' the mapping to 24-bpp RGB
+        dstDIB.SetColorManagementState cms_ProfileConverted
+
     End If
     
 End Function
@@ -1769,23 +1808,10 @@ Public Function LoadPDF(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     'If the user requests "preview only" mode, set the "noUI" mode to match
     If previewOnly Then noUI = True
     
-    'pdPDF handles all the dirty work for us
+    'pdPDF handles all the dirty work for us, including prompting the user for a password as necessary.
     Dim cPDF As pdPDF
     Set cPDF = New pdPDF
-    
-    'Validate the potential PDF file
-    Dim passwordRequired As Boolean
-    LoadPDF = cPDF.IsFilePDF(srcFile, passwordRequired, True)
-    
-    'If a password is required, ask for it now
-    Dim pdfPassword As String
-    If (LoadPDF And passwordRequired) Then
-        'TODO: retrieve password and attempt load again
-        'LoadPDF = cPDF.LoadPDFFromFile(srcFile, True, pdfPassword)
-    Else
-        pdfPassword = vbNullString
-        LoadPDF = cPDF.LoadPDFFromFile(srcFile, False, pdfPassword)
-    End If
+    LoadPDF = cPDF.LoadPDFFromFile(srcFile)
     
     'In the future, more complex validation could be performed here, but for now,
     ' let's just double-confirm that the PDF object is happy with the loaded PDF.

@@ -117,7 +117,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Detection Interface
-'Copyright 2000-2025 by Tanner Helland
+'Copyright 2000-2026 by Tanner Helland
 'Created: 1/11/02
 'Last updated: 30/July/17
 'Last update: performance improvements, migrate to XML params

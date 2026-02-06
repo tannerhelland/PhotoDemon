@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'File > Open Recent List Manager
-'Copyright 2005-2025 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2026 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
 'Last updated: 17/August/20
 'Last update: when adding a file to the Recent Files list, callers can now provide a bare DIB instead

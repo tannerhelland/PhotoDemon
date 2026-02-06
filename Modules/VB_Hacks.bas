@@ -1,7 +1,7 @@
 Attribute VB_Name = "VBHacks"
 '***************************************************************************
 'Misc VB6 Hacks
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 24/March/25
 'Last update: add "LargeAllocationIncoming()" function for compressing and/or suspending to disk
@@ -96,6 +96,8 @@ Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function LoadLibraryW Lib "kernel32" (ByVal lpLibFileName As Long) As Long
+Private Declare Function LoadLibraryExW Lib "kernel32" (ByVal lpLibFileName As Long, ByVal hFile As Long, ByVal dwFlags As Long) As Long
+
 Private Declare Function lstrlenW Lib "kernel32" (ByVal ptrToFirstChar As Long) As Long
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -135,6 +137,9 @@ Private m_PDIKRef As pdInputKeyboard
 
 Private m_BitFlags(0 To 31) As Long, m_BitFlagsReady As Boolean
 
+'Cached App.Major/Minor/Revision strings; populated upon first access via AppMajor_Fix() and related functions
+Private m_AppMajor As Long, m_AppMinor As Long, m_AppRevision As Long, m_AppVersionRetrieved As Boolean
+
 '"Wrap" an arbitrary VB array at some other arbitrary array.  The new array must *NOT* be initialized
 ' or its memory will leak.
 '
@@ -173,6 +178,33 @@ End Sub
 
 Public Sub Unalias2DArray_Integer(ByRef orig2DArray() As Integer, ByRef new2DArray() As Integer)
     PutMem4 VarPtrArray(new2DArray), 0&
+End Sub
+
+'In Dec 2025, I discovered that accessing the App.Major/Minor/Revision properties is enough to crash a VB6 app
+' if the source folder containing the .exe has surrogate pair Unicode chars in its name.  Use these functions
+' to bypass the App object entirely.
+Public Function AppMajor_Safe() As Long
+    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+    AppMajor_Safe = m_AppMajor
+End Function
+
+Public Function AppMinor_Safe() As Long
+    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+    AppMinor_Safe = m_AppMinor
+End Function
+
+Public Function AppRevision_Safe() As Long
+    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+    AppRevision_Safe = m_AppRevision
+End Function
+
+Private Sub AppVersionRetrieve()
+    Dim targetFile As String
+    targetFile = Files.AppPathW() & "\Pho" & "toD" & "em" & "on" & "." & "ex" & "e"
+    m_AppMajor = Files.FileGetVersionAsLong(targetFile, 0, True)
+    m_AppMinor = Files.FileGetVersionAsLong(targetFile, 1, True)
+    m_AppRevision = Files.FileGetVersionAsLong(targetFile, 3, True)
+    m_AppVersionRetrieved = True
 End Sub
 
 'Because we can't use the AddressOf operator inside a class module, timer classes will cheat and AddressOf this
@@ -494,6 +526,10 @@ End Function
 
 Public Function LoadLib(ByRef libPathAndName As String) As Long
     LoadLib = LoadLibraryW(StrPtr(libPathAndName))
+End Function
+
+Public Function LoadLibExW(ByRef libPathAndName As String, ByVal dwFlags As Long) As Long
+    LoadLibExW = LoadLibraryExW(StrPtr(libPathAndName), 0&, dwFlags)
 End Function
 
 Public Function SendMsgW(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long

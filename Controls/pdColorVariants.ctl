@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Color Variants" color selector
-'Copyright 2015-2025 by Tanner Helland
+'Copyright 2015-2026 by Tanner Helland
 'Created: 22/October/15
 'Last updated: 23/October/15
 'Last update: switch to a pure path-based system for rendering and hit-detection

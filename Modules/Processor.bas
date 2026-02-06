@@ -1,7 +1,7 @@
 Attribute VB_Name = "Processor"
 '***************************************************************************
 'Program Sub-Processor and Error Handler
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 22/January/24
 'Last update: new additions for the expanded File > Export menu
@@ -429,13 +429,6 @@ MainErrHandler:
         On Error GoTo 0
         addInfo = g_Language.TranslateMessage("There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.")
         Message "Out of memory.  Function canceled."
-        mType = vbExclamation Or vbOKOnly
-    
-    'File not found error
-    ElseIf (Err.Number = 53) Then
-        On Error GoTo 0
-        addInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & vbCrLf & "2) the file location provided to PhotoDemon is correct.")
-        Message "File not found"
         mType = vbExclamation Or vbOKOnly
         
     'Unknown error

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous functions related to UI
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 17/August/17
 'Last update: overhaul PDMsgBox to use an internal renderer

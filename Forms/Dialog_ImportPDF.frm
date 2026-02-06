@@ -234,7 +234,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PDF Import Dialog
-'Copyright 2024-2025 by Tanner Helland
+'Copyright 2024-2026 by Tanner Helland
 'Created: 29/February/24
 'Last updated: 13/July/24
 'Last update: fix crash on setting focus to invalid entries in the "page range" edit box

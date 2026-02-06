@@ -116,7 +116,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fragment Filter Dialog
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 01/August/17
 'Last updated: 01/August/17
 'Last update: complete rewrite using new, original algorithm.  (Performance increase is ~20x over the old method,

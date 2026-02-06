@@ -1,7 +1,7 @@
 Attribute VB_Name = "Palettes"
 '***************************************************************************
 'PhotoDemon's Central Palette Interface
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 12/January/17
 'Last updated: 08/March/22
 'Last update: use new pdHistogramHash class to greatly accelerate median cut palette generation
@@ -4255,7 +4255,7 @@ Public Function SortPaletteByPopularity_RGB(ByRef srcDIB As pdDIB, ByRef srcPale
     ' searching for contiguous matching colors.
     Dim lastColor As Long: lastColor = -1
     Dim lastAlpha As Long: lastAlpha = -1
-    Dim r As Long, g As Long, b As Long, a As Long
+    Dim r As Long, g As Long, b As Long
     
     Dim tmpQuad As RGBQuad, palIndex As Long, lastPalIndex As Long
     

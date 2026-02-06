@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_ByteArray"
 '***************************************************************************
 'Byte Array Filters Module
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 02/April/15
 'Last updated: 23/August/22
 'Last update: minor perf improvements to dilate/erode
@@ -284,7 +284,7 @@ Public Function VerticalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidt
     ' 0.5 for the current pixel count.
     Dim halfNumPixels As Long
     halfNumPixels = Int(numOfPixels \ 2)
-        
+    
     'This vertical blur algorithm is based on the principle of "not redoing work that's already been done."
     ' To that end, we store the accumulated blur total for each vertical line, and only update it when we
     ' move one row down.
@@ -640,15 +640,12 @@ Public Function ThresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     'If auto-calculate was specified, find the array's mean value now.
     If autoCalculateThreshold Then
     
-        Dim gHistogram() As Long
-        ReDim gHistogram(0 To 255) As Long
+        Dim gHistogram(0 To 255) As Long
         
         For x = initX To finalX
         For y = initY To finalY
-            
             curValue = srcArray(x, y)
             gHistogram(curValue) = gHistogram(curValue) + 1
-            
         Next y
         Next x
         
@@ -889,8 +886,7 @@ Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
     percentIgnore = percentIgnore / 100
     
     'Prepare a histogram array
-    Dim lCount() As Long
-    ReDim lCount(0 To 255) As Long
+    Dim lCount(0 To 255) As Long
     
     'Build an initial histogram
     For y = 0 To finalY
@@ -1012,8 +1008,7 @@ Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double
     numOfPixels = 0
             
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
-    Dim lValues() As Long
-    ReDim lValues(0 To 255) As Long
+    Dim lValues(0 To 255) As Long
     
     Dim cutoffTotal As Long
     Dim l As Long
@@ -1134,9 +1129,7 @@ Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_
     numOfPixels = 0
             
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
-    Dim lValues() As Long
-    ReDim lValues(0 To 255) As Long
-    
+    Dim lValues(0 To 255) As Long
     Dim startY As Long, stopY As Long, yStep As Long, i As Long
     
     Dim directionDown As Boolean
@@ -1248,8 +1241,7 @@ Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_P
     numOfPixels = 0
             
     'We use an optimized histogram technique for tracking pixel values
-    Dim lValues() As Long
-    ReDim lValues(0 To 255) As Long
+    Dim lValues(0 To 255) As Long
     Dim startY As Long, stopY As Long, yStep As Long, i As Long
     
     Dim directionDown As Boolean

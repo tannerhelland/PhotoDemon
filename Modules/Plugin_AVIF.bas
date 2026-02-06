@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_AVIF"
 '***************************************************************************
 'libavif Interface
-'Copyright 2021-2025 by Tanner Helland
+'Copyright 2021-2026 by Tanner Helland
 'Created: 13/July/21
 'Last updated: 11/March/25
 'Last update: update to the latest libavif (1.2.0)
@@ -151,9 +151,6 @@ Public Function ConvertAVIFtoStandardImage(ByRef srcFile As String, ByRef dstFil
             
             'Store any problems in the central plugin error tracker
             PluginManager.NotifyPluginError CCP_libavif, avifStdErr, Files.FileGetName(srcFile, False)
-            
-            'You can also report errors directly to the user here:
-            'If (Macros.GetMacroStatus <> MacroBATCH) And allowErrorPopups Then PluginManager.GenericLibraryError CCP_libavif, cShell.GetStdErrDataAsString()
             
         End If
         

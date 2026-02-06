@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image class
-'Copyright 2006-2025 by Tanner Helland
+'Copyright 2006-2026 by Tanner Helland
 'Created: sometime 2006
 'Last updated: 10/March/25
 'Last update: expose "suspend to disk" behavior to callers

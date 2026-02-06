@@ -94,7 +94,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Outline Effect Dialog
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 05/January/17
 'Last updated: 24/April/19
 'Last update: fix outline size in "preview" mode - it needs to be scaled by the preview's zoom

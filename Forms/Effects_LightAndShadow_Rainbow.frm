@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rainbow Effect dialog
-'Copyright 2003-2025 by Tanner Helland
+'Copyright 2003-2026 by Tanner Helland
 'Created: sometime 2003
 'Last updated: 01/August/17
 'Last update: performance improvements, migrate to XML params

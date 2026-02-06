@@ -219,7 +219,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PNG export dialog
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 29/October/21
 'Last update: remove "web-optimized PNG" panel; instead, we're gonna do a full-blown Save for Web tool

@@ -53,7 +53,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tools > Options Handler
-'Copyright 2002-2025 by Tanner Helland
+'Copyright 2002-2026 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 29/March/25
 'Last update: total overhaul of this dialog; individual panels are now split into standalone forms,
@@ -394,8 +394,6 @@ End Sub
 Private Sub Form_Load()
     
     m_ActivePanel = OP_None
-    
-    Dim i As Long
     
     'Prep the category button strip
     With btsvCategory

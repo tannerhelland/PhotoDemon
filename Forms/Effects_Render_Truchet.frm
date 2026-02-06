@@ -181,7 +181,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Render Truchet Tiles Effect
-'Copyright 2021-2025 by Tanner Helland
+'Copyright 2021-2026 by Tanner Helland
 'Created: 03/August/21
 'Last updated: 15/August/21
 'Last update: wrap up initial build

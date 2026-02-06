@@ -1,7 +1,7 @@
 Attribute VB_Name = "TextSupport"
 '***************************************************************************
 'Miscellaneous functions related to specialized text handling
-'Copyright 2000-2025 by Tanner Helland
+'Copyright 2000-2026 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 08/March/24
 'Last update: new page range parser (added as part of PDF import)

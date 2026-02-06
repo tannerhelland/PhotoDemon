@@ -1,7 +1,7 @@
 Attribute VB_Name = "SelectionFiles"
 '***************************************************************************
 'Selection Tools: File I/O
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 07/September/21
 'Last update: split selection file I/O into its own module

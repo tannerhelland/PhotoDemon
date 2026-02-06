@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tools_Text"
 '***************************************************************************
 'Text tools (both of 'em) on-canvas interface wrapper
-'Copyright 2015-2025 by Tanner Helland
+'Copyright 2015-2026 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 10/December/21
 'Last update: migrate various text-related bits out of pdCanvas in preparation for new tools

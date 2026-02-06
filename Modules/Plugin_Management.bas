@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 '3rd-Party Library Manager
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 19/September/25
 'Last update: add OpenJPEG as standalone library
@@ -71,10 +71,10 @@ Private Const EXPECTED_LIBAVIF_VERSION As String = "1.2.0"
 Private Const EXPECTED_LIBDEFLATE_VERSION As String = "1.23"
 Private Const EXPECTED_LIBHEIF_VERSION As String = "1.20.2"
 Private Const EXPECTED_LIBJXL_VERSION As String = "0.11.1"
-Private Const EXPECTED_LITTLECMS_VERSION As String = "2.16.0"
+Private Const EXPECTED_LITTLECMS_VERSION As String = "2.18.0"
 Private Const EXPECTED_LZ4_VERSION As String = "10904"
 Private Const EXPECTED_OPENJPEG_VERSION As String = "2.5"
-Private Const EXPECTED_PDFIUM_VERSION As String = "136.0.7073"
+Private Const EXPECTED_PDFIUM_VERSION As String = "145.0.7616"
 Private Const EXPECTED_PDHELPER_VERSION As String = "1.3.0"
 Private Const EXPECTED_PSPI_VERSION As String = "0.9"
 Private Const EXPECTED_RESVG_VERSION As String = "0.45.0"
@@ -227,19 +227,6 @@ End Sub
 Public Sub GenericLibraryMissingError(ByVal pluginID As PD_PluginCore)
     If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox "A necessary third-party library (%1) is missing or disabled." & vbCrLf & vbCrLf & "To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.", vbCritical Or vbOKOnly, "Error", PluginManager.GetPluginName(pluginID)
     Message "Error: %1", PluginManager.GetPluginName(pluginID)
-End Sub
-
-'...Similarly, if an external library throws some kind of error message and it might help the user to see
-' that message, send the plugin ID and error message here, and we'll display the message for you.
-'
-'(As with other library error messages, *all* popups are disabled during batch processes.)
-Public Sub GenericLibraryError(ByVal pluginID As PD_PluginCore, ByRef pluginMsg As String)
-    Dim fullErrMsg As pdString: Set fullErrMsg = New pdString
-    fullErrMsg.AppendLine g_Language.TranslateMessage("A third-party library (%1) reported the following error:", PluginManager.GetPluginName(pluginID))
-    fullErrMsg.AppendLineBreak
-    fullErrMsg.Append pluginMsg
-    If (Macros.GetMacroStatus <> MacroBATCH) Then PDMsgBox fullErrMsg.ToString(), vbExclamation Or vbOKOnly, "Error"
-    Message "Error: %1", pluginMsg
 End Sub
 
 'Given a plugin enum value, return a string of the core plugin's filename.  Note that this (obviously) does not include

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'General-purpose image and data import interface
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 18/November/25
 'Last update: expand QuickLoad support for recent format support enhancements
@@ -845,13 +845,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
         
         Case "PDF"
-            Dim cPDF As pdPDF
-            Set cPDF = New pdPDF
-            If cPDF.IsFilePDF(imagePath, False, True) Then
+            If Plugin_PDF.IsFileLikelyPDF(imagePath) Then
                 loadSuccessful = ImageImporter.LoadPDF(imagePath, tmpPDImage, targetDIB, True)
                 If loadSuccessful Then tmpPDImage.GetCompositedImage targetDIB, True
             End If
-            cPDF.ClosePDF
             
         Case "PNG", "APNG"
             Dim cPNG As pdPNG
@@ -1037,6 +1034,8 @@ Private Function GetDecoderName(ByVal srcDecoder As PD_ImageDecoder) As String
             GetDecoderName = "FreeImage"
         Case id_CBZParser
             GetDecoderName = "Internal CBZ parser"
+        Case id_HDRParser
+            GetDecoderName = "Internal HDR parser"
         Case id_HGTParser
             GetDecoderName = "Internal HGT parser"
         Case id_ICOParser
@@ -1212,7 +1211,6 @@ Private Sub ShowFailedLoadMsgBox(ByRef srcFilesBroken As pdStringStack)
         idxMatch = tplFilenames.ContainsString(srcFilesBroken.GetString(i), True)
         If (idxMatch >= 0) Then
             listOfFiles.Append Space$(4) & "("
-            'Do not change this error text; it is mirrored in PluginManager.GenericLibraryError()
             listOfFiles.Append g_Language.TranslateMessage("A third-party library (%1) reported the following error:", tplNames.GetString(idxMatch))
             listOfFiles.Append " "
             listOfFiles.Append Strings.ForceSingleLine(Trim$(tplMsgs.GetString(idxMatch)))

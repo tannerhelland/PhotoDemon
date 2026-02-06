@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.34</langversion>
+<langversion>1.0.37</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -2896,15 +2896,6 @@ Nahlaste prosím tuto chybu prostřednictvím nabídky Nápověda -> Odeslat zpr
 </phrase>
 
 <phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Zadaný soubor nelze najít.  Pokud byl umístěn na vyměnitelném médiu, znovu vložte správnou disketu, CD nebo přenosnou jednotku.  Pokud soubor není umístěn na přenosném médiu, ujistěte se, že:
-1) soubor nebyl smazán a...
-2) umístění souboru poskytnuté PhotoDemon je správné.</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
@@ -3225,7 +3216,7 @@ Po dokončení klikněte na tlačítko Odeslat nové vydání.  Děkuju!</transl
 <translation>Instrukce pro hlášení chyby</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -4372,6 +4363,18 @@ Tento soubor budete muset stáhnout ručně pomocí vašeho internetového prohl
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<phrase>
+<original>Enter password</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This file is password-protected.  Please enter a password</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -5760,12 +5763,6 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
-<original>Third-party libraries</original>
-<translation>Knihovny třetích stran
-</translation>
-</phrase>
-
-<phrase>
 <original>Developers</original>
 <translation>Vývojáři</translation>
 </phrase>
@@ -6028,6 +6025,12 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 <phrase>
 <original>PhotoDemon website</original>
 <translation>Web PhotoDemon
+</translation>
+</phrase>
+
+<phrase>
+<original>Third-party libraries</original>
+<translation>Knihovny třetích stran
 </translation>
 </phrase>
 
@@ -8367,12 +8370,6 @@ Pokud jej chcete uložit pod jiným názvem souboru, vyberte 'Zrušit' a poté p
 </phrase>
 
 <phrase>
-<original>available plugins</original>
-<translation>dostupné pluginy
-</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>přidat složku
 </translation>
@@ -8444,7 +8441,7 @@ Pokud jej chcete uložit pod jiným názvem souboru, vyberte 'Zrušit' a poté p
 <translation>Po stažení jednoho nebo více souborů 8bf použijte tlačítko nastavení (výše), abyste PhotoDemonovi řekli, kde je najde.  PhotoDemon je poté přidá do vaší sbírky efektů.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -15422,6 +15419,6 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- As of this build, PhotoDemon contains 5979 phrases. -->
 <!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12099 total words. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box support class
-'Copyright 2015-2025 by Tanner Helland
+'Copyright 2015-2026 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 04/June/25
 'Last update: fix potential crash in .AddItem when passed an OOB initial index

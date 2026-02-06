@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Palette Container and Parser
-'Copyright 2018-2025 by Tanner Helland
+'Copyright 2018-2026 by Tanner Helland
 'Created: 16/January/18
 'Last updated: 07/February/18
 'Last update: add support for writing Adobe Swatch Exchange files (.ase)

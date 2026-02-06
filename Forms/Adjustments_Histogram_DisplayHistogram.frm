@@ -337,7 +337,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Handler
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 28/February/25
 'Last update: merge rendering code from Histograms.GenerateHistogramImages(), so this dialog uses an identical

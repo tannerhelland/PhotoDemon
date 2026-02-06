@@ -51,7 +51,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Mini" Command Bar control
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 23/August/17
 'Last update: add automatic handling for Enter/Esc keypresses from child controls
@@ -197,6 +197,11 @@ Private Sub cmdCancel_Click()
     HandleCancelButton
 End Sub
 
+'See dialog_InputBox for a use-case for this function
+Public Sub ClickCancelForMe()
+    HandleCancelButton
+End Sub
+
 Private Sub HandleCancelButton()
 
     'The user may have Cancel actions they want to apply - let them do that
@@ -221,6 +226,11 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
+    HandleOKButton
+End Sub
+
+'See dialog_InputBox for a use-case for this function
+Public Sub ClickOKForMe()
     HandleOKButton
 End Sub
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ImageExporter"
 '***************************************************************************
 'Low-level image export interfaces
-'Copyright 2001-2025 by Tanner Helland
+'Copyright 2001-2026 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 12/November/25
 'Last update: rewrite JPEG-2000 export against OpenJPEG
@@ -965,7 +965,7 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         tmpFilename = dstFile
     End If
     
-    'Direct OpenJPEG export is preferred
+    'OpenJPEG export is required for export
     If Plugin_OpenJPEG.IsOpenJPEGEnabled() Then
         
         'Open a pdStream object on the target file
@@ -981,35 +981,8 @@ Public Function ExportJP2(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             
         End If
         
-    'As a last resort, we can use the old FreeImage-based JPEG-2000 pathway as a fallback
-    ' (which is more prone to crashes, but should work OK on ).
-    ElseIf ImageFormats.IsFreeImageEnabled Then
-        
-        'To save us some time, auto-convert any non-transparent images to 24-bpp now
-        If (desiredAlphaStatus = PDAS_NoAlpha) Then tmpImageCopy.ConvertTo24bpp
-        
-        Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIDib_SpecificColorMode(tmpImageCopy, outputColorDepth, desiredAlphaStatus, currentAlphaStatus)
-        
-        If (fi_DIB <> 0) Then
-            
-            Dim fi_Flags As Long: fi_Flags = 0&
-            fi_Flags = fi_Flags Or jp2Quality
-            
-            
-            ExportJP2 = FreeImage_Save(FIF_JP2, fi_DIB, tmpFilename, fi_Flags)
-            If (Not ExportJP2) Then
-                PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
-                Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-            End If
-            
-        Else
-            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
-            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-            ExportJP2 = False
-        End If
     Else
-        GenericLibraryMissingError CCP_FreeImage
+        GenericLibraryMissingError CCP_OpenJPEG
         ExportJP2 = False
     End If
     
@@ -1450,140 +1423,57 @@ ExportJXRError:
     
 End Function
 
-'Save an HDR (High-Dynamic Range) image
+'Save a Radiance HDR (High-Dynamic Range) image
 Public Function ExportHDR(ByRef srcPDImage As pdImage, ByVal dstFile As String, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
     On Error GoTo ExportHDRError
-    
+
     ExportHDR = False
     Dim sFileType As String: sFileType = "HDR"
     
-    If ImageFormats.IsFreeImageEnabled Then
-        
-        'TODO: parse incoming HDR parameters.  (FreeImage doesn't support any HDR export parameters
-        ' at present, but we could still provide options for things like gamma correction,
-        ' background color for 32-bpp images, etc.)
-        Dim cParams As pdSerialize
-        Set cParams = New pdSerialize
-        cParams.SetParamString formatParams
-        
-        'Generate a composited image copy, with alpha automatically un-premultiplied
-        Dim tmpImageCopy As pdDIB
-        Set tmpImageCopy = New pdDIB
-        srcPDImage.GetCompositedImage tmpImageCopy
-        
-        'HDR does not support alpha-channels, so convert to 24-bpp in advance
-        If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp
-        
-        'HDR only supports one output color depth, so auto-detection is unnecessary
-        ExportDebugMsg "HDR format only supports one output depth, so color depth auto-detection was ignored."
-            
-        'Convert our current DIB to a FreeImage-type DIB
-        Dim fi_DIB As Long
-        fi_DIB = FreeImage_CreateFromDC(tmpImageCopy.GetDIBDC)
-        Set tmpImageCopy = Nothing
-        
-        If (fi_DIB <> 0) Then
-            
-            'Convert the image data to RGBF format
-            Dim fi_FloatDIB As Long
-            fi_FloatDIB = FreeImage_ConvertToRGBF(fi_DIB)
-            FreeImage_Unload fi_DIB
-            
-            If (fi_FloatDIB <> 0) Then
-                
-                'Prior to saving, we must account for default 2.2 gamma correction.
-                ' We do this by iterating through the source, and modifying gamma values as we go.
-                ' (If we reduce gamma prior to RGBF conversion, quality will obviously be impacted due to clipping.)
-                Dim srcImageData() As Single, srcSA As SafeArray1D
-                
-                'Iterate through each scanline in the source image, copying it to destination as we go.
-                Dim iWidth As Long, iHeight As Long, iScanWidth As Long, iLoopWidth As Long
-                iWidth = FreeImage_GetWidth(fi_FloatDIB) - 1
-                iHeight = FreeImage_GetHeight(fi_FloatDIB) - 1
-                iScanWidth = FreeImage_GetPitch(fi_FloatDIB)
-                iLoopWidth = FreeImage_GetWidth(fi_FloatDIB) * 3 - 1
-                
-                Dim srcF As Single
-                
-                Dim gammaCorrection As Double
-                gammaCorrection = 1# / (1# / 2.2)
-                
-                Dim x As Long, y As Long
-                
-                For y = 0 To iHeight
-                    
-                    'Point a 1D VB array at this scanline
-                    VBHacks.WrapArrayAroundPtr_Float srcImageData, srcSA, FreeImage_GetScanline(fi_FloatDIB, y), iScanWidth * 4
-                    
-                    'Iterate through this line, converting values as we go
-                    For x = 0 To iLoopWidth
-                        
-                        'Retrieve the source values
-                        srcF = srcImageData(x)
-                        
-                        'Apply 1/2.2 gamma correction
-                        If (srcF > 0!) Then srcImageData(x) = srcF ^ gammaCorrection
-                        
-                    Next x
-                    
-                    'Safely unalias the VB array object
-                    VBHacks.UnwrapArrayFromPtr_Float srcImageData
-                    
-                Next y
-                
-                'With gamma properly accounted for, we can finally write the image out to file.
-                
-                'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
-                ' and if it's saved successfully, overwrite the original file - this way, if an error occurs mid-save,
-                ' the original file remains untouched).
-                Dim tmpFilename As String
-                If Files.FileExists(dstFile) Then
-                    Do
-                        tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
-                    Loop While Files.FileExists(tmpFilename)
-                Else
-                    tmpFilename = dstFile
-                End If
-                
-                ExportHDR = FreeImage_Save(PDIF_HDR, fi_FloatDIB, tmpFilename, 0)
-                If ExportHDR Then
-                    
-                    ExportDebugMsg "Export to " & sFileType & " appears successful."
-                    
-                    'If the original file already existed, attempt to replace it now
-                    If Strings.StringsNotEqual(dstFile, tmpFilename) Then
-                        If (Files.FileReplace(dstFile, tmpFilename) <> FPR_SUCCESS) Then
-                            Files.FileDelete tmpFilename
-                            PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
-                        End If
-                    End If
-                    
-                Else
-                    PDDebug.LogAction "WARNING: FreeImage_Save silent fail"
-                    Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-                End If
-                
-                FreeImage_Unload fi_FloatDIB
-                
-            Else
-                ExportDebugMsg "HDR save failed; could not convert to RGBF"
-                ExportHDR = False
-            End If
-                
-        Else
-            PDDebug.LogAction "WARNING: FreeImage returned blank handle"
-            Message "%1 save failed. Please report this error using Help -> Submit Bug Report.", sFileType
-            ExportHDR = False
-        End If
-        
+    'All heavy lifting happens in the pdHDR class
+    Dim cHDR As pdHDR
+    Set cHDR = New pdHDR
+    
+    'If the target file already exists, use "safe" file saving (e.g. write the save data to a new file,
+    ' and if it's saved successfully, overwrite the original file then - this way, if an error occurs
+    ' mid-save, the original file is left untouched).
+    Dim tmpFilename As String
+    If Files.FileExists(dstFile) Then
+        Do
+            tmpFilename = dstFile & Hex$(PDMath.GetCompletelyRandomInt()) & ".pdtmp"
+        Loop While Files.FileExists(tmpFilename)
     Else
-        GenericLibraryMissingError CCP_FreeImage
-        ExportHDR = False
+        tmpFilename = dstFile
     End If
     
-    Exit Function
+    If cHDR.SaveHDR_ToFile(srcPDImage, tmpFilename) Then
+    
+        If Strings.StringsEqual(dstFile, tmpFilename) Then
+            ExportHDR = True
         
+        'If we wrote our data to a temp file, attempt to replace the original file
+        Else
+        
+            ExportHDR = (Files.FileReplace(dstFile, tmpFilename) = FPR_SUCCESS)
+            
+            If (Not ExportHDR) Then
+                Files.FileDelete tmpFilename
+                PDDebug.LogAction "WARNING!  Safe save did not overwrite original file (is it open elsewhere?)"
+            End If
+            
+        End If
+    
+    Else
+        ExportHDR = False
+        ExportDebugMsg "WARNING!  pdHDR.SaveHDR() failed for reasons unknown; check the debug log for additional details"
+    End If
+    
+    'This exporter uses the progress bar.  Make sure it's hidden when we're done.
+    ProgressBars.ReleaseProgressBar
+    
+    Exit Function
+    
 ExportHDRError:
     ExportDebugMsg "Internal VB error encountered in " & sFileType & " routine.  Err #" & Err.Number & ", " & Err.Description
     ExportHDR = False
@@ -1801,18 +1691,8 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
     
     'PD now uses its own custom-built PNG encoder.  This encoder is capable of much better compression
     ' and format coverage than either FreeImage or GDI+.
-    If (Not imgSavedOK) Then
-        PDDebug.LogAction "Using internal PNG encoder for this operation..."
-        imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
-    End If
-    
-    'If other mechanisms failed, attempt a failsafe export using GDI+.  (Note that this pathway is *not* preferred,
-    ' as GDI+ forcibly writes problematic color data chunks and it performs no adaptive filtering so file sizes
-    ' are enormous, but hey - it's better than not writing a PNG at all, right?)
-    If (Not imgSavedOK) Then
-        PDDebug.LogAction "WARNING: pdPNG failed!"
-        imgSavedOK = GDIPlusSavePicture(srcPDImage, tmpFilename, P2_FFE_PNG, 32)
-    End If
+    PDDebug.LogAction "Using internal PNG encoder for this operation..."
+    imgSavedOK = (cPNG.SavePNG_ToFile(tmpFilename, tmpImageCopy, srcPDImage, png_AutoColorType, 0, pngCompressionLevel, formatParams, True) < png_Failure)
     
     'If the original file already existed, attempt to replace it now
     If imgSavedOK And Strings.StringsNotEqual(dstFile, tmpFilename) Then

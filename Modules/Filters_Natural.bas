@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Natural"
 '***************************************************************************
 '"Natural" Filters
-'Copyright 2002-2025 by Tanner Helland
+'Copyright 2002-2026 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 17/October/17
 'Last update: migrate "metal" effect here, as it's useful in a number of other settings

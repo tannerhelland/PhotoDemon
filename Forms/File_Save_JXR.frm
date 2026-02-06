@@ -159,7 +159,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG XR Export Dialog
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 14/February/14
 'Last updated: 11/November/25
 'Last update: merge localizations with JPEG-2000 to reduce localization burden

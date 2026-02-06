@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_zstd"
 '***************************************************************************
 'Zstd Compression Library Interface
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 01/December/16
 'Last updated: 20/March/25
 'Last update: update to latest 1.5.7 binary
@@ -77,8 +77,9 @@ Private m_ZstdHandle As Long
 'Maximum compression level that the library currently supports.  This is cached at initialization time.
 Private m_ZstdCompressLevelMax As Long
 
-'Experimental check for multithread-capable libzstd instance (requires a custom build for PD)
-Private m_ZstdMTAvailable As Boolean
+'Experimental check for multithread-capable libzstd instance (requires a custom build for PD, so currently disabled
+' pending satisfactory testing)
+'Private m_ZstdMTAvailable As Boolean
 
 'zstd has very specific compiler needs in order to produce maximum perf code, so rather than
 ' recompile myself, I've just grabbed the prebuilt Windows binaries and wrapped 'em using DispCallFunc

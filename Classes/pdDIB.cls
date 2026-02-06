@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 24/March/25
 'Last update: if we fail to create a blank surface at the target size, this class will now send out a

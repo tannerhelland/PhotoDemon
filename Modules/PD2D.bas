@@ -1,7 +1,7 @@
 Attribute VB_Name = "PD2D"
 '***************************************************************************
 'PhotoDemon 2D Painting class (interface for using pd2DBrush and pd2DPen on pd2DSurface objects)
-'Copyright 2012-2025 by Tanner Helland
+'Copyright 2012-2026 by Tanner Helland
 'Created: 01/September/12
 'Last updated: 28/January/25
 'Last update: fix some sloppy float/double intermixing

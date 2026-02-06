@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'DDS Export Dialog
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 14/May/25
 'Last updated: 14/May/25
 'Last update: initial build
@@ -413,7 +413,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
             ' and the resulting file is stored in m_PreviewImagePath.)
             
             'Start by generating temporary filenames for intermediary files
-            Dim tmpFilenameBase As String, tmpFilenameIntermediary As String, tmpFilenameDDS As String
+            Dim tmpFilenameIntermediary As String, tmpFilenameDDS As String
 
             'Pull a format name from the list box
             Dim ddsFormatName As String

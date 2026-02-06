@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Navigation custom control (inner panel)
-'Copyright 2015-2025 by Tanner Helland
+'Copyright 2015-2026 by Tanner Helland
 'Created: 16/October/15
 'Last updated: 03/December/20
 'Last update: improve UI behavior during _MouseDown

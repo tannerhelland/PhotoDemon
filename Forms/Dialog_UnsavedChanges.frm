@@ -115,7 +115,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Unsaved Changes Dialog
-'Copyright 2011-2025 by Tanner Helland
+'Copyright 2011-2026 by Tanner Helland
 'Created: 13/November/12
 'Last updated: 01/December/12
 'Last update: removed the DrawSystemIcon sub; now it can be found in the "Drawing" module

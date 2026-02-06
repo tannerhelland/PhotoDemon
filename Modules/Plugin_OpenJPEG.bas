@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_OpenJPEG"
 '***************************************************************************
 'OpenJPEG (JPEG-2000) Library Interface
-'Copyright 2025-2025 by Tanner Helland
+'Copyright 2025-2026 by Tanner Helland
 'Created: 19/September/25
 'Last updated: 11/November/25
 'Last update: finalize write support
@@ -524,7 +524,7 @@ Private Declare Function opj_read_header Lib "openjp2" Alias "_opj_read_header@1
 Private Declare Sub opj_image_destroy Lib "openjp2" Alias "_opj_image_destroy@4" (ByVal p_image As Long)
 Private Declare Function opj_decode Lib "openjp2" Alias "_opj_decode@12" (ByVal p_decompressor As Long, ByVal p_stream As Long, ByVal p_image As Long) As Long
 Private Declare Function opj_end_decompress Lib "openjp2" Alias "_opj_end_decompress@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
-Private Declare Function opj_set_decoded_components Lib "openjp2" Alias "_opj_set_decoded_components@16" (ByVal p_codec As Long, ByVal numcomps As Long, ByVal p_comps_indices As Long, ByVal b_apply_color_transforms As Long) As Long
+'Private Declare Function opj_set_decoded_components Lib "openjp2" Alias "_opj_set_decoded_components@16" (ByVal p_codec As Long, ByVal numcomps As Long, ByVal p_comps_indices As Long, ByVal b_apply_color_transforms As Long) As Long
 Private Declare Function opj_image_create Lib "openjp2" Alias "_opj_image_create@12" (ByVal numcmpts As Long, ByVal p_cmptparms As Long, ByVal clrspc As OPJ_COLOR_SPACE) As Long
 Private Declare Function opj_create_compress Lib "openjp2" Alias "_opj_create_compress@4" (ByVal jp2_format As OPJ_CODEC_FORMAT) As Long
 Private Declare Sub opj_set_default_encoder_parameters Lib "openjp2" Alias "_opj_set_default_encoder_parameters@4" (ByVal p_opj_cparameters_t As Long)
@@ -532,9 +532,9 @@ Private Declare Function opj_setup_encoder Lib "openjp2" Alias "_opj_setup_encod
 Private Declare Function opj_start_compress Lib "openjp2" Alias "_opj_start_compress@12" (ByVal p_codec As Long, ByVal p_image As Long, ByVal p_stream As Long) As Long
 Private Declare Function opj_encode Lib "openjp2" Alias "_opj_encode@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
 Private Declare Function opj_end_compress Lib "openjp2" Alias "_opj_end_compress@8" (ByVal p_codec As Long, ByVal p_stream As Long) As Long
-Private Declare Function opj_stream_create_default_file_stream Lib "openjp2" Alias "_opj_stream_create_default_file_stream@8" (ByVal p_fname As Long, ByVal p_is_read_stream As Long) As Long
+'Private Declare Function opj_stream_create_default_file_stream Lib "openjp2" Alias "_opj_stream_create_default_file_stream@8" (ByVal p_fname As Long, ByVal p_is_read_stream As Long) As Long
 Private Declare Function opj_stream_default_create Lib "openjp2" Alias "_opj_stream_default_create@4" (ByVal bool_p_is_input As Long) As Long
-Private Declare Function opj_stream_create Lib "openjp2" Alias "_opj_stream_create@8" (ByVal p_buffer_size As Long, ByVal bool_p_is_input As Long) As Long
+'Private Declare Function opj_stream_create Lib "openjp2" Alias "_opj_stream_create@8" (ByVal p_buffer_size As Long, ByVal bool_p_is_input As Long) As Long
 Private Declare Sub opj_stream_destroy Lib "openjp2" Alias "_opj_stream_destroy@4" (ByVal p_stream As Long)
 
 'Default OpenJPEG builds assume cdecl callbacks, but I'm currently custom-building OpenJPEG with support for stdcall callbacks
@@ -642,7 +642,6 @@ End Sub
 'Verify JPEG-2000 file signature.  Doesn't require OpenJPEG.  Obviously requires read access on the target file.
 Public Function IsFileJP2(ByRef srcFile As String, Optional ByRef outCodecFormat As OPJ_CODEC_FORMAT) As Boolean
 
-    Const FUNC_NAME As String = "IsFileJP2"
     IsFileJP2 = False
     
     If Files.FileExists(srcFile) Then
@@ -1156,7 +1155,7 @@ AttemptDecodingWithReduction:
             
     Dim r As Long, g As Long, b As Long, a As Long, yccY As Long, yccB As Long, yccR As Long
     Dim dstPixels() As Byte, dstSA As SafeArray1D
-    Dim saOffset As Long, xOffset As Long, hdrDivisor As Long
+    Dim saOffset As Long, hdrDivisor As Long
     
     'Data in JP2 files can be signed, meaning that e.g. 8-bit data is represented as [-127, 128] instead of [0, 255].
     ' PD handles this case successfully but requires additional variables to convert to unsigned types.
@@ -1890,7 +1889,7 @@ Public Function FastDecodeFromStreamToDIB(ByRef srcStream As pdStream, ByRef dst
             
     Dim r As Long, g As Long, b As Long, a As Long, yccY As Long, yccB As Long, yccR As Long
     Dim dstPixels() As Byte, dstSA As SafeArray1D
-    Dim saOffset As Long, xOffset As Long, hdrDivisor As Long
+    Dim saOffset As Long, hdrDivisor As Long
     
     'Data in JP2 files can be signed, meaning that e.g. 8-bit data is represented as [-127, 128] instead of [0, 255].
     ' PD handles this case successfully.

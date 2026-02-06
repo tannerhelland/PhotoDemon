@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon PNG Container and Parser
-'Copyright 2018-2025 by Tanner Helland
+'Copyright 2018-2026 by Tanner Helland
 'Created: 12/April/18
 'Last updated: 28/August/25
 'Last update: add coverage for new cICP HDR chunk (see https://w3c.github.io/png/Implementation_Report_3e/)
@@ -368,7 +368,7 @@ Friend Function ImportStage1_ValidatePNG(ByRef srcFile As String, Optional ByVal
     ' running as a compiled exe (as the PNG's failure is simply due to not being a PNG at all, and not due to
     ' any internal problem in this class).
     If (okToProceed >= png_Failure) Then
-        InternalError "ImportStage1_ValidatePNG", "file is not a valid PNG file", False
+        If PNG_DEBUG_VERBOSE Then InternalError "ImportStage1_ValidatePNG", "file is not a valid PNG file", False
         If m_Stream.IsOpen() Then m_Stream.StopStream True
     End If
     

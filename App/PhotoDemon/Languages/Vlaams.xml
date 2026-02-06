@@ -6,10 +6,10 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>8.9.1770</langversion>
-<langstatus>80% complete</langstatus>
+<langversion>2025.12.3</langversion>
+<langstatus>99% complete</langstatus>
 
-<author>Frank Donckers</author>
+<author>Frank Donckers, Rudi Klein</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -85,7 +85,7 @@
 
 <phrase>
 <original>Export layers</original>
-<translation></translation>
+<translation>Lagen exporteren</translation>
 </phrase>
 
 <phrase>
@@ -95,12 +95,12 @@
 
 <phrase>
 <original>Export color lookup</original>
-<translation></translation>
+<translation>Kleur opzoektabel exporteren</translation>
 </phrase>
 
 <phrase>
 <original>Export color profile</original>
-<translation></translation>
+<translation>Kleurprofiel exporteren</translation>
 </phrase>
 
 <phrase>
@@ -155,7 +155,7 @@
 
 <phrase>
 <original>Cut merged</original>
-<translation></translation>
+<translation>Samengevoegd knippen</translation>
 </phrase>
 
 <phrase>
@@ -175,22 +175,22 @@
 
 <phrase>
 <original>Paste to cursor</original>
-<translation></translation>
+<translation>Tot aanwijzer plakken</translation>
 </phrase>
 
 <phrase>
 <original>Cut special</original>
-<translation></translation>
+<translation>Speciaal knippen</translation>
 </phrase>
 
 <phrase>
 <original>Copy special</original>
-<translation></translation>
+<translation>Speciaal kopiëren</translation>
 </phrase>
 
 <phrase>
 <original>Paste special</original>
-<translation></translation>
+<translation>Speciaal plakken</translation>
 </phrase>
 
 <phrase>
@@ -205,7 +205,7 @@
 
 <phrase>
 <original>Content-aware fill</original>
-<translation></translation>
+<translation>Inhoudsbewust vullen</translation>
 </phrase>
 
 <phrase>
@@ -255,7 +255,7 @@
 
 <phrase>
 <original>Trim empty image borders</original>
-<translation></translation>
+<translation>Verwijder lege fotokaders</translation>
 </phrase>
 
 <phrase>
@@ -305,17 +305,17 @@
 
 <phrase>
 <original>Animation options</original>
-<translation></translation>
+<translation>Animatie opties</translation>
 </phrase>
 
 <phrase>
 <original>Create color lookup</original>
-<translation></translation>
+<translation>Maak kleur opzoektabel</translation>
 </phrase>
 
 <phrase>
 <original>Compare similarity</original>
-<translation></translation>
+<translation>Vergelijk overeenkomsten</translation>
 </phrase>
 
 <phrase>
@@ -325,7 +325,7 @@
 
 <phrase>
 <original>Remove all metadata</original>
-<translation></translation>
+<translation>Verwijder alle metadata</translation>
 </phrase>
 
 <phrase>
@@ -360,12 +360,12 @@
 
 <phrase>
 <original>Layer via copy</original>
-<translation></translation>
+<translation>Laag door kopie</translation>
 </phrase>
 
 <phrase>
 <original>Layer via cut</original>
-<translation></translation>
+<translation>Laag door knippen</translation>
 </phrase>
 
 <phrase>
@@ -380,17 +380,17 @@
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation></translation>
+<translation>Vervang laag door klembord</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from file</original>
-<translation></translation>
+<translation>Vervang laag door bestand</translation>
 </phrase>
 
 <phrase>
 <original>Replace layer from visible layers</original>
-<translation></translation>
+<translation>Vervang laag door zichtbare lagen</translation>
 </phrase>
 
 <phrase>
@@ -405,22 +405,22 @@
 
 <phrase>
 <original>Go to top layer</original>
-<translation></translation>
+<translation>Ga naar bovenste laag</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer above</original>
-<translation></translation>
+<translation>Ga naar laag erboven</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer below</original>
-<translation></translation>
+<translation>Ga naar laag eronder</translation>
 </phrase>
 
 <phrase>
 <original>Go to bottom layer</original>
-<translation></translation>
+<translation>Ga naar onderste laag</translation>
 </phrase>
 
 <phrase>
@@ -445,7 +445,7 @@
 
 <phrase>
 <original>Reverse layer order</original>
-<translation></translation>
+<translation>Keer laagvolgorde om</translation>
 </phrase>
 
 <phrase>
@@ -455,22 +455,22 @@
 
 <phrase>
 <original>Show only this layer</original>
-<translation></translation>
+<translation>Toon alleen deze laag</translation>
 </phrase>
 
 <phrase>
 <original>Hide only this layer</original>
-<translation></translation>
+<translation>Verberg alleen deze laag</translation>
 </phrase>
 
 <phrase>
 <original>Show all layers</original>
-<translation></translation>
+<translation>Toon alle lagen</translation>
 </phrase>
 
 <phrase>
 <original>Hide all layers</original>
-<translation></translation>
+<translation>Verberg alle lagen</translation>
 </phrase>
 
 <phrase>
@@ -480,12 +480,12 @@
 
 <phrase>
 <original>Pad layer to image size</original>
-<translation></translation>
+<translation>Laag opvullen tot afbeeldingsgrootte</translation>
 </phrase>
 
 <phrase>
 <original>Trim empty layer borders</original>
-<translation></translation>
+<translation>Verwijder lege laagkaders</translation>
 </phrase>
 
 <phrase>
@@ -540,7 +540,7 @@
 
 <phrase>
 <original>Fit layer to image</original>
-<translation></translation>
+<translation>Pas laag aan, aan afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -575,17 +575,17 @@
 
 <phrase>
 <original>Split layer into image</original>
-<translation></translation>
+<translation>Splits laag naar afbeelding</translation>
 </phrase>
 
 <phrase>
 <original>Split layers into images</original>
-<translation></translation>
+<translation>Splits lagen naar afbeeldingen</translation>
 </phrase>
 
 <phrase>
 <original>Split images into layers</original>
-<translation></translation>
+<translation>Splits afbeeldingen naar lagen</translation>
 </phrase>
 
 <phrase>
@@ -635,17 +635,17 @@
 
 <phrase>
 <original>Fill selected area</original>
-<translation></translation>
+<translation>Vul selectie op</translation>
 </phrase>
 
 <phrase>
 <original>Heal selected area</original>
-<translation></translation>
+<translation>Herstel selectie</translation>
 </phrase>
 
 <phrase>
 <original>Stroke selection outline</original>
-<translation></translation>
+<translation>Belijn selectieranden</translation>
 </phrase>
 
 <phrase>
@@ -765,7 +765,7 @@
 
 <phrase>
 <original>Color lookup</original>
-<translation></translation>
+<translation>Kleur opzoek</translation>
 </phrase>
 
 <phrase>
@@ -820,7 +820,7 @@
 
 <phrase>
 <original>Dehaze</original>
-<translation></translation>
+<translation>Nevel verwijderen</translation>
 </phrase>
 
 <phrase>
@@ -845,7 +845,7 @@
 
 <phrase>
 <original>Palette map</original>
-<translation></translation>
+<translation>Paletkaart</translation>
 </phrase>
 
 <phrase>
@@ -960,7 +960,7 @@
 
 <phrase>
 <original>Droste</original>
-<translation></translation>
+<translation>Droste effect</translation>
 </phrase>
 
 <phrase>
@@ -1020,7 +1020,7 @@
 
 <phrase>
 <original>Gradient flow</original>
-<translation></translation>
+<translation>Verloop-hoeveelheid</translation>
 </phrase>
 
 <phrase>
@@ -1120,7 +1120,7 @@
 
 <phrase>
 <original>Dust and scratches</original>
-<translation></translation>
+<translation>Stof en krassen</translation>
 </phrase>
 
 <phrase>
@@ -1170,7 +1170,7 @@
 
 <phrase>
 <original>Pointillize</original>
-<translation></translation>
+<translation>Stippelen</translation>
 </phrase>
 
 <phrase>
@@ -1180,12 +1180,12 @@
 
 <phrase>
 <original>Fibers</original>
-<translation></translation>
+<translation>Vezels</translation>
 </phrase>
 
 <phrase>
 <original>Truchet</original>
-<translation></translation>
+<translation>Truchet</translation>
 </phrase>
 
 <phrase>
@@ -1245,7 +1245,7 @@
 
 <phrase>
 <original>Offset and zoom</original>
-<translation></translation>
+<translation>Compenseer en zoom</translation>
 </phrase>
 
 <phrase>
@@ -1275,17 +1275,17 @@
 
 <phrase>
 <original>Animation background</original>
-<translation></translation>
+<translation>Animatieachtergrond</translation>
 </phrase>
 
 <phrase>
 <original>Animation foreground</original>
-<translation></translation>
+<translation>Animatievoorgrond</translation>
 </phrase>
 
 <phrase>
 <original>Animation playback speed</original>
-<translation></translation>
+<translation>Animatie-afspeelsnelheid</translation>
 </phrase>
 
 <phrase>
@@ -1295,7 +1295,7 @@
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation></translation>
+<translation>Photoshop (8bf) plugin</translation>
 </phrase>
 
 <phrase>
@@ -1383,7 +1383,7 @@
 
 <phrase>
 <original>Profile exported successfully.</original>
-<translation></translation>
+<translation>Profiel succesvol geëxporteerd.</translation>
 </phrase>
 
 <!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -1783,17 +1783,17 @@ Deze afbeelding bevat %2 unieke kleur-ondoorzichtigheidswaarden (RGBA).</transla
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>Terugtoets</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Tab</translation>
 </phrase>
 
 <phrase>
 <original>Escape</original>
-<translation></translation>
+<translation>Escape</translation>
 </phrase>
 
 <phrase>
@@ -2051,7 +2051,7 @@ Deze afbeelding bevat %2 unieke kleur-ondoorzichtigheidswaarden (RGBA).</transla
 
 <phrase>
 <original>Behind</original>
-<translation></translation>
+<translation>Achter</translation>
 </phrase>
 
 <phrase>
@@ -2293,22 +2293,22 @@ Sluit dit bestand in elk ander programma, en probeer het opnieuw</translation>
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation></translation>
+<translation>Dit bestand heeft de "%1"extensie, maar is feitelijk in "%2" formaat</translation>
 </phrase>
 
 <phrase>
 <original>May PhotoDemon rename the file with a correct extension?</original>
-<translation></translation>
+<translation>Mag PhotoDemon dit bestand hernoemen met de correcte extensie?</translation>
 </phrase>
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation></translation>
+<translation>Als je "Ja" kiest wordt het bestand hernoemd naar "%1"</translation>
 </phrase>
 
 <phrase>
 <original>Bad file extension</original>
-<translation></translation>
+<translation>Foute bestands-extensie</translation>
 </phrase>
 
 <phrase>
@@ -2351,7 +2351,7 @@ Gebruik een ander programma om deze afbeelding op te slaan in een generiek forma
 
 <phrase>
 <original>Importing %1</original>
-<translation></translation>
+<translation>Importeren %1</translation>
 </phrase>
 
 <phrase>
@@ -2361,7 +2361,7 @@ Gebruik een ander programma om deze afbeelding op te slaan in een generiek forma
 
 <phrase>
 <original>A third-party library (%1) reported the following error</original>
-<translation></translation>
+<translation>Een bibliotheekbestand van een derde partij (%1) rapporteerde de bolgende fout</translation>
 </phrase>
 
 <phrase>
@@ -2531,7 +2531,7 @@ Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeld
 
 <phrase>
 <original>Select a palette</original>
-<translation></translation>
+<translation>Selecteer een palet</translation>
 </phrase>
 
 <phrase>
@@ -2541,7 +2541,7 @@ Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeld
 
 <phrase>
 <original>Exporting palette</original>
-<translation></translation>
+<translation>Exporteer palet</translation>
 </phrase>
 
 <phrase>
@@ -2561,7 +2561,7 @@ Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeld
 
 <phrase>
 <original>Single neighbor</original>
-<translation></translation>
+<translation>Enkel buur</translation>
 </phrase>
 
 <phrase>
@@ -2726,22 +2726,22 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 
 <phrase>
 <original>JPEG XL (JXL) is a modern replacement for the JPEG image format.  PhotoDemon does not natively support JPEG XL images, but it can download a free, open-source plugin that adds JPEG XL support.</original>
-<translation></translation>
+<translation>JPEG XL (JXL) is een moderne vervanging voor het JPEG-afbeeldingsformaat. PhotoDemon ondersteunt JPEG XL-afbeeldingen niet standaard, maar het kan een gratis, open-source plug-in downloaden die JPEG XL-ondersteuning toevoegt.</translation>
 </phrase>
 
 <phrase>
 <original>The libjxl library provides free, open-source JPEG XL compatibility.  A portable copy of libjxl will require ~%1 mb of disk space.  Once downloaded, PhotoDemon can use libjxl to load and save JPEG XL images (including animations).</original>
-<translation></translation>
+<translation>De libjxl-bibliotheek biedt gratis, open-source JPEG XL-compatibiliteit. Een draagbare kopie van libjxl vereist ~%1 mb schijfruimte. Eenmaal gedownload, kan PhotoDemon libjxl gebruiken om JPEG XL-afbeeldingen (inclusief animaties) te laden en op te slaan.</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to download libjxl to your PhotoDemon plugin folder?</original>
-<translation></translation>
+<translation>Wilt u dat PhotoDemon libjxl downloadt naar uw PhotoDemon plug-in map?</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon will not download libjxl at this time.</original>
-<translation></translation>
+<translation>PhotoDemon zal libjxl op dit moment niet downloaden.</translation>
 </phrase>
 
 <!-- Plugin_jxl.bas contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -2750,12 +2750,14 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation></translation>
+<translation>Een noodzakelijke bibliotheek van derden (%1) ontbreekt of is uitgeschakeld.
+
+Om deze functie in te schakelen, gelieve een nieuwe kopie van PhotoDemon te downloaden of de ontbrekende bibliotheek te herstellen.</translation>
 </phrase>
 
 <phrase>
 <original>Error: %1</original>
-<translation></translation>
+<translation>Fout: %1</translation>
 </phrase>
 
 <phrase>
@@ -2785,7 +2787,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 
 <phrase>
 <original>LGPL license</original>
-<translation></translation>
+<translation>LGPL licentie</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -2819,15 +2821,6 @@ A.U.B. rapporteer deze bug via de Help -> Indienen Bug Report menu.</translation
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Onvoldoende geheugen. Functie geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
-1) the file hasn't been deleted, and...
-2) the file location provided to PhotoDemon is correct.</original>
-<translation>Het opgegeven bestand kan niet worden gevonden. Als het opgeslagen was op een verwisselbaar medium, gebruik dan de juiste diskette, cd of draagbare schijf. Als het bestand zich niet op draagbaar medium stond,zorg er dan voor dat:
-1) het bestand niet is verwijderd is, en...
-2) de bestandslocatie doorgegeven aan PhotoDemon correct is.</translation>
 </phrase>
 
 <phrase>
@@ -3106,12 +3099,12 @@ Beschrijving: %2
 
 <phrase>
 <original>last line justify</original>
-<translation></translation>
+<translation>laatste regel uitvullen</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation></translation>
+<translation>omtrek bovenop</translation>
 </phrase>
 
 <phrase>
@@ -3133,7 +3126,7 @@ Als u klaar bent, klikt u op de knop "Nieuw probleem indienen".  Dank U!</transl
 <translation>Bug report instructies</translation>
 </phrase>
 
-<!-- Processor.bas contains 132 phrases. 71 were duplicates of existing phrases, so only 61 new phrases were written to file. -->
+<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3426,7 +3419,7 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>Crop tool</original>
-<translation></translation>
+<translation>Uitsnede hulpmiddel</translation>
 </phrase>
 
 <!-- Tools_Crop.bas contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3599,27 +3592,27 @@ Geef een numerieke waarde.</translation>
 
 <phrase>
 <original>This action relies on a third-party plugin (%1).  An updated version of this plugin is available.</original>
-<translation></translation>
+<translation>Deze actie is afhankelijk van een plug-in van derden (%1). Er is een bijgewerkte versie van deze plug-in beschikbaar.</translation>
 </phrase>
 
 <phrase>
 <original>Your version: %1</original>
-<translation></translation>
+<translation>Uw versie: %1</translation>
 </phrase>
 
 <phrase>
 <original>New version: %1</original>
-<translation></translation>
+<translation>Nieuwe versie: %1</translation>
 </phrase>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation></translation>
+<translation>Wilt u dat PhotoDemon deze plug-in voor u bijwerkt?</translation>
 </phrase>
 
 <phrase>
 <original>Update available</original>
-<translation></translation>
+<translation>Update beschikbaar</translation>
 </phrase>
 
 <phrase>
@@ -3812,7 +3805,7 @@ U moet dit bestand handmatig downloaden met uw internetbrowser.</translation>
 
 <phrase>
 <original>Memory usage looks high; suspending some data to disk before continuing</original>
-<translation></translation>
+<translation>Geheugengebruik lijkt hoog; sommige gegevens naar schijf opschorten voordat u doorgaat</translation>
 </phrase>
 
 <!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -3848,14 +3841,14 @@ U moet dit bestand handmatig downloaden met uw internetbrowser.</translation>
 
 <phrase>
 <original>Finalizing image</original>
-<translation></translation>
+<translation>Afronden afbeelding</translation>
 </phrase>
 
 <!-- pdGIF.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Repainting selected regions</original>
-<translation></translation>
+<translation>Opnieuw schilderen van geselecteerde gebieden</translation>
 </phrase>
 
 <!-- pdInpaint.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -3869,17 +3862,17 @@ U moet dit bestand handmatig downloaden met uw internetbrowser.</translation>
 
 <phrase>
 <original>Building color lookup</original>
-<translation></translation>
+<translation>Opbouwen van kleur opzoeken</translation>
 </phrase>
 
 <phrase>
 <original>All supported LUTs</original>
-<translation></translation>
+<translation>Alle ondersteunde LUT's</translation>
 </phrase>
 
 <phrase>
 <original>Select a LUT file</original>
-<translation></translation>
+<translation>Selecteer een LUT-bestand</translation>
 </phrase>
 
 <!-- pdLUT3D.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -4205,6 +4198,18 @@ U moet dit bestand handmatig downloaden met uw internetbrowser.</translation>
 <!-- pdPalette.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- pdPCX.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<phrase>
+<original>Enter password</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This file is password-protected.  Please enter a password</original>
+<translation></translation>
+</phrase>
+
+<!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
@@ -4554,7 +4559,7 @@ U moet dit bestand handmatig downloaden met uw internetbrowser.</translation>
 
 <phrase>
 <original>last-used settings</original>
-<translation></translation>
+<translation>laatst gebruikte instelling</translation>
 </phrase>
 
 <phrase>
@@ -4963,12 +4968,12 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 
 <phrase>
 <original>Image to file</original>
-<translation></translation>
+<translation>Afbeelding naar bestand</translation>
 </phrase>
 
 <phrase>
 <original>Layers to files</original>
-<translation></translation>
+<translation>Lagen naar bestanden</translation>
 </phrase>
 
 <phrase>
@@ -5533,17 +5538,12 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 
 <phrase>
 <original>Keyboard shortcuts</original>
-<translation></translation>
+<translation>Toetsenbord sneltoetsen</translation>
 </phrase>
 
 <phrase>
 <original>Options</original>
 <translation>Opties</translation>
-</phrase>
-
-<phrase>
-<original>Third-party libraries</original>
-<translation>Bibliotheken van derden</translation>
 </phrase>
 
 <phrase>
@@ -5553,7 +5553,7 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation></translation>
+<translation>Bekijk debug log voor deze sessie</translation>
 </phrase>
 
 <phrase>
@@ -5603,37 +5603,37 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 
 <phrase>
 <original>Show extras</original>
-<translation></translation>
+<translation>Extra's tonen</translation>
 </phrase>
 
 <phrase>
 <original>Layer edges</original>
-<translation></translation>
+<translation>Laagranden</translation>
 </phrase>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>Slimme hulplijnen</translation>
 </phrase>
 
 <phrase>
 <original>Snap</original>
-<translation></translation>
+<translation>Uitlijnen</translation>
 </phrase>
 
 <phrase>
 <original>Snap to</original>
-<translation></translation>
+<translation>Uitlijnen op</translation>
 </phrase>
 
 <phrase>
 <original>Canvas edges</original>
-<translation></translation>
+<translation>Canvasranden</translation>
 </phrase>
 
 <phrase>
 <original>Centerlines</original>
-<translation></translation>
+<translation>Middenlijnen</translation>
 </phrase>
 
 <phrase>
@@ -5643,17 +5643,17 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 
 <phrase>
 <original>Angle 90</original>
-<translation></translation>
+<translation>Hoek 90</translation>
 </phrase>
 
 <phrase>
 <original>Angle 45</original>
-<translation></translation>
+<translation>Hoek 45</translation>
 </phrase>
 
 <phrase>
 <original>Angle 30</original>
-<translation></translation>
+<translation>Hoek 30</translation>
 </phrase>
 
 <phrase>
@@ -5784,6 +5784,11 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 <phrase>
 <original>PhotoDemon website</original>
 <translation>PhotoDemon website</translation>
+</phrase>
+
+<phrase>
+<original>Third-party libraries</original>
+<translation>Bibliotheken van derden</translation>
 </phrase>
 
 <phrase>
@@ -6423,7 +6428,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>use moving average</original>
-<translation></translation>
+<translation>gebruik voortschrijdend gemiddelde</translation>
 </phrase>
 
 <phrase>
@@ -6686,12 +6691,12 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>Deep blue</original>
-<translation></translation>
+<translation>diep blauw</translation>
 </phrase>
 
 <phrase>
 <original>Deep emerald</original>
-<translation></translation>
+<translation>diep smaragd</translation>
 </phrase>
 
 <phrase>
@@ -6774,7 +6779,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>Attempt to recover</original>
-<translation></translation>
+<translation>Proberen te herstellen</translation>
 </phrase>
 
 <phrase>
@@ -6806,22 +6811,22 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>Color panel settings</original>
-<translation></translation>
+<translation>Instellingen kleuren paneel</translation>
 </phrase>
 
 <phrase>
 <original>palettes in this file (%1)</original>
-<translation></translation>
+<translation>paletten in dit bestand (%1)</translation>
 </phrase>
 
 <phrase>
 <original>palette to use</original>
-<translation></translation>
+<translation>te gebruiken palet</translation>
 </phrase>
 
 <phrase>
 <original>wheels + history</original>
-<translation></translation>
+<translation>wielen + geschiedenis</translation>
 </phrase>
 
 <phrase>
@@ -6845,7 +6850,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>Saved presets</original>
-<translation></translation>
+<translation>Opgeslagen vooraf ingestelde waarden</translation>
 </phrase>
 
 <phrase>
@@ -6855,17 +6860,17 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>delete preset</original>
-<translation></translation>
+<translation>verwijder vooraf ingestelde waarde</translation>
 </phrase>
 
 <phrase>
 <original>saved presets for this tool</original>
-<translation></translation>
+<translation>opgeslagen vooraf ingestelde waarden voor dit gereedschap</translation>
 </phrase>
 
 <phrase>
 <original>(no saved presets)</original>
-<translation></translation>
+<translation>(geen opgeslagen vooraf ingestelde waarden)</translation>
 </phrase>
 
 <phrase>
@@ -6900,7 +6905,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>edit existing presets</original>
-<translation></translation>
+<translation>bewerk bestaande vooraf ingestelde waarden</translation>
 </phrase>
 
 <!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -6993,42 +6998,42 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>make node distances equal</original>
-<translation></translation>
+<translation>maak node-afstanden gelijk</translation>
 </phrase>
 
 <phrase>
 <original>additional options</original>
-<translation></translation>
+<translation>aanvullende opties</translation>
 </phrase>
 
 <phrase>
 <original>use gamma when blending</original>
-<translation></translation>
+<translation>gebruik gamma bij mengen</translation>
 </phrase>
 
 <phrase>
 <original>gradient name</original>
-<translation></translation>
+<translation>naam kleurverloop</translation>
 </phrase>
 
 <phrase>
 <original>import gradient file</original>
-<translation></translation>
+<translation>importeer gradiëntbestand</translation>
 </phrase>
 
 <phrase>
 <original>import / export</original>
-<translation></translation>
+<translation>import / export</translation>
 </phrase>
 
 <phrase>
 <original>export gradient file</original>
-<translation></translation>
+<translation>exporteer gradiëntbestand</translation>
 </phrase>
 
 <phrase>
 <original>save to gradient collection</original>
-<translation></translation>
+<translation>opslaan in collectie kleurverlopen</translation>
 </phrase>
 
 <phrase>
@@ -7053,57 +7058,57 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>generate new pattern</original>
-<translation></translation>
+<translation>genereer nieuw patroon</translation>
 </phrase>
 
 <phrase>
 <original>start color and opacity</original>
-<translation></translation>
+<translation>startkleur en dekking</translation>
 </phrase>
 
 <phrase>
 <original>end color and opacity</original>
-<translation></translation>
+<translation>eindkleur en dekking</translation>
 </phrase>
 
 <phrase>
 <original>noise density</original>
-<translation></translation>
+<translation>ruisdichtheid</translation>
 </phrase>
 
 <phrase>
 <original>vary hue</original>
-<translation></translation>
+<translation>varieer tint</translation>
 </phrase>
 
 <phrase>
 <original>vary saturation</original>
-<translation></translation>
+<translation>varieer verzadiging</translation>
 </phrase>
 
 <phrase>
 <original>vary luminance</original>
-<translation></translation>
+<translation>varieer luminantie</translation>
 </phrase>
 
 <phrase>
 <original>vary alpha</original>
-<translation></translation>
+<translation>varieer alpha</translation>
 </phrase>
 
 <phrase>
 <original>edit this gradient >></original>
-<translation></translation>
+<translation>bewerk dit kleurverloop >></translation>
 </phrase>
 
 <phrase>
 <original>sort collection by</original>
-<translation></translation>
+<translation>sorteer collectie op</translation>
 </phrase>
 
 <phrase>
 <original>your collection</original>
-<translation></translation>
+<translation>uw collectie</translation>
 </phrase>
 
 <phrase>
@@ -7213,17 +7218,17 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>Foreground to black</original>
-<translation></translation>
+<translation>Voorgrond naar zwart</translation>
 </phrase>
 
 <phrase>
 <original>Foreground to white</original>
-<translation></translation>
+<translation>Voorgrond naar wit</translation>
 </phrase>
 
 <phrase>
 <original>Foreground to transparent</original>
-<translation></translation>
+<translation>Voorgrond naar transparant</translation>
 </phrase>
 
 <phrase>
@@ -7252,12 +7257,12 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>import settings</original>
-<translation></translation>
+<translation>import instellingen</translation>
 </phrase>
 
 <phrase>
 <original>file information</original>
-<translation></translation>
+<translation>bestandsinformatie</translation>
 </phrase>
 
 <phrase>
@@ -7267,22 +7272,22 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>annotations</original>
-<translation></translation>
+<translation>aantekeningen</translation>
 </phrase>
 
 <phrase>
 <original>document size</original>
-<translation></translation>
+<translation>document grootte</translation>
 </phrase>
 
 <phrase>
 <original>reverse page order</original>
-<translation></translation>
+<translation>omgekeerde pagina volgorde</translation>
 </phrase>
 
 <phrase>
 <original>pages to import</original>
-<translation></translation>
+<translation>te importeren pagina's</translation>
 </phrase>
 
 <phrase>
@@ -7292,47 +7297,47 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation></translation>
+<translation>Het bereik "%1" is niet geldig.</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for user to specify import options</original>
-<translation></translation>
+<translation>Wachten op de gebruiker om import opties te specificeren</translation>
 </phrase>
 
 <phrase>
 <original>pages</original>
-<translation></translation>
+<translation>pagina's</translation>
 </phrase>
 
 <phrase>
 <original>rendering</original>
-<translation></translation>
+<translation>rendering</translation>
 </phrase>
 
 <phrase>
 <original>all pages</original>
-<translation></translation>
+<translation>alle pagina's</translation>
 </phrase>
 
 <phrase>
 <original>(%1 total)</original>
-<translation></translation>
+<translation>(%1 totaal)</translation>
 </phrase>
 
 <phrase>
 <original>current page only</original>
-<translation></translation>
+<translation>alleen huidige pagina</translation>
 </phrase>
 
 <phrase>
 <original>custom range</original>
-<translation></translation>
+<translation>aangepast bereik</translation>
 </phrase>
 
 <phrase>
 <original>solid color</original>
-<translation></translation>
+<translation>effen kleur</translation>
 </phrase>
 
 <phrase>
@@ -7342,27 +7347,27 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>optimize for screens</original>
-<translation></translation>
+<translation>optimaliseer voor schermen</translation>
 </phrase>
 
 <phrase>
 <original>optimize for printing</original>
-<translation></translation>
+<translation>optimaliseer voor printen</translation>
 </phrase>
 
 <phrase>
 <original>%1 pages</original>
-<translation></translation>
+<translation>%1 pagina's</translation>
 </phrase>
 
 <phrase>
 <original>page size:  %1</original>
-<translation></translation>
+<translation>pagina grootte: %1</translation>
 </phrase>
 
 <phrase>
 <original>page size varies (first page is %1)</original>
-<translation></translation>
+<translation>pagina grootte varieert (eerste pagina is %1)</translation>
 </phrase>
 
 <phrase>
@@ -7372,12 +7377,12 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>%1 cm x %2 cm</original>
-<translation></translation>
+<translation>%1 cm x %2 cm</translation>
 </phrase>
 
 <phrase>
 <original>%1" x %2"</original>
-<translation></translation>
+<translation>%1" x %2"</translation>
 </phrase>
 
 <!-- Dialog_ImportPDF.frm contains 48 phrases. 22 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -7460,7 +7465,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 
 <phrase>
 <original>tone-mapping operator</original>
-<translation></translation>
+<translation>toonafbeelding operator</translation>
 </phrase>
 
 <phrase>
@@ -7774,32 +7779,32 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>sample from</original>
-<translation></translation>
+<translation>monster van</translation>
 </phrase>
 
 <phrase>
 <original>fill order</original>
-<translation></translation>
+<translation>vulvolgorde</translation>
 </phrase>
 
 <phrase>
 <original>patch test size</original>
-<translation></translation>
+<translation>patch testgrootte</translation>
 </phrase>
 
 <phrase>
 <original>random patch candidates</original>
-<translation></translation>
+<translation>willekeurige patch kandidaten</translation>
 </phrase>
 
 <phrase>
 <original>refinement (percent)</original>
-<translation></translation>
+<translation>verfijning (percent)</translation>
 </phrase>
 
 <phrase>
 <original>patch perfection threshold</original>
-<translation></translation>
+<translation>patch perfectiedrempel</translation>
 </phrase>
 
 <phrase>
@@ -7819,12 +7824,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>below</original>
-<translation></translation>
+<translation>onder</translation>
 </phrase>
 
 <phrase>
 <original>outside-in</original>
-<translation></translation>
+<translation>buitenste-binnen</translation>
 </phrase>
 
 <phrase>
@@ -7858,29 +7863,29 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Applying fill</original>
-<translation></translation>
+<translation>Vulling toepassen</translation>
 </phrase>
 
 <phrase>
 <original>do not change</original>
-<translation></translation>
+<translation>niet wijzigen</translation>
 </phrase>
 
 <phrase>
 <original>use selection size</original>
-<translation></translation>
+<translation>gebruik selectiegrootte</translation>
 </phrase>
 
 <phrase>
 <original>use combined size (union)</original>
-<translation></translation>
+<translation>gebruik gecombineerde grootte (unie)</translation>
 </phrase>
 
 <!-- Edit_Fill.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>pen</original>
-<translation></translation>
+<translation>pen</translation>
 </phrase>
 
 <phrase>
@@ -7925,11 +7930,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>about this plugin</original>
 <translation>over deze plugin</translation>
-</phrase>
-
-<phrase>
-<original>available plugins</original>
-<translation>beschikbare plugins</translation>
 </phrase>
 
 <phrase>
@@ -7997,7 +7997,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Nadat u een of meer 8bf-bestanden hebt gedownload, gebruikt u de knop Instellingen (hierboven) om PhotoDemon te vertellen waar u ze kunt vinden.  PhotoDemon voegt ze dan toe aan uw Effectenverzameling.</translation>
 </phrase>
 
-<!-- Effects_8bf.frm contains 25 phrases. 9 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
@@ -8036,14 +8036,14 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>foreground layer</original>
-<translation></translation>
+<translation>voorgrondlaag</translation>
 </phrase>
 
 <!-- Effects_Animation_Background.frm contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>speed modifier</original>
-<translation></translation>
+<translation>snelheidsaanpassing</translation>
 </phrase>
 
 <!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8139,7 +8139,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>random seed</original>
-<translation></translation>
+<translation>willekeurige zaad</translation>
 </phrase>
 
 <phrase>
@@ -8298,7 +8298,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>adaptive coloring</original>
-<translation></translation>
+<translation>adaptieve kleuring</translation>
 </phrase>
 
 <phrase>
@@ -8352,7 +8352,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>edge color and opacity</original>
-<translation></translation>
+<translation>randkleur en dekking</translation>
 </phrase>
 
 <phrase>
@@ -8608,7 +8608,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>swap order</original>
-<translation></translation>
+<translation>volgorde omwisselen</translation>
 </phrase>
 
 <phrase>
@@ -8623,14 +8623,14 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Summoning M. C. Escher</original>
-<translation></translation>
+<translation>M. C. Escher oproepen</translation>
 </phrase>
 
 <!-- Effects_Distort_Droste.frm contains 11 phrases. 7 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>Miscellaneous distorts</original>
-<translation></translation>
+<translation>Diverse vervormingen</translation>
 </phrase>
 
 <phrase>
@@ -8865,7 +8865,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>background color and opacity</original>
-<translation></translation>
+<translation>achtergrondkleur en dekking</translation>
 </phrase>
 
 <phrase>
@@ -8880,7 +8880,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>boost</original>
-<translation></translation>
+<translation>boost</translation>
 </phrase>
 
 <phrase>
@@ -8890,12 +8890,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Calculating gradient flow</original>
-<translation></translation>
+<translation>Gradiëntstroom berekenen</translation>
 </phrase>
 
 <phrase>
 <original>magnitude</original>
-<translation></translation>
+<translation>omvang</translation>
 </phrase>
 
 <phrase>
@@ -8910,7 +8910,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>static</original>
-<translation></translation>
+<translation>statisch</translation>
 </phrase>
 
 <!-- Effects_Edge_GradientFlow.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -8958,12 +8958,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>ambient light</original>
-<translation></translation>
+<translation>omgevingslicht</translation>
 </phrase>
 
 <phrase>
 <original>Generating bump map</original>
-<translation></translation>
+<translation>Genereren van bump map</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BumpMap.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9083,7 +9083,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>color shift</original>
-<translation></translation>
+<translation>kleurverschuiving</translation>
 </phrase>
 
 <phrase>
@@ -9159,12 +9159,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>luminance only</original>
-<translation></translation>
+<translation>alleen luminantie</translation>
 </phrase>
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation></translation>
+<translation>Stof en krassen repareren</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9334,7 +9334,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Splattering canvas with paint</original>
-<translation></translation>
+<translation>Spatten van canvas met verf</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Pointillize.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9346,7 +9346,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Rendering clouds</original>
-<translation></translation>
+<translation>Wolken renderen</translation>
 </phrase>
 
 <phrase>
@@ -9368,19 +9368,19 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Rendering fibers</original>
-<translation></translation>
+<translation>Vezels renderen</translation>
 </phrase>
 
 <!-- Effects_Render_Fibers.frm contains 16 phrases. 13 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
 <original>Truchet tiles</original>
-<translation></translation>
+<translation>Truchet tegels</translation>
 </phrase>
 
 <phrase>
 <original>Rendering Truchet tiles</original>
-<translation></translation>
+<translation>Truchet tegels renderen</translation>
 </phrase>
 
 <!-- Effects_Render_Truchet.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9401,22 +9401,22 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>color fade</original>
-<translation></translation>
+<translation>kleurvervaging</translation>
 </phrase>
 
 <phrase>
 <original>diffuse light</original>
-<translation></translation>
+<translation>diffuus licht</translation>
 </phrase>
 
 <phrase>
 <original>fade edges</original>
-<translation></translation>
+<translation>vervaag randen</translation>
 </phrase>
 
 <phrase>
 <original>Sending image back in time</original>
-<translation></translation>
+<translation>Afbeelding terug in de tijd sturen</translation>
 </phrase>
 
 <!-- Effects_Stylize_Antique.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9447,7 +9447,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>use Lab color space</original>
-<translation></translation>
+<translation>gebruik Lab kleurruimte</translation>
 </phrase>
 
 <phrase>
@@ -9462,27 +9462,27 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>palette type</original>
-<translation></translation>
+<translation>palettype</translation>
 </phrase>
 
 <phrase>
 <original>use palette's alpha values</original>
-<translation></translation>
+<translation>gebruik alfa-waarden van het palet</translation>
 </phrase>
 
 <phrase>
 <original>palettes in this file</original>
-<translation></translation>
+<translation>paletten in dit bestand</translation>
 </phrase>
 
 <phrase>
 <original>choose a palette file</original>
-<translation></translation>
+<translation>kies een paletbestand</translation>
 </phrase>
 
 <phrase>
 <original>optimal</original>
-<translation></translation>
+<translation>optimaal</translation>
 </phrase>
 
 <phrase>
@@ -9619,7 +9619,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>custom foreshortening (x, y)</original>
-<translation></translation>
+<translation>aangepaste verkorting (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9860,12 +9860,12 @@ Gegarandeerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden b
 
 <phrase>
 <original>when importing vector images</original>
-<translation></translation>
+<translation>bij het importeren van vectorafbeeldingen</translation>
 </phrase>
 
 <phrase>
 <original>(optional) advanced import settings</original>
-<translation></translation>
+<translation>(optioneel) geavanceerde importinstellingen</translation>
 </phrase>
 
 <phrase>
@@ -10309,12 +10309,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>use embedded size</original>
-<translation></translation>
+<translation>gebruik ingebedde grootte</translation>
 </phrase>
 
 <phrase>
 <original>use custom size</original>
-<translation></translation>
+<translation>gebruik aangepaste grootte</translation>
 </phrase>
 
 <phrase>
@@ -10448,7 +10448,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>effort</original>
-<translation></translation>
+<translation>inspanning</translation>
 </phrase>
 
 <!-- File_Export_AnimatedJXL.frm contains 19 phrases. 18 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10479,42 +10479,42 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>layers to export</original>
-<translation></translation>
+<translation>lagen om te exporteren</translation>
 </phrase>
 
 <phrase>
 <original>destination folder</original>
-<translation></translation>
+<translation>doelmap</translation>
 </phrase>
 
 <phrase>
 <original>file type</original>
-<translation></translation>
+<translation>bestandstype</translation>
 </phrase>
 
 <phrase>
 <original>Exporting layer %1 of %2</original>
-<translation></translation>
+<translation>Exporteren laag %1 van %2</translation>
 </phrase>
 
 <phrase>
 <original>all layers</original>
-<translation></translation>
+<translation>alle lagen</translation>
 </phrase>
 
 <phrase>
 <original>visible layers</original>
-<translation></translation>
+<translation>zichtbare lagen</translation>
 </phrase>
 
 <phrase>
 <original>current layer</original>
-<translation></translation>
+<translation>huidige laag</translation>
 </phrase>
 
 <phrase>
 <original>layer name</original>
-<translation></translation>
+<translation>laagnaam</translation>
 </phrase>
 
 <!-- File_Export_Layers.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -10543,12 +10543,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Palette export options</original>
-<translation></translation>
+<translation>Palet export opties</translation>
 </phrase>
 
 <phrase>
 <original>target palette file</original>
-<translation></translation>
+<translation>doelpaletbestand</translation>
 </phrase>
 
 <phrase>
@@ -10563,27 +10563,27 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>palette color count</original>
-<translation></translation>
+<translation>palet aantal kleuren</translation>
 </phrase>
 
 <phrase>
 <original>palette contents</original>
-<translation></translation>
+<translation>palet inhoud</translation>
 </phrase>
 
 <phrase>
 <original>palette to export</original>
-<translation></translation>
+<translation>palet om te exporteren</translation>
 </phrase>
 
 <phrase>
 <original>current palette</original>
-<translation></translation>
+<translation>huidige palet</translation>
 </phrase>
 
 <phrase>
 <original>original embedded palette</original>
-<translation></translation>
+<translation>origineel ingebed palet</translation>
 </phrase>
 
 <phrase>
@@ -10593,7 +10593,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>append</original>
-<translation></translation>
+<translation>toevoegen</translation>
 </phrase>
 
 <phrase>
@@ -10904,12 +10904,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>lossless</original>
-<translation></translation>
+<translation>verliesloos</translation>
 </phrase>
 
 <phrase>
 <original>lossy</original>
-<translation></translation>
+<translation>met verlies</translation>
 </phrase>
 
 <phrase>
@@ -10941,12 +10941,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>icon source</original>
-<translation></translation>
+<translation>icoon bron</translation>
 </phrase>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation></translation>
+<translation>behandel elke laag als een uniek icoonframe</translation>
 </phrase>
 
 <phrase>
@@ -10976,12 +10976,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>custom icon</original>
-<translation></translation>
+<translation>aangepast icoon</translation>
 </phrase>
 
 <phrase>
 <original>use original file settings</original>
-<translation></translation>
+<translation>gebruik originele bestandsinstellingen</translation>
 </phrase>
 
 <!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11097,7 +11097,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>compression effort</original>
-<translation></translation>
+<translation>compressie-inspanning</translation>
 </phrase>
 
 <phrase>
@@ -11158,7 +11158,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>compression optimization</original>
-<translation></translation>
+<translation>compressie optimalisatie</translation>
 </phrase>
 
 <phrase>
@@ -11168,37 +11168,37 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>optimize: fast filters</original>
-<translation></translation>
+<translation>optimaliseren: snelle filters</translation>
 </phrase>
 
 <phrase>
 <original>optimize: all filters</original>
-<translation></translation>
+<translation>optimaliseren: alle filters</translation>
 </phrase>
 
 <phrase>
 <original>single filter: none</original>
-<translation></translation>
+<translation>enkele filter: geen</translation>
 </phrase>
 
 <phrase>
 <original>single filter: sub</original>
-<translation></translation>
+<translation>enkele filter: sub</translation>
 </phrase>
 
 <phrase>
 <original>single filter: up</original>
-<translation></translation>
+<translation>enkele filter: op</translation>
 </phrase>
 
 <phrase>
 <original>single filter: average</original>
-<translation></translation>
+<translation>enkele filter: gemiddeld</translation>
 </phrase>
 
 <phrase>
 <original>single filter: paeth</original>
-<translation></translation>
+<translation>enkele filter: paeth</translation>
 </phrase>
 
 <phrase>
@@ -11345,7 +11345,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>animation enabled for this image</original>
-<translation></translation>
+<translation>animatie ingeschakeld voor deze afbeelding</translation>
 </phrase>
 
 <!-- Image_Animation.frm contains 28 phrases. 27 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -11359,27 +11359,27 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Compare images</original>
-<translation></translation>
+<translation>Afbeeldingen vergelijken</translation>
 </phrase>
 
 <phrase>
 <original>resize images as necessary</original>
-<translation></translation>
+<translation>afbeeldingen herschalen waar nodig</translation>
 </phrase>
 
 <phrase>
 <original>base image and layer</original>
-<translation></translation>
+<translation>basisafbeelding en laag</translation>
 </phrase>
 
 <phrase>
 <original>comparison image and layer</original>
-<translation></translation>
+<translation>vergelijkingsafbeelding en laag</translation>
 </phrase>
 
 <phrase>
 <original>compare using Lab color space</original>
-<translation></translation>
+<translation>vergelijken met behulp van Lab kleurruimte</translation>
 </phrase>
 
 <phrase>
@@ -11389,12 +11389,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>difference between %1 and %2</original>
-<translation></translation>
+<translation>verschil tussen %1 en %2</translation>
 </phrase>
 
 <phrase>
 <original>infinite</original>
-<translation></translation>
+<translation>oneindig</translation>
 </phrase>
 
 <phrase>
@@ -11463,7 +11463,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>modified image and layer</original>
-<translation></translation>
+<translation>gewijzigde afbeelding en laag</translation>
 </phrase>
 
 <!-- Image_CreateLUT.frm contains 20 phrases. 17 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11692,12 +11692,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>preview changes</original>
-<translation></translation>
+<translation>voorbeeld wijzigingen</translation>
 </phrase>
 
 <phrase>
 <original>optimize for speed</original>
-<translation></translation>
+<translation>optimaliseren voor snelheid</translation>
 </phrase>
 
 <phrase>
@@ -11707,7 +11707,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>resampling</original>
-<translation></translation>
+<translation>resampling</translation>
 </phrase>
 
 <phrase>
@@ -11852,7 +11852,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>after importing source images</original>
-<translation></translation>
+<translation>na importeren bronafbeeldingen</translation>
 </phrase>
 
 <phrase>
@@ -11862,7 +11862,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>align imported layers</original>
-<translation></translation>
+<translation>geïmporteerde lagen uitlijnen</translation>
 </phrase>
 
 <phrase>
@@ -11872,47 +11872,47 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>destination image</original>
-<translation></translation>
+<translation>doelafbeelding</translation>
 </phrase>
 
 <phrase>
 <original>source image(s)</original>
-<translation></translation>
+<translation>bronafbeelding(en)</translation>
 </phrase>
 
 <phrase>
 <original>keep current size</original>
-<translation></translation>
+<translation>behoud huidige grootte</translation>
 </phrase>
 
 <phrase>
 <original>resize to fit imported layers</original>
-<translation></translation>
+<translation>herschalen om te passen bij geïmporteerde lagen</translation>
 </phrase>
 
 <phrase>
 <original>replace existing layers with imported ones</original>
-<translation></translation>
+<translation>vervang bestaande lagen met geïmporteerde</translation>
 </phrase>
 
 <phrase>
 <original>add duplicates as new layers</original>
-<translation></translation>
+<translation>duplicaten toevoegen als nieuwe lagen</translation>
 </phrase>
 
 <phrase>
 <original>leave images open</original>
-<translation></translation>
+<translation>afbeeldingen open laten</translation>
 </phrase>
 
 <phrase>
 <original>close images normally (prompt for unsaved changes)</original>
-<translation></translation>
+<translation>afbeeldingen normaal sluiten (vraag om onopgeslagen wijzigingen)</translation>
 </phrase>
 
 <phrase>
 <original>close images without prompting</original>
-<translation></translation>
+<translation>afbeeldingen sluiten zonder vragen</translation>
 </phrase>
 
 <!-- Layer_Split_ImagesToLayers.frm contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -11941,22 +11941,22 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Generate mask from luminance</original>
-<translation></translation>
+<translation>Genereer masker van luminantie</translation>
 </phrase>
 
 <phrase>
 <original>black is transparent</original>
-<translation></translation>
+<translation>zwart is transparant</translation>
 </phrase>
 
 <phrase>
 <original>white is transparent</original>
-<translation></translation>
+<translation>wit is transparant</translation>
 </phrase>
 
 <phrase>
 <original>gray is transparent</original>
-<translation></translation>
+<translation>grijs is transparant</translation>
 </phrase>
 
 <!-- Layer_Transparency_Luma.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -11970,7 +11970,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Converting alpha channel</original>
-<translation></translation>
+<translation>Converteren alfa kanaal</translation>
 </phrase>
 
 <!-- Layer_Transparency_Threshold.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12109,7 +12109,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation></translation>
+<translation>Ongedaan maken/Herstellen gereedschap: wijzigingen aan een afbeelding of laag ongedaan maken</translation>
 </phrase>
 
 <phrase>
@@ -12224,12 +12224,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Select colors from the image</original>
-<translation></translation>
+<translation>Kleuren selecteren uit de afbeelding</translation>
 </phrase>
 
 <phrase>
 <original>Measure angles and distances</original>
-<translation></translation>
+<translation>Hoeken en afstanden meten</translation>
 </phrase>
 
 <phrase>
@@ -12259,12 +12259,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Basic Text</original>
-<translation></translation>
+<translation>Basis Tekst</translation>
 </phrase>
 
 <phrase>
 <original>Advanced Text</original>
-<translation></translation>
+<translation>Geavanceerde Tekst</translation>
 </phrase>
 
 <phrase>
@@ -12284,7 +12284,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Paint bucket (fill with color)</original>
-<translation></translation>
+<translation>Verfemmer (vullen met kleur)</translation>
 </phrase>
 
 <phrase>
@@ -12294,7 +12294,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Hand tool</original>
-<translation></translation>
+<translation>Handgereedschap</translation>
 </phrase>
 
 <phrase>
@@ -12319,37 +12319,37 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Rectangle selection tool</original>
-<translation></translation>
+<translation>Rechthoek selectiegereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Ellipse selection tool</original>
-<translation></translation>
+<translation>Ellips selectiegereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Polygon selection tool</original>
-<translation></translation>
+<translation>Veelhoek selectiegereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Lasso selection tool</original>
-<translation></translation>
+<translation>Lasso selectiegereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Magic wand selection tool</original>
-<translation></translation>
+<translation>Toverstaf selectiegereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Basic text tool</original>
-<translation></translation>
+<translation>Basis tekstgereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Advanced text tool</original>
-<translation></translation>
+<translation>Geavanceerd tekstgereedschap</translation>
 </phrase>
 
 <phrase>
@@ -12359,59 +12359,59 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Paintbrush tool</original>
-<translation></translation>
+<translation>Verfborstelgereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Erase tool</original>
-<translation></translation>
+<translation>Wisgereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation></translation>
+<translation>Kloonstempelgereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Paint bucket tool</original>
-<translation></translation>
+<translation>Verfemmergereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Search tool</original>
-<translation></translation>
+<translation>Zoekgereedschap</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush size</original>
-<translation></translation>
+<translation>Penseelgrootte verkleinen</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush size</original>
-<translation></translation>
+<translation>Penseelgrootte vergroten</translation>
 </phrase>
 
 <phrase>
 <original>Decrease brush hardness</original>
-<translation></translation>
+<translation>Penseelhardheid verkleinen</translation>
 </phrase>
 
 <phrase>
 <original>Increase brush hardness</original>
-<translation></translation>
+<translation>Penseelhardheid vergroten</translation>
 </phrase>
 
 <phrase>
 <original>Toggle brush cursor</original>
-<translation></translation>
+<translation>Penseelcursor wisselen</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
-<translation></translation>
+<translation>patroonmodus</translation>
 </phrase>
 
 <phrase>
@@ -12436,7 +12436,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>source settings</original>
-<translation></translation>
+<translation>broninstellingen</translation>
 </phrase>
 
 <phrase>
@@ -12451,34 +12451,34 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>tile + flip horizontal</original>
-<translation></translation>
+<translation>tegel + horizontaal spiegelen</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip vertical</original>
-<translation></translation>
+<translation>tegel + verticaal spiegelen</translation>
 </phrase>
 
 <phrase>
 <original>tile + flip both</original>
-<translation></translation>
+<translation>tegel + beide spiegelen</translation>
 </phrase>
 
 <!-- Toolpanel_Clone.frm contains 20 phrases. 9 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <phrase>
 <original>after clicking</original>
-<translation></translation>
+<translation>na klikken</translation>
 </phrase>
 
 <phrase>
 <original>return to previous tool</original>
-<translation></translation>
+<translation>terugkeren naar vorig gereedschap</translation>
 </phrase>
 
 <phrase>
 <original>RGB %</original>
-<translation></translation>
+<translation>RGB %</translation>
 </phrase>
 
 <phrase>
@@ -12495,37 +12495,37 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>presets</original>
-<translation></translation>
+<translation>voorinstellingen</translation>
 </phrase>
 
 <phrase>
 <original>guides</original>
-<translation></translation>
+<translation>hulplijnen</translation>
 </phrase>
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>doel</translation>
 </phrase>
 
 <phrase>
 <original>highlight crop area</original>
-<translation></translation>
+<translation>bijsnijdgebied markeren</translation>
 </phrase>
 
 <phrase>
 <original>delete cropped pixels</original>
-<translation></translation>
+<translation>bijgesneden pixels verwijderen</translation>
 </phrase>
 
 <phrase>
 <original>allow enlarging</original>
-<translation></translation>
+<translation>vergroten toestaan</translation>
 </phrase>
 
 <phrase>
 <original>apply</original>
-<translation></translation>
+<translation>toepassen</translation>
 </phrase>
 
 <phrase>
@@ -12540,32 +12540,32 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>resolution (PPI)</original>
-<translation></translation>
+<translation>resolutie (PPI)</translation>
 </phrase>
 
 <phrase>
 <original>centerlines</original>
-<translation></translation>
+<translation>middenlijnen</translation>
 </phrase>
 
 <phrase>
 <original>rule of thirds</original>
-<translation></translation>
+<translation>regel van derden</translation>
 </phrase>
 
 <phrase>
 <original>rule of fifths</original>
-<translation></translation>
+<translation>regel van vijfden</translation>
 </phrase>
 
 <phrase>
 <original>golden ratio</original>
-<translation></translation>
+<translation>gulden snede</translation>
 </phrase>
 
 <phrase>
 <original>diagonals</original>
-<translation></translation>
+<translation>diagonalen</translation>
 </phrase>
 
 <phrase>
@@ -12575,41 +12575,41 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Swap width and height</original>
-<translation></translation>
+<translation>Breedte en hoogte omwisselen</translation>
 </phrase>
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation></translation>
+<translation>Bijsnijden buiten de afbeeldingsgrenzen toestaan (wat de afbeelding zal vergroten).</translation>
 </phrase>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation></translation>
+<translation>Resolutie wordt gebruikt om metingen uit de echte wereld om te zetten naar pixels. Het wordt genegeerd voor metingen die al in pixels zijn.</translation>
 </phrase>
 
 <phrase>
 <original>You can use this measurement in landscape or portrait orientation.</original>
-<translation></translation>
+<translation>U kunt deze meting gebruiken in liggende of staande oriëntatie.</translation>
 </phrase>
 
 <!-- Toolpanel_Crop.frm contains 29 phrases. 9 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <phrase>
 <original>align to pixel grid</original>
-<translation></translation>
+<translation>uitlijnen op pixel raster</translation>
 </phrase>
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation></translation>
+<translation>Deze instelling lijnt penseelstreken krachtig uit op de middelpunten van het pixelraster. Dit verbetert de precisie (vooral bij kleine penseelgroottes), maar penseelstreken kunnen minder natuurlijk lijken.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>fill source</original>
-<translation></translation>
+<translation>vulling bron</translation>
 </phrase>
 
 <phrase>
@@ -12624,17 +12624,17 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>compare pixels by</original>
-<translation></translation>
+<translation>pixels vergelijken op</translation>
 </phrase>
 
 <phrase>
 <original>fill area</original>
-<translation></translation>
+<translation>gebied vullen</translation>
 </phrase>
 
 <phrase>
 <original>current color</original>
-<translation></translation>
+<translation>huidige kleur</translation>
 </phrase>
 
 <phrase>
@@ -12676,7 +12676,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>center offset</original>
-<translation></translation>
+<translation>midden verschuiving</translation>
 </phrase>
 
 <phrase>
@@ -12691,7 +12691,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>spherical</original>
-<translation></translation>
+<translation>bolvormig</translation>
 </phrase>
 
 <phrase>
@@ -12708,22 +12708,22 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>modify measurement</original>
-<translation></translation>
+<translation>meting wijzigen</translation>
 </phrase>
 
 <phrase>
 <original>share measurements between images</original>
-<translation></translation>
+<translation>metingen delen tussen afbeeldingen</translation>
 </phrase>
 
 <phrase>
 <original>swap points</original>
-<translation></translation>
+<translation>punten wisselen</translation>
 </phrase>
 
 <phrase>
 <original>rotate 90</original>
-<translation></translation>
+<translation>90 graden draaien</translation>
 </phrase>
 
 <phrase>
@@ -12733,24 +12733,24 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>straighten image</original>
-<translation></translation>
+<translation>afbeelding rechten</translation>
 </phrase>
 
 <phrase>
 <original>straighten layer</original>
-<translation></translation>
+<translation>laag rechten</translation>
 </phrase>
 
 <phrase>
 <original>use measurement to</original>
-<translation></translation>
+<translation>meting gebruiken om</translation>
 </phrase>
 
 <!-- Toolpanel_Measure.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>lock aspect ratio</original>
-<translation></translation>
+<translation>aspectverhouding vergrendelen</translation>
 </phrase>
 
 <phrase>
@@ -12760,12 +12760,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>ignore transparent pixels</original>
-<translation></translation>
+<translation>transparante pixels negeren</translation>
 </phrase>
 
 <phrase>
 <original>show distances</original>
-<translation></translation>
+<translation>afstanden tonen</translation>
 </phrase>
 
 <phrase>
@@ -12785,27 +12785,27 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>make transforms permanent</original>
-<translation></translation>
+<translation>transformaties permanent maken</translation>
 </phrase>
 
 <phrase>
 <original>sample selections from</original>
-<translation></translation>
+<translation>selecties samplen van</translation>
 </phrase>
 
 <phrase>
 <original>default selection behavior</original>
-<translation></translation>
+<translation>standaard selectiegedrag</translation>
 </phrase>
 
 <phrase>
 <original>shear (x, y)</original>
-<translation></translation>
+<translation>scheeftrekken (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>auto select layer</original>
-<translation></translation>
+<translation>automatisch laag selecteren</translation>
 </phrase>
 
 <phrase>
@@ -12841,22 +12841,22 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>(no additional options)</original>
-<translation></translation>
+<translation>(geen aanvullende opties)</translation>
 </phrase>
 
 <phrase>
 <original>fill interior</original>
-<translation></translation>
+<translation>interieur vullen</translation>
 </phrase>
 
 <phrase>
 <original>fill exterior</original>
-<translation></translation>
+<translation>exterieur vullen</translation>
 </phrase>
 
 <phrase>
 <original>open panel automatically</original>
-<translation></translation>
+<translation>paneel automatisch openen</translation>
 </phrase>
 
 <phrase>
@@ -12881,7 +12881,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>New selection</original>
-<translation></translation>
+<translation>Nieuwe selectie</translation>
 </phrase>
 
 <phrase>
@@ -12901,12 +12901,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>always</original>
-<translation></translation>
+<translation>altijd</translation>
 </phrase>
 
 <phrase>
 <original>when combining</original>
-<translation></translation>
+<translation>bij het combineren</translation>
 </phrase>
 
 <phrase>
@@ -13008,7 +13008,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>always open this panel for new text layers</original>
-<translation></translation>
+<translation>open dit paneel altijd voor nieuwe tekstlagen</translation>
 </phrase>
 
 <phrase>
@@ -13060,12 +13060,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>jitter (x, y)</original>
-<translation></translation>
+<translation>jiter (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>inflate</original>
-<translation></translation>
+<translation>opblazen</translation>
 </phrase>
 
 <phrase>
@@ -13075,12 +13075,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>horizontal padding</original>
-<translation></translation>
+<translation>horizontale opvulling</translation>
 </phrase>
 
 <phrase>
 <original>vertical padding</original>
-<translation></translation>
+<translation>verticale opvulling</translation>
 </phrase>
 
 <phrase>
@@ -13095,7 +13095,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>outline background</original>
-<translation></translation>
+<translation>achtergrond omlijnen</translation>
 </phrase>
 
 <phrase>
@@ -13105,12 +13105,12 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>fill and outline</original>
-<translation></translation>
+<translation>vullen en omlijnen</translation>
 </phrase>
 
 <phrase>
 <original>click to edit</original>
-<translation></translation>
+<translation>klik om te bewerken</translation>
 </phrase>
 
 <phrase>
@@ -13177,132 +13177,132 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>undo all changes</original>
-<translation></translation>
+<translation>alle wijzigingen ongedaan maken</translation>
 </phrase>
 
 <phrase>
 <original>all hotkeys</original>
-<translation></translation>
+<translation>alle sneltoetsen</translation>
 </phrase>
 
 <phrase>
 <original>undo changes</original>
-<translation></translation>
+<translation>wijzigingen ongedaan maken</translation>
 </phrase>
 
 <phrase>
 <original>try to capture automatically</original>
-<translation></translation>
+<translation>probeer automatisch vast te leggen</translation>
 </phrase>
 
 <phrase>
 <original>this hotkey</original>
-<translation></translation>
+<translation>deze sneltoets</translation>
 </phrase>
 
 <phrase>
 <original>restore default</original>
-<translation></translation>
+<translation>standaard herstellen</translation>
 </phrase>
 
 <phrase>
 <original>export to file</original>
-<translation></translation>
+<translation>exporteren naar bestand</translation>
 </phrase>
 
 <phrase>
 <original>import from file</original>
-<translation></translation>
+<translation>importeren van bestand</translation>
 </phrase>
 
 <phrase>
 <original>delete</original>
-<translation></translation>
+<translation>verwijderen</translation>
 </phrase>
 
 <phrase>
 <original>restore all defaults</original>
-<translation></translation>
+<translation>alle standaardwaarden herstellen</translation>
 </phrase>
 
 <phrase>
 <original>generate summary</original>
-<translation></translation>
+<translation>samenvatting genereren</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys</original>
-<translation></translation>
+<translation>Sneltoetsen</translation>
 </phrase>
 
 <phrase>
 <original>Import hotkeys</original>
-<translation></translation>
+<translation>Sneltoetsen importeren</translation>
 </phrase>
 
 <phrase>
 <original>Export hotkeys</original>
-<translation></translation>
+<translation>Sneltoetsen exporteren</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon Hotkeys</original>
-<translation></translation>
+<translation>PhotoDemon Sneltoetsen</translation>
 </phrase>
 
 <phrase>
 <original>One or more hotkeys is currently assigned to multiple actions.</original>
-<translation></translation>
+<translation>Eén of meer sneltoetsen zijn momenteel aan meerdere acties toegewezen.</translation>
 </phrase>
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation></translation>
+<translation>Als u doorgaat, zal PhotoDemon enkel de eerste keer dat een gedupliceerde sneltoets voorkomt behouden.</translation>
 </phrase>
 
 <phrase>
 <original>Press OK to proceed.</original>
-<translation></translation>
+<translation>Druk op OK om door te gaan.</translation>
 </phrase>
 
 <phrase>
 <original>Press cancel to keep editing hotkeys.</original>
-<translation></translation>
+<translation>Druk op annuleren om verder te gaan met het bewerken van sneltoetsen.</translation>
 </phrase>
 
 <phrase>
 <original>Toolbox tools</original>
-<translation></translation>
+<translation>Gereedschappen toolbox</translation>
 </phrase>
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation></translation>
+<translation>Gebruik deze sneltoets op slechts één actie</translation>
 </phrase>
 
 <phrase>
 <original>(this item)</original>
-<translation></translation>
+<translation>(dit item)</translation>
 </phrase>
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation></translation>
+<translation>Sneltoetsen moeten uniek zijn.</translation>
 </phrase>
 
 <phrase>
 <original>Command</original>
-<translation></translation>
+<translation>Opdracht</translation>
 </phrase>
 
 <phrase>
 <original>Hotkey</original>
-<translation></translation>
+<translation>Sneltoets</translation>
 </phrase>
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Dit zal alle sneltoetsbewerkingen overschrijven. Weet u zeker dat u wilt doorgaan?</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -13314,7 +13314,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>UI elements</original>
-<translation></translation>
+<translation>UI elementen</translation>
 </phrase>
 
 <phrase>
@@ -13329,7 +13329,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>phrase groups</original>
-<translation></translation>
+<translation>zinsgroepen</translation>
 </phrase>
 
 <phrase>
@@ -13349,7 +13349,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>Auto-translate all missing phrases</original>
-<translation></translation>
+<translation>Alle ontbrekende zinnen automatisch vertalen</translation>
 </phrase>
 
 <phrase>
@@ -13364,37 +13364,37 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 
 <phrase>
 <original>phrase types</original>
-<translation></translation>
+<translation>zinstypen</translation>
 </phrase>
 
 <phrase>
 <original>action names</original>
-<translation></translation>
+<translation>actienamen</translation>
 </phrase>
 
 <phrase>
 <original>message boxes</original>
-<translation></translation>
+<translation>berichtvakken</translation>
 </phrase>
 
 <phrase>
 <original>status bar messages</original>
-<translation></translation>
+<translation>statusbalkberichten</translation>
 </phrase>
 
 <phrase>
 <original>tooltips</original>
-<translation></translation>
+<translation>tooltips</translation>
 </phrase>
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation></translation>
+<translation>bestanden waar deze zin voorkomt</translation>
 </phrase>
 
 <phrase>
 <original>miscellaneous</original>
-<translation></translation>
+<translation>diverse</translation>
 </phrase>
 
 <phrase>
@@ -13572,12 +13572,12 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>apply language and translation settings</original>
-<translation></translation>
+<translation>taal- en vertaalinstellingen toepassen</translation>
 </phrase>
 
 <phrase>
 <original>localize phrases</original>
-<translation></translation>
+<translation>zinnen lokaliseren</translation>
 </phrase>
 
 <phrase>
@@ -13696,7 +13696,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Menus</original>
-<translation></translation>
+<translation>Menu's</translation>
 </phrase>
 
 <phrase>
@@ -13716,12 +13716,12 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 
 <phrase>
 <original>Fonts</original>
-<translation></translation>
+<translation>Lettertypen</translation>
 </phrase>
 
 <phrase>
 <original>Input devices</original>
-<translation></translation>
+<translation>Invoerapparaten</translation>
 </phrase>
 
 <phrase>
@@ -13752,17 +13752,17 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Reset all library options</original>
-<translation></translation>
+<translation>Alle bibliotheekopties opnieuw instellen</translation>
 </phrase>
 
 <phrase>
 <original>library details</original>
-<translation></translation>
+<translation>bibliotheekdetails</translation>
 </phrase>
 
 <phrase>
 <original>library status</original>
-<translation></translation>
+<translation>bibliotheekstatus</translation>
 </phrase>
 
 <phrase>
@@ -13772,7 +13772,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>library folder</original>
-<translation></translation>
+<translation>bibliotheekmap</translation>
 </phrase>
 
 <phrase>
@@ -13832,12 +13832,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation></translation>
+<translation>incompatibel met Windows XP</translation>
 </phrase>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>incompatibel met Windows 7</translation>
 </phrase>
 
 <phrase>
@@ -13852,7 +13852,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>not installed, but available on-demand</original>
-<translation></translation>
+<translation>niet geïnstalleerd, maar op aanvraag beschikbaar</translation>
 </phrase>
 
 <phrase>
@@ -13862,12 +13862,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>an AVIF image</original>
-<translation></translation>
+<translation>een AVIF-afbeelding</translation>
 </phrase>
 
 <phrase>
 <original>a JPEG XL image</original>
-<translation></translation>
+<translation>een JPEG XL-afbeelding</translation>
 </phrase>
 
 <phrase>
@@ -13884,22 +13884,22 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Select capture area</original>
-<translation></translation>
+<translation>Selecteer opnamegebied</translation>
 </phrase>
 
 <phrase>
 <original>End recording</original>
-<translation></translation>
+<translation>Opname beëindigen</translation>
 </phrase>
 
 <phrase>
 <original>Recording will start in %1</original>
-<translation></translation>
+<translation>Opname start over %1</translation>
 </phrase>
 
 <phrase>
 <original>capture</original>
-<translation></translation>
+<translation>opname</translation>
 </phrase>
 
 <phrase>
@@ -13911,64 +13911,64 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
-<translation></translation>
+<translation>openen in PhotoDemon (voor verdere bewerking)</translation>
 </phrase>
 
 <phrase>
 <original>recording settings</original>
-<translation></translation>
+<translation>opname-instellingen</translation>
 </phrase>
 
 <phrase>
 <original>target frame rate (fps)</original>
-<translation></translation>
+<translation>doel framesnelheid (bps)</translation>
 </phrase>
 
 <phrase>
 <original>repeat final animation</original>
-<translation></translation>
+<translation>herhaal de uiteindelijke animatie</translation>
 </phrase>
 
 <phrase>
 <original>record mouse actions</original>
-<translation></translation>
+<translation>muisacties opnemen</translation>
 </phrase>
 
 <phrase>
 <original>countdown before starting (in seconds)</original>
-<translation></translation>
+<translation>aftellen voor start (in seconden)</translation>
 </phrase>
 
 <phrase>
 <original>when recording finishes</original>
-<translation></translation>
+<translation>wanneer de opname eindigt</translation>
 </phrase>
 
 <phrase>
 <original>save directly to image file</original>
-<translation></translation>
+<translation>direct opslaan naar afbeeldingsbestand</translation>
 </phrase>
 
 <phrase>
 <original>cursor only</original>
-<translation></translation>
+<translation>alleen cursor</translation>
 </phrase>
 
 <phrase>
 <original>cursor and clicks</original>
-<translation></translation>
+<translation>cursor en klikken</translation>
 </phrase>
 
 <!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>reset all "remember my choice" decisions</original>
-<translation></translation>
+<translation>alle "onthoud mijn keuze" beslissingen resetten</translation>
 </phrase>
 
 <phrase>
 <original>title bar text</original>
-<translation></translation>
+<translation>tekst van de titelbalk</translation>
 </phrase>
 
 <phrase>
@@ -13978,37 +13978,37 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>grid size</original>
-<translation></translation>
+<translation>rastergrootte</translation>
 </phrase>
 
 <phrase>
 <original>grid colors</original>
-<translation></translation>
+<translation>rasterkleuren</translation>
 </phrase>
 
 <phrase>
 <original>canvas background color</original>
-<translation></translation>
+<translation>canvas achtergrondkleur</translation>
 </phrase>
 
 <phrase>
 <original>remember my choice</original>
-<translation></translation>
+<translation>onthoud mijn keuze</translation>
 </phrase>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>na het plakken van een nieuwe laag, het verplaatsgereedschap activeren</translation>
 </phrase>
 
 <phrase>
 <original>compact (filename only)</original>
-<translation></translation>
+<translation>compact (alleen bestandsnaam)</translation>
 </phrase>
 
 <phrase>
 <original>verbose (filename and path)</original>
-<translation></translation>
+<translation>uitgebreid (bestandsnaam en pad)</translation>
 </phrase>
 
 <phrase>
@@ -14040,7 +14040,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>display splash screen</original>
-<translation></translation>
+<translation>welkomstscherm weergeven</translation>
 </phrase>
 
 <phrase>
@@ -14075,7 +14075,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>startup</original>
-<translation></translation>
+<translation>opstarten</translation>
 </phrase>
 
 <phrase>
@@ -14142,7 +14142,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation></translation>
+<translation>wanneer "Opslaan als" wordt gebruikt</translation>
 </phrase>
 
 <phrase>
@@ -14167,12 +14167,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>the current image's format</original>
-<translation></translation>
+<translation>het formaat van de huidige afbeelding</translation>
 </phrase>
 
 <phrase>
 <original>the last-used format</original>
-<translation></translation>
+<translation>het laatst gebruikte formaat</translation>
 </phrase>
 
 <phrase>
@@ -14197,17 +14197,17 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>suggest the current filename (standard behavior)</original>
-<translation></translation>
+<translation>de huidige bestandsnaam voorstellen (standaard gedrag)</translation>
 </phrase>
 
 <phrase>
 <original>suggest a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation></translation>
+<translation>een nieuwe kopie voorstellen, bijvoorbeeld "bestandsnaam (2).jpg" (veilig gedrag)</translation>
 </phrase>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation></translation>
+<translation>In de meeste foto-editors wordt bij het commando "Opslaan als" standaard de huidige bestandsnaam gebruikt. PhotoDemon biedt ook een "veiligere" optie, waarbij "Opslaan als" automatisch bestandsnamen voor u verhoogt.</translation>
 </phrase>
 
 <!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
@@ -14294,14 +14294,14 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation></translation>
+<translation>Lage compressie-instellingen vereisen meer schijfruimte, maar ongedaan maken/herhalen bewerkingen zullen sneller zijn. Hoge compressie-instellingen vereisen minder schijfruimte, maar ongedaan maken/herhalen bewerkingen zullen trager zijn. Ongedaan maken gegevens worden gewist wanneer afbeeldingen worden gesloten, dus deze instelling beïnvloedt alleen de schijfruimte terwijl afbeeldingen actief worden bewerkt.</translation>
 </phrase>
 
 <!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
 
 <phrase>
 <original>use embedded ICC profiles, when available</original>
-<translation></translation>
+<translation>gebruik ingesloten ICC-profielen, indien beschikbaar</translation>
 </phrase>
 
 <phrase>
@@ -14346,12 +14346,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>file policies</original>
-<translation></translation>
+<translation>bestand beleid</translation>
 </phrase>
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation></translation>
+<translation>gebruik formaatspecifieke kleurbeheergegevens, indien beschikbaar</translation>
 </phrase>
 
 <phrase>
@@ -14361,12 +14361,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Primary display</original>
-<translation></translation>
+<translation>Primaire weergave</translation>
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation></translation>
+<translation>Secundaire weergave</translation>
 </phrase>
 
 <phrase>
@@ -14406,12 +14406,12 @@ Weet je zeker dat je door wilt gaan?</translation>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation></translation>
+<translation>Ingebouwde ICC-profielen verbeteren de kleurgetrouwheid. Zelfs als deze instelling is uitgeschakeld, kan PhotoDemon nog steeds ICC-profielen gebruiken voor sommige taken (zoals het verwerken van CMYK-gegevens).</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation></translation>
+<translation>Sommige afbeeldingsformaten ondersteunen zowel ICC-profielen als hun eigen kleurbeheeroplossingen. PhotoDemon geeft altijd de voorkeur aan ICC-profielen, maar wanneer er geen zijn ingesloten, kunnen andere kleurbeheerbenaderingen worden geprobeerd.</translation>
 </phrase>
 
 <!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -14538,12 +14538,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>application settings folder</original>
-<translation></translation>
+<translation>map met toepassingsinstellingen</translation>
 </phrase>
 
 <phrase>
 <original>generate debug logs</original>
-<translation></translation>
+<translation>debug-logs genereren</translation>
 </phrase>
 
 <phrase>
@@ -14585,54 +14585,54 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>add another folder</original>
-<translation></translation>
+<translation>andere map toevoegen</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation></translation>
+<translation>lettertypemappen</translation>
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation></translation>
+<translation>interface-lettertype</translation>
 </phrase>
 
 <phrase>
 <original>remove this folder</original>
-<translation></translation>
+<translation>deze map verwijderen</translation>
 </phrase>
 
 <phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
-<translation></translation>
+<translation>Wijzigingen worden de volgende keer dat u PhotoDemon start, van kracht.</translation>
 </phrase>
 
 <!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
-<translation></translation>
+<translation>gedrag muiswiel</translation>
 </phrase>
 
 <phrase>
 <original>snap distance (in pixels)</original>
-<translation></translation>
+<translation>uitlijnafstand (in pixels)</translation>
 </phrase>
 
 <phrase>
 <original>angle snap distance (in degrees)</original>
-<translation></translation>
+<translation>hoekuitlijnafstand (in graden)</translation>
 </phrase>
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation></translation>
+<translation>muisinvoer met hoge resolutie</translation>
 </phrase>
 
 <phrase>
 <original>scroll</original>
-<translation></translation>
+<translation>scrollen</translation>
 </phrase>
 
 <phrase>
@@ -14644,7 +14644,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>display access keys (mnemonics)</original>
-<translation></translation>
+<translation>toegangstoetsen (memorabilia) weergeven</translation>
 </phrase>
 
 <phrase>
@@ -14654,17 +14654,17 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>recent files</original>
-<translation></translation>
+<translation>recente bestanden</translation>
 </phrase>
 
 <phrase>
 <original>recent file menu text</original>
-<translation></translation>
+<translation>tekst menu recente bestanden</translation>
 </phrase>
 
 <phrase>
 <original>Access keys (mnemonics) allow you to navigate menus using the keyboard.  In "auto" mode, languages without native access keys will display the U.S. English access key for each menu.</original>
-<translation></translation>
+<translation>Toegangstoetsen (memorabilia) stellen u in staat om door menu's te navigeren met behulp van het toetsenbord. In de "auto"-modus tonen talen zonder native toegangstoetsen de U.S. Engelse toegangstoets voor elk menu.</translation>
 </phrase>
 
 <phrase>
@@ -14681,7 +14681,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>loading</original>
-<translation></translation>
+<translation>laden</translation>
 </phrase>
 
 <phrase>
@@ -14706,7 +14706,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>saving</original>
-<translation></translation>
+<translation>opslaan</translation>
 </phrase>
 
 <phrase>
@@ -14748,32 +14748,32 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrase>
 <original>mipmaps</original>
-<translation></translation>
+<translation>mipmaps</translation>
 </phrase>
 
 <phrase>
 <original>perceptual</original>
-<translation></translation>
+<translation>perceptueel</translation>
 </phrase>
 
 <phrase>
 <original>slow</original>
-<translation></translation>
+<translation>traag</translation>
 </phrase>
 
 <phrase>
 <original>all</original>
-<translation></translation>
+<translation>alles</translation>
 </phrase>
 
 <phrase>
 <original>point</original>
-<translation></translation>
+<translation>punt</translation>
 </phrase>
 
 <phrase>
 <original>cubic</original>
-<translation></translation>
+<translation>kubisch</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14784,6 +14784,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- As of this build, PhotoDemon contains 5979 phrases. -->
 <!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12099 total words. -->
+<!-- These 2795 phrases contain approximately 12057 total words. -->
 
 </pdData>

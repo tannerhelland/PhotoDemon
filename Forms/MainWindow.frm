@@ -1636,16 +1636,12 @@ Begin VB.Form FormMain
          Index           =   12
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Third-party libraries..."
+         Caption         =   "-"
          Index           =   13
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "-"
-         Index           =   14
-      End
-      Begin VB.Menu MnuTool 
          Caption         =   "Developers"
-         Index           =   15
+         Index           =   14
          Begin VB.Menu MnuDevelopers 
             Caption         =   "View debug log for this session..."
             Index           =   0
@@ -1968,8 +1964,16 @@ Begin VB.Form FormMain
          Index           =   11
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "About..."
+         Caption         =   "Third-party libraries..."
          Index           =   12
+      End
+      Begin VB.Menu MnuHelp 
+         Caption         =   "-"
+         Index           =   13
+      End
+      Begin VB.Menu MnuHelp 
+         Caption         =   "About..."
+         Index           =   14
       End
    End
 End
@@ -1978,7 +1982,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'PhotoDemon is Copyright 1999-2025 by Tanner Helland, tannerhelland.com
+'PhotoDemon is Copyright 1999-2026 by Tanner Helland, tannerhelland.com
 '
 'PhotoDemon's INSTALL file provides important information for developers:
 ' https://github.com/tannerhelland/PhotoDemon/blob/master/INSTALL.md
@@ -1990,7 +1994,7 @@ Attribute VB_Exposed = False
 '
 '***************************************************************************
 'Primary PhotoDemon Interface
-'Copyright 2002-2025 by Tanner Helland
+'Copyright 2002-2026 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 06/October/21
 'Last update: remove all hotkey code - it's now handled elsewhere!
@@ -2420,7 +2424,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
     ' it can compare its version against this value, to infer if an update occurred.
     PDDebug.LogAction "Writing session data to file..."
-    UserPrefs.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
+    UserPrefs.SetPref_String "Core", "LastRunVersion", Updates.GetPhotoDemonVersionCanonical()
     
     'All core PD functions appear to have terminated correctly, so notify the Autosave handler
     ' that this session was clean.  (One exception to this rule is if this is a system-initiated shutdown,
@@ -2513,10 +2517,10 @@ Private Sub AsyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 
                 If updateAvailable Then
                     Message "A new version of PhotoDemon is available.  The update is automatically processing in the background..."
-                    PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly Or vbInformation, "PhotoDemon Updates"
                 Else
                     Message "This copy of PhotoDemon is up to date."
-                    PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly Or vbInformation, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly Or vbInformation, "PhotoDemon Updates", VBHacks.AppMajor_Safe(), VBHacks.AppMinor_Safe(), VBHacks.AppRevision_Safe()
                 End If
                 
                 'If the update managed to download while the reader was staring at the message box,
@@ -2669,7 +2673,10 @@ End Sub
 ' The other session will forward any "open this image" requests passed on its command line.
 Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal numOfBytes As Long)
     
+    'Failsafe checks only
     If g_ProgramShuttingDown Then Exit Sub
+    If (m_SessionStream Is Nothing) Then Exit Sub
+    If (Not m_SessionStream.IsOpen()) Then Exit Sub
     
     'This pipe is used by other PD sessions to forward their command-line contents to us,
     ' if the user has enabled single-session mode.  We do not want to retrieve the pipe's
@@ -2680,14 +2687,14 @@ Private Sub m_OtherSessions_BytesArrived(ByVal initStreamPosition As Long, ByVal
     
     'If at least four bytes are available, retrieve them; they're the size of the command line placed
     ' into the pipe buffer.
-    If (m_SessionStream.GetStreamSize >= 4) Then
+    If (m_SessionStream.GetStreamSize() >= 4) Then
         
         Dim msgSize As Long
         msgSize = m_SessionStream.ReadLong()
         
         'If the stream has received the full pipe message, retrieve all data, then blank out
         ' the stream.
-        If (m_SessionStream.GetStreamSize >= msgSize + 4) Then
+        If (m_SessionStream.GetStreamSize() >= msgSize + 4) Then
             
             'If arguments were passed, extract them to a string stack
             If (msgSize > 0) Then
@@ -3259,6 +3266,10 @@ Private Sub MnuHelp_Click(Index As Integer)
         Case 11
             '(separator)
         Case 12
+            Actions.LaunchAction_ByName "help_3rdpartylibs"
+        Case 13
+            '(separator)
+        Case 14
             Actions.LaunchAction_ByName "help_about"
     End Select
 End Sub
@@ -3953,7 +3964,9 @@ Private Sub mnuTool_Click(Index As Integer)
         Case 12
             Actions.LaunchAction_ByName "tools_options"
         Case 13
-            Actions.LaunchAction_ByName "tools_3rdpartylibs"
+            '(separator)
+        Case 14
+            'Developer menu top-level
     End Select
 End Sub
 

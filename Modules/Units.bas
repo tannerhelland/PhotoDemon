@@ -1,7 +1,7 @@
 Attribute VB_Name = "Units"
 '***************************************************************************
 'Unit Handling and Conversion Functions
-'Copyright 2014-2025 by Tanner Helland
+'Copyright 2014-2026 by Tanner Helland
 'Created: 10/February/14
 'Last updated: 20/March/25
 'Last update: load size presets from file on-demand and cache them here

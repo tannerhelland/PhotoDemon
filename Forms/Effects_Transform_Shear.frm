@@ -102,7 +102,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Shear Distortion
-'Copyright 2013-2025 by Tanner Helland
+'Copyright 2013-2026 by Tanner Helland
 'Created: 03/April/13
 'Last updated: 20/February/20
 'Last update: large performance improvements

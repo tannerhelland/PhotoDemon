@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Printer Interface (including Print Preview)
-'Copyright 2000-2025 by Tanner Helland
+'Copyright 2000-2026 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 13/April/22
 'Last update: restructure this horrifying dialog into something slightly less horrifying... and remove a bunch of

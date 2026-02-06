@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gaussian Blur Tool
-'Copyright 2010-2025 by Tanner Helland
+'Copyright 2010-2026 by Tanner Helland
 'Created: 01/July/10
 'Last updated: 07/November/19
 'Last update: switched to an all-new Deriche implementation for "high quality" gaussian

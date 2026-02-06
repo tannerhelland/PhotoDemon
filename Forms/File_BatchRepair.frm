@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Repair dialog
-'Copyright 2016-2025 by Tanner Helland
+'Copyright 2016-2026 by Tanner Helland
 'Created: 16/August/16
 'Last updated: 18/August/16
 'Last update: add video repair capabilities

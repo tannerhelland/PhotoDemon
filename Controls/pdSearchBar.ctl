@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Search Bar control
-'Copyright 2019-2025 by Tanner Helland
+'Copyright 2019-2026 by Tanner Helland
 'Created: 25/April/19
 'Last updated: 09/January/24
 'Last update: harden against potential errors (see https://github.com/tannerhelland/PhotoDemon/issues/509)

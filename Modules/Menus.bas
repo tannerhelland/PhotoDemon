@@ -1,7 +1,7 @@
 Attribute VB_Name = "Menus"
 '***************************************************************************
 'PhotoDemon Menu Manager
-'Copyright 2017-2025 by Tanner Helland
+'Copyright 2017-2026 by Tanner Helland
 'Created: 11/January/17
 'Last updated: 08/January/25
 'Last update: move the Tools > Test menu to the Developer submenu
@@ -567,20 +567,19 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 7, 10
     AddMenuItem "Keyboard shortcuts...", "tools_hotkeys", 7, 11, , "keyboard"
     AddMenuItem "Options...", "tools_options", 7, 12, , "pref_advanced"
-    AddMenuItem "Third-party libraries...", "tools_3rdpartylibs", 7, 13, , "tools_plugin"
     
     Dim debugMenuVisibility As Boolean
-    debugMenuVisibility = (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)
+    debugMenuVisibility = ((PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA)) Or (Not OS.IsProgramCompiled)
     If debugMenuVisibility Then
-        AddMenuItem "-", "-", 7, 14
-        AddMenuItem "Developers", "tools_developers", 7, 15
-            AddMenuItem "View debug log for this session...", "tools_viewdebuglog", 7, 15, 0, , False
-            AddMenuItem "-", "-", 7, 15, 1, , False
-            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 15, 2, , False
-            AddMenuItem "Build theme package...", "tools_themepackage", 7, 15, 3, , False
-            AddMenuItem "-", "-", 7, 15, 4
-            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 15, 5, , False
-            AddMenuItem "Test", "effects_developertest", 7, 15, 6, , False
+        AddMenuItem "-", "-", 7, 13
+        AddMenuItem "Developers", "tools_developers", 7, 14
+            AddMenuItem "View debug log for this session...", "tools_viewdebuglog", 7, 14, 0, , False
+            AddMenuItem "-", "-", 7, 14, 1, , False
+            AddMenuItem "Theme editor...", "tools_themeeditor", 7, 14, 2, , False
+            AddMenuItem "Build theme package...", "tools_themepackage", 7, 14, 3, , False
+            AddMenuItem "-", "-", 7, 14, 4
+            AddMenuItem "Build standalone package...", "tools_standalonepackage", 7, 14, 5, , False
+            AddMenuItem "Test", "effects_developertest", 7, 14, 6, , False
     End If
     
     'View Menu
@@ -659,7 +658,9 @@ Public Sub InitializeMenus()
     AddMenuItem "PhotoDemon source code...", "help_sourcecode", 10, 9, , "help_github"
     AddMenuItem "PhotoDemon website...", "help_website", 10, 10, , "help_website"
     AddMenuItem "-", "-", 10, 11
-    AddMenuItem "About...", "help_about", 10, 12, , "help_about"
+    AddMenuItem "Third-party libraries...", "help_3rdpartylibs", 10, 12, , "tools_plugin"
+    AddMenuItem "-", "-", 10, 13
+    AddMenuItem "About...", "help_about", 10, 14, , "help_about"
     
     'After all menu items have been added, we need to manually go through and fill the "has children" boolean
     ' for each menu entry.  (This is important because we use it when producing a searchable list of menu items,
