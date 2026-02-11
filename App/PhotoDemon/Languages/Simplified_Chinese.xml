@@ -5,11 +5,11 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>zh-CN</langid>
-<langname>简体中文（2025.4 build 130）</langname>
-<langversion>2025.10.31</langversion>
+<langname>简体中文（2026.1 build 120）</langname>
+<langversion>2026.2.9</langversion>
 <langstatus>完成</langstatus>
 
-<author>Charltsing（QQ 564955427） revised on Oct 24, 2025</author>
+<author>Charltsing（QQ 564955427） revised on Feb 9, 2026</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -4197,12 +4197,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>输入密码</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>此文件受密码保护。请输入密码</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13832,7 +13832,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>与Windows 7不兼容</translation>
 </phrase>
 
 <phrase>
@@ -13993,7 +13993,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>粘贴新图层后，激活“移动”工具</translation>
 </phrase>
 
 <phrase>
