@@ -101,10 +101,10 @@ Private Type PD_Icon
     ico_Reserved As Byte
     '4   2   In ICO format: Specifies color planes. Should be 0 or 1.[Notes 3]
     '        In CUR format: Specifies the horizontal coordinates of the hotspot in number of pixels from the left.
-    ico_ColorPlanes As Integer
+    ico_ColorPlanes As Long 'SHORT in the spec, but it's read as an unsigned int and malformed images exist in-the-wild
     '6   2   In ICO format: Specifies bits per pixel. [Notes 4]
     '        In CUR format: Specifies the vertical coordinates of the hotspot in number of pixels from the top.
-    ico_BPP As Integer
+    ico_BPP As Long         'SHORT in the spec, but it's read as an unsigned int and malformed images exist in-the-wild
     '8   4   Specifies the size of the image's data in bytes
     ico_SizeInBytes As Long
     '12  4   Specifies the offset of BMP or PNG data from the beginning of the ICO/CUR file
@@ -215,7 +215,9 @@ Friend Function LoadICO(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
                 .ico_PalSize = m_Stream.ReadByte()
                 .ico_Reserved = m_Stream.ReadByte()
                 .ico_ColorPlanes = m_Stream.ReadIntUnsigned()
+                If (.ico_ColorPlanes > 32767) Then PDDebug.LogAction "WARNING: bad color planes: " & .ico_ColorPlanes
                 .ico_BPP = m_Stream.ReadIntUnsigned()
+                If (.ico_BPP > 32767) Then PDDebug.LogAction "WARNING: bad BPP: " & .ico_BPP
                 .ico_SizeInBytes = m_Stream.ReadLong()
                 .ico_OffsetInFile = m_Stream.ReadLong()
             End With
@@ -1322,12 +1324,12 @@ Private Function LoadICO_GenerateFrames(ByRef dstImage As pdImage, ByVal origLoa
         For i = 0 To m_NumIcons - 1
             If m_Icons(i).ico_OK And (Not m_Icons(i).ico_DIB Is Nothing) Then
                 If (m_Icons(i).ico_DIB.GetDIBWidth = maxWidth) And (m_Icons(i).ico_DIB.GetDIBHeight = maxHeight) Then
-                
+                    
                     'This layer matches the largest layer size we have so far.  If it *also* has the
-                    ' highest bit-depth, flag it as the new active index.
-                    If (m_Icons(i).ico_BPP > highestBitDepth) Or (m_Icons(i).ico_IsPNG) Then
+                    ' highest bit-depth, or if it matches the highest bit-depth but is in PNG format,
+                    ' flag it as the new active index.
+                    If (m_Icons(i).ico_BPP > highestBitDepth) Or ((m_Icons(i).ico_BPP = highestBitDepth) And (m_Icons(i).ico_IsPNG)) Then
                         highestBitDepth = m_Icons(i).ico_BPP
-                        If m_Icons(i).ico_IsPNG Then highestBitDepth = 48   'Give PNGs an arbitrarily large preference
                         activeLayerIndex = i
                     End If
                 
