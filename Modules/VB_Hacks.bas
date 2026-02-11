@@ -184,18 +184,30 @@ End Sub
 ' if the source folder containing the .exe has surrogate pair Unicode chars in its name.  Use these functions
 ' to bypass the App object entirely.
 Public Function AppMajor_Safe() As Long
-    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
-    AppMajor_Safe = m_AppMajor
+    If OS.IsProgramCompiled Then
+        If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+        AppMajor_Safe = m_AppMajor
+    Else
+        AppMajor_Safe = App.Major
+    End If
 End Function
 
 Public Function AppMinor_Safe() As Long
-    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
-    AppMinor_Safe = m_AppMinor
+    If OS.IsProgramCompiled Then
+        If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+        AppMinor_Safe = m_AppMinor
+    Else
+        AppMinor_Safe = App.Minor
+    End If
 End Function
 
 Public Function AppRevision_Safe() As Long
-    If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
-    AppRevision_Safe = m_AppRevision
+    If OS.IsProgramCompiled Then
+        If (Not m_AppVersionRetrieved) Then AppVersionRetrieve
+        AppRevision_Safe = m_AppRevision
+    Else
+        AppRevision_Safe = App.Revision
+    End If
 End Function
 
 Private Sub AppVersionRetrieve()
