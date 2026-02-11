@@ -1117,7 +1117,7 @@ Public Function SimplifyPathForScreen(ByRef srcPath As pd2DPath, Optional ByVal 
 'When debugging, I verified the correctness of this function by completely skipping the previous block
 ' (the actual simplification) and simply reconstituting the path manually.  If you doubt my work, feel free
 ' to confirm the same way!
-SkipSimplification:
+'SkipSimplification:
     
     'All sub-paths have now been trimmed down to screen size.  Reconstruct the original path
     ' from the new sub-path list.
@@ -1204,7 +1204,7 @@ Public Function SimplifyPathFromMarchingSquares(ByRef srcPath As pd2DPath) As Bo
 'When debugging, I verified the correctness of this function by completely skipping the previous block
 ' (the actual simplification) and simply reconstituting the path manually.  If you doubt my work, feel free
 ' to confirm the same way!
-SkipSimplification:
+'SkipSimplification:
     
     'All sub-paths have now been trimmed down to screen size.  Reconstruct the original path
     ' from the new sub-path list.

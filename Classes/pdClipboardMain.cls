@@ -1693,7 +1693,8 @@ End Function
 'Load dragged text data as a new image and/or layer.  The text will be analyzed for valid file paths or URLs.
 Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, Optional ByVal loadAsLayers As Boolean = False, Optional ByVal suppressErrorMsgs As Boolean = False, Optional ByVal srcX As Long = LONG_MAX, Optional ByVal srcY As Long = LONG_MAX) As Boolean
     
-    'On Error GoTo DragDropTextFailed
+    'Failsafe only; errors are not expected, but clipboard data is always unpredictable
+    On Error GoTo DragDropTextFailed
     
     DragDrop_TextData = False
     

@@ -504,7 +504,7 @@ End Sub
 '
 'Inputs:
 ' 1) Download Item Key.  This key MUST BE UNIQUE for each entry in the download queue.
-' 2) URL to download.  Standard VB download rules apply (e.g. https:// will cause issues)
+' 2) URL to download.  Standard VB download rules apply (e.g. https:// may cause issues on XP-era PCs)
 ' 3) Optional download flags.  By default, PD is set to download a new copy of the file only if the server version is newer
 '    (vbAsyncReadResynchronize), but downloads can also be forcibly requested regardless of version (vbAsyncReadForceUpdate)
 ' 4) Optional startDownloadImmediately parameter, which does exactly what you think it does.  NOTE: if set, this flag operates
@@ -526,8 +526,6 @@ Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As Strin
         Exit Function
     
     End If
-    
-    'On Error GoTo addToQueueFailure
     
     'This key is unique; add it now
     Dim itemIndex As Long
@@ -558,16 +556,6 @@ Public Function AddToQueue(ByVal downloadKey As String, ByVal urlString As Strin
     
     'Success!
     AddToQueue = True
-    Exit Function
-    
-AddToQueueFailure:
-
-    AddToQueue = False
-    m_LastErrorNumber = Err.Number
-    m_LastErrorDescription = Err.Description
-    
-    'TODO: implement "try again later" status
-    m_DownloadList(itemIndex).CurrentStatus = PDS_FAILURE_NOT_TRYING_AGAIN
     
 End Function
 

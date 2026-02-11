@@ -130,7 +130,7 @@ Private m_dcxCount As Long, m_dcxOffsets() As Long
 'PCX files use a simple but well-defined header (https://en.wikipedia.org/wiki/PCX#PCX_file_format).
 ' This makes validation straightforward.
 Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireValidFileExtension As Boolean = True, Optional ByVal leaveStreamOpenIfValid As Boolean = True) As Boolean
-        
+    
     Const FUNC_NAME As String = "IsFilePCX"
         
     IsFilePCX = False
@@ -184,7 +184,6 @@ Friend Function IsFilePCX(ByRef srcFilename As String, Optional ByVal requireVal
     m_HeaderValid = IsFilePCX
     
     If PCX_DEBUG_VERBOSE And IsFilePCX Then PDDebug.LogAction "PCX format looks valid!"
-    
     Exit Function
     
 'On any parse error, this function jumps to this branch and simply closes the underlying file, then exits
@@ -359,14 +358,6 @@ Private Function LoadPCXHeader() As Boolean
     
     'If the the file *isn't* PCX, reset the stream header before exiting.
     If (Not LoadPCXHeader) Then m_Stream.SetPosition initStreamPos
-    Exit Function
-    
-'On any parse error, this function jumps to this branch and simply closes the underlying file, then exits
-BadPCXFile:
-    
-    InternalError FUNC_NAME, "critical header failure"
-    m_Stream.SetPosition initStreamPos, FILE_BEGIN
-    LoadPCXHeader = False
     
 End Function
 

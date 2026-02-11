@@ -1032,7 +1032,6 @@ Private Function LoadLUTFromFile_CUBE(ByRef srcFile As String) As Boolean
                 End If
                 
             'Continue parsing remaining lines
-BadLineValue:
             Loop
                             
             If m_LoadSuccessful Then

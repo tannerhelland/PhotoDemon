@@ -572,11 +572,6 @@ Public Function LoadJXL(ByRef srcFile As String, ByRef dstImage As pdImage, ByRe
     End If
     
     If (Not LoadJXL) And JXL_DEBUG_VERBOSE Then DebugMsg "Plugin_jxl.LoadJXL failed."
-    Exit Function
-    
-LoadFailed:
-    LoadJXL = False
-    InternalError FUNC_NAME, "terminating due to error"
     
 End Function
 
@@ -742,12 +737,6 @@ Public Function SaveJXL_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As St
         InternalError FUNC_NAME, "tmp png failed"
     End If
     
-    Exit Function
-    
-FatalEncoderError:
-    SaveJXL_ToFile = False
-    InternalError FUNC_NAME, "VB error # " & Err.Number
-
 End Function
 
 'Save a full image stack as an animated JPEG XL file (using APNG as an intermediary format).
@@ -778,12 +767,6 @@ Public Function SaveJXL_ToFile_Animated(ByRef srcImage As pdImage, ByRef srcOpti
         InternalError FUNC_NAME, "tmp png failed"
     End If
     
-    Exit Function
-    
-FatalEncoderError:
-    SaveJXL_ToFile_Animated = False
-    InternalError FUNC_NAME, "VB error # " & Err.Number
-
 End Function
 
 'Returns TRUE if the installed version of libjxl is >= the expected version of libjxl.

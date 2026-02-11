@@ -394,6 +394,8 @@ End Function
 'Save an animated (multi-layer) pdImage object to a pdStream.  This allows for saving to file, memory, etc.
 Friend Function SaveGIF_ToStream_Animated(ByRef srcPDImage As pdImage, ByRef dstStream As pdStream, Optional ByVal formatParams As String = vbNullString, Optional ByVal metadataParams As String = vbNullString) As Boolean
     
+    On Error GoTo ExportGIFError
+    
     Const FUNC_NAME As String = "SaveGIF_ToStream_Animated"
     
     SaveGIF_ToStream_Animated = False

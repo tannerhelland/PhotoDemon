@@ -1386,7 +1386,7 @@ Public Function SaveHEIF_ToFile(ByRef srcImage As pdImage, ByRef srcOptions As S
         
         If HEIF_DEBUG_VERBOSE Then PDDebug.LogAction "HEIF encoding complete"
         
-NextLayer:
+    'Next layer
     Next i
     
     'Free the encoder

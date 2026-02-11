@@ -2051,7 +2051,8 @@ Private Function BuildPD2DPolygon(ByRef srcWarnings As pdStringStack, ByRef srcH
             
         End If
         
-ResumeNextPoint:
+'See previous comment about "visibility" flag being unpredictable; this jump is disabled pending further testing
+'ResumeNextPoint:
     Next i
     
 EarlyTermination:

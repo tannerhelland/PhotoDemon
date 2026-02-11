@@ -1111,11 +1111,6 @@ Friend Function SaveGradient_SVG(ByRef dstFilename As String) As Boolean
     'And that's that!  Dump the completed string out to file.
     SaveGradient_SVG = Files.FileSaveAsText(dstText.ToString(), dstFilename, True, False)
     
-    Exit Function
-
-InvalidGradient:
-    SaveGradient_SVG = False
-
 End Function
 
 Friend Sub ResetAllProperties()

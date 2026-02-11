@@ -301,11 +301,6 @@ Friend Sub WriteListToFile()
     'Save all file thumbnails, and in the process, remove any orphaned thumbnail files
     WriteAllThumbnails
     
-    Exit Sub
-    
-MRUSaveFailure:
-    InternalError "WriteListToFile encountered error #" & Err.Number & ", " & Err.Description
-    
 End Sub
 
 Private Function GetIndexFromThumbPath(ByRef srcThumbPath As String) As Long
