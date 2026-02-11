@@ -7096,11 +7096,6 @@ Friend Function GetTransparentColor(ByRef dstColor As Long, Optional ByVal scale
     
 End Function
 
-'Request a copy of this PNG's header; returns a blank header if no PNG is loaded
-Friend Sub GetHeader(ByRef dstHeader As PD_PNGHeader)
-    dstHeader = m_Header
-End Sub
-
 Friend Function GetBitsPerPixel() As Long
     GetBitsPerPixel = m_Header.BitsPerPixel
 End Function
@@ -7262,7 +7257,7 @@ Private Function PopulateHeader() As PD_PNGResult
                 .BitsPerPixel = .BitDepth * 4
                 
             End If
-                    
+            
         End With
         
     End If
