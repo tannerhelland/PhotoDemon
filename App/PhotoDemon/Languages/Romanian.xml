@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.9</langversion>
+<langversion>1.0.10</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -1823,7 +1823,7 @@ Această imagine conține %2 culori unice + valori opacitate (RGBA)</translation
 <translation>Eșec la salvarea %1. Vă rog raportați această eroare folosind Ajutor -> Transmite raport probleme.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2794,7 +2794,7 @@ Pentru a activa această funcționalitate, vă rog descărcați o copie nouă a 
 <translation>Licență LGPL</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3116,6 +3116,16 @@ Descriere: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Modifică selecție</translation>
 </phrase>
@@ -3134,7 +3144,7 @@ Când ați terminat, faceți clic pe butonul Submit New Issue. Mulțumim!</trans
 <translation>Instrucțiuni raportare eroare</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10887,6 +10897,53 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation>Hărți mip</translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>Format:</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation>Perceptual</translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation>Lent</translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation>Toate</translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation>Punct</translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>Liniar</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation>Cubic</translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>Cutie</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>Culoare transparentă (clic-dreapta pe imagine pentru selecție)</translation>
 </phrase>
@@ -11136,11 +11193,6 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>Format:</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>Virgulă mobilă</translation>
 </phrase>
@@ -11155,7 +11207,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12691,11 +12743,6 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>Liniar</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation>Radial</translation>
 </phrase>
@@ -12715,7 +12762,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Spirală</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13080,6 +13127,11 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>Întoarcere linie</translation>
 </phrase>
@@ -13122,11 +13174,6 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <phrase>
 <original>click to edit</original>
 <translation>Clic pentru editare</translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>Cutie</translation>
 </phrase>
 
 <phrase>
@@ -13184,7 +13231,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Clic aici pentru a converti acest strat în text avansat.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14755,44 +14802,12 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation>Hărți mip</translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation>Perceptual</translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation>Lent</translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation>Toate</translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation>Punct</translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation>Cubic</translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

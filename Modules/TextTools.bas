@@ -3,8 +3,8 @@ Attribute VB_Name = "Tools_Text"
 'Text tools (both of 'em) on-canvas interface wrapper
 'Copyright 2015-2026 by Tanner Helland
 'Created: 14/May/15
-'Last updated: 10/December/21
-'Last update: migrate various text-related bits out of pdCanvas in preparation for new tools
+'Last updated: 12/February/26
+'Last update: add support for variable character scaling (advanced text only)
 '
 'To simplify the design of the primary canvas, various text layer requests are blindly forwarded here.
 ' This module then handles the messy business of forwarding correct text layer commands to the underlying
@@ -58,6 +58,8 @@ Public Enum PD_TextProperty
     ptp_StretchToFit = 36
     ptp_AlignLastLine = 37
     ptp_OutlineAboveFill = 38
+    ptp_CharScaleX = 39
+    ptp_CharScaleY = 40
 End Enum
 
 #If False Then
@@ -67,7 +69,7 @@ End Enum
     Const ptp_OutlineActive = 18, ptp_OutlinePen = 19, ptp_BackgroundActive = 20, ptp_BackgroundBrush = 21, ptp_BackBorderActive = 22
     Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
     Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
-    Const ptp_CharMirror = 35, ptp_StretchToFit = 36, ptp_AlignLastLine = 37, ptp_OutlineAboveFill = 38
+    Const ptp_CharMirror = 35, ptp_StretchToFit = 36, ptp_AlignLastLine = 37, ptp_OutlineAboveFill = 38, ptp_CharScaleX = 39, ptp_CharScaleY = 40
 #End If
 
 'PD's internal glyph renderer supports a number of esoteric capabilities

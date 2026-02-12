@@ -6,7 +6,7 @@
 
 <langid>nl-NL</langid>
 <langname>Dutch (Nederlands)</langname>
-<langversion>2025.12.3</langversion>
+<langversion>2025.12.4</langversion>
 <langstatus>99% complete</langstatus>
 
 <author>Rudi Klein</author>
@@ -1821,7 +1821,7 @@ Deze afbeelding bevat %2 unieke kleur-ondoorzichtigheidswaarden (RGBA).</transla
 <translation>%1 opslaan mislukt. Gelieve deze fout te melden via Help -> Bug Report indienen.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2788,7 +2788,7 @@ Om deze functie in te schakelen, gelieve een nieuwe kopie van PhotoDemon te down
 <translation>LGPL licentie</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3106,6 +3106,16 @@ Beschrijving: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Selectie wijzigen</translation>
 </phrase>
@@ -3124,7 +3134,7 @@ Als u klaar bent, klikt u op de knop "Nieuw probleem indienen".  Dank U!</transl
 <translation>Bug report instructies</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10878,6 +10888,53 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation>mipmaps</translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>opmaak</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation>perceptueel</translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation>traag</translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation>alles</translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation>punt</translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>lineair</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation>kubisch</translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>vak</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>transparente kleur (rechter-klik op afbeelding om te selecteren)</translation>
 </phrase>
@@ -11127,11 +11184,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>opmaak</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>zwevendekommagetal</translation>
 </phrase>
@@ -11146,7 +11198,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12682,11 +12734,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>lineair</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation>radiaal</translation>
 </phrase>
@@ -12706,7 +12753,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>spiraal</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13071,6 +13118,11 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>lijn wrap</translation>
 </phrase>
@@ -13113,11 +13165,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <phrase>
 <original>click to edit</original>
 <translation>klik om te bewerken</translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>vak</translation>
 </phrase>
 
 <phrase>
@@ -13175,7 +13222,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Klik hier om deze laag om te zetten in geavanceerde tekst.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14748,44 +14795,12 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation>mipmaps</translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation>perceptueel</translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation>traag</translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation>alles</translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation>punt</translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation>kubisch</translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

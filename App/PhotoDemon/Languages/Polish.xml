@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.73</langversion>
+<langversion>9.0.74</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -1823,7 +1823,7 @@ Ten obraz zawiera %2 unikalnych kolorów + krycia (RGBA)</translation>
 <translation>Zapis %1 nie powiódł się. Zgłoś ten błąd przez Pomoc -> Prześlij raport o błędach.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2785,7 +2785,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation></translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3102,6 +3102,16 @@ Opis: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Zmień zaznaczenie</translation>
 </phrase>
@@ -3120,7 +3130,7 @@ Po zakończeniu kliknij przycisk "Prześlij nowe zgłoszenie".</translation>
 <translation>Instrukcje do raportu o błędzie</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10869,6 +10879,53 @@ Dziękujemy!</translation>
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>Format</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>Liniowy</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>Pole</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>Kolor przezroczysty (kliknij obraz prawym przyciskiem myszy  aby zaznaczyć)</translation>
 </phrase>
@@ -11118,11 +11175,6 @@ Dziękujemy!</translation>
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>Format</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>Zmienny punktowy</translation>
 </phrase>
@@ -11137,7 +11189,7 @@ Dziękujemy!</translation>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12673,11 +12725,6 @@ Dziękujemy!</translation>
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>Liniowy</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation>Promieniowy</translation>
 </phrase>
@@ -12697,7 +12744,7 @@ Dziękujemy!</translation>
 <translation>Spiralny</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13062,6 +13109,11 @@ Dziękujemy!</translation>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>Linia zawijania</translation>
 </phrase>
@@ -13104,11 +13156,6 @@ Dziękujemy!</translation>
 <phrase>
 <original>click to edit</original>
 <translation>Kliknij, aby edytować</translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>Pole</translation>
 </phrase>
 
 <phrase>
@@ -13166,7 +13213,7 @@ Dziękujemy!</translation>
 <translation>Kliknij tutaj, aby przekonwertować tę warstwę na tekst zaawansowany.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14737,44 +14784,12 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português (Brasil)</langname>
-<langversion>2025.4.158</langversion>
+<langversion>2025.4.159</langversion>
 <langstatus>Completo</langstatus>
 
 <author>by Marcos Ventura (ƔΞИТƱƦΔ)</author>
@@ -3108,6 +3108,16 @@ Descrição: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Modificar a seleção</translation>
 </phrase>
@@ -3126,7 +3136,7 @@ Ao terminar, clique no botão Enviar Novo Problema</translation>
 <translation>Instruções do relatório de erros</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -13111,6 +13121,11 @@ Deseja salvar a lista de lotes antes de sair?</translation>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>Ajuste de linha</translation>
 </phrase>
@@ -13210,7 +13225,7 @@ Deseja salvar a lista de lotes antes de sair?</translation>
 <translation>Clique aqui apara converter esta camada em uma camada de texto avançado</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 40 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14786,10 +14801,10 @@ Se você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5971 phrases. -->
-<!-- 3176 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

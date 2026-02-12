@@ -928,6 +928,12 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TextProperty) As 
         Case ptp_OutlineAboveFill
             GetNameOfTextAction = g_Language.TranslateMessage("outline on top")
         
+        Case ptp_CharScaleX
+            GetNameOfTextAction = g_Language.TranslateMessage("horizontal scaling")
+            
+        Case ptp_CharScaleY
+            GetNameOfTextAction = g_Language.TranslateMessage("vertical scaling")
+            
         Case Else
             GetNameOfTextAction = "WARNING!  Action name not found!"
     
