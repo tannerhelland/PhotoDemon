@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（2026.1 build 120）</langname>
-<langversion>2026.2.9</langversion>
+<langversion>2026.2.10</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Feb 9, 2026</author>
@@ -1823,7 +1823,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>%1 保存失败。请使用帮助菜单->提交错误报告。</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2787,7 +2787,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation>LGPL 许可证</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3105,6 +3105,16 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>修改选区</translation>
 </phrase>
@@ -3123,7 +3133,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>错误报告介绍</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10871,6 +10881,53 @@ Would you like to save your batch list before exiting?</original>
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation>多层纹理</translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>格式</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation>感知</translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation>慢</translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation>全部</translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation>点</translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>线性</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation>三次采样</translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>适合文本框</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>透明颜色（右键选择图像）</translation>
 </phrase>
@@ -11120,11 +11177,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>格式</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>浮点</translation>
 </phrase>
@@ -11139,7 +11191,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12675,11 +12727,6 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>线性</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation>径向</translation>
 </phrase>
@@ -12699,7 +12746,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>螺旋形</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13064,6 +13111,11 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>换行</translation>
 </phrase>
@@ -13106,11 +13158,6 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>click to edit</original>
 <translation>单击此处进行编辑</translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>适合文本框</translation>
 </phrase>
 
 <phrase>
@@ -13168,7 +13215,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>单击此处将此层转换为高级文本。</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14741,45 +14788,13 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation>多层纹理</translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation>感知</translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation>慢</translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation>全部</translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation>点</translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation>三次采样</translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 <special-translations>
 

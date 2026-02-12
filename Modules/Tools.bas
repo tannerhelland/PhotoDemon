@@ -1067,6 +1067,8 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
                     .SetTextLayerProperty ptp_CharSpacing, toolpanel_TextAdvanced.sltCharSpacing.Value
                     .SetTextLayerProperty ptp_AlignLastLine, toolpanel_TextAdvanced.btsHAlignJustify.ListIndex
                     .SetTextLayerProperty ptp_OutlineAboveFill, toolpanel_TextAdvanced.chkFillFirst.Value
+                    .SetTextLayerProperty ptp_CharScaleX, toolpanel_TextAdvanced.tudScale(0).Value / 100#
+                    .SetTextLayerProperty ptp_CharScaleY, toolpanel_TextAdvanced.tudScale(1).Value / 100#
                 End With
                 
                 'Advanced text layers are rendered using a PhotoDemon-specific renderer.

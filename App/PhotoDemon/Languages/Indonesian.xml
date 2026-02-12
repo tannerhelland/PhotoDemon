@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>2024.4.5</langversion>
+<langversion>2024.4.6</langversion>
 <langstatus>Done</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -1823,7 +1823,7 @@ Gambar ini mengandung %2 nilai warna + transparansi unik (RGBA).</translation>
 <translation>Penyimpanan %1 gagal. Silakan laporkan kesalahan ini menggunakan Bantuan -> Kirim Laporan Bug.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -3106,6 +3106,16 @@ Deskripsi: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Ubah seleksi</translation>
 </phrase>
@@ -3124,7 +3134,7 @@ Setelah selesai, klik tombol Submit New Issue.  Terima kasih!</translation>
 <translation>Instruksi laporan bug</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10874,6 +10884,53 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>format</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>linear</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>kotak</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>warna transparan (klik kanan gambar untuk memilih)</translation>
 </phrase>
@@ -11123,11 +11180,6 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>format</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>floating-point</translation>
 </phrase>
@@ -11142,7 +11194,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12678,11 +12730,6 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>linear</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation>radial</translation>
 </phrase>
@@ -12702,7 +12749,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>spiral</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13067,6 +13114,11 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>pembungkusan baris</translation>
 </phrase>
@@ -13109,11 +13161,6 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <phrase>
 <original>click to edit</original>
 <translation>klik untuk mengedit</translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>kotak</translation>
 </phrase>
 
 <phrase>
@@ -13171,7 +13218,7 @@ Apakah Anda ingin menyimpan daftar batch Anda sebelum keluar?</translation>
 <translation>Klik di sini untuk mengonversi lapisan ini ke teks lanjutan.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14744,44 +14791,12 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5975 phrases. -->
-<!-- 3180 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

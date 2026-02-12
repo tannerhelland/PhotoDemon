@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).43</langversion>
+<langversion>2028.8 Alfa (Build 25).44</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -1823,7 +1823,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>%1 saglabāt neizdevās. Lūdzu, ziņojiet par šo kļūdu, izmantojot Palīdzību -> Iesniegt ziņojumu par kļūdu.</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2790,7 +2790,7 @@ Lai iespējotu šo funkciju, lūdzu, lejupielādējiet jaunu PhotoDemon kopiju v
 <translation>LGPL licence</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3108,6 +3108,16 @@ Apraksts: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Mainīt atlasi</translation>
 </phrase>
@@ -3126,7 +3136,7 @@ Kad esat pabeidzis, noklikšķiniet uz pogas Iesniegt jaunu problēmu.  Paldies!
 <translation>Kļūdu ziņojuma instrukcijas</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10876,6 +10886,53 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation>mipmaps</translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>formāts</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation>uztveres</translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation>lēns</translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation>visi</translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation>punkts</translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>lineārais</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation>kubiskais</translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>kaste</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>caurspīdīga krāsa (noklikšķiniet uz attēla ar peles labo pogu, lai atlasītu)</translation>
 </phrase>
@@ -11125,11 +11182,6 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>formāts</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>ar peldošo komata skaitli</translation>
 </phrase>
@@ -11144,7 +11196,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12680,11 +12732,6 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>lineārais</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation>radiāli</translation>
 </phrase>
@@ -12704,7 +12751,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>spirāle</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13069,6 +13116,11 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>līnijas aplaušana</translation>
 </phrase>
@@ -13111,11 +13163,6 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <phrase>
 <original>click to edit</original>
 <translation>noklikšķiniet, lai rediģētu</translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>kaste</translation>
 </phrase>
 
 <phrase>
@@ -13173,7 +13220,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>Noklikšķiniet šeit, lai pārvērstu šo slāni par uzlabotu tekstu.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14746,44 +14793,12 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation>mipmaps</translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation>uztveres</translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation>lēns</translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation>visi</translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation>punkts</translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation>kubiskais</translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

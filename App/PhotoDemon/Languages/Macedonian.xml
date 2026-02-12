@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1773</langversion>
+<langversion>8.9.1774</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1820,7 +1820,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation></translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2783,7 +2783,7 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 <translation></translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3101,6 +3101,16 @@ Error број %
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation></translation>
 </phrase>
@@ -3117,7 +3127,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>инструкциите за пријавување на бубачки</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10864,6 +10874,53 @@ Would сакате да ги зачувате вашата листа сериј
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>формат</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>линиски</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>box</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>транспарентна боја (десен клик на сликата за да го изберете)</translation>
 </phrase>
@@ -11113,11 +11170,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>формат</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>лебдечки-точка</translation>
 </phrase>
@@ -11132,7 +11184,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12668,11 +12720,6 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>линиски</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation></translation>
 </phrase>
@@ -12692,7 +12739,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13057,6 +13104,11 @@ Would сакате да ги зачувате вашата листа сериј
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>линија фолија</translation>
 </phrase>
@@ -13099,11 +13151,6 @@ Would сакате да ги зачувате вашата листа сериј
 <phrase>
 <original>click to edit</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>box</translation>
 </phrase>
 
 <phrase>
@@ -13161,7 +13208,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14730,44 +14777,12 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation></translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

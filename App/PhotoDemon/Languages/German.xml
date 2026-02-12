@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2025.12 Alpha - Build 35.1</langversion>
+<langversion>2025.12 Alpha - Build 35.2</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1823,7 +1823,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 <translation>Speichern von %1 fehlgeschlagen. Bitte melden Sie diesen Fehler unter Verwendung von "Hilfe > Bug-Bericht einreichen".</translation>
 </phrase>
 
-<!-- ImageExporter.bas contains 20 phrases. 18 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All Compatible Images</original>
@@ -2790,7 +2790,7 @@ Um dieses Feature zu aktivieren, laden Sie bitte eine neue Kopie von PhotoDemon 
 <translation>LGPL License</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 43 phrases. 35 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -3108,6 +3108,16 @@ Deskription: %2
 </phrase>
 
 <phrase>
+<original>horizontal scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical scaling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Auswahl modifizieren</translation>
 </phrase>
@@ -3126,7 +3136,7 @@ Nach Abschluss klicken Sie auf den Button "Neues Problem einreichen". Danke!</tr
 <translation>Bug-Bericht-Instruktionen</translation>
 </phrase>
 
-<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -10874,6 +10884,53 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <!-- File_Save_BMP.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
+<original>mipmaps</original>
+<translation>Mip-Mapping</translation>
+</phrase>
+
+<phrase>
+<original>format</original>
+<translation>Format</translation>
+</phrase>
+
+<phrase>
+<original>perceptual</original>
+<translation>Perzeptiv</translation>
+</phrase>
+
+<phrase>
+<original>slow</original>
+<translation>Langsam</translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation>Alles</translation>
+</phrase>
+
+<phrase>
+<original>point</original>
+<translation>Punkt (Point)</translation>
+</phrase>
+
+<phrase>
+<original>linear</original>
+<translation>Linear</translation>
+</phrase>
+
+<phrase>
+<original>cubic</original>
+<translation>Kubisch</translation>
+</phrase>
+
+<phrase>
+<original>box</original>
+<translation>Box</translation>
+</phrase>
+
+<!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>Transparente Farbe (zum Auswählen Rechtsklick auf Bild)</translation>
 </phrase>
@@ -11123,11 +11180,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>format</original>
-<translation>Format</translation>
-</phrase>
-
-<phrase>
 <original>floating-point</original>
 <translation>Fließkomma</translation>
 </phrase>
@@ -11142,7 +11194,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 18 phrases. 14 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>basic settings</original>
@@ -12678,11 +12730,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
-<original>linear</original>
-<translation>Linear</translation>
-</phrase>
-
-<phrase>
 <original>radial</original>
 <translation>Radial</translation>
 </phrase>
@@ -12702,7 +12749,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Spirale</translation>
 </phrase>
 
-<!-- Toolpanel_Gradient.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Gradient.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>modify measurement</original>
@@ -13067,6 +13114,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>scale (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation>Zeilenumbruch</translation>
 </phrase>
@@ -13109,11 +13161,6 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>click to edit</original>
 <translation>Klick, um zu bearbeiten</translation>
-</phrase>
-
-<phrase>
-<original>box</original>
-<translation>Box</translation>
 </phrase>
 
 <phrase>
@@ -13171,7 +13218,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Klicken Sie hier, um diesen Layer in erweiterten Text zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 64 phrases. 39 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14744,44 +14791,12 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Options_Metadata.frm contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
 
-<phrase>
-<original>mipmaps</original>
-<translation>Mip-Mapping</translation>
-</phrase>
-
-<phrase>
-<original>perceptual</original>
-<translation>Perzeptiv</translation>
-</phrase>
-
-<phrase>
-<original>slow</original>
-<translation>Langsam</translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation>Alles</translation>
-</phrase>
-
-<phrase>
-<original>point</original>
-<translation>Punkt (Point)</translation>
-</phrase>
-
-<phrase>
-<original>cubic</original>
-<translation>Kubisch</translation>
-</phrase>
-
-<!-- File_Save_DDS.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2795</phrasecount>
+<phrasecount>2798</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3184 are duplicates, so only 2795 unique phrases have been written to file. -->
-<!-- These 2795 phrases contain approximately 12057 total words. -->
+<!-- As of this build, PhotoDemon contains 5976 phrases. -->
+<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
+<!-- These 2798 phrases contain approximately 12062 total words. -->
 
 </pdData>

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Glyph Collection Interface
 'Copyright 2015-2026 by Tanner Helland
 'Created: 27/April/15
-'Last updated: 11/September/22
-'Last update: add support for justified paragraph alignment
+'Last updated: 12/February/26
+'Last update: add support for variable character scaling
 '
 'This class manages the creation and storage of individual text glyphs.  These glyphs are used by PhotoDemon's
 ' advanced text tool to enable advanced text features.
@@ -145,10 +145,10 @@ Private Const DEFAULT_INITIAL_LINE_COUNT As Long = 16
 Private m_LineSpacing As Single
 Private m_CharSpacing As Single
 Private m_CharOrientation As Single
-Private m_CharJitterX As Single
-Private m_CharJitterY As Single
+Private m_CharJitterX As Single, m_CharJitterY As Single
 Private m_CharInflation As Single
 Private m_CharMirror As PD_CharacterMirror
+Private m_CharScaleX As Double, m_CharScaleY As Double
 
 'If no custom character modifications are active, we can skip ceratin steps during path assembly.
 Private m_CharEffectsEnabled As Boolean
@@ -591,7 +591,7 @@ Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
 End Function
 
 'Prior to calling AssembleCompositePath, below, the caller can notify us of custom layout settings via this function
-Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0!, Optional ByVal customCharSpacing As Single = 0!, Optional ByVal customCharOrientation As Single = 0!, Optional ByVal customCharJitterX As Single = 0!, Optional ByVal customCharJitterY As Single = 0!, Optional ByVal customCharInflation As Single = 0!, Optional ByVal customCharMirror As PD_CharacterMirror = cm_None)
+Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0!, Optional ByVal customCharSpacing As Single = 0!, Optional ByVal customCharOrientation As Single = 0!, Optional ByVal customCharJitterX As Single = 0!, Optional ByVal customCharJitterY As Single = 0!, Optional ByVal customCharInflation As Single = 0!, Optional ByVal customCharMirror As PD_CharacterMirror = cm_None, Optional ByVal customCharScaleX As Double = 1#, Optional ByVal customCharScaleY As Double = 1#)
     
     m_LineSpacing = customLineSpacing
     m_CharSpacing = customCharSpacing
@@ -600,10 +600,14 @@ Friend Sub NotifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single
     m_CharJitterY = customCharJitterY
     m_CharInflation = customCharInflation
     m_CharMirror = customCharMirror
+    m_CharScaleX = customCharScaleX
+    If (m_CharScaleX < 0.01) Then m_CharScaleX = 1#
+    m_CharScaleY = customCharScaleY
+    If (m_CharScaleY < 0.01) Then m_CharScaleY = 1#
     
     'If one or more custom character attributes are non-zero, mark a class-level flag.
     ' This allows us to skip some processor-intensive steps when text uses normal formatting.
-    m_CharEffectsEnabled = (m_CharSpacing <> 0) Or (m_CharOrientation <> 0) Or (m_CharJitterX <> 0) Or (m_CharJitterY <> 0) Or (m_CharInflation <> 0) Or (m_CharMirror <> cm_None)
+    m_CharEffectsEnabled = (m_CharSpacing <> 0) Or (m_CharOrientation <> 0) Or (m_CharJitterX <> 0) Or (m_CharJitterY <> 0) Or (m_CharInflation <> 0) Or (m_CharMirror <> cm_None) Or (m_CharScaleX <> 1#) Or (m_CharScaleY <> 1#)
     
 End Sub
 
@@ -661,6 +665,13 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
             
         End If
         
+        'If scaling is active, build a scale matrix now
+        Dim tmpScale As pd2DTransform
+        If (m_CharScaleX <> 1#) Or (m_CharScaleY <> 1#) Then
+            Set tmpScale = New pd2DTransform
+            tmpScale.ApplyScaling m_CharScaleX, m_CharScaleY
+        End If
+        
         'Start iterating through the source string one character at a time.
         For i = 0 To m_NumOfGlyphs - 1
             
@@ -691,6 +702,11 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
                     tmpGlyphOutlineCopy.CloneExistingPath m_GlyphOutlines(curGlyphOutline).glyphPath
                     
                     'Let's break down the possible character changes one at a time.
+                    
+                    'Scaling first
+                    If (m_CharScaleX <> 1#) Or (m_CharScaleY <> 1#) Then
+                        tmpGlyphOutlineCopy.ApplyTransformation tmpScale
+                    End If
                     
                     'm_CharOrientation controls character orientation, which is used to rotate characters around
                     ' their own center point.

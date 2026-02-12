@@ -78,7 +78,7 @@ Begin VB.Form toolpanel_TextAdvanced
       Left            =   120
       Top             =   3360
       Visible         =   0   'False
-      Width           =   8415
+      Width           =   8895
       _ExtentX        =   11033
       _ExtentY        =   7726
       Begin PhotoDemon.pdButtonStrip btsHinting 
@@ -95,9 +95,9 @@ Begin VB.Form toolpanel_TextAdvanced
       Begin PhotoDemon.pdButtonToolbox cmdFlyoutLock 
          Height          =   390
          Index           =   1
-         Left            =   7920
+         Left            =   8400
          TabIndex        =   4
-         Top             =   3000
+         Top             =   2985
          Width           =   390
          _ExtentX        =   1111
          _ExtentY        =   1111
@@ -206,9 +206,9 @@ Begin VB.Form toolpanel_TextAdvanced
          Height          =   735
          Left            =   3330
          TabIndex        =   14
-         Top             =   2655
-         Width           =   2475
-         _ExtentX        =   4366
+         Top             =   2640
+         Width           =   2355
+         _ExtentX        =   4154
          _ExtentY        =   1296
          Caption         =   "orientation"
          FontSizeCaption =   10
@@ -242,7 +242,7 @@ Begin VB.Form toolpanel_TextAdvanced
          Height          =   270
          Index           =   3
          Left            =   5880
-         Top             =   0
+         Top             =   840
          Width           =   2355
          _ExtentX        =   5371
          _ExtentY        =   476
@@ -252,9 +252,9 @@ Begin VB.Form toolpanel_TextAdvanced
       Begin PhotoDemon.pdSpinner tudJitter 
          Height          =   345
          Index           =   1
-         Left            =   7160
+         Left            =   7170
          TabIndex        =   17
-         Top             =   390
+         Top             =   1215
          Width           =   1140
          _ExtentX        =   2011
          _ExtentY        =   609
@@ -264,9 +264,9 @@ Begin VB.Form toolpanel_TextAdvanced
       Begin PhotoDemon.pdSpinner tudJitter 
          Height          =   345
          Index           =   0
-         Left            =   5940
+         Left            =   5970
          TabIndex        =   18
-         Top             =   390
+         Top             =   1215
          Width           =   1140
          _ExtentX        =   2011
          _ExtentY        =   609
@@ -275,15 +275,14 @@ Begin VB.Form toolpanel_TextAdvanced
       End
       Begin PhotoDemon.pdSlider sltCharInflation 
          CausesValidation=   0   'False
-         Height          =   855
+         Height          =   735
          Left            =   5880
          TabIndex        =   19
-         Top             =   840
+         Top             =   2640
          Width           =   2460
          _ExtentX        =   4339
-         _ExtentY        =   1508
+         _ExtentY        =   1296
          Caption         =   "inflate"
-         CaptionPadding  =   3
          FontSizeCaption =   10
          Max             =   20
          SigDigits       =   1
@@ -298,6 +297,45 @@ Begin VB.Form toolpanel_TextAdvanced
          _ExtentY        =   1508
          Caption         =   "automatic fit"
          FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   270
+         Index           =   5
+         Left            =   5880
+         Top             =   0
+         Width           =   2355
+         _ExtentX        =   5371
+         _ExtentY        =   476
+         Caption         =   "scale (x, y)"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdSpinner tudScale 
+         Height          =   345
+         Index           =   1
+         Left            =   7170
+         TabIndex        =   47
+         Top             =   360
+         Width           =   1140
+         _ExtentX        =   2011
+         _ExtentY        =   609
+         DefaultValue    =   100
+         Min             =   1
+         Max             =   300
+         Value           =   100
+      End
+      Begin PhotoDemon.pdSpinner tudScale 
+         Height          =   345
+         Index           =   0
+         Left            =   5970
+         TabIndex        =   48
+         Top             =   360
+         Width           =   1140
+         _ExtentX        =   2011
+         _ExtentY        =   609
+         DefaultValue    =   100
+         Min             =   1
+         Max             =   300
+         Value           =   100
       End
    End
    Begin PhotoDemon.pdContainer cntrPopOut 
@@ -687,8 +725,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Advanced Typography Tool Panel
 'Copyright 2013-2026 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 17/May/22
-'Last update: new stretch-to-fit option
+'Last updated: 12/February/26
+'Last update: add support for variable character scaling
 '
 'This form includes all user-editable settings for PD's Advanced Typography text tool.
 '
@@ -1072,7 +1110,7 @@ Private Sub cboCharCase_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, 
     If shiftTabWasPressed Then
         newTargetHwnd = Me.btsHinting.hWnd
     Else
-        newTargetHwnd = Me.sltCharOrientation.hWnd
+        newTargetHwnd = Me.sltCharOrientation.hWndSlider
     End If
 End Sub
 
@@ -1107,9 +1145,9 @@ End Sub
 
 Private Sub cboCharMirror_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.sltCharInflation.hWndSpinner
+        newTargetHwnd = Me.tudJitter(1).hWnd
     Else
-        newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
+        newTargetHwnd = Me.sltCharInflation.hWndSlider
     End If
 End Sub
 
@@ -1465,7 +1503,7 @@ Private Sub cmdFlyoutLock_SetCustomTabTarget(Index As Integer, ByVal shiftTabWas
             Case 0
                 newTargetHwnd = Me.txtTextTool.hWnd
             Case 1
-                newTargetHwnd = Me.cboCharMirror.hWnd
+                newTargetHwnd = Me.sltCharInflation.hWndSpinner
             Case 2
                 newTargetHwnd = Me.psTextBackground.hWnd
             Case 3
@@ -1786,9 +1824,9 @@ End Sub
 
 Private Sub sltCharInflation_SetCustomTabTarget(ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
     If shiftTabWasPressed Then
-        newTargetHwnd = Me.tudJitter(1).hWnd
-    Else
         newTargetHwnd = Me.cboCharMirror.hWnd
+    Else
+        newTargetHwnd = Me.cmdFlyoutLock(1).hWnd
     End If
 End Sub
 
@@ -1825,7 +1863,7 @@ Private Sub sltCharOrientation_SetCustomTabTarget(ByVal shiftTabWasPressed As Bo
     If shiftTabWasPressed Then
         newTargetHwnd = Me.cboCharCase.hWnd
     Else
-        newTargetHwnd = Me.tudJitter(0).hWnd
+        newTargetHwnd = Me.tudScale(0).hWnd
     End If
 End Sub
 
@@ -1922,6 +1960,22 @@ Private Sub tudJitter_LostFocusAPI(Index As Integer)
     Processor.FlagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
 End Sub
 
+Private Sub tudJitter_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Index = 0) Then
+        If shiftTabWasPressed Then
+            newTargetHwnd = Me.tudScale(1).hWnd
+        Else
+            newTargetHwnd = Me.tudJitter(1).hWnd
+        End If
+    Else
+        If shiftTabWasPressed Then
+            newTargetHwnd = Me.tudJitter(0).hWnd
+        Else
+            newTargetHwnd = Me.cboCharMirror.hWnd
+        End If
+    End If
+End Sub
+
 Private Sub sldLineSpacing_Change()
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
@@ -1949,22 +2003,6 @@ End Sub
 
 Private Sub sldLineSpacing_LostFocusAPI()
     Processor.FlagFinalNDFXState_Text ptp_LineSpacing, sldLineSpacing.Value
-End Sub
-
-Private Sub tudJitter_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
-    If (Index = 0) Then
-        If shiftTabWasPressed Then
-            newTargetHwnd = Me.sltCharOrientation.hWndSpinner
-        Else
-            newTargetHwnd = Me.tudJitter(1).hWnd
-        End If
-    Else
-        If shiftTabWasPressed Then
-            newTargetHwnd = Me.tudJitter(0).hWnd
-        Else
-            newTargetHwnd = Me.sltCharInflation.hWnd
-        End If
-    End If
 End Sub
 
 Private Sub tudMargin_Change(Index As Integer)
@@ -2055,6 +2093,51 @@ Private Sub tudMargin_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPres
             newTargetHwnd = Me.cmdFlyoutLock(3).hWnd
         Else
             newTargetHwnd = Me.tudMargin(Index + 1).hWnd
+        End If
+    End If
+End Sub
+
+Private Sub tudScale_Change(Index As Integer)
+
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Or m_suspendSettingRelay Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tools.SetToolBusyState True
+        
+    'Update the current layer text alignment
+    PDImages.GetActiveImage.GetActiveLayer.SetTextLayerProperty ptp_CharScaleX + Index, tudScale(Index).Value / 100#
+    
+    'Free the tool engine
+    Tools.SetToolBusyState False
+    
+    'Redraw the viewport
+    Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+End Sub
+
+Private Sub tudScale_GotFocusAPI(Index As Integer)
+    UpdateFlyout 1, True
+    If (Not PDImages.IsImageActive()) Then Exit Sub
+    Processor.FlagInitialNDFXState_Text ptp_CharScaleX + Index, tudScale(Index).Value, PDImages.GetActiveImage.GetActiveLayerID
+End Sub
+
+Private Sub tudScale_LostFocusAPI(Index As Integer)
+    Processor.FlagFinalNDFXState_Text ptp_CharScaleX + Index, tudScale(Index).Value
+End Sub
+
+Private Sub tudScale_SetCustomTabTarget(Index As Integer, ByVal shiftTabWasPressed As Boolean, newTargetHwnd As Long)
+    If (Index = 0) Then
+        If shiftTabWasPressed Then
+            newTargetHwnd = Me.sltCharOrientation.hWndSpinner
+        Else
+            newTargetHwnd = Me.tudScale(1).hWnd
+        End If
+    Else
+        If shiftTabWasPressed Then
+            newTargetHwnd = Me.tudScale(0).hWnd
+        Else
+            newTargetHwnd = Me.tudJitter(0).hWnd
         End If
     End If
 End Sub
@@ -2210,6 +2293,8 @@ Public Sub SyncSettingsToCurrentLayer()
     cboCharCase.ListIndex = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharRemap)
     sltCharSpacing.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharSpacing)
     chkFillFirst.Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_OutlineAboveFill)
+    tudScale(0).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharScaleX) * 100#
+    tudScale(1).Value = PDImages.GetActiveImage.GetActiveLayer.GetTextLayerProperty(ptp_CharScaleY) * 100#
 
 End Sub
 

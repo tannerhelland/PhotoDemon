@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text Layer Renderer (using some hellish combination of GDI, GDI+, Uniscribe, and custom code)
 'Copyright 2015-2026 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 07/April/25
-'Last update: add support for creating GDI+ fonts from user-specified (non-system) font files
+'Last updated: 12/February/26
+'Last update: add support for variable character-scaling (homebrew renderer only)
 '
 'This class handles the messy business of font management for PD's basic and advanced text layers.
 ' It intermixes GDI, GDI+, and Uniscribe as necessary to provide a comprehensive text rendering solution.
@@ -319,6 +319,7 @@ Private m_CharJitterX As Double
 Private m_CharJitterY As Double
 Private m_CharInflation As Double
 Private m_CharMirror As PD_CharacterMirror
+Private m_CharScaleX As Double, m_CharScaleY As Double
 
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
@@ -704,6 +705,8 @@ Friend Function GetAllFontSettingsAsXML() As String
         .AddParam "obj-character-mirror", GetTextMirrorStringFromEnum(m_CharMirror), True, True
         .AddParam "obj-align-last-line", GetAlignmentStringFromUnit(m_AlignLastLine), True, True
         .AddParam "obj-outline-above-fill", m_OutlineAboveFill, True, True
+        .AddParam "obj-character-scale-x", m_CharScaleX, True, True
+        .AddParam "obj-character-scale-y", m_CharScaleY, True, True
     End With
     
     'Close out the text object
@@ -775,6 +778,8 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             SetGenericTextProperty ptp_CharMirror, GetTextMirrorEnumFromString(.GetString("obj-character-mirror", GetTextMirrorStringFromEnum(cm_None), True))
             SetGenericTextProperty ptp_AlignLastLine, GetAlignmentUnitFromString(.GetString("obj-align-last-line", GetAlignmentStringFromUnit(StringAlignmentNear), True))
             SetGenericTextProperty ptp_OutlineAboveFill, .GetBool("obj-outline-above-fill", True, True)
+            SetGenericTextProperty ptp_CharScaleX, .GetDouble("obj-character-scale-x", 1#, True)
+            SetGenericTextProperty ptp_CharScaleY, .GetDouble("obj-character-scale-y", 1#, True)
         End With
         
         'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
@@ -936,6 +941,12 @@ Friend Function GetGenericTextProperty(ByVal desiredProperty As PD_TextProperty)
             
         Case ptp_OutlineAboveFill
             GetGenericTextProperty = m_OutlineAboveFill
+            
+        Case ptp_CharScaleX
+            GetGenericTextProperty = m_CharScaleX
+        
+        Case ptp_CharScaleY
+            GetGenericTextProperty = m_CharScaleY
     
     End Select
 
@@ -1212,6 +1223,20 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
         Case ptp_OutlineAboveFill
             If (m_OutlineAboveFill <> CBool(newValue)) Then
                 m_OutlineAboveFill = CBool(newValue)
+                SetGenericTextProperty = True
+            End If
+        
+        Case ptp_CharScaleX
+            If (m_CharScaleX <> CDbl(newValue)) Then
+                m_CharScaleX = CDbl(newValue)
+                If (m_CharScaleX < 0.01) Then m_CharScaleX = 1# 'Failsafe against bad manually-edited files
+                SetGenericTextProperty = True
+            End If
+            
+        Case ptp_CharScaleY
+            If (m_CharScaleY <> CDbl(newValue)) Then
+                m_CharScaleY = CDbl(newValue)
+                If (m_CharScaleY < 0.01) Then m_CharScaleY = 1# 'Failsafe against bad manually-edited files
                 SetGenericTextProperty = True
             End If
         
@@ -1896,7 +1921,7 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'Retrieve a full, composite path from the glyph collector.  It handles messy business like character positioning,
     ' and simply hands us a fully composited path, ready for rendering.
     Dim finalTextPath As pd2DPath
-    m_GlyphCollection.NotifyCustomLayoutSettings m_LineSpacing, m_CharSpacing, m_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror
+    m_GlyphCollection.NotifyCustomLayoutSettings m_LineSpacing, m_CharSpacing, m_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror, m_CharScaleX, m_CharScaleY
     
     If REPORT_TEXT_RENDER_TIMING Then
         PDDebug.LogAction "RenderTextToDIB_Glyphs - init: " & VBHacks.GetTimeDiffNowAsString(startTime)
@@ -2538,6 +2563,8 @@ Private Function SetAllFontSettingsFromXML_Legacy(ByRef srcXMLString As String) 
         SetGenericTextProperty ptp_CharMirror, .GetLong("TextCharMirror", 0)
         SetGenericTextProperty ptp_AlignLastLine, StringAlignmentNear
         SetGenericTextProperty ptp_OutlineAboveFill, True
+        SetGenericTextProperty ptp_CharScaleX, 1#
+        SetGenericTextProperty ptp_CharScaleY, 1#
     End With
     
     'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
