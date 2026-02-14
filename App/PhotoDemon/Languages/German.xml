@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2025.12 Alpha - Build 35.2</langversion>
+<langversion>2026.1 Alpha (Build 124)</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3109,12 +3109,12 @@ Deskription: %2
 
 <phrase>
 <original>horizontal scaling</original>
-<translation></translation>
+<translation>Horizontale Skalierung</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation></translation>
+<translation>Vertikale Skalierung</translation>
 </phrase>
 
 <phrase>
@@ -8139,7 +8139,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>scale</original>
-<translation>Skalierung</translation>
+<translation>Skalieren</translation>
 </phrase>
 
 <phrase>
@@ -13115,7 +13115,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>scale (x, y)</original>
-<translation></translation>
+<translation>Skalieren (x, y)</translation>
 </phrase>
 
 <phrase>
