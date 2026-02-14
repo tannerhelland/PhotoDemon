@@ -1237,7 +1237,13 @@ End Sub
 'This panel *does* need to be notified of active image changes, because things like max/min of spin controls
 ' may change based on user settings and image dimensions.
 Public Sub NotifyActiveImageChanged()
+    
+    'Clear the active crop, if any
+    Tools_Crop.RemoveCurrentCrop
+    
+    'Synchronize new image max/min dimensions
     SyncMinMaxAgainstImage
+    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
