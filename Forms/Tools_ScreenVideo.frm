@@ -272,7 +272,7 @@ Public Sub ShowDialog(ByVal ptrToParentRect As Long, ByRef listOfSettings As Str
     cSettings.SetParamString listOfSettings
     
     With cSettings
-        m_FPS = .GetLong("frame-rate", 10)
+        m_FPS = .GetDouble("frame-rate", 10#)
         m_CountdownTime = .GetLong("countdown", 0)
         m_ShowCursor = .GetBool("show-cursor", True)
         m_ShowClicks = .GetBool("show-clicks", True)
