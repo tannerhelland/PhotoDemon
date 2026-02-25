@@ -6,7 +6,7 @@
 
 <langid>es-ES</langid>
 <langname>Español (España)</langname>
-<langversion>9.0.50</langversion>
+<langversion>9.0.51</langversion>
 <langstatus>Completo</langstatus>
 
 <author>Tecnorama - Updated by Miguel Chamorro</author>
@@ -14151,7 +14151,7 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>when using "Save As", set the default file format to</original>
+<original>when using "Save As", suggest this file format</original>
 <translation>cuando use "Guardar Como", establecer como predeterminado el formato de archivo en</translation>
 </phrase>
 
@@ -14191,6 +14191,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>when using "Save" on a new image, suggest this file format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
 <translation>Por defecto, PhotoDemon le avisará cuando intente cerrar una imagen sin guardar los cambios.</translation>
 </phrase>
@@ -14208,6 +14213,16 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
 <translation>La mayoría de los editores de fotografías utilizan de forma predeterminada la carpeta de la imagen actual.   Para flujos de trabajo que implican cargar imágenes desde una carpeta pero guardarlas en una carpeta nueva, use la última carpeta utilizada para ahorrar tiempo.</translation>
+</phrase>
+
+<phrase>
+<original>automatic (match format to image properties)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14255,7 +14270,7 @@ Are you sure you want to continue?</original>
 <translation>En la mayoría de los editores de fotografías, el comando "Guardar como" tiene por defecto el nombre de archivo actual. PhotoDemon también proporciona una opción "más segura", donde Guardar como incrementará automáticamente los nombres de los archivos.</translation>
 </phrase>
 
-<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14793,10 +14808,10 @@ Si, con todo y con ello, elige desactivar las actualizaciones, no olvide visitar
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2801</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5976 phrases. -->
-<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12062 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
+<!-- These 2801 phrases contain approximately 12118 total words. -->
 
 </pdData>

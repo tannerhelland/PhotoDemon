@@ -52,7 +52,11 @@ Public Function RetrieveVersionRevisionAsLong(ByVal srcVersionString As String) 
     tmpArray = Split(srcVersionString, ".")
     
     If (UBound(tmpArray) >= 2) Then
-        RetrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
+        If IsNumeric(Trim$(tmpArray(2))) Then
+            RetrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
+        Else
+            RetrieveVersionRevisionAsLong = 0
+        End If
     
     'If one or less "." chars are found, assume a revision of 0
     Else
@@ -65,4 +69,3 @@ CantFormatRevisionAsLong:
     RetrieveVersionRevisionAsLong = 0
 
 End Function
-

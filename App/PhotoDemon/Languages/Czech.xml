@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.38</langversion>
+<langversion>1.0.39</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -14779,7 +14779,7 @@ Opravdu chcete pokračovat?</translation>
 </phrase>
 
 <phrase>
-<original>when using "Save As", set the default file format to</original>
+<original>when using "Save As", suggest this file format</original>
 <translation>při použití "Uložit jako" nastavte výchozí soubor na</translation>
 </phrase>
 
@@ -14820,6 +14820,11 @@ Opravdu chcete pokračovat?</translation>
 </phrase>
 
 <phrase>
+<original>when using "Save" on a new image, suggest this file format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
 <translation>Ve výchozím nastavení vás PhotoDemon upozorní, když se pokusíte zavřít obrázek s neuloženými změnami.
 <překlad></překlad></translation>
@@ -14838,6 +14843,16 @@ Opravdu chcete pokračovat?</translation>
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
 <translation>Většina editorů fotografií ve výchozím nastavení použije složku aktuálního obrázku.  U pracovních postupů, které zahrnují načítání obrázků z jedné složky, ale ukládání do nové složky, použijte naposledy použitou složku, abyste ušetřili čas.</translation>
+</phrase>
+
+<phrase>
+<original>automatic (match format to image properties)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14886,7 +14901,7 @@ Opravdu chcete pokračovat?</translation>
 <translation>Ve většině editorů fotografií má příkaz „Uložit jako“ výchozí název aktuálního souboru.  PhotoDemon také poskytuje "bezpečnější" možnost, kdy Uložit jako automaticky zvýší názvy souborů za vás.</translation>
 </phrase>
 
-<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -15430,10 +15445,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2801</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5976 phrases. -->
-<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12062 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
+<!-- These 2801 phrases contain approximately 12118 total words. -->
 
 </pdData>

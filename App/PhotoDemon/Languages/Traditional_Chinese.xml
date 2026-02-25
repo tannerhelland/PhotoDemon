@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>正體中文</langname>
-<langversion>2025.12.4</langversion>
+<langversion>2025.12.5</langversion>
 <langstatus>Translation completed on 2025/12/1 (bulid 135)</langstatus>
 
 <author>昇</author>
@@ -14181,7 +14181,7 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>when using "Save As", set the default file format to</original>
+<original>when using "Save As", suggest this file format</original>
 <translation>使用「另存為」時，將使用預設圖檔格式</translation>
 </phrase>
 
@@ -14221,6 +14221,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>when using "Save" on a new image, suggest this file format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
 <translation>預設情況下，當您嘗試使用未保存的更改關閉圖像時，PhotoDemon將發出警告。</translation>
 </phrase>
@@ -14239,6 +14244,16 @@ Are you sure you want to continue?</original>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
 <translation>大多數圖像編輯器預設會使用［目前圖像資料夾］。
 對於涉及從一個資料夾載入影像但儲存到新資料夾的工作流程，使用［最後使用的資料夾｝可以節省時間</translation>
+</phrase>
+
+<phrase>
+<original>automatic (match format to image properties)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14289,7 +14304,7 @@ PhotoDemon 提供一個更「安全」的選項，每次儲存都會產生檔案
 PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自動為你遞增檔案名稱。」</translation>
 </phrase>
 
-<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14863,10 +14878,10 @@ PhotoDemon 可以透過分析其他元數據（例如量化表）來推斷品質
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2801</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5976 phrases. -->
-<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12062 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
+<!-- These 2801 phrases contain approximately 12118 total words. -->
 
 </pdData>

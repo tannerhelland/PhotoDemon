@@ -934,6 +934,27 @@ Private Sub PreprocessText(ByRef srcString As String)
     
 End Sub
 
+'Sometimes I "lightly" modify English PhotoDemon text to fix typos or improve consistency.
+' This confuses the translated-phrase-mapper and while it can auto-match things like punctuation fixes,
+' it can't intelligently match phrases that have been lightly reworded or rephrased.  This function
+' allows me to manually map a lightly modified phrase to its original, untouched one, which we can then
+' match against its original translation (which likely doesn't need to be modified) ensuring translated
+' phrases still persist across minor en-US updates.
+'
+'RETURNS: TRUE if a source phrase is successfully matched; dstTextNew will hold the old phrase that (possibly)
+'         has a translation in the source file
+Private Function GetLightlyModifiedText(ByRef srcTextNew As String, ByRef dstTextOld As String) As Boolean
+    
+    GetLightlyModifiedText = False
+    
+    'In this match line, put the PREPROCESSED NEW TRANSLATION (e.g. remove trailing colons and ellipses)
+    If Strings.StringsEqual(srcTextNew, "when using ""Save As"", suggest this file format", True) Then
+        dstTextOld = "when using ""Save As"", set the default file format to"
+        GetLightlyModifiedText = True
+    End If
+    
+End Function
+
 'PD's build script uses this function to update all languages files against the latest en-US project text.
 Private Sub cmdMergeAll_Click()
     
@@ -1186,6 +1207,22 @@ Private Sub cmdMergeAll_Click()
                 lenOrig = Len(untranslatedPhrases(i))
                 
                 If (lenOrig > 0) Then
+                
+                    'First, look for phrases that I have manually migrated to something new
+                    Dim origUnmodifiedEnUsText As String
+                    If GetLightlyModifiedText(untranslatedPhrases(i), origUnmodifiedEnUsText) Then
+                        
+                        'If the old version of this phrase had a translation, reuse it, then skip to
+                        ' the next phrase without a matching translation in the current file
+                        If m_PhraseCollection.GetItemByKey(origUnmodifiedEnUsText, translatedText) Then
+                            findText = XML_ORIGINAL_OPEN & untranslatedPhrases(i) & ORIG_TAG_CLOSE
+                            replaceText = XML_ORIGINAL_OPEN & untranslatedPhrases(i) & TRANSLATE_TAG_INTERIOR & translatedText & TRANSLATE_TAG_CLOSE
+                            m_NewLanguageText = Replace$(m_NewLanguageText, findText, replaceText, 1, -1, vbBinaryCompare)
+                            numRescuedPhrases = numRescuedPhrases + 1
+                            GoTo NextMissedPhrase
+                        End If
+
+                    End If
                     
                     'We now want to iterate all phrases in the "unused phrases" list to find the best match.
                     Dim j As Long
@@ -1269,12 +1306,15 @@ Private Sub cmdMergeAll_Click()
                     Message chkFile & ": " & (i + 1) & " of " & (UBound(untranslatedPhrases) + 1) & " missing phrases estimated, " & numSavesMade & " potentially salvaged)"
                 End If
                 
+'Continue trying to match previously unmatched phrases
+NextMissedPhrase:
             Next i
             
         End If
         
-        'All exact translations have now been merged, and near-exact translations have been written out to a
-        ' text file for human review.
+        'All exact translations have now been merged, near-exact translations have been salvaged (where possible),
+        ' and sorta-similar translations that we could *not* salvage have been written out to a text file for
+        ' human review.
         If (numRescuedPhrases > 0) Then Debug.Print "NOTE: " & numRescuedPhrases & " near-identical phrases were rescued!"
         
         'Finally, look for any language-specific text+translation pairs.  This (optional) segment can be used

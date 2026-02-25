@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha (Build 124)</langversion>
+<langversion>2026.1 Alpha (Build 124).1</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14151,7 +14151,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 </phrase>
 
 <phrase>
-<original>when using "Save As", set the default file format to</original>
+<original>when using "Save As", suggest this file format</original>
 <translation>Bei Verwendung von "Speichern unter" das per Default vorgegebene Dateiformat setzen auf</translation>
 </phrase>
 
@@ -14191,6 +14191,11 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 </phrase>
 
 <phrase>
+<original>when using "Save" on a new image, suggest this file format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
 <translation>Defaultmäßig wird Sie PhotoDemon warnen, wenn Sie versuchen, ein Bild mit ungesicherten Änderungen zu schließen.</translation>
 </phrase>
@@ -14208,6 +14213,16 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
 <translation>Die meisten Foto-Editoren verwenden standardmäßig den Ordner des aktuellen Bildes. Bei Workflows, die das Laden von Bildern aus einem Ordner, aber das Speichern in einem neuen Ordner involvieren, verwenden Sie den zuletzt-verwendeten Ordner, um Zeit zu sparen.</translation>
+</phrase>
+
+<phrase>
+<original>automatic (match format to image properties)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14255,7 +14270,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 <translation>In den meisten Foto-Editoren wird bei dem Befehl "Speichern unter" standardmäßig der aktuelle Dateiname verwendet. PhotoDemon bietet auch eine "sicherere" Option, bei der "Speichern unter" automatisch die Dateinamen für Sie inkrementiert.</translation>
 </phrase>
 
-<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14793,10 +14808,10 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2801</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5976 phrases. -->
-<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12062 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
+<!-- These 2801 phrases contain approximately 12118 total words. -->
 
 </pdData>

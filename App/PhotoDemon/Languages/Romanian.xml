@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.10</langversion>
+<langversion>1.0.11</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -14164,7 +14164,7 @@ Ești sigur că vreți să continuați?</translation>
 </phrase>
 
 <phrase>
-<original>when using "Save As", set the default file format to</original>
+<original>when using "Save As", suggest this file format</original>
 <translation>Când se folosește "Salvează ca", setează formatul de fișier implicit la</translation>
 </phrase>
 
@@ -14204,6 +14204,11 @@ Ești sigur că vreți să continuați?</translation>
 </phrase>
 
 <phrase>
+<original>when using "Save" on a new image, suggest this file format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
 <translation>Implicit, PhotoDemon vă va atenționa când încercați să închideți o imagine cu modificările nesalvate.</translation>
 </phrase>
@@ -14221,6 +14226,16 @@ Ești sigur că vreți să continuați?</translation>
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
 <translation>Majoritatea editorilor de fotografii sunt implicite în folderul imaginii curente.  Pentru fluxurile de lucru care implică încărcarea imaginilor dintr-un folder, dar salvarea într-un folder nou, utilizați ultimul folder utilizat pentru a economisi timp.</translation>
+</phrase>
+
+<phrase>
+<original>automatic (match format to image properties)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14268,7 +14283,7 @@ Ești sigur că vreți să continuați?</translation>
 <translation>În majoritatea editorilor de fotografii, comanda "Salvează ca" este implicită la numele fișierului curent.  PhotoDemon oferă, de asemenea, o opțiune "mai sigură", unde "Salvează ca" va incrementa automat numele fișierelor pentru dvs.</translation>
 </phrase>
 
-<!-- Options_Saving.frm contains 26 phrases. 4 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
@@ -14804,10 +14819,10 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2798</phrasecount>
+<phrasecount>2801</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5976 phrases. -->
-<!-- 3178 are duplicates, so only 2798 unique phrases have been written to file. -->
-<!-- These 2798 phrases contain approximately 12062 total words. -->
+<!-- As of this build, PhotoDemon contains 5979 phrases. -->
+<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
+<!-- These 2801 phrases contain approximately 12118 total words. -->
 
 </pdData>
