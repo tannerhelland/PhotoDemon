@@ -33,31 +33,31 @@ Begin VB.Form options_Saving
       Height          =   330
       Left            =   180
       TabIndex        =   0
-      Top             =   5160
+      Top             =   5880
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   582
       Caption         =   "when closing images, warn about unsaved changes"
    End
-   Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
-      Height          =   690
+   Begin PhotoDemon.pdDropDown cboDefaultSaveAsFormat 
+      Height          =   720
       Left            =   180
       TabIndex        =   1
-      Top             =   1680
+      Top             =   2400
       Width           =   7980
       _ExtentX        =   14076
-      _ExtentY        =   582
-      Caption         =   "when using ""Save As"", set the default file format to:"
+      _ExtentY        =   1270
+      Caption         =   "when using ""Save As"", suggest this file format:"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboSaveBehavior 
-      Height          =   690
+      Height          =   720
       Left            =   180
       TabIndex        =   2
-      Top             =   3000
+      Top             =   3720
       Width           =   7980
       _ExtentX        =   14076
-      _ExtentY        =   582
+      _ExtentY        =   1270
       Caption         =   "when ""Save"" is used:"
       FontSizeCaption =   10
    End
@@ -65,7 +65,7 @@ Begin VB.Form options_Saving
       Height          =   285
       Index           =   6
       Left            =   0
-      Top             =   2640
+      Top             =   3360
       Width           =   8175
       _ExtentX        =   14420
       _ExtentY        =   503
@@ -77,7 +77,7 @@ Begin VB.Form options_Saving
       Height          =   285
       Index           =   7
       Left            =   0
-      Top             =   4800
+      Top             =   5520
       Width           =   8145
       _ExtentX        =   14367
       _ExtentY        =   503
@@ -89,7 +89,7 @@ Begin VB.Form options_Saving
       Height          =   285
       Index           =   8
       Left            =   0
-      Top             =   1320
+      Top             =   1215
       Width           =   8205
       _ExtentX        =   14473
       _ExtentY        =   503
@@ -113,7 +113,7 @@ Begin VB.Form options_Saving
       Height          =   690
       Left            =   180
       TabIndex        =   3
-      Top             =   360
+      Top             =   330
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   582
@@ -121,14 +121,25 @@ Begin VB.Form options_Saving
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboSaveAsBehavior 
-      Height          =   690
+      Height          =   720
       Left            =   180
       TabIndex        =   4
-      Top             =   3840
+      Top             =   4560
       Width           =   7980
       _ExtentX        =   14076
-      _ExtentY        =   582
+      _ExtentY        =   1270
       Caption         =   "when ""Save as"" is used:"
+      FontSizeCaption =   10
+   End
+   Begin PhotoDemon.pdDropDown cboSaveFormat 
+      Height          =   720
+      Left            =   180
+      TabIndex        =   5
+      Top             =   1575
+      Width           =   7980
+      _ExtentX        =   14076
+      _ExtentY        =   1270
+      Caption         =   "when using ""Save"" on a new image, suggest this file format:"
       FontSizeCaption =   10
    End
 End
@@ -141,8 +152,8 @@ Attribute VB_Exposed = False
 'Tools > Options > Saving panel
 'Copyright 2002-2026 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 02/April/25
-'Last update: split this panel into a standalone form
+'Last updated: 23/April/26
+'Last update: new option for modifying PD's suggested save format for never-before-saved images
 '
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
@@ -172,10 +183,19 @@ Private Sub Form_Load()
     cboDefaultSaveFolder.AddItem "the last-used folder", 1
     cboDefaultSaveFolder.AssignTooltip "Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time."
     
-    cboDefaultSaveFormat.Clear
-    cboDefaultSaveFormat.AddItem "the current image's format", 0
-    cboDefaultSaveFormat.AddItem "the last-used format", 1
-    cboDefaultSaveFormat.AssignTooltip "Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time."
+    cboSaveFormat.Clear
+    cboSaveFormat.AddItem "automatic (match format to image properties)", 0, True
+    cboSaveFormat.AssignTooltip "This setting determines the initial file format suggestion for images that have never been saved before.  The ""automatic"" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency."
+    
+    Dim i As Long
+    For i = 0 To ImageFormats.GetNumOfOutputFormats()
+        cboSaveFormat.AddItem ImageFormats.GetOutputFormatDescription(i), i + 1
+    Next i
+    
+    cboDefaultSaveAsFormat.Clear
+    cboDefaultSaveAsFormat.AddItem "the current image's format", 0
+    cboDefaultSaveAsFormat.AddItem "the last-used format", 1
+    cboDefaultSaveAsFormat.AssignTooltip "Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time."
     
     cboSaveBehavior.Clear
     cboSaveBehavior.AddItem "overwrite the current file (standard behavior)", 0
@@ -193,10 +213,45 @@ Public Sub LoadUserPreferences()
 
     'Saving preferences
     chkConfirmUnsaved.Value = g_ConfirmClosingUnsaved
-    cboDefaultSaveFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
+    cboDefaultSaveAsFormat.ListIndex = UserPrefs.GetPref_Long("Saving", "Suggested Format", 0)
     If UserPrefs.GetPref_Boolean("Saving", "Use Last Folder", False) Then cboDefaultSaveFolder.ListIndex = 1 Else cboDefaultSaveFolder.ListIndex = 0
     cboSaveBehavior.ListIndex = UserPrefs.GetPref_Long("Saving", "Overwrite Or Copy", 0)
     If UserPrefs.GetPref_Boolean("Saving", "save-as-autoincrement", True) Then cboSaveAsBehavior.ListIndex = 1 Else cboSaveAsBehavior.ListIndex = 0
+    
+    'Default save format is more complex; to avoid problems arising from changes to PD's format list,
+    ' we need to translate to/from safe strings
+    Dim nameSaveFormat As String
+    nameSaveFormat = Trim$(UserPrefs.GetPref_String("Saving", "new-image-format", "auto"))
+    
+    'By default, we use a dedicated "auto" tag that uses JPEG for non-transparent images and PNG for transparent images
+    If Strings.StringsEqual(nameSaveFormat, "auto", True) Then
+        cboSaveFormat.ListIndex = 0
+    Else
+        
+        'Translate the retrieved string into a format index
+        Dim idFormat As PD_IMAGE_FORMAT
+        idFormat = ImageFormats.GetPDIFFromExtension(nameSaveFormat, True)
+        
+        'If we don't recognize the extension, default back to "auto"
+        If (idFormat = PDIF_UNKNOWN) Then
+            cboSaveFormat.ListIndex = 0
+        
+        'If we *do* recognize the format, translate it to an index and use that
+        Else
+            
+            Dim idxFinal As Long
+            idxFinal = ImageFormats.GetIndexOfOutputPDIF(idFormat)
+            
+            'Failsafe check for valid index
+            If (idxFinal < 0) Or (idxFinal >= ImageFormats.GetNumOfOutputFormats()) Then
+                cboSaveFormat.ListIndex = 0
+            Else
+                cboSaveFormat.ListIndex = idxFinal + 1
+            End If
+            
+        End If
+        
+    End If
     
 End Sub
 
@@ -213,8 +268,18 @@ Public Sub SaveUserPreferences()
     
     UserPrefs.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
     UserPrefs.SetPref_Long "Saving", "save-as-autoincrement", (cboSaveAsBehavior.ListIndex = 1)
-    UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveFormat.ListIndex
+    UserPrefs.SetPref_Long "Saving", "Suggested Format", cboDefaultSaveAsFormat.ListIndex
     UserPrefs.SetPref_Boolean "Saving", "Use Last Folder", (cboDefaultSaveFolder.ListIndex = 1)
+    
+    'Save format is more complex; translate it to an image extension, so we can preserve index between
+    ' PD versions (if the list of supported formats changes).
+    If (cboSaveFormat.ListIndex = 0) Then
+        UserPrefs.SetPref_String "Saving", "new-image-format", "auto"
+    Else
+        Dim formatExtension As String
+        formatExtension = ImageFormats.GetExtensionFromPDIF(ImageFormats.GetOutputPDIF(cboSaveFormat.ListIndex - 1))
+        UserPrefs.SetPref_String "Saving", "new-image-format", formatExtension
+    End If
     
 End Sub
 

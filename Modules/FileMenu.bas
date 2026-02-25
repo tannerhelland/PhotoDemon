@@ -458,6 +458,9 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
 End Function
 
+'When an image is being saved for the first time (and the image doesn't already exist on-disk),
+' you can call this function to get a "suggested" format for the save.  As of v2026.02, the user
+' can override PD's default behavior and supply their own default format via Tools > Options > Saving.
 Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, ByRef dstSuggestedExtension As String) As PD_IMAGE_FORMAT
     
     'First, see if the image has a file format already.  If it does, we need to suggest that preferentially.
@@ -474,19 +477,12 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
         'This image must have come from a source where the best save format isn't clear (like a generic clipboard DIB).
         ' As such, we need to suggest an appropriate format.
         
-        'Start with the most obvious criteria: does the image have multiple layers?  If so, PDI is best.
-        If (srcImage.GetNumOfLayers > 1) Then
-            GetSuggestedSaveFormatAndExtension = PDIF_PDI
-        Else
+        'PD has a built-in function for this (since the process is somewhat cumbersome, involving user prefs settable
+        ' via Tools > Options > Saving)
+        GetSuggestedSaveFormatAndExtension = Saving.GetUsersDefaultSaveFormat(srcImage)
         
-            'Query the only layer in the image.  If it has meaningful alpha values, we'll suggest PNG; otherwise, JPEG.
-            If DIBs.IsDIBAlphaBinary(srcImage.GetActiveDIB, False) Then
-                GetSuggestedSaveFormatAndExtension = PDIF_JPEG
-            Else
-                GetSuggestedSaveFormatAndExtension = PDIF_PNG
-            End If
-        
-        End If
+        'Failsafe only (should never trigger)
+        If (GetSuggestedSaveFormatAndExtension = PDIF_UNKNOWN) Then GetSuggestedSaveFormatAndExtension = PDIF_PDI
         
         'Also return a proper extension that matches the selected format
         dstSuggestedExtension = ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)

@@ -362,6 +362,81 @@ Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDI
     
 End Sub
 
+'Sometimes, PhotoDemon needs to blindly suggest a save format for an image.  (Examples: image created via
+' "new image" or came from the clipboard and has never been saved before, or image was loaded in a format that
+' PD can read but *not* write.)  Historically, PD suggested JPEG for 24-bpp sources and PNG for 32-bpp sources.
+' In 2026.02, a preference for the default export format was exposed in Tools > Options > Saving.
+'
+'This function is guaranteed to return a valid export format (e.g. never PDIF_UNKNOWN).
+Public Function GetUsersDefaultSaveFormat(Optional ByRef srcImage As pdImage = Nothing) As PD_IMAGE_FORMAT
+    
+    'Saved save format has a little complexity; to avoid problems arising from changes to PD's supported
+    ' image format list, we need to translate to/from safe strings.
+    Dim nameSaveFormat As String
+    nameSaveFormat = Trim$(UserPrefs.GetPref_String("Saving", "new-image-format", "auto"))
+    
+    'By default, we use a dedicated "auto" tag that suggests different formats for different image states.
+    ' (This requires us to analyze the current image to look for things like multiple layers, transparency, etc.)
+    Dim testDIB As pdDIB
+    If Strings.StringsEqual(nameSaveFormat, "auto", True) Then
+        
+        'If the caller didn't supply a test image, default to PD's internal format
+        If (srcImage Is Nothing) Then
+            GetUsersDefaultSaveFormat = PDIF_PDI
+        Else
+            
+            'If the source image has multiple layers, suggest PD's native format (PDI)
+            If (srcImage.GetNumOfLayers() > 1) Then
+                GetUsersDefaultSaveFormat = PDIF_PDI
+                
+            'If the source image is single-layer, use transparency status to determine format
+            Else
+                
+                'Failsafe check for valid composited image (should never trigger)
+                srcImage.GetCompositedImage testDIB, True
+                If (Not testDIB Is Nothing) Then
+                    If DIBs.IsDIBTransparent(testDIB) Then
+                        GetUsersDefaultSaveFormat = PDIF_PNG
+                    Else
+                        GetUsersDefaultSaveFormat = PDIF_JPEG
+                    End If
+                Else
+                    GetUsersDefaultSaveFormat = PDIF_PNG
+                End If
+                
+            End If
+                
+        End If
+    
+    'If the user has overridden our default setting, suggest their choice instead
+    Else
+        
+        'Translate the retrieved string into a format index
+        Dim idFormat As PD_IMAGE_FORMAT
+        idFormat = ImageFormats.GetPDIFFromExtension(nameSaveFormat, True)
+        
+        'If we don't recognize the extension, default back to "auto" behavior.
+        ' (This will only occur if the user manually edits the prefs file and enters a bad extension,
+        '  or if PD drops format support in the future - both unlikely, but better safe than sorry!)
+        If (idFormat = PDIF_UNKNOWN) Then
+            If (srcImage Is Nothing) Then
+                GetUsersDefaultSaveFormat = PDIF_PNG
+            Else
+                srcImage.GetCompositedImage testDIB, True
+                If DIBs.IsDIBTransparent(testDIB) Then
+                    GetUsersDefaultSaveFormat = PDIF_PNG
+                Else
+                    GetUsersDefaultSaveFormat = PDIF_JPEG
+                End If
+            End If
+        Else
+            GetUsersDefaultSaveFormat = idFormat
+        End If
+        
+    End If
+    
+End Function
+
 'Given a source image, a desired export format, and a destination string, fill the destination string with format-specific parameters
 ' returned from the associated format-specific dialog.
 '

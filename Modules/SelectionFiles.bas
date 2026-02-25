@@ -3,8 +3,9 @@ Attribute VB_Name = "SelectionFiles"
 'Selection Tools: File I/O
 'Copyright 2013-2026 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 07/September/21
-'Last update: split selection file I/O into its own module
+'Last updated: 25/February/26
+'Last update: when exporting selected area as image, use the new Tools > Options > Saving preference for
+'             default file format suggestion
 '
 'This module should only contain functions for writing/reading selection data to file.  Note that these
 ' functions will be used primarily for PD's Undo/Redo engine, so performance considerations are paramount.
@@ -22,7 +23,7 @@ Option Explicit
 Public Function ExportSelectedAreaAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If (Not PDImages.GetActiveImage.IsSelectionActive) Then
+    If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectedAreaAsImage = False
         Exit Function
@@ -50,13 +51,14 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     Dim tempPathString As String
     tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     
-    'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
-    Dim saveFormat As Long
-    If DIBs.IsDIBAlphaBinary(tmpDIB, False) Then
-        saveFormat = ImageFormats.GetIndexOfOutputPDIF(PDIF_JPEG) + 1
-    Else
-        saveFormat = ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG) + 1
-    End If
+    'The user can customize default output format in Tools > Options > Saving
+    Dim saveFormat As PD_IMAGE_FORMAT
+    saveFormat = Saving.GetUsersDefaultSaveFormat(tmpImage)
+    
+    'Convert this to an index into PD's supported list of output formats (we need to pass this +1
+    ' to the export common dialog).
+    Dim idxSaveFormat As Long
+    idxSaveFormat = ImageFormats.GetIndexOfOutputPDIF(saveFormat) + 1
     
     'Now it's time to prepare a standard Save Image common dialog
     Dim saveDialog As pdOpenSaveDialog
@@ -64,13 +66,14 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim sFile As String
-    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString), ImageFormats.GetOutputFormatExtension(saveFormat - 1))
+    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString), ImageFormats.GetOutputFormatExtension(idxSaveFormat))
     
     'Present a common dialog to the user
-    If saveDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, vbNullString, True, ImageFormats.GetCommonDialogOutputFormats, idxSaveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
         
-        'Store the selected file format to the image object
-        tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(saveFormat - 1)
+        'Store the selected file format to the image object (remember to *remove* 1 to make it 0-based;
+        ' the common-dialog returns a 1-based number)
+        tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(idxSaveFormat - 1)
         
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
@@ -121,23 +124,28 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     Dim tempPathString As String
     tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     
-    'By default, recommend PNG as the save format
-    Dim saveFormat As Long
-    saveFormat = ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG) + 1
+    'The user can customize default output format in Tools > Options > Saving
+    Dim saveFormat As PD_IMAGE_FORMAT
+    saveFormat = Saving.GetUsersDefaultSaveFormat(tmpImage)
+    
+    'Convert this to an index into PD's supported list of output formats (we need to pass this +1
+    ' to the export common dialog).
+    Dim idxSaveFormat As Long
+    idxSaveFormat = ImageFormats.GetIndexOfOutputPDIF(saveFormat) + 1
     
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim sFile As String
-    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString), "png")
+    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString), ImageFormats.GetOutputFormatExtension(idxSaveFormat))
     
     'Now it's time to prepare a standard Save Image common dialog
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
     
     'Present a common dialog to the user
-    If saveDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, idxSaveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
-        tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(saveFormat - 1)
+        tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(idxSaveFormat - 1)
                                 
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         ExportSelectionMaskAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
