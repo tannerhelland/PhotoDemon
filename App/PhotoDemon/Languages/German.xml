@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha (Build 124).1</langversion>
+<langversion>2026.1 Alpha (Build 139)</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1470,12 +1470,12 @@
 Lossless copies will be saved to the same folder as this initial image save.</original>
 <translation>Bevor verlustfreie Kopien gespeichert werden können, müssen Sie dieses Bild mindestens einmal speichern.
 
-Verlustfreie Kopien werden in demselben Ordner gespeichert wie dieses erstmalige Bild-Speichern.</translation>
+Verlustfreie Kopien werden in demselben Ordner gespeichert wie dieses initiale Bild-Speichern.</translation>
 </phrase>
 
 <phrase>
 <original>Initial save required</original>
-<translation>Erstmaliges Speichern erforderlich</translation>
+<translation>Initiales Speichern erforderlich</translation>
 </phrase>
 
 <phrase>
@@ -7949,7 +7949,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>default plugin folder</original>
-<translation>Default-Plug-in-Ordner</translation>
+<translation>Plug-in-Ordner per Default</translation>
 </phrase>
 
 <phrase>
@@ -10227,7 +10227,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Wenn "Bilder in deren Original-Format behalten" selektiert ist, wird PhotoDemon versuchen, jedes Bild in seinem Original-Format zu speichern. Wenn das Original-Format nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
+<translation>Wenn "Bilder in deren Original-Format behalten" selektiert ist, versucht PhotoDemon, jedes Bild in seinem Original-Format zu speichern. Wenn das Original-Format nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
 </phrase>
 
 <phrase>
@@ -10606,7 +10606,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>Adobe Swatch Exchange (ASE) -Dateien können multiple Paletten in einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, wird PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzufügen. Jegliche bereits in der Datei enthaltenen Paletten werden nicht modifiziert.</translation>
+<translation>Adobe Swatch Exchange (ASE) -Dateien können multiple Paletten in einer einzelnen Datei speichern. Wenn Sie die Option "Anfügen" auswählen, fügt PhotoDemon diese Palette zu Ihrer vorhandenen ASE-Datei hinzu. Jegliche bereits in der Datei enthaltenen Paletten werden nicht modifiziert.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -12840,7 +12840,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>default selection behavior</original>
-<translation>Default-Auswahl -Verhalten</translation>
+<translation>Auswahl-Verhalten per Default</translation>
 </phrase>
 
 <phrase>
@@ -13922,7 +13922,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>If you interact with %1, PhotoDemon will offer to download and configure this library for you.</original>
-<translation>Wenn Sie mit %1 interagieren, wird PhotoDemon anbieten, diese Bibliothek für Sie herunterzuladen und zu konfigurieren.</translation>
+<translation>Wenn Sie mit %1 interagieren, bietet PhotoDemon an, diese Bibliothek für Sie herunterzuladen und zu konfigurieren.</translation>
 </phrase>
 
 <!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -13956,7 +13956,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>open in PhotoDemon (for further editing)</original>
-<translation>Es in PhotoDemon öffnen (zur weiteren Bearbeitung)</translation>
+<translation>In PhotoDemon öffnen (zur weiteren Bearbeitung)</translation>
 </phrase>
 
 <phrase>
@@ -14152,7 +14152,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>when using "Save As", suggest this file format</original>
-<translation>Bei Verwendung von "Speichern unter" das per Default vorgegebene Dateiformat setzen auf</translation>
+<translation>Bei Verwendung von "Speichern unter" dieses Dateiformat vorschlagen</translation>
 </phrase>
 
 <phrase>
@@ -14192,12 +14192,12 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>Bei Verwendung von "Speichern" für ein neues Bild dieses Dateiformat vorschlagen</translation>
 </phrase>
 
 <phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>Defaultmäßig wird Sie PhotoDemon warnen, wenn Sie versuchen, ein Bild mit ungesicherten Änderungen zu schließen.</translation>
+<translation>Defaultmäßig wird PhotoDemon Sie warnen, wenn Sie versuchen, ein Bild mit ungesicherten Änderungen zu schließen.</translation>
 </phrase>
 
 <phrase>
@@ -14217,12 +14217,12 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>Automatisch (Format stimmt mit Bildeigenschaften überein)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>Diese Einstellung bestimmt den Vorschlag für das initiale Dateiformat für Bilder, die noch nie zuvor gespeichert worden sind. Die Einstellung "Automatisch" verwendet standardmäßig PDI (natives Format von PhotoDemon) für Bilder mit Layern, JPEG für Bilder mit Einzel-Layer ohne Transparenz und PNG für Bilder mit Einzel-Layer mit Transparenz.</translation>
 </phrase>
 
 <phrase>
@@ -14543,7 +14543,7 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist, beim Testen neuer Releases zu helfen. Defaultmäßig werden sowohl stabile als auch Beta-Releases vorgeschlagen, aber die wirklich Abenteuerlustigen können auch Developer-Releases ausprobieren. (Developer-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, aber Sie könnten auf etwaige Bugs stoßen.)</translation>
+<translation>Eine der besten Möglichkeiten, um PhotoDemon zu unterstützen, ist, beim Testen neuer Releases zu helfen. Defaultmäßig wird PhotoDemon sowohl stabile als auch Beta-Releases vorschlagen, aber die wirklich Abenteuerlustigen können auch Developer-Releases ausprobieren. (Developer-Releases bieten Ihnen unmittelbaren Zugriff auf die neuesten Programmverbesserungen, aber Sie könnten auf etwaige Bugs stoßen.)</translation>
 </phrase>
 
 <phrase>
@@ -14697,7 +14697,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Bei Verwendung eines Remote-Desktops oder einer VM (Virtual Machine) kann möglicherweise die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Windows-Bug. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Maus-Verhalten wiederherzustellen.</translation>
+<translation>Bei Verwendung von einem Remote-Desktop oder einer VM (Virtual Machine) kann möglicherweise die hochauflösende (high-resolution) Mauseingabe nicht korrekt arbeiten. Dies ist ein langjähriger Windows-Bug. In diesen Situationen können Sie diese Einstellung verwenden, um das korrekte Maus-Verhalten wiederherzustellen.</translation>
 </phrase>
 
 <!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14796,7 +14796,7 @@ Wenn Sie sich dennoch dafür entscheiden, Updates zu deaktivieren, vergessen Sie
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können möglicherweise diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also seitwärts oder auf dem Kopf stehend importiert werden, können Sie versuchen, das Feature zum automatischen Drehen zu deaktivieren.</translation>
+<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon verwendet, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können möglicherweise diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also seitwärts oder auf dem Kopf stehend importiert werden, können Sie versuchen, das Feature zum automatischen Drehen zu deaktivieren.</translation>
 </phrase>
 
 <phrase>
