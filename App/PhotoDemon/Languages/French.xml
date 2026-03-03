@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.02.25</langversion>
+<langversion>2026.03.4</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -14202,7 +14202,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>Quand "Enregistrer" est utilisé sur une nouvelle image, proposer ce format</translation>
 </phrase>
 
 <phrase>
@@ -14227,12 +14227,12 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>Automatique (format correspondant aux propriétés de l'image)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>Ce paramètre détermine le format initial proposé pour les images jamais sauvegardées auparavant. Le paramètre "Automatique" enregistre par défaut en PDI (format natif PhotoDemon) pour les images avec calques, en JPEG pour les images d'une seule couche sans transparence, et en PNG pour les images d'une seule couche avec transparence.</translation>
 </phrase>
 
 <phrase>

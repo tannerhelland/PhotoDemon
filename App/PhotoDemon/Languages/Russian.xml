@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2025.4.150</langversion>
+<langversion>2026.1.141</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -3109,12 +3109,12 @@ Description: %2
 
 <phrase>
 <original>horizontal scaling</original>
-<translation></translation>
+<translation>Горизонтальное масштабирование</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation></translation>
+<translation>Вертикальное масштабирование</translation>
 </phrase>
 
 <phrase>
@@ -4211,12 +4211,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>Ввести пароль</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>Этот файл защищён паролем.  Введи пароль</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13117,7 +13117,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>scale (x, y)</original>
-<translation></translation>
+<translation>масштаб (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -14154,7 +14154,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save As", suggest this file format</original>
-<translation>При использовании параметра "Сохранить как", установить формат файла по умолчанию</translation>
+<translation>При использовании "Сохранить как", предложить этот формат файла</translation>
 </phrase>
 
 <phrase>
@@ -14184,7 +14184,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>Папка для "Сохранить как"</translation>
+<translation>Для команды "Сохранить как", использовать эту папку</translation>
 </phrase>
 
 <phrase>
@@ -14194,12 +14194,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>При использовании "Сохранить" для нового изображения, предложить этот формат файла</translation>
 </phrase>
 
 <phrase>
 <original>By default, PhotoDemon will warn you when you attempt to close an image with unsaved changes.</original>
-<translation>По умолчанию PhotoDemon предупредит, если ты попытаешься закрыть изображение с несохранёнными изменениями.</translation>
+<translation>По умолчанию, PhotoDemon предупредит о не сохранённых изменениях на изображении.</translation>
 </phrase>
 
 <phrase>
@@ -14214,17 +14214,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>Большинство фоторедакторов по умолчанию используют папку текущего изображения. Для рабочих процессов, в которых изображения загружаются из одной папки и сохраняются в новой папке, для экономии времени используй последнюю использованную папку.</translation>
+<translation>Большинство фоторедакторов по умолчанию используют папку текущего изображения. Для рабочих процессов, связанных с загрузкой изображений из одной папки и сохранением в новой папке, используйте последнюю использованную папку для экономии времени.</translation>
 </phrase>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>Автоматический (соответствие формата свойствам изображения)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>Этот параметр определяет исходный формат файла для изображений, которые никогда ранее не сохранялись.  В режиме "Автоматический", по умолчанию, используется  формат PDI (собственный формат PhotoDemon) для многослойных изображений, JPEG - для однослойных изображений без прозрачности и PNG - для однослойных изображений с прозрачностью.</translation>
 </phrase>
 
 <phrase>
@@ -14254,7 +14254,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>В большинстве фоторедакторов команда "Сохранить" сохраняет изображение поверх исходной версии и безвозвратно стирает копию. PhotoDemon предлагает "более безопасный" вариант: при каждом сохранении создается новая копия файла.</translation>
+<translation>В большинстве фоторедакторов команда "Сохранить" сохраняет изображение поверх исходной версии и безвозвратно стирает копию. PhotoDemon предлагает "более безопасный" вариант: при каждом сохранении создаётся новая копия файла.</translation>
 </phrase>
 
 <phrase>
@@ -14269,7 +14269,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>В большинстве фоторедакторов команда "Сохранить как" по умолчанию использует текущее имя файла. PhotoDemon также предоставляет "более безопасную" опцию, при которой "Сохранить как" автоматически увеличивает цифру в имени файла.</translation>
+<translation>В большинстве фоторедакторов команда "Сохранить как" по умолчанию использует текущее имя файла. PhotoDemon предоставляет "более безопасную" опцию, при которой "Сохранить как" автоматически добавляет цифру к имени файла.</translation>
 </phrase>
 
 <!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
