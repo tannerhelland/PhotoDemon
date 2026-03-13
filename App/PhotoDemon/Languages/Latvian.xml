@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).45</langversion>
+<langversion>2028.8 Alfa (Build 25).46</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -9919,7 +9919,7 @@ Labotie faili ir saglabāti mērķa mapē.  Nelabotie faili paliek savās sākot
 </phrase>
 
 <phrase>
-<original>Select macro</original>
+<original>select macro</original>
 <translation>Atlasiet makro</translation>
 </phrase>
 
@@ -10009,7 +10009,7 @@ Labotie faili ir saglabāti mērķa mapē.  Nelabotie faili paliek savās sākot
 </phrase>
 
 <phrase>
-<original>Select destination folder</original>
+<original>select destination folder</original>
 <translation>Atlasiet galamērķa mapi</translation>
 </phrase>
 
@@ -10303,18 +10303,33 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 </phrase>
 
 <phrase>
-<original>stretching to fit</original>
+<original>fixed size, stretch to fit</original>
 <translation>izstiept, lai ietilptu</translation>
 </phrase>
 
 <phrase>
-<original>fit inclusively</original>
+<original>fixed size, fit inclusive</original>
 <translation>iekļaujoši pielāgoties</translation>
 </phrase>
 
 <phrase>
-<original>fit exclusively</original>
+<original>fixed size, fit exclusive</original>
 <translation>piemērots tikai un vienīgi</translation>
+</phrase>
+
+<phrase>
+<original>fixed width, preserve aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fixed height, preserve aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>max size, fit within, preserve aspect ratio</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10392,7 +10407,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>Atlikušā laika aplēse</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14810,10 +14825,10 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2801</phrasecount>
+<phrasecount>2804</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
-<!-- These 2801 phrases contain approximately 12118 total words. -->
+<!-- As of this build, PhotoDemon contains 5982 phrases. -->
+<!-- 3178 are duplicates, so only 2804 unique phrases have been written to file. -->
+<!-- These 2804 phrases contain approximately 12141 total words. -->
 
 </pdData>

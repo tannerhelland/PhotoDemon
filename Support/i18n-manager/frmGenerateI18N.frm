@@ -948,8 +948,14 @@ Private Function GetLightlyModifiedText(ByRef srcTextNew As String, ByRef dstTex
     GetLightlyModifiedText = False
     
     'In this match line, put the PREPROCESSED NEW TRANSLATION (e.g. remove trailing colons and ellipses)
-    If Strings.StringsEqual(srcTextNew, "when using ""Save As"", suggest this file format", True) Then
-        dstTextOld = "when using ""Save As"", set the default file format to"
+    If Strings.StringsEqual(srcTextNew, "fixed size, stretch to fit", True) Then
+        dstTextOld = "stretching to fit"
+        GetLightlyModifiedText = True
+    ElseIf Strings.StringsEqual(srcTextNew, "fixed size, fit inclusive", True) Then
+        dstTextOld = "fit inclusively"
+        GetLightlyModifiedText = True
+    ElseIf Strings.StringsEqual(srcTextNew, "fixed size, fit exclusive", True) Then
+        dstTextOld = "fit exclusively"
         GetLightlyModifiedText = True
     End If
     

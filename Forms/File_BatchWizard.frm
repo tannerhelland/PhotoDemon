@@ -301,7 +301,7 @@ Begin VB.Form FormBatchWizard
             Width           =   2775
             _ExtentX        =   4895
             _ExtentY        =   1085
-            Caption         =   "Select macro..."
+            Caption         =   "select macro..."
             FontSize        =   9
          End
          Begin PhotoDemon.pdTextBox txtMacro 
@@ -613,7 +613,7 @@ Begin VB.Form FormBatchWizard
          Width           =   3135
          _ExtentX        =   5530
          _ExtentY        =   1296
-         Caption         =   "Select destination folder..."
+         Caption         =   "select destination folder..."
          FontSize        =   9
       End
       Begin PhotoDemon.pdTextBox txtRenameRemove 
@@ -935,11 +935,15 @@ Private Sub UpdateResizeSample()
         'Fit exclusive
         Case 2
             LoadResourceToDIB "sample_resize_fitexclusive", tmpDIB, 191, 50
+            
+        'Fit width/height/max size - with aspect ratio preserved
+        Case 3, 4, 5
+            LoadResourceToDIB "sample_resize_fitaspect", tmpDIB, 191, 50
     
     End Select
     
     'Paint the sample image to the screen
-    picResizeDemo.CopyDIB tmpDIB, suspendTransparencyGrid:=True, useNeutralBackground:=True, drawBorderAroundImage:=True
+    picResizeDemo.CopyDIB tmpDIB, suspendTransparencyGrid:=True, useNeutralBackground:=False, drawBorderAroundImage:=False, drawBorderAroundControl:=False
 
 End Sub
 
@@ -1636,9 +1640,12 @@ Private Sub Form_Load()
             
         'Resize fit types
         cmbResizeFit.Clear
-        cmbResizeFit.AddItem "stretching to fit", 0
-        cmbResizeFit.AddItem "fit inclusively", 1
-        cmbResizeFit.AddItem "fit exclusively", 2
+        cmbResizeFit.AddItem "fixed size, stretch to fit", 0
+        cmbResizeFit.AddItem "fixed size, fit inclusive", 1
+        cmbResizeFit.AddItem "fixed size, fit exclusive", 2
+        cmbResizeFit.AddItem "fixed width, preserve aspect ratio", 3
+        cmbResizeFit.AddItem "fixed height, preserve aspect ratio", 4
+        cmbResizeFit.AddItem "max size, fit within, preserve aspect ratio", 5
         cmbResizeFit.ListIndex = 0
         UpdateResizeSample
         

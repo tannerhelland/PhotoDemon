@@ -459,7 +459,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     
     'Finally, use the above values to determine a "fit" width/height (necessary if stretch-to-fit
     ' is *not* enabled).
-    Dim fitWidth As Long, fitHeight As Long
+    Dim fitWidth As Long, fitHeight As Long, fitAspectRatio As Single
     Select Case fitMethod
     
         'Stretch-to-fit.  Default behavior, and no size changes are required.
@@ -469,11 +469,37 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         
         'Fit inclusively.  Fit the image's largest dimension.  No cropping will occur, but blank space may be present.
         Case ResizeFitInclusive
-            PDMath.ConvertAspectRatio srcWidth, srcHeight, imgWidth, imgHeight, fitWidth, fitHeight
+            PDMath.ConvertAspectRatio srcWidth, srcHeight, imgWidth, imgHeight, fitWidth, fitHeight, True
             
         'Fit exclusively.  Fit the image's smallest dimension.  Cropping will occur, but no blank space will be present.
         Case ResizeFitExclusive
             PDMath.ConvertAspectRatio srcWidth, srcHeight, imgWidth, imgHeight, fitWidth, fitHeight, False
+        
+        'Use passed width and auto-calculate height, preserving aspect ratio
+        Case ResizeFixedWidth
+            If (srcHeight <> 0!) Then fitAspectRatio = srcWidth / srcHeight
+            fitWidth = imgWidth
+            fitHeight = imgWidth / fitAspectRatio
+            
+            'Manually specify the new image height as the *fit* height
+            imgHeight = fitHeight
+            
+        'Use passed height and auto-calculate width, preserving aspect ratio
+        Case ResizeFixedHeight
+            If (srcWidth <> 0!) Then fitAspectRatio = srcHeight / srcWidth
+            fitHeight = imgHeight
+            fitWidth = fitHeight / fitAspectRatio
+            
+            'Manually specify the new image width as the *fit* width
+            imgWidth = fitWidth
+            
+        'Fit image within passed width/height, aspect ratio preserved
+        Case ResizeMaxSize
+            PDMath.ConvertAspectRatio srcWidth, srcHeight, imgWidth, imgHeight, fitWidth, fitHeight, True
+            
+            'Manually specify the new image dimensions as the *fit* dimensions
+            imgWidth = fitWidth
+            imgHeight = fitHeight
         
     End Select
     
@@ -619,8 +645,10 @@ Public Sub ResizeImage(ByVal resizeParams As String)
         'We now want to copy the resized image into the current image using the technique requested by the user.
         Select Case fitMethod
         
-            'Stretch-to-fit.  This is default resize behavior in all image editing software
-            Case ResizeFitStretch
+            'Stretch-to-fit.  This is default resize behavior in all image editing software.
+            ' (This branch also includes targeting a specific width or height, and aspect-ratio-preserving
+            '  the other dimension - in both cases, the image is already the correct size.)
+            Case ResizeFitStretch, ResizeFixedWidth, ResizeFixedHeight, ResizeMaxSize
         
                 'Very simple - just copy the resized image back into the main DIB
                 tmpLayerRef.GetLayerDIB.CreateFromExistingDIB tmpDIB

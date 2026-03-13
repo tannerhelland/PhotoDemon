@@ -702,10 +702,14 @@ Public Enum PD_ResizeFit
     ResizeFitStretch = 0
     ResizeFitInclusive = 1
     ResizeFitExclusive = 2
+    ResizeFixedWidth = 3
+    ResizeFixedHeight = 4
+    ResizeMaxSize = 5
 End Enum
 
 #If False Then
     Private Const ResizeFitStretch = 0, ResizeFitInclusive = 1, ResizeFitExclusive = 2
+    Private Const ResizeFixedWidth = 3, ResizeFixedHeight = 4, ResizeMaxSize = 5
 #End If
 
 'Internal struct for tracking processor calls.  These are constructed from data passed to the Processor module.

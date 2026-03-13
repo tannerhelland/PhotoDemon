@@ -6,7 +6,7 @@
 
 		<langid>en-US</langid>
 		<langname>English (US) - MASTER COPY</langname>
-		<langversion>2026.1.140</langversion>
+		<langversion>2026.1.149</langversion>
 		<langstatus>Automatically generated from PhotoDemon's source code</langstatus>
 
 		<author>Tanner Helland</author>
@@ -9864,7 +9864,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>Select macro</original>
+<original>select macro</original>
 <translation></translation>
 </phrase>
 
@@ -9954,7 +9954,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>Select destination folder</original>
+<original>select destination folder</original>
 <translation></translation>
 </phrase>
 
@@ -10246,17 +10246,32 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>stretching to fit</original>
+<original>fixed size, stretch to fit</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>fit inclusively</original>
+<original>fixed size, fit inclusive</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>fit exclusively</original>
+<original>fixed size, fit exclusive</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fixed width, preserve aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fixed height, preserve aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>max size, fit within, preserve aspect ratio</original>
 <translation></translation>
 </phrase>
 
@@ -10335,7 +10350,7 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-		<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
+		<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14743,10 +14758,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 		<!-- Automatic text generation complete. -->
 
-		<phrasecount>2801</phrasecount>
+		<phrasecount>2804</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-	<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
-	<!-- These 2801 phrases contain approximately 12118 total words. -->
+	<!-- As of this build, PhotoDemon contains 5982 phrases. -->
+	<!-- 3178 are duplicates, so only 2804 unique phrases have been written to file. -->
+	<!-- These 2804 phrases contain approximately 12141 total words. -->
 
 	</pdData>

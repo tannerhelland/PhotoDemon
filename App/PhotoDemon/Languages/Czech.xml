@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.39</langversion>
+<langversion>1.0.40</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -10487,7 +10487,7 @@ Zkuste prosím jinou složku.</translation>
 </phrase>
 
 <phrase>
-<original>Select macro</original>
+<original>select macro</original>
 <translation>Vybrat makro</translation>
 </phrase>
 
@@ -10577,7 +10577,7 @@ Zkuste prosím jinou složku.</translation>
 </phrase>
 
 <phrase>
-<original>Select destination folder</original>
+<original>select destination folder</original>
 <translation>Vyberte cílovou složku</translation>
 </phrase>
 
@@ -10875,18 +10875,33 @@ Chcete před ukončením uložit seznam dávek?</translation>
 </phrase>
 
 <phrase>
-<original>stretching to fit</original>
+<original>fixed size, stretch to fit</original>
 <translation>protažení, aby se vešly</translation>
 </phrase>
 
 <phrase>
-<original>fit inclusively</original>
+<original>fixed size, fit inclusive</original>
 <translation>vše</translation>
 </phrase>
 
 <phrase>
-<original>fit exclusively</original>
+<original>fixed size, fit exclusive</original>
 <translation>výhradně</translation>
+</phrase>
+
+<phrase>
+<original>fixed width, preserve aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fixed height, preserve aspect ratio</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>max size, fit within, preserve aspect ratio</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10965,7 +10980,7 @@ Chcete před ukončením uložit seznam dávek?</translation>
 <translation>Odhad zbývajícího času</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 182 phrases. 75 were duplicates of existing phrases, so only 107 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -15445,10 +15460,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2801</phrasecount>
+<phrasecount>2804</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5979 phrases. -->
-<!-- 3178 are duplicates, so only 2801 unique phrases have been written to file. -->
-<!-- These 2801 phrases contain approximately 12118 total words. -->
+<!-- As of this build, PhotoDemon contains 5982 phrases. -->
+<!-- 3178 are duplicates, so only 2804 unique phrases have been written to file. -->
+<!-- These 2804 phrases contain approximately 12141 total words. -->
 
 </pdData>
