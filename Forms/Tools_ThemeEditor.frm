@@ -868,6 +868,19 @@ Private Sub LoadResourceFromFile()
                         
                         lstResources.AddItem m_Resources(i).ResourceName
                         
+                        'March 2026: try to make resource paths a little more portable, by stripping out any previous
+                        ' "\PhotoDemon\" path and replacing it with the app path for *this* PD instance.
+                        ' (As long as I always use identical sub-paths in a /no-sync folder, this will successfully
+                        '  let me switch freely between desktop + laptop work.)
+                        Const PD_PATH_ISOLATED As String = "\PhotoDemon\"
+                        
+                        Dim idxPdPath As Long
+                        idxPdPath = InStr(1, m_Resources(i).ResFileLocation, PD_PATH_ISOLATED, vbTextCompare)
+                        If (idxPdPath > 0) Then
+                            idxPdPath = idxPdPath + Len(PD_PATH_ISOLATED)
+                            m_Resources(i).ResFileLocation = UserPrefs.GetProgramPath() & Right$(m_Resources(i).ResFileLocation, Len(m_Resources(i).ResFileLocation) - idxPdPath + 1)
+                        End If
+                        
                     End If
                     
                 Next i
