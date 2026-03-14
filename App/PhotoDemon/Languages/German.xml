@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha (Build 139).1</langversion>
+<langversion>2026.1 Alpha (Build 148)</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2827,7 +2827,7 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon kann nicht additionale Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass dieser Fehler ein Bug ist und er behoben werden muss!
+<translation>PhotoDemon kann nicht additionale Informationen zu diesem Fehler lokalisieren. Das bedeutet wahrscheinlich, dass dieser Fehler ein Bug ist und er gefixt werden muss!
 
 Möchten Sie einen Bug-Bericht einreichen? (Es dauert weniger als eine Minute, und es hilft allen, die die Software verwenden.)</translation>
 </phrase>
@@ -6617,7 +6617,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild produzieren. Sie können das Tool "Effekte > Schärfen > Unscharfmaskierung" verwenden, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
+<translation>Wie alle Monochrom-zu-Graustufen-Tools wird dieses Tool ein verschwommenes Bild produzieren. Sie können das Tool "Effekte > Schärfen > Unscharfmaskierung" verwenden, um dies zu fixen. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6770,7 +6770,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden eine neue Ben
 
 <phrase>
 <original>tonal width</original>
-<translation>Tonal mit</translation>
+<translation>Tonale Breite</translation>
 </phrase>
 
 <phrase>
@@ -9174,7 +9174,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Fixing dust and scratches</original>
-<translation>Staub und Kratzer werden behoben</translation>
+<translation>Staub und Kratzer werden gefixt</translation>
 </phrase>
 
 <!-- Effects_Noise_DustAndScratches.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9933,7 +9933,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>fix exposure and lighting problems</original>
-<translation>Belichtungs- und Beleuchtungsprobleme beheben</translation>
+<translation>Belichtungs- und Beleuchtungsprobleme fixen</translation>
 </phrase>
 
 <phrase>
@@ -10302,32 +10302,32 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fixed size, stretch to fit</original>
-<translation>Dehnen zum Anpassen</translation>
+<translation>Feste Größe, dehnen zum Anpassen</translation>
 </phrase>
 
 <phrase>
 <original>fixed size, fit inclusive</original>
-<translation>Einschließlich anpassen</translation>
+<translation>Feste Größe, inklusive anpassen</translation>
 </phrase>
 
 <phrase>
 <original>fixed size, fit exclusive</original>
-<translation>Ausschließlich anpassen</translation>
+<translation>Feste Größe, exklusive anpassen</translation>
 </phrase>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>Feste Breite, Seitenverhältnis beibehalten</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>Feste Höhe, Seitenverhältnis beibehalten</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>Max. Größe, innerhalb anpassen, Seitenverhältnis beibehalten</translation>
 </phrase>
 
 <phrase>
