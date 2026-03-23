@@ -655,10 +655,19 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     cmdParams.AppendLine "-sep"
     cmdParams.AppendLine ";;;"
         
-    'If a translation is active, request descriptions in the current language
+    'If a translation is active, request descriptions in the current language.
+    ' (UPDATE MAR 2026: Exiftool won't return *any* metadata if you request an unsupported language.
+    '  As PD's language list has expanded, I am forced to switch to the "check language support
+    '  *before* attempting to localize" approach; this list will need to be revisited if/when
+    '  PD's Exiftool copy is updated in the future.)
     If g_Language.TranslationActive Then
+        Dim langNameToUse As String
         cmdParams.AppendLine "-lang"
-        cmdParams.AppendLine g_Language.GetCurrentLanguage((g_Language.GetCurrentLanguage(False) = "zh"))
+        If DoesExiftoolSupportCurrentLang(langNameToUse) Then
+            cmdParams.AppendLine langNameToUse
+        Else
+            cmdParams.AppendLine "en"
+        End If
     End If
     
     'If the user wants us to estimate JPEG quality, do so now
@@ -2012,7 +2021,13 @@ Private Function GetStrictMDDatatype(ByRef textRepresentation As String) As PD_M
     ' rational is two integer strings separated by a '/' character
     ' date is a date/time string in the format "YYYY:MM:DD HH:MM:SS[+/-HH:MM]"
     ' boolean is either "True" or "False", and lang-alt is a list of string alternatives in different languages.
-    'Individual languages for lang-alt tags are accessed by suffixing the tag name with a '-', followed by an RFC 3066 language code (ie. "XMP:Title-fr", or "Rights-en-US"). A lang-alt tag with no language code accesses the "x-default" language, but causes other languages to be deleted when writing. The "x-default" language code may be specified when writing a new value to write only the default language, but note that all languages are still deleted if "x-default" tag is deleted. When reading, "x-default" is not specified.
+    
+    'Individual languages for lang-alt tags are accessed by suffixing the tag name with a '-',
+    ' followed by an RFC 3066 language code (ie. "XMP:Title-fr", or "Rights-en-US").
+    ' A lang-alt tag with no language code accesses the "x-default" language, but causes other languages to be
+    ' deleted when writing. The "x-default" language code may be specified when writing a new value to write
+    ' only the default language, but note that all languages are still deleted if "x-default" tag is deleted.
+    ' When reading, "x-default" is not specified.
     
     'Data types past this point do not appear in the official ExifTool documentation, but they have been observed in
     ' the database.  This list may not be all-inclusive.
@@ -2208,3 +2223,66 @@ End Sub
 Public Sub RemoveAllMetadata(ByRef srcImage As pdImage)
     If (Not srcImage Is Nothing) Then srcImage.ImgMetadata.Reset
 End Sub
+
+'See if Exiftool supports the current PD UI language.  Note that Exiftool only supports some languages
+' (e.g. Chinese) if you *also* supply a locale.  This function returns TRUE if you should request localization
+' from Exiftool; if you do, you *MUST* pass the dstLangNameToUse parameter to ExifTool (*not* a language
+' or language+locale retrieved from g_Language).
+Private Function DoesExiftoolSupportCurrentLang(ByRef dstLangNameToUse As String) As Boolean
+    
+    'Assume the caller is behaving correctly and ignoring the returned language name.
+    ' (This way, we only need to pass a modified language name if/when Exiftool actually requires it.)
+    dstLangNameToUse = LCase$(g_Language.GetCurrentLanguage(False))
+    DoesExiftoolSupportCurrentLang = False
+    
+    Select Case LCase$(g_Language.GetCurrentLanguage(False))
+        Case "cs"   'Czech(Ceština)
+            DoesExiftoolSupportCurrentLang = True
+        Case "de"   'German(Deutsch)
+            DoesExiftoolSupportCurrentLang = True
+        Case "en"   'English
+            DoesExiftoolSupportCurrentLang = True
+        Case "es"   'Spanish(Español)
+            DoesExiftoolSupportCurrentLang = True
+        Case "fi"   'Finnish(Suomi)
+            DoesExiftoolSupportCurrentLang = True
+        Case "fr"   'French(Français)
+            DoesExiftoolSupportCurrentLang = True
+        Case "it"   'Italian(Italiano)
+            DoesExiftoolSupportCurrentLang = True
+        Case "ja"   'Japanese
+            DoesExiftoolSupportCurrentLang = True
+        Case "ko"   'Korean
+            DoesExiftoolSupportCurrentLang = True
+        Case "nl"   'Dutch(Nederlands)
+            DoesExiftoolSupportCurrentLang = True
+        Case "pl"   'Polish(Polski)
+            DoesExiftoolSupportCurrentLang = True
+        Case "ru"   'Russian
+            DoesExiftoolSupportCurrentLang = True
+        Case "sk"   'Slovak(Slovencina)
+            DoesExiftoolSupportCurrentLang = True
+        Case "sv"   'Swedish(Svenska)
+            DoesExiftoolSupportCurrentLang = True
+        Case "tr"   'Turkish(Türkçe)
+            DoesExiftoolSupportCurrentLang = True
+        Case "zh"
+            If LCase$(g_Language.GetCurrentLanguage(True)) = "zh-cn" Then
+                DoesExiftoolSupportCurrentLang = True
+                dstLangNameToUse = "zh-cn"
+            ElseIf LCase$(g_Language.GetCurrentLanguage(True)) = "zh-tw" Then
+                DoesExiftoolSupportCurrentLang = True
+                dstLangNameToUse = "zh-tw"
+            
+            'For now, condense all other localizations to zh-cn (this allows Exiftool to return *something* localized)
+            Else
+                DoesExiftoolSupportCurrentLang = True
+                dstLangNameToUse = "zh-cn"
+            End If
+        
+        'Any other languages must use en-US
+        Case Else
+            DoesExiftoolSupportCurrentLang = False
+    End Select
+    
+End Function
