@@ -1785,12 +1785,12 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Backspace</original>
-<translation></translation>
+<translation>退格鍵</translation>
 </phrase>
 
 <phrase>
 <original>Tab</original>
-<translation></translation>
+<translation>Tab</translation>
 </phrase>
 
 <phrase>
@@ -3117,12 +3117,12 @@ Description: %2
 
 <phrase>
 <original>horizontal scaling</original>
-<translation></translation>
+<translation>水平縮放</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation></translation>
+<translation>垂直縮放</translation>
 </phrase>
 
 <phrase>
@@ -4220,12 +4220,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>輸入密碼</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>此文件已設定密碼保護。請輸入密碼。</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10337,17 +10337,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>固定寬度，保持長寬比</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>固定高度，保持長寬比</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>最大尺寸，適應範圍，保持長寬比</translation>
 </phrase>
 
 <phrase>
@@ -13160,7 +13160,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>scale (x, y)</original>
-<translation></translation>
+<translation>縮放 (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -14237,7 +14237,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>使用「儲存」功能儲存新圖像時，建議使用此檔案格式</translation>
 </phrase>
 
 <phrase>
@@ -14263,12 +14263,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>自動（自動匹配圖像屬性格式）</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>此設定決定了從未儲存過的影像的初始檔案格式建議。「自動」設定預設使用 PDI（PhotoDemon 的原生格式）儲存分層影像，JPEG 儲存無透明度的單層影像，PNG 儲存具有透明度的單層影像。</translation>
 </phrase>
 
 <phrase>
