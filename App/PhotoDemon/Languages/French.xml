@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.03.5</langversion>
+<langversion>2026.03.25</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -10321,17 +10321,17 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>Largeur fixe, ratio d'aspect préservé</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>Hauteur fixe, ratio d'aspect préservé</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>Taille maxi, adaptée, ratio d'aspect préservé</translation>
 </phrase>
 
 <phrase>
@@ -12585,7 +12585,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>highlight crop area</original>
-<translation>Surligner le zone de recadrage</translation>
+<translation>Surligner la zone de recadrage</translation>
 </phrase>
 
 <phrase>
@@ -14217,7 +14217,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation>Quand "Enregistrer" est utilisé sur une nouvelle image, proposer ce format</translation>
+<translation>Quand "Enregistrer" est utilisé pour une nouvelle image, proposer ce format</translation>
 </phrase>
 
 <phrase>
@@ -14277,7 +14277,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer" sauvegarde  l'image en écrasant sa version originale, en effaçant cette copie pour toujours. PhotoDemon offre une option plus "Sûre", où chaque sauvegarde effectuée produit une nouvelle copie du fichier.</translation>
+<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer" sauvegarde  l'image en écrasant sa version originale, en effaçant cette copie pour toujours. PhotoDemon offre une option plus "sûre", où chaque sauvegarde effectuée produit une nouvelle copie du fichier.</translation>
 </phrase>
 
 <phrase>
@@ -14292,7 +14292,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. PhotoDemon fournit pour plus de "Sûreté" une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
+<translation>Dans la plupart des éditeurs photo, la commande "Enregistrer sous" utilise par défaut le nom courant. PhotoDemon fournit pour plus de "sûreté" une option qui incrémente automatiquement le nom de fichier pour vous.</translation>
 </phrase>
 
 <!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
