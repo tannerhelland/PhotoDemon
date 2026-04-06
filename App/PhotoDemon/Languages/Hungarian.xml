@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>2025.4.12</langversion>
+<langversion>2026.1.149</langversion>
 <langstatus>complete</langstatus>
 
 <author>István Bánszki</author>
@@ -555,7 +555,7 @@
 
 <phrase>
 <original>Remove alpha channel</original>
-<translation>Átlátszóság megszűntetése</translation>
+<translation>Átlátszóság megszüntetése</translation>
 </phrase>
 
 <phrase>
@@ -810,12 +810,12 @@
 
 <phrase>
 <original>Invert hue</original>
-<translation>Színárnyalat megfordítása</translation>
+<translation>Színárnyalat invertálása</translation>
 </phrase>
 
 <phrase>
 <original>Invert RGB</original>
-<translation>RGB megfordítása</translation>
+<translation>RGB invertálása</translation>
 </phrase>
 
 <phrase>
@@ -1000,7 +1000,7 @@
 
 <phrase>
 <original>Miscellaneous distort</original>
-<translation>Kölönféle torzítások</translation>
+<translation>Különféle torzítások</translation>
 </phrase>
 
 <phrase>
@@ -1310,7 +1310,7 @@
 
 <phrase>
 <original>Play macro</original>
-<translation>Makrő lejátszása</translation>
+<translation>Makró lejátszása</translation>
 </phrase>
 
 <phrase>
@@ -1337,7 +1337,7 @@
 
 <phrase>
 <original>[untitled image]</original>
-<translation>[névteleln kép]</translation>
+<translation>[névtelen kép]</translation>
 </phrase>
 
 <!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -1349,7 +1349,7 @@
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Nem lehet végrehajtani teljes helyreállítást. Részleges helyreállítás megkisérelve.</translation>
+<translation>Nem lehet végrehajtani teljes helyreállítást. Részleges helyreállítás megkísérelve.</translation>
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -3110,12 +3110,12 @@ Leírás: %2
 
 <phrase>
 <original>horizontal scaling</original>
-<translation></translation>
+<translation>vízszintes méretezés</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation></translation>
+<translation>függőleges méretezés</translation>
 </phrase>
 
 <phrase>
@@ -4212,12 +4212,12 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>Jelszó megadása</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>Ez a fájl jelszóval védett. Kérjük, adja meg a jelszót</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4348,7 +4348,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 
 <phrase>
 <original>Center image in viewport</original>
-<translation></translation>
+<translation>Kép középre igazítása a nézetablakban</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -4476,7 +4476,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 
 <phrase>
 <original>Current color</original>
-<translation></translation>
+<translation>Aktuális szín</translation>
 </phrase>
 
 <phrase>
@@ -4734,7 +4734,7 @@ Kérem, töltse le a fájlt manuálisan, az internetböngészője segítségéve
 
 <phrase>
 <original>resolution</original>
-<translation></translation>
+<translation>felbontás</translation>
 </phrase>
 
 <phrase>
@@ -5434,7 +5434,7 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 
 <phrase>
 <original>Dilate</original>
-<translation></translation>
+<translation>Tágítás</translation>
 </phrase>
 
 <phrase>
@@ -5624,7 +5624,7 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 
 <phrase>
 <original>Smart guides</original>
-<translation></translation>
+<translation>Intelligens segédvonalak</translation>
 </phrase>
 
 <phrase>
@@ -6973,7 +6973,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 
 <phrase>
 <original>rectangle</original>
-<translation></translation>
+<translation>téglalap</translation>
 </phrase>
 
 <!-- Dialog_FillSettings.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -7422,7 +7422,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 
 <phrase>
 <original>dashes</original>
-<translation></translation>
+<translation>szaggatott vonalak</translation>
 </phrase>
 
 <phrase>
@@ -8172,7 +8172,7 @@ Ha más fájlnéven szeretné menteni, kérem válassza a „Mégse” opciót, 
 
 <phrase>
 <original>highlight cut-off</original>
-<translation></translation>
+<translation>csúcsfény-levágás</translation>
 </phrase>
 
 <phrase>
@@ -10320,17 +10320,17 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>rögzített szélesség, méretarány megtartása</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>rögzített magasság, méretarány megtartása</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>max. méret, befoglaló mérethez igazítás, méretarány megtartása</translation>
 </phrase>
 
 <phrase>
@@ -12801,7 +12801,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 
 <phrase>
 <original>straighten layer</original>
-<translation></translation>
+<translation>réteg kiegyenesítése</translation>
 </phrase>
 
 <phrase>
@@ -13133,7 +13133,7 @@ Szeretné menteni a kötegelt listát kilépés előtt?</translation>
 
 <phrase>
 <original>scale (x, y)</original>
-<translation></translation>
+<translation>méretezés (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -13896,7 +13896,7 @@ Biztosan folytatni szeretné?</translation>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation></translation>
+<translation>nem kompatibilis a Windows 7-tel</translation>
 </phrase>
 
 <phrase>
@@ -14022,7 +14022,7 @@ Biztosan folytatni szeretné?</translation>
 
 <phrase>
 <original>reset all "remember my choice" decisions</original>
-<translation></translation>
+<translation>összes „jegyezze meg a választásomat” döntés alaphelyzetbe állítása</translation>
 </phrase>
 
 <phrase>
@@ -14052,12 +14052,12 @@ Biztosan folytatni szeretné?</translation>
 
 <phrase>
 <original>remember my choice</original>
-<translation></translation>
+<translation>jegyezze meg a választásomat</translation>
 </phrase>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation></translation>
+<translation>új réteg beillesztése után legyen a Mozgatás eszköz az aktív</translation>
 </phrase>
 
 <phrase>
@@ -14206,7 +14206,7 @@ Biztosan folytatni szeretné?</translation>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>új kép mentésekor ezt a fájlformátumot javasolja</translation>
 </phrase>
 
 <phrase>
@@ -14231,12 +14231,12 @@ Biztosan folytatni szeretné?</translation>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>automatikus (formátum igazítása a kép tulajdonságaihoz)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>Ez a beállítás határozza meg a javasolt fájlformátumot a még soha el nem mentett képek esetében. Az „automatikus” beállítás réteges képeknél a PDI-t (a PhotoDemon saját formátumát), átlátszóság nélküli egyrétegű képeknél a JPEG-et, míg átlátszóságot tartalmazó egyrétegű képeknél a PNG-t választja alapértelmezettnek.</translation>
 </phrase>
 
 <phrase>
