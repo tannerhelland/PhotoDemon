@@ -197,21 +197,17 @@ Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMe
     
     Dim i As Long
     Dim iconLocation As Long
-    Dim iconAlreadyLoaded As Boolean
-    
-    iconAlreadyLoaded = False
+    Dim iconAlreadyLoaded As Boolean: iconAlreadyLoaded = False
     
     'Loop through all icons that have been loaded, and see if this one has been requested already.
     ' (This is necessary because some menus reuse the same icons, and it's a waste of resources to maintain
     '  two copies of said icons.)
     For i = 0 To m_curIconIndex
-
         If Strings.StringsEqual(m_IconNames(i), resID, False) Then
             iconAlreadyLoaded = True
             iconLocation = i
             Exit For
         End If
-
     Next i
     
     'If the icon was not found, load it and add it to the list
@@ -221,7 +217,7 @@ Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMe
         iconLocation = m_curIconIndex
         m_curIconIndex = m_curIconIndex + 1
     End If
-        
+    
     'Place the icon onto the requested menu
     If (subSubMenu = -1) Then
         cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu

@@ -376,67 +376,72 @@ Public Sub InitializeMenus()
         
     'Adjustments Menu
     AddMenuItem "Adjustments", "adj_top", 5
-    AddMenuItem "Auto correct", "adj_autocorrect", 5, 0
-    AddMenuItem "Auto enhance", "adj_autoenhance", 5, 1
-    AddMenuItem "-", "-", 5, 2
-    AddMenuItem "Black and white...", "adj_blackandwhite", 5, 3
-    AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 4
-    AddMenuItem "Color balance...", "adj_colorbalance", 5, 5
-    AddMenuItem "Curves...", "adj_curves", 5, 6
-    AddMenuItem "Levels...", "adj_levels", 5, 7
-    AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 8
-    AddMenuItem "Vibrance...", "adj_vibrance", 5, 9
-    AddMenuItem "White balance...", "adj_whitebalance", 5, 10
-    AddMenuItem "-", "-", 5, 11
-    AddMenuItem "Channels", "adj_channels", 5, 12
-        AddMenuItem "Channel mixer...", "adj_channelmixer", 5, 12, 0
-        AddMenuItem "Rechannel...", "adj_rechannel", 5, 12, 1
-        AddMenuItem "-", "-", 5, 12, 2
-        AddMenuItem "Maximum channel", "adj_maxchannel", 5, 12, 3
-        AddMenuItem "Minimum channel", "adj_minchannel", 5, 12, 4
-        AddMenuItem "-", "-", 5, 12, 5
-        AddMenuItem "Shift left", "adj_shiftchannelsleft", 5, 12, 6
-        AddMenuItem "Shift right", "adj_shiftchannelsright", 5, 12, 7
-    AddMenuItem "Color", "adj_color", 5, 13
-        AddMenuItem "Color balance...", "adj_colorbalance", 5, 13, 0
-        AddMenuItem "White balance...", "adj_whitebalance", 5, 13, 1
-        AddMenuItem "-", "-", 5, 13, 2
-        AddMenuItem "Hue and saturation...", "adj_hsl", 5, 13, 3
-        AddMenuItem "Temperature...", "adj_temperature", 5, 13, 4
-        AddMenuItem "Tint...", "adj_tint", 5, 13, 5
-        AddMenuItem "Vibrance...", "adj_vibrance", 5, 13, 6
-        AddMenuItem "-", "-", 5, 13, 7
-        AddMenuItem "Black and white...", "adj_blackandwhite", 5, 13, 8
-        AddMenuItem "Color lookup...", "adj_colorlookup", 5, 13, 9
-        AddMenuItem "Colorize...", "adj_colorize", 5, 13, 10
-        AddMenuItem "Photo filter...", "adj_photofilters", 5, 13, 11
-        AddMenuItem "Replace color...", "adj_replacecolor", 5, 13, 12
-        AddMenuItem "Sepia...", "adj_sepia", 5, 13, 13
-        AddMenuItem "Split toning...", "adj_splittone", 5, 13, 14
-    AddMenuItem "Histogram", "adj_histogram", 5, 14
-        AddMenuItem "Display...", "adj_histogramdisplay", 5, 14, 0
-        AddMenuItem "-", "-", 5, 14, 1
-        AddMenuItem "Equalize...", "adj_histogramequalize", 5, 14, 2
-        AddMenuItem "Stretch", "adj_histogramstretch", 5, 14, 3
-    AddMenuItem "Invert", "adj_invert", 5, 15
-        AddMenuItem "CMYK (film negative)", "adj_invertcmyk", 5, 15, 0
-        AddMenuItem "Hue", "adj_inverthue", 5, 15, 1
-        AddMenuItem "RGB", "adj_invertrgb", 5, 15, 2
-    AddMenuItem "Lighting", "adj_lighting", 5, 16
-        AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 16, 0
-        AddMenuItem "Curves...", "adj_curves", 5, 16, 1
-        AddMenuItem "Dehaze...", "adj_dehaze", 5, 16, 2
-        AddMenuItem "Exposure...", "adj_exposure", 5, 16, 3
-        AddMenuItem "Gamma...", "adj_gamma", 5, 16, 4
-        AddMenuItem "HDR...", "adj_hdr", 5, 16, 5
-        AddMenuItem "Levels...", "adj_levels", 5, 16, 6
-        AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 16, 7
-    AddMenuItem "Map", "adj_map", 5, 17
-        AddMenuItem "Gradient map...", "adj_gradientmap", 5, 17, 0
-        AddMenuItem "Palette map...", "adj_palettemap", 5, 17, 1
-    AddMenuItem "Monochrome", "adj_monochrome", 5, 18
-        AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 18, 0
-        AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 18, 1
+    AddMenuItem "Repeat", "adj_repeat", 5, 0, , "edit_repeat"
+    AddMenuItem "Re-show", "adj_reshow", 5, 1
+    AddMenuItem "Recently used", "adj_recent_top", 5, 2
+    'Sub-menu isn't handled here
+    AddMenuItem "-", "-", 5, 3
+    AddMenuItem "Auto correct", "adj_autocorrect", 5, 4
+    AddMenuItem "Auto enhance", "adj_autoenhance", 5, 5
+    AddMenuItem "-", "-", 5, 6
+    AddMenuItem "Black and white...", "adj_blackandwhite", 5, 7
+    AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 8
+    AddMenuItem "Color balance...", "adj_colorbalance", 5, 9
+    AddMenuItem "Curves...", "adj_curves", 5, 10
+    AddMenuItem "Levels...", "adj_levels", 5, 11
+    AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 12
+    AddMenuItem "Vibrance...", "adj_vibrance", 5, 13
+    AddMenuItem "White balance...", "adj_whitebalance", 5, 14
+    AddMenuItem "-", "-", 5, 15
+    AddMenuItem "Channels", "adj_channels", 5, 16
+        AddMenuItem "Channel mixer...", "adj_channelmixer", 5, 16, 0
+        AddMenuItem "Rechannel...", "adj_rechannel", 5, 16, 1
+        AddMenuItem "-", "-", 5, 16, 2
+        AddMenuItem "Maximum channel", "adj_maxchannel", 5, 16, 3
+        AddMenuItem "Minimum channel", "adj_minchannel", 5, 16, 4
+        AddMenuItem "-", "-", 5, 16, 5
+        AddMenuItem "Shift left", "adj_shiftchannelsleft", 5, 16, 6
+        AddMenuItem "Shift right", "adj_shiftchannelsright", 5, 16, 7
+    AddMenuItem "Color", "adj_color", 5, 17
+        AddMenuItem "Color balance...", "adj_colorbalance", 5, 17, 0
+        AddMenuItem "White balance...", "adj_whitebalance", 5, 17, 1
+        AddMenuItem "-", "-", 5, 17, 2
+        AddMenuItem "Hue and saturation...", "adj_hsl", 5, 17, 3
+        AddMenuItem "Temperature...", "adj_temperature", 5, 17, 4
+        AddMenuItem "Tint...", "adj_tint", 5, 17, 5
+        AddMenuItem "Vibrance...", "adj_vibrance", 5, 17, 6
+        AddMenuItem "-", "-", 5, 17, 7
+        AddMenuItem "Black and white...", "adj_blackandwhite", 5, 17, 8
+        AddMenuItem "Color lookup...", "adj_colorlookup", 5, 17, 9
+        AddMenuItem "Colorize...", "adj_colorize", 5, 17, 10
+        AddMenuItem "Photo filter...", "adj_photofilters", 5, 17, 11
+        AddMenuItem "Replace color...", "adj_replacecolor", 5, 17, 12
+        AddMenuItem "Sepia...", "adj_sepia", 5, 17, 13
+        AddMenuItem "Split toning...", "adj_splittone", 5, 17, 14
+    AddMenuItem "Histogram", "adj_histogram", 5, 18
+        AddMenuItem "Display...", "adj_histogramdisplay", 5, 18, 0
+        AddMenuItem "-", "-", 5, 18, 1
+        AddMenuItem "Equalize...", "adj_histogramequalize", 5, 18, 2
+        AddMenuItem "Stretch", "adj_histogramstretch", 5, 18, 3
+    AddMenuItem "Invert", "adj_invert", 5, 19
+        AddMenuItem "CMYK (film negative)", "adj_invertcmyk", 5, 19, 0
+        AddMenuItem "Hue", "adj_inverthue", 5, 19, 1
+        AddMenuItem "RGB", "adj_invertrgb", 5, 19, 2
+    AddMenuItem "Lighting", "adj_lighting", 5, 20
+        AddMenuItem "Brightness and contrast...", "adj_bandc", 5, 20, 0
+        AddMenuItem "Curves...", "adj_curves", 5, 20, 1
+        AddMenuItem "Dehaze...", "adj_dehaze", 5, 20, 2
+        AddMenuItem "Exposure...", "adj_exposure", 5, 20, 3
+        AddMenuItem "Gamma...", "adj_gamma", 5, 20, 4
+        AddMenuItem "HDR...", "adj_hdr", 5, 20, 5
+        AddMenuItem "Levels...", "adj_levels", 5, 20, 6
+        AddMenuItem "Shadows and highlights...", "adj_sandh", 5, 20, 7
+    AddMenuItem "Map", "adj_map", 5, 21
+        AddMenuItem "Gradient map...", "adj_gradientmap", 5, 21, 0
+        AddMenuItem "Palette map...", "adj_palettemap", 5, 21, 1
+    AddMenuItem "Monochrome", "adj_monochrome", 5, 22
+        AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 5, 22, 0
+        AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 5, 22, 1
         
     'Effects (Filters) Menu
     AddMenuItem "Effects", "effects_top", 6

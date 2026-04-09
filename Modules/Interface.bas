@@ -325,7 +325,7 @@ Public Sub SyncInterfaceToCurrentImage()
         Tools.SyncToolOptionsUIToCurrentLayer
         
     End If
-        
+    
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
     Menus.SetMenuEnabled "window_next", (PDImages.GetNumOpenImages() > 1)
@@ -425,6 +425,9 @@ Private Sub SyncUI_CurrentImageSettings()
     'Reset all Undo/Redo and related menus.  (Note that this also controls the SAVE BUTTON, as the image's save state is modified
     ' by PD's Undo/Redo engine.)
     Interface.SyncUndoRedoInterfaceElements True
+    
+    'Synchronize any "recently used" submenus (including repeat/reshow) in the adjustment and effect menus
+    SyncRepeatReshowInterfaceElements
     
     'Because Undo/Redo changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
     IconsAndCursors.ResetMenuIcons
@@ -636,8 +639,10 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
             Dim tmpDIB As pdDIB, tmpLayerIndex As Long, tmpActionName As String
             
-            'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
-            ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
+            'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.
+            ' If it returns TRUE:
+            ' - enable the Edit > Repeat and Edit > Fade menus
+            ' - rename each menu caption (so the user knows what action is being repeated and/or faded)
             If PDImages.GetActiveImage.UndoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 Menus.RequestCaptionChange_ByName "edit_fade", g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName)), True
                 Menus.SetMenuEnabled "edit_fade", True
@@ -663,6 +668,58 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
     
     End If
 
+End Sub
+
+'Some non-destructive actions need to synchronize *only* Undo/Redo buttons and menus (and their
+' related counterparts, e.g. "Fade").  To make these actions snappier, I have pulled all Undo/Redo
+' UI sync code into this separate sub, which can be called on-demand as necessary.
+'
+'If the caller will be calling ResetMenuIcons() after using this function, make sure to pass the
+' optional suspendAssociatedRedraws as TRUE to prevent unnecessary menu redraws.
+'
+'Finally, if no images are loaded, this function does absolutely nothing.  Refer to SetUIMode_NoImages(),
+' above, for additional details.
+Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRedraws As Boolean = False)
+
+    If PDImages.IsImageActive() Then
+        
+        'Repeat the above steps, but for adjustment and effect menus (and relevant submenus)
+        Dim shownProcName As String
+        If (LenB(Actions.GetLastActionName(rr_Adjustment, shownProcName)) > 0) Then
+            Debug.Print "Re-show: TRUE (" & shownProcName & ")"
+            Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
+            Menus.SetMenuEnabled "adj_reshow", True
+        Else
+            Debug.Print "Re-show: FALSE"
+            Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show"), True
+            Menus.SetMenuEnabled "adj_reshow", False
+        End If
+        
+        shownProcName = vbNullString
+        If (LenB(Actions.GetLastActionExecutedName(rr_Adjustment, shownProcName)) > 0) Then
+            Debug.Print "Repeat: TRUE (" & shownProcName & ")"
+            Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(shownProcName)), True
+            Menus.SetMenuEnabled "adj_repeat", True
+        Else
+            Debug.Print "Repeat: FALSE"
+            Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Repeat"), True
+            Menus.SetMenuEnabled "adj_repeat", False
+        End If
+        
+        'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
+        If (Not suspendAssociatedRedraws) Then
+            
+            'Redraw repeat/reshow/recently used menus in other places
+            'TODO: test this to see if it's still relevant!
+            'IconsAndCursors.AddMenuIcon "adj_repeat", 5, 0
+            'IconsAndCursors.AddMenuIcon "adj_reshow", 5, 1
+            'TODO: recently used menu
+            
+        End If
+
+    'No /Else is required here because the associated top-level menus are disabled
+    End If
+    
 End Sub
 
 'SetUIGroupState enables or disables a swath of controls related to a simple keyword

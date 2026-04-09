@@ -77,6 +77,22 @@ End Type
 
 Private m_numActions As Long, m_Actions() As PD_Action
 
+'The *last* action requested by the user is stored here.  (It is stored regardless of whether the action
+' executes "correctly", e.g. a canceled operation will still have its name stored here.)
+'
+'The "last action executed" requires feedback from the Processor module; see NoteLastActionExecuted() for details.
+Public Enum PD_RepeatReshow
+    rr_None = -1
+    rr_Adjustment = 0
+    rr_Effect = 1
+    [rr_Count] = 2
+End Enum
+#If False Then
+    Private Const rr_None = -1, rr_Adjustment = 0, rr_Effect = 1, rr_Count = 2
+#End If
+Private m_LastActions() As String, m_LastActionsExecuted() As String, m_LastActionsExecutedParams() As String
+Private m_LastActionCategory As PD_RepeatReshow
+
 'Given a menu search string, apply the corresponding default processor action.
 Public Function LaunchAction_BySearch(ByRef srcSearchText As String) As Boolean
     LaunchAction_BySearch = Actions.LaunchAction_ByName(Menus.GetNameFromSearchText(srcSearchText), pdas_Search)
@@ -107,6 +123,17 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     
     'Failsafe check for other actions already processing in the background
     If Processor.IsProgramBusy() Then Exit Function
+    
+    'Note the name of this action; various UI elements can query it.
+    ' (This enables UI features like the Adjustment > Repeat or Effect > Re-show menus.)
+    m_LastActionCategory = GetRepeatReshowCategory(srcMenuName)
+    If (m_LastActionCategory <> rr_None) Then
+        m_LastActions(m_LastActionCategory) = srcMenuName
+        m_LastActionsExecuted(m_LastActionCategory) = vbNullString
+        m_LastActionsExecutedParams(m_LastActionCategory) = vbNullString
+    End If
+    
+    Dim idxAction As Long
     
     'Failsafe check to see if the menu associated with an action is enabled; if it isn't, that's an
     ' excellent surrogate for "do not allow this operation to proceed".  (Note that this is only
@@ -1865,6 +1892,9 @@ Public Sub BuildActionDatabase()
     AddAction "select_exportarea", "Export selected area as image"
     AddAction "select_exportmask", "Export selection mask as image"
     
+    AddAction "adj_repeat", "Repeat", False, True
+    AddAction "adj_reshow", "Re-show", False, False
+    'AddAction "adj_recent_top", "Recently used"
     AddAction "adj_autocorrect", "Auto correct", True, True
     AddAction "adj_autoenhance", "Auto enhance", True, True
     AddAction "adj_blackandwhite", "Black and white", True, True
@@ -2099,6 +2129,10 @@ Public Sub BuildActionDatabase()
     
     PDDebug.LogAction CStr(m_numActions) & " actions registered this session."
     
+    ReDim m_LastActions(0 To rr_Count - 1) As String
+    ReDim m_LastActionsExecuted(0 To rr_Count - 1) As String
+    ReDim m_LastActionsExecutedParams(0 To rr_Count - 1) As String
+    
 End Sub
 
 Private Sub AddAction(ByVal actionName As String, Optional ByRef processName As String = vbNullString, Optional ByVal isRepeatable As Boolean = False, Optional ByVal isFadeable As Boolean = False)
@@ -2153,4 +2187,53 @@ Public Function IsActionFadeable(ByRef actionName As String, Optional ByVal name
     Dim idxAction As Long
     idxAction = GetActionIndexFromName(actionName, nameIsProcessName)
     If (idxAction >= 0) Then IsActionFadeable = m_Actions(idxAction).isFadeable Else IsActionFadeable = False
+End Function
+
+'Return the last adjustment (or effect) that showed a dialog to the user.  Returns a null-string if no adjustment
+' (or effect) has been shown this session.
+Public Function GetLastActionName(ByVal actionType As PD_RepeatReshow, Optional ByRef dstProcessName As String = vbNullString) As String
+    
+    GetLastActionName = m_LastActions(actionType)
+    
+    If (LenB(GetLastActionName) > 0) Then
+        Dim idxAction As Long
+        idxAction = GetActionIndexFromName(GetLastActionName)
+        If (idxAction >= 0) Then dstProcessName = m_Actions(idxAction).processName Else dstProcessName = vbNullString
+    End If
+    
+End Function
+
+'Return the last adjustment (or effect) that was actually *applied* to the image.  Returns a null-string if no
+' adjustment (or effect) has been applied this session.
+Public Function GetLastActionExecutedName(ByVal actionType As PD_RepeatReshow, Optional ByRef dstProcessName As String = vbNullString) As String
+    
+    GetLastActionExecutedName = m_LastActionsExecuted(actionType)
+    
+    If (LenB(GetLastActionExecutedName) > 0) Then
+        Dim idxAction As Long
+        idxAction = GetActionIndexFromName(GetLastActionExecutedName)
+        If (idxAction >= 0) Then dstProcessName = m_Actions(idxAction).processName Else dstProcessName = vbNullString
+    End If
+    
+End Function
+
+'The Process module calls this function when an action is executed (e.g. a Process call uses ShowDialog = false).
+' We use it to update the
+Public Sub NoteLastActionExecuted(ByRef srcParamString As String)
+    If (m_LastActionCategory <> rr_None) Then
+        m_LastActionsExecuted(m_LastActionCategory) = m_LastActions(m_LastActionCategory)
+        m_LastActionsExecutedParams(m_LastActionCategory) = srcParamString
+    End If
+End Sub
+
+Private Function GetRepeatReshowCategory(ByRef srcActionName As String) As PD_RepeatReshow
+    
+    If Strings.StringsEqualLeft(srcActionName, "adj_", True) Then
+        GetRepeatReshowCategory = rr_Adjustment
+    ElseIf Strings.StringsEqualLeft(srcActionName, "effects_", True) Then
+        GetRepeatReshowCategory = rr_Effect
+    Else
+        GetRepeatReshowCategory = rr_None
+    End If
+    
 End Function

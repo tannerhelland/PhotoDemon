@@ -175,8 +175,8 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     ' (It may choose to store this action for later playback.)
     Macros.NotifyProcessorEvent thisProcData
     
-    'If a dialog is being displayed, forcibly disable Undo creation.  (This is really just a failsafe; PD's various dialog functions
-    ' are smart about not requesting Undo/Redo events for dialog actions.)
+    'If a dialog is being displayed, forcibly disable Undo creation.  (This is really just a failsafe;
+    ' PD's various dialog functions are smart about not requesting Undo/Redo events for dialog actions.)
     If raiseDialog Then createUndo = UNDO_Nothing
     
     'If this action requires us to create an Undo entry, do so now.  (We can also use this identifier to initiate a few
@@ -360,7 +360,16 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_Nothing) Then
-        If PDImages.IsImageActive() Then CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "processor call complete", True, createUndo
+    
+        If PDImages.IsImageActive() Then
+            
+            'Activate the current image
+            CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "processor call complete", True, createUndo
+            
+            'Notify the action manager than the last action was actually *applied* to the image
+            Actions.NoteLastActionExecuted processParameters
+            
+        End If
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied (via the
     ' ActivatePDImage function, above).  If an undo-related action was *not* applied, it's harder to know if an interface
@@ -383,6 +392,12 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         End If
         
     End If
+    
+    'Update the Adjustment and Effect menus to reflect the latest "shown" and "applied" actions.
+    ' (We have to do this regardless of whether the current process was canceled or not, because a process
+    '  that was invoked with ShowDialog = True but later canceled is still reflected in the Adjustment/Effect >
+    '  Re-show [last action] sub-menu.)
+    Interface.SyncRepeatReshowInterfaceElements False
     
     'Re-enable the main form and restore things like selection animations and proper control focus.
     ' (NOTE: this call is also what decrements the nested process counter.)

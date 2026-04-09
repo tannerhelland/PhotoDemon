@@ -872,56 +872,76 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuAdjustmentsTop 
       Caption         =   "Adjustments"
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Auto correct"
+         Caption         =   "Repeat"
          Index           =   0
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Auto enhance"
+         Caption         =   "Re-show"
          Index           =   1
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "-"
+         Caption         =   "Recently used"
          Index           =   2
+         Begin VB.Menu MnuAdjustmentsRecent 
+            Caption         =   "empty"
+            Index           =   0
+         End
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Black and white..."
+         Caption         =   "-"
          Index           =   3
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Brightness and contrast..."
+         Caption         =   "Auto correct"
          Index           =   4
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Color balance..."
+         Caption         =   "Auto enhance"
          Index           =   5
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Curves..."
+         Caption         =   "-"
          Index           =   6
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Levels..."
+         Caption         =   "Black and white..."
          Index           =   7
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Shadows and highlights..."
+         Caption         =   "Brightness and contrast..."
          Index           =   8
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Vibrance..."
+         Caption         =   "Color balance..."
          Index           =   9
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "White balance..."
+         Caption         =   "Curves..."
          Index           =   10
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "-"
+         Caption         =   "Levels..."
          Index           =   11
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Channels"
+         Caption         =   "Shadows and highlights..."
          Index           =   12
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Vibrance..."
+         Index           =   13
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "White balance..."
+         Index           =   14
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "-"
+         Index           =   15
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Channels"
+         Index           =   16
          Begin VB.Menu MnuChannels 
             Caption         =   "Channel mixer..."
             Index           =   0
@@ -957,7 +977,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Color"
-         Index           =   13
+         Index           =   17
          Begin VB.Menu MnuColor 
             Caption         =   "Color balance..."
             Index           =   0
@@ -1021,7 +1041,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Histogram"
-         Index           =   14
+         Index           =   18
          Begin VB.Menu MnuHistogram 
             Caption         =   "Display..."
             Index           =   0
@@ -1041,7 +1061,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Invert"
-         Index           =   15
+         Index           =   19
          Begin VB.Menu MnuInvert 
             Caption         =   "CMYK (film negative)"
             Index           =   0
@@ -1057,7 +1077,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Lighting"
-         Index           =   16
+         Index           =   20
          Begin VB.Menu MnuLighting 
             Caption         =   "Brightness and contrast..."
             Index           =   0
@@ -1093,7 +1113,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Map"
-         Index           =   17
+         Index           =   21
          Begin VB.Menu MnuMap 
             Caption         =   "Gradient map..."
             Index           =   0
@@ -1105,7 +1125,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Monochrome"
-         Index           =   18
+         Index           =   22
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Color to monochrome..."
             Index           =   0
@@ -2819,27 +2839,27 @@ End Sub
 
 Private Sub MnuAdjustments_Click(Index As Integer)
     Select Case Index
-        Case 0
-            Actions.LaunchAction_ByName "adj_autocorrect"
-        Case 1
-            Actions.LaunchAction_ByName "adj_autoenhance"
-        Case 2
-            '(separator)
-        Case 3
-            Actions.LaunchAction_ByName "adj_blackandwhite"
         Case 4
-            Actions.LaunchAction_ByName "adj_bandc"
+            Actions.LaunchAction_ByName "adj_autocorrect"
         Case 5
-            Actions.LaunchAction_ByName "adj_colorbalance"
+            Actions.LaunchAction_ByName "adj_autoenhance"
         Case 6
-            Actions.LaunchAction_ByName "adj_curves"
+            '(separator)
         Case 7
-            Actions.LaunchAction_ByName "adj_levels"
+            Actions.LaunchAction_ByName "adj_blackandwhite"
         Case 8
-            Actions.LaunchAction_ByName "adj_sandh"
+            Actions.LaunchAction_ByName "adj_bandc"
         Case 9
-            Actions.LaunchAction_ByName "adj_vibrance"
+            Actions.LaunchAction_ByName "adj_colorbalance"
         Case 10
+            Actions.LaunchAction_ByName "adj_curves"
+        Case 11
+            Actions.LaunchAction_ByName "adj_levels"
+        Case 12
+            Actions.LaunchAction_ByName "adj_sandh"
+        Case 13
+            Actions.LaunchAction_ByName "adj_vibrance"
+        Case 14
             Actions.LaunchAction_ByName "adj_whitebalance"
         Case Else
             'All remaining commands in this menu are parent menus only
