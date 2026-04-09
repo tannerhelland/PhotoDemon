@@ -367,7 +367,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "processor call complete", True, createUndo
             
             'Notify the action manager than the last action was actually *applied* to the image
-            Actions.NoteLastActionExecuted processParameters
+            Actions.NoteLastActionExecuted processID, processParameters
             
         End If
     

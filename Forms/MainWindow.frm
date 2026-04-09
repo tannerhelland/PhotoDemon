@@ -2839,6 +2839,14 @@ End Sub
 
 Private Sub MnuAdjustments_Click(Index As Integer)
     Select Case Index
+        Case 0
+            Actions.RepeatLastAction rr_Adjustment
+        Case 1
+            Actions.ReshowLastAction rr_Adjustment
+        Case 2
+            'Recently used top-menu
+        Case 3
+            '(separator)
         Case 4
             Actions.LaunchAction_ByName "adj_autocorrect"
         Case 5

@@ -686,23 +686,19 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
         'Repeat the above steps, but for adjustment and effect menus (and relevant submenus)
         Dim shownProcName As String
         If (LenB(Actions.GetLastActionName(rr_Adjustment, shownProcName)) > 0) Then
-            Debug.Print "Re-show: TRUE (" & shownProcName & ")"
             Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
             Menus.SetMenuEnabled "adj_reshow", True
         Else
-            Debug.Print "Re-show: FALSE"
-            Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show"), True
+            Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Nothing to re-show"), True
             Menus.SetMenuEnabled "adj_reshow", False
         End If
         
-        shownProcName = vbNullString
-        If (LenB(Actions.GetLastActionExecutedName(rr_Adjustment, shownProcName)) > 0) Then
-            Debug.Print "Repeat: TRUE (" & shownProcName & ")"
+        shownProcName = Actions.GetLastActionExecutedName(rr_Adjustment)
+        If (LenB(shownProcName) > 0) Then
             Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(shownProcName)), True
             Menus.SetMenuEnabled "adj_repeat", True
         Else
-            Debug.Print "Repeat: FALSE"
-            Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Repeat"), True
+            Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Nothing to repeat"), True
             Menus.SetMenuEnabled "adj_repeat", False
         End If
         

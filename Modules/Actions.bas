@@ -3,9 +3,8 @@ Attribute VB_Name = "Actions"
 'Action Handler
 'Copyright 2001-2026 by Tanner Helland
 'Created: 07/October/21
-'Last updated: 19/August/22
-'Last update: build a rudimentary "action database" at run-time, which stores action names and corresponding
-'             process IDs, and some attributes (like whether this action can be repeated or faded)
+'Last updated: 09/April/26
+'Last update: new functions to enable Repeat [last] and Re-show [last] submenus for Adjustments and Effects
 '
 'Want to execute a program operation?  Call this module.
 '
@@ -90,7 +89,7 @@ End Enum
 #If False Then
     Private Const rr_None = -1, rr_Adjustment = 0, rr_Effect = 1, rr_Count = 2
 #End If
-Private m_LastActions() As String, m_LastActionsExecuted() As String, m_LastActionsExecutedParams() As String
+Private m_LastActions() As String, m_LastProcessExecuted() As String, m_LastProcessExecutedParams() As String
 Private m_LastActionCategory As PD_RepeatReshow
 
 'Given a menu search string, apply the corresponding default processor action.
@@ -129,8 +128,8 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     m_LastActionCategory = GetRepeatReshowCategory(srcMenuName)
     If (m_LastActionCategory <> rr_None) Then
         m_LastActions(m_LastActionCategory) = srcMenuName
-        m_LastActionsExecuted(m_LastActionCategory) = vbNullString
-        m_LastActionsExecutedParams(m_LastActionCategory) = vbNullString
+        m_LastProcessExecuted(m_LastActionCategory) = vbNullString
+        m_LastProcessExecutedParams(m_LastActionCategory) = vbNullString
     End If
     
     Dim idxAction As Long
@@ -2130,8 +2129,8 @@ Public Sub BuildActionDatabase()
     PDDebug.LogAction CStr(m_numActions) & " actions registered this session."
     
     ReDim m_LastActions(0 To rr_Count - 1) As String
-    ReDim m_LastActionsExecuted(0 To rr_Count - 1) As String
-    ReDim m_LastActionsExecutedParams(0 To rr_Count - 1) As String
+    ReDim m_LastProcessExecuted(0 To rr_Count - 1) As String
+    ReDim m_LastProcessExecutedParams(0 To rr_Count - 1) As String
     
 End Sub
 
@@ -2205,24 +2204,16 @@ End Function
 
 'Return the last adjustment (or effect) that was actually *applied* to the image.  Returns a null-string if no
 ' adjustment (or effect) has been applied this session.
-Public Function GetLastActionExecutedName(ByVal actionType As PD_RepeatReshow, Optional ByRef dstProcessName As String = vbNullString) As String
-    
-    GetLastActionExecutedName = m_LastActionsExecuted(actionType)
-    
-    If (LenB(GetLastActionExecutedName) > 0) Then
-        Dim idxAction As Long
-        idxAction = GetActionIndexFromName(GetLastActionExecutedName)
-        If (idxAction >= 0) Then dstProcessName = m_Actions(idxAction).processName Else dstProcessName = vbNullString
-    End If
-    
+Public Function GetLastActionExecutedName(ByVal actionType As PD_RepeatReshow) As String
+    GetLastActionExecutedName = m_LastProcessExecuted(actionType)
 End Function
 
 'The Process module calls this function when an action is executed (e.g. a Process call uses ShowDialog = false).
 ' We use it to update the
-Public Sub NoteLastActionExecuted(ByRef srcParamString As String)
+Public Sub NoteLastActionExecuted(ByRef procName As String, ByRef srcParamString As String)
     If (m_LastActionCategory <> rr_None) Then
-        m_LastActionsExecuted(m_LastActionCategory) = m_LastActions(m_LastActionCategory)
-        m_LastActionsExecutedParams(m_LastActionCategory) = srcParamString
+        m_LastProcessExecuted(m_LastActionCategory) = procName
+        m_LastProcessExecutedParams(m_LastActionCategory) = srcParamString
     End If
 End Sub
 
@@ -2237,3 +2228,12 @@ Private Function GetRepeatReshowCategory(ByRef srcActionName As String) As PD_Re
     End If
     
 End Function
+
+'Called from the Adjustments > Repeat / Reshow and Effects > Repeat / Reshow menus.
+Public Sub ReshowLastAction(ByVal actionType As PD_RepeatReshow)
+    If (actionType <> rr_None) Then Actions.LaunchAction_ByName m_LastActions(actionType), pdas_Menu
+End Sub
+
+Public Sub RepeatLastAction(ByVal actionType As PD_RepeatReshow)
+    If (actionType <> rr_None) Then Process m_LastProcessExecuted(actionType), False, m_LastProcessExecutedParams(actionType), UNDO_Layer
+End Sub
