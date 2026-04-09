@@ -47,8 +47,8 @@ Private Const INIT_QUICKSORT_STACK_SIZE As Long = 256
 Private m_qsStack() As QSStack
 Private m_qsStackPtr As Long
 
-'Add a string to the stack.  Return value is the index of the added location (which can be used to infer the number of strings
-' in the stack, obviously).
+'Add a string to the stack.  Return value is the index of the added location
+' (which can be used to infer the number of strings in the stack, obviously).
 Friend Function AddString(ByRef srcString As String) As Long
 
     'Resize the stack as necessary
@@ -60,6 +60,34 @@ Friend Function AddString(ByRef srcString As String) As Long
     AddString = m_NumOfStrings
     m_NumOfStrings = m_NumOfStrings + 1
         
+End Function
+
+'Add a string to the stack, but before you add it, see if the string already exists.
+' IF IT DOES, that string will not be added as a new string - instead, it will be MOVED
+' to the TOP of the stack and all other strings will be shifted forward.
+'
+'If this string was added as a normal string, this function will return FALSE (meaning no
+' duplicates were found, and the number of strings in the stack incremented by one).
+'If this string was FOUND in the stack and simply MOVED to the top of the stack,
+' this function will return TRUE (meaning a duplicate WAS found, and the number of strings
+' in the stack did NOT change).
+Friend Function AddString_CheckDuplicatesFirst(ByRef srcString As String) As Boolean
+    
+    'Look for this string in the current stack
+    Dim idxFound As Long
+    idxFound = Me.ContainsString(srcString, False)
+    If (idxFound < 0) Then
+        
+        'String was not found; add normally
+        Me.AddString srcString
+        
+    Else
+        
+        'String *was* found; simply move it to the top of the stack
+        If (idxFound <> m_NumOfStrings - 1) Then Me.MoveStringToNewPosition idxFound, m_NumOfStrings - 1
+        
+    End If
+    
 End Function
 
 'Append a full stack to this one
@@ -117,6 +145,29 @@ End Function
 Friend Function GetNumOfStrings() As Long
     GetNumOfStrings = m_NumOfStrings
 End Function
+
+'Remove all strings from the stack except the top [n] strings.  This is a potentially expensive operation because
+' it must shift all kept strings to new locations in the stack.
+'
+'This operation is a NOP if [n] is <= stack size.
+Friend Sub KeepTopNStringsOnly(ByVal n As Long)
+    
+    If (m_NumOfStrings > n) Then
+            
+        'Shift the last 5 strings in the stack forward, then reset the stack pointer.
+        Dim idxOffset As Long
+        idxOffset = m_NumOfStrings - n
+        
+        Dim i As Long
+        For i = 0 To n - 1
+            m_Strings(i) = m_Strings(i + idxOffset)
+        Next i
+        
+        m_NumOfStrings = n
+        
+    End If
+    
+End Sub
 
 'Set a new stack size.  By design, this only works if the new size is <= the current stack size
 ' (otherwise we'd need to allocate new memory and what would we even fill it with - null strings?).
