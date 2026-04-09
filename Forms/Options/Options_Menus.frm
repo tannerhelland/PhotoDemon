@@ -173,6 +173,7 @@ Public Sub SaveUserPreferences()
     If mruNeedsToBeRebuilt Then
         g_RecentFiles.NotifyMaxLimitChanged
         g_RecentMacros.MRU_NotifyNewMaxLimit
+        Actions.NotifyMaxNumActionsToRemember
     End If
 
 End Sub

@@ -40,6 +40,7 @@ Option Explicit
 ' tag some unique command IDs so that they can be reused elsewhere.
 Public Const COMMAND_FILE_OPEN_RECENT As String = "file_open_recent_"
 Public Const COMMAND_TOOLS_MACRO_RECENT As String = "tools_macro_recent_"
+Public Const COMMAND_ADJUSTMENT_RECENT As String = "adjustment_recent"
 
 'PhotoDemon actions can be triggered by different places: menu clicks, hotkeys, or searches.  Some actions
 ' behave slightly differently depending on source.  (For example, "Paste to cursor" only works if the
@@ -76,10 +77,10 @@ End Type
 
 Private m_numActions As Long, m_Actions() As PD_Action
 
-'The *last* action requested by the user is stored here.  (It is stored regardless of whether the action
-' executes "correctly", e.g. a canceled operation will still have its name stored here.)
-'
-'The "last action executed" requires feedback from the Processor module; see NoteLastActionExecuted() for details.
+'As of April 2026, this module also manages the "recently used" (and associated "Repeat" and "Reshow") menus for
+' the Adjustments and Effects menus.  I realize this is a weird place to manage UI elements, but this module
+' was the easiest place to do it because it's already the centralized place for launching arbitrary program actions.
+' (That said, note that some information must be relayed from the Processor module; see NoteLastActionExecuted() for details.)
 Public Enum PD_RepeatReshow
     rr_None = -1
     rr_Adjustment = 0
@@ -89,8 +90,9 @@ End Enum
 #If False Then
     Private Const rr_None = -1, rr_Adjustment = 0, rr_Effect = 1, rr_Count = 2
 #End If
-Private m_LastActions() As String, m_LastProcessExecuted() As String, m_LastProcessExecutedParams() As String
+Private m_LastActions() As String, m_LastProcessExecuted() As String, m_LastProcessExecutedParams() As String, m_LastProcessExecutedUndo() As PD_UndoType
 Private m_LastActionCategory As PD_RepeatReshow
+Private m_RecentActions() As pdStringStack, m_numActionsToRemember As Long
 
 'Given a menu search string, apply the corresponding default processor action.
 Public Function LaunchAction_BySearch(ByRef srcSearchText As String) As Boolean
@@ -125,14 +127,22 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     
     'Note the name of this action; various UI elements can query it.
     ' (This enables UI features like the Adjustment > Repeat or Effect > Re-show menus.)
+    Dim idxAction As Long
+    
     m_LastActionCategory = GetRepeatReshowCategory(srcMenuName)
     If (m_LastActionCategory <> rr_None) Then
         m_LastActions(m_LastActionCategory) = srcMenuName
         m_LastProcessExecuted(m_LastActionCategory) = vbNullString
         m_LastProcessExecutedParams(m_LastActionCategory) = vbNullString
+        m_LastProcessExecutedUndo(m_LastActionCategory) = UNDO_Nothing
+        m_RecentActions(m_LastActionCategory).AddString_CheckDuplicatesFirst srcMenuName
+        m_RecentActions(m_LastActionCategory).KeepTopNStringsOnly m_numActionsToRemember
+        Debug.Print "[" & m_numActionsToRemember & "]"
+        Dim q As Long
+        For q = 0 To m_RecentActions(m_LastActionCategory).GetNumOfStrings - 1
+            Debug.Print "*" & q & vbTab & m_RecentActions(m_LastActionCategory).GetString(q)
+        Next q
     End If
-    
-    Dim idxAction As Long
     
     'Failsafe check to see if the menu associated with an action is enabled; if it isn't, that's an
     ' excellent surrogate for "do not allow this operation to proceed".  (Note that this is only
@@ -2128,9 +2138,19 @@ Public Sub BuildActionDatabase()
     
     PDDebug.LogAction CStr(m_numActions) & " actions registered this session."
     
+    'Also prep the arrays that track "repeat [action]" and "re-show [dialog]" in individual menus
     ReDim m_LastActions(0 To rr_Count - 1) As String
     ReDim m_LastProcessExecuted(0 To rr_Count - 1) As String
     ReDim m_LastProcessExecutedParams(0 To rr_Count - 1) As String
+    ReDim m_LastProcessExecutedUndo(0 To rr_Count - 1) As PD_UndoType
+    ReDim m_RecentActions(0 To rr_Count - 1) As pdStringStack
+    
+    Dim i As Long
+    For i = 0 To rr_Count - 1
+        Set m_RecentActions(i) = New pdStringStack
+    Next i
+    
+    NotifyMaxNumActionsToRemember
     
 End Sub
 
@@ -2210,10 +2230,11 @@ End Function
 
 'The Process module calls this function when an action is executed (e.g. a Process call uses ShowDialog = false).
 ' We use it to update the
-Public Sub NoteLastActionExecuted(ByRef procName As String, ByRef srcParamString As String)
+Public Sub NoteLastActionExecuted(ByRef procName As String, ByRef srcParamString As String, ByVal srcUndoType As PD_UndoType)
     If (m_LastActionCategory <> rr_None) Then
         m_LastProcessExecuted(m_LastActionCategory) = procName
         m_LastProcessExecutedParams(m_LastActionCategory) = srcParamString
+        m_LastProcessExecutedUndo(m_LastActionCategory) = srcUndoType
     End If
 End Sub
 
@@ -2235,5 +2256,17 @@ Public Sub ReshowLastAction(ByVal actionType As PD_RepeatReshow)
 End Sub
 
 Public Sub RepeatLastAction(ByVal actionType As PD_RepeatReshow)
-    If (actionType <> rr_None) Then Process m_LastProcessExecuted(actionType), False, m_LastProcessExecutedParams(actionType), UNDO_Layer
+    If (actionType <> rr_None) Then Process m_LastProcessExecuted(actionType), False, m_LastProcessExecutedParams(actionType), m_LastProcessExecutedUndo(actionType)
+End Sub
+
+'Whenever the user preferences for "recent files" changes, this function needs to be called
+Public Sub NotifyMaxNumActionsToRemember()
+    
+    m_numActionsToRemember = UserPrefs.GetPref_Long("Interface", "Recent Files Limit", 10)
+    
+    Dim i As Long
+    For i = 0 To rr_Count - 1
+        m_RecentActions(i).KeepTopNStringsOnly m_numActionsToRemember
+    Next i
+    
 End Sub
