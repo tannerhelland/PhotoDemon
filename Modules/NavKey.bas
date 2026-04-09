@@ -3,9 +3,8 @@ Attribute VB_Name = "NavKey"
 'Navigation Key Handler (including automated tab order handling)
 'Copyright 2017-2026 by Tanner Helland
 'Created: 18/August/17
-'Last updated: 14/November/21
-'Last update: fix nav key tracking across toolboxes (which are no longer unloaded after switching away
-'             from them, but are kept in-memory for faster subsequent access)
+'Last updated: 09/April/26
+'Last update: fix form count decrementing when form count reaches INIT_NUM_OF_FORMS (off-by-1 counting, ugh)
 '
 'In a project as complex as PD, tab order is difficult to keep straight.  VB orders controls in the order
 ' they're added, and there's no easy way to modify this short of manually setting TabOrder across all forms.
@@ -75,8 +74,8 @@ Public Sub NotifyControlLoad(ByRef childObject As Object, Optional ByVal hostFor
     
 End Sub
 
-'Before loading individual controls, notify this module of the parent form preceding the loop.  (This improves
-' performance because we don't have to look-up the form in our table for subsequent calls.)
+'Before loading individual controls, notify this module of the parent form preceding the loop.
+' (This improves performance because we don't have to look-up the form in our table for subsequent calls.)
 Public Sub NotifyFormLoading(ByRef parentForm As Form, ByVal handleAutoResize As Boolean, Optional ByVal hWndCustomAnchor As Long = 0)
     
     'At present, PD guarantees that *most* forms will not be double-loaded - e.g. only one instance
@@ -160,12 +159,17 @@ Public Sub NotifyFormUnloading(ByRef parentForm As Form)
         Next i
         
         'If we removed this from the middle of the list, shift subsequent entries down
-        If (indexOfForm >= 0) And (indexOfForm < m_NumOfForms - 1) Then
+        If (indexOfForm >= 0) Then
+            
             m_NumOfForms = m_NumOfForms - 1
-            For i = indexOfForm To m_NumOfForms - 1
-                Set m_Forms(i) = m_Forms(i + 1)
-            Next i
-            Set m_Forms(m_NumOfForms) = Nothing
+            
+            If (indexOfForm < m_NumOfForms) Then
+                For i = indexOfForm To m_NumOfForms - 1
+                    Set m_Forms(i) = m_Forms(i + 1)
+                Next i
+                Set m_Forms(m_NumOfForms) = Nothing
+            End If
+            
         End If
         
     End If
