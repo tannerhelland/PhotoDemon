@@ -876,7 +876,7 @@ Begin VB.Form FormMain
          Index           =   0
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Re-show"
+         Caption         =   "Re-show: %1"
          Index           =   1
       End
       Begin VB.Menu MnuAdjustments 
@@ -1143,7 +1143,7 @@ Begin VB.Form FormMain
          Index           =   0
       End
       Begin VB.Menu MnuEffectUpper 
-         Caption         =   "Re-show"
+         Caption         =   "Re-show: %1"
          Index           =   1
       End
       Begin VB.Menu MnuEffectUpper 

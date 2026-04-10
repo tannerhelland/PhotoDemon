@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.43</langversion>
+<langversion>1.0.46</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -1865,6 +1865,21 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
+<original>Re-show: %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Nothing to re-show</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Nothing to repeat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Undo last action</original>
 <translation>Скасувати останню дію</translation>
 </phrase>
@@ -2134,7 +2149,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>попередній перегляд недоступний</translation>
 </phrase>
 
-<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
+<!-- Interface.bas contains 101 phrases. 41 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2487,7 +2502,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Очистити список останніх макросів</translation>
 </phrase>
 
-<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Menus.bas contains 14 phrases. 12 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -5325,6 +5340,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Recently used</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Channels</original>
 <translation>Канали</translation>
 </phrase>
@@ -5867,7 +5887,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Мова змінилася успішно.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
+<!-- MainWindow.frm contains 417 phrases. 228 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14823,10 +14843,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2804</phrasecount>
+<phrasecount>2808</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 5982 phrases. -->
-<!-- 3178 are duplicates, so only 2804 unique phrases have been written to file. -->
-<!-- These 2804 phrases contain approximately 12141 total words. -->
+<!-- As of this build, PhotoDemon contains 6008 phrases. -->
+<!-- 3200 are duplicates, so only 2808 unique phrases have been written to file. -->
+<!-- These 2808 phrases contain approximately 12150 total words. -->
 
 </pdData>
