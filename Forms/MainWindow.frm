@@ -1139,8 +1139,28 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuEffectsTop 
       Caption         =   "Effects"
       Begin VB.Menu MnuEffectUpper 
-         Caption         =   "Artistic"
+         Caption         =   "Repeat"
          Index           =   0
+      End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Re-show"
+         Index           =   1
+      End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Recently used"
+         Index           =   2
+         Begin VB.Menu MnuEffectsRecent 
+            Caption         =   "empty"
+            Index           =   0
+         End
+      End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "-"
+         Index           =   3
+      End
+      Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Artistic"
+         Index           =   4
          Begin VB.Menu MnuArtistic 
             Caption         =   "Colored pencil..."
             Index           =   0
@@ -1192,7 +1212,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Blur"
-         Index           =   1
+         Index           =   5
          Begin VB.Menu MnuBlur 
             Caption         =   "Box blur..."
             Index           =   0
@@ -1224,7 +1244,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Distort"
-         Index           =   2
+         Index           =   6
          Begin VB.Menu MnuDistort 
             Caption         =   "Correct existing distortion..."
             Index           =   0
@@ -1280,7 +1300,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Edge"
-         Index           =   3
+         Index           =   7
          Begin VB.Menu MnuEdge 
             Caption         =   "Emboss..."
             Index           =   0
@@ -1308,7 +1328,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Light and shadow"
-         Index           =   4
+         Index           =   8
          Begin VB.Menu MnuLightShadow 
             Caption         =   "Black light..."
             Index           =   0
@@ -1344,7 +1364,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Natural"
-         Index           =   5
+         Index           =   9
          Begin VB.Menu MnuNatureFilter 
             Caption         =   "Atmosphere..."
             Index           =   0
@@ -1376,7 +1396,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Noise"
-         Index           =   6
+         Index           =   10
          Begin VB.Menu MnuNoise 
             Caption         =   "Add film grain..."
             Index           =   0
@@ -1416,7 +1436,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Pixelate"
-         Index           =   7
+         Index           =   11
          Begin VB.Menu MnuPixelate 
             Caption         =   "Color halftone..."
             Index           =   0
@@ -1444,7 +1464,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Render"
-         Index           =   8
+         Index           =   12
          Begin VB.Menu MnuRender 
             Caption         =   "Clouds..."
             Index           =   0
@@ -1460,7 +1480,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Sharpen"
-         Index           =   9
+         Index           =   13
          Begin VB.Menu MnuSharpen 
             Caption         =   "Sharpen..."
             Index           =   0
@@ -1472,7 +1492,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Stylize"
-         Index           =   10
+         Index           =   14
          Begin VB.Menu MnuStylize 
             Caption         =   "Antique..."
             Index           =   0
@@ -1512,7 +1532,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Transform"
-         Index           =   11
+         Index           =   15
          Begin VB.Menu MnuEffectTransform 
             Caption         =   "Offset and zoom..."
             Index           =   0
@@ -1540,11 +1560,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "-"
-         Index           =   12
+         Index           =   16
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Animation"
-         Index           =   13
+         Index           =   17
          Begin VB.Menu MnuEffectAnimation 
             Caption         =   "Background..."
             Index           =   0
@@ -1560,11 +1580,11 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Custom filter..."
-         Index           =   14
+         Index           =   18
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Photoshop (8bf) plugin..."
-         Index           =   15
+         Index           =   19
       End
    End
    Begin VB.Menu MnuTools 
@@ -3132,6 +3152,10 @@ Private Sub MnuEffectAnimation_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuEffectsRecent_Click(Index As Integer)
+    Actions.ReshowRecentAction Index, rr_Effect
+End Sub
+
 Private Sub MnuEffectTransform_Click(Index As Integer)
     Select Case Index
         Case 0
@@ -3152,36 +3176,44 @@ End Sub
 Private Sub MnuEffectUpper_Click(Index As Integer)
     Select Case Index
         Case 0
-            'Artistic
+            Actions.RepeatLastAction rr_Effect
         Case 1
-            'Blur
+            Actions.ReshowLastAction rr_Effect
         Case 2
-            'Distort
+            'Recently used top-menu
         Case 3
-            'Edge
-        Case 4
-            'Light and Shadow
-        Case 5
-            'Natural
-        Case 6
-            'Noise
-        Case 7
-            'Pixelate
-        Case 8
-            'Render
-        Case 9
-            'Sharpen
-        Case 10
-            'Stylize
-        Case 11
-            'Transform
-        Case 12
             '(separator)
+        Case 4
+            'Artistic
+        Case 5
+            'Blur
+        Case 6
+            'Distort
+        Case 7
+            'Edge
+        Case 8
+            'Light and Shadow
+        Case 9
+            'Natural
+        Case 10
+            'Noise
+        Case 11
+            'Pixelate
+        Case 12
+            'Render
         Case 13
-            'Animation
+            'Sharpen
         Case 14
-            Actions.LaunchAction_ByName "effects_customfilter"
+            'Stylize
         Case 15
+            'Transform
+        Case 16
+            '(separator)
+        Case 17
+            'Animation
+        Case 18
+            Actions.LaunchAction_ByName "effects_customfilter"
+        Case 19
             Actions.LaunchAction_ByName "effects_8bf"
     End Select
 End Sub

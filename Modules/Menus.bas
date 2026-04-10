@@ -445,113 +445,118 @@ Public Sub InitializeMenus()
         
     'Effects (Filters) Menu
     AddMenuItem "Effects", "effects_top", 6
-    AddMenuItem "Artistic", "effects_artistic", 6, 0
-        AddMenuItem "Colored pencil...", "effects_colorpencil", 6, 0, 0
-        AddMenuItem "Comic book...", "effects_comicbook", 6, 0, 1
-        AddMenuItem "Figured glass (dents)...", "effects_figuredglass", 6, 0, 2
-        AddMenuItem "Film noir...", "effects_filmnoir", 6, 0, 3
-        AddMenuItem "Glass tiles...", "effects_glasstiles", 6, 0, 4
-        AddMenuItem "Kaleidoscope...", "effects_kaleidoscope", 6, 0, 5
-        AddMenuItem "Modern art...", "effects_modernart", 6, 0, 6
-        AddMenuItem "Oil painting...", "effects_oilpainting", 6, 0, 7
-        AddMenuItem "Plastic wrap...", "effects_plasticwrap", 6, 0, 8
-        AddMenuItem "Posterize...", "effects_posterize", 6, 0, 9
-        AddMenuItem "Relief...", "effects_relief", 6, 0, 10
-        AddMenuItem "Stained glass...", "effects_stainedglass", 6, 0, 11
-    AddMenuItem "Blur", "effects_blur", 6, 1
-        AddMenuItem "Box blur...", "effects_boxblur", 6, 1, 0
-        AddMenuItem "Gaussian blur...", "effects_gaussianblur", 6, 1, 1
-        AddMenuItem "Surface blur...", "effects_surfaceblur", 6, 1, 2
-        AddMenuItem "-", "-", 6, 1, 3
-        AddMenuItem "Motion blur...", "effects_motionblur", 6, 1, 4
-        AddMenuItem "Radial blur...", "effects_radialblur", 6, 1, 5
-        AddMenuItem "Zoom blur...", "effects_zoomblur", 6, 1, 6
-    AddMenuItem "Distort", "effects_distort", 6, 2
-        AddMenuItem "Correct existing distortion...", "effects_fixlensdistort", 6, 2, 0
-        AddMenuItem "-", "-", 6, 2, 1
-        AddMenuItem "Donut...", "effects_donut", 6, 2, 2
-        AddMenuItem "Droste...", "effects_droste", 6, 2, 3
-        AddMenuItem "Lens...", "effects_lens", 6, 2, 4
-        AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 6, 2, 5
-        AddMenuItem "Poke...", "effects_poke", 6, 2, 6
-        AddMenuItem "Ripple...", "effects_ripple", 6, 2, 7
-        AddMenuItem "Squish...", "effects_squish", 6, 2, 8
-        AddMenuItem "Swirl...", "effects_swirl", 6, 2, 9
-        AddMenuItem "Waves...", "effects_waves", 6, 2, 10
-        AddMenuItem "-", "-", 6, 2, 11
-        AddMenuItem "Miscellaneous...", "effects_miscdistort", 6, 2, 12
-    AddMenuItem "Edge", "effects_edges", 6, 3
-        AddMenuItem "Emboss...", "effects_emboss", 6, 3, 0
-        AddMenuItem "Enhance edges...", "effects_enhanceedges", 6, 3, 1
-        AddMenuItem "Find edges...", "effects_findedges", 6, 3, 2
-        AddMenuItem "Gradient flow...", "effects_gradientflow", 6, 3, 3
-        AddMenuItem "Range filter...", "effects_rangefilter", 6, 3, 4
-        AddMenuItem "Trace contour...", "effects_tracecontour", 6, 3, 5
-    AddMenuItem "Light and shadow", "effects_lightandshadow", 6, 4
-        AddMenuItem "Black light...", "effects_blacklight", 6, 4, 0
-        AddMenuItem "Bump map...", "effects_bumpmap", 6, 4, 1
-        AddMenuItem "Cross-screen...", "effects_crossscreen", 6, 4, 2
-        AddMenuItem "Rainbow...", "effects_rainbow", 6, 4, 3
-        AddMenuItem "Sunshine...", "effects_sunshine", 6, 4, 4
-        AddMenuItem "-", "-", 6, 4, 5
-        AddMenuItem "Dilate...", "effects_dilate", 6, 4, 6
-        AddMenuItem "Erode...", "effects_erode", 6, 4, 7
-    AddMenuItem "Natural", "effects_natural", 6, 5
-        AddMenuItem "Atmosphere...", "effects_atmosphere", 6, 5, 0
-        AddMenuItem "Fog...", "effects_fog", 6, 5, 1
-        AddMenuItem "Ignite...", "effects_ignite", 6, 5, 2
-        AddMenuItem "Lava...", "effects_lava", 6, 5, 3
-        AddMenuItem "Metal...", "effects_metal", 6, 5, 4
-        AddMenuItem "Snow...", "effects_snow", 6, 5, 5
-        AddMenuItem "Underwater...", "effects_underwater", 6, 5, 6
-    AddMenuItem "Noise", "effects_noise", 6, 6
-        AddMenuItem "Add film grain...", "effects_filmgrain", 6, 6, 0
-        AddMenuItem "Add RGB noise...", "effects_rgbnoise", 6, 6, 1
-        AddMenuItem "-", "-", 6, 6, 2
-        AddMenuItem "Anisotropic diffusion...", "effects_anisotropic", 6, 6, 3
-        AddMenuItem "Dust and scratches...", "effects_dustandscratches", 6, 6, 4
-        AddMenuItem "Harmonic mean...", "effects_harmonicmean", 6, 6, 5
-        AddMenuItem "Mean shift...", "effects_meanshift", 6, 6, 6
-        AddMenuItem "Median...", "effects_median", 6, 6, 7
-        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 6, 6, 8
-    AddMenuItem "Pixelate", "effects_pixelate", 6, 7
-        AddMenuItem "Color halftone...", "effects_colorhalftone", 6, 7, 0
-        AddMenuItem "Crystallize...", "effects_crystallize", 6, 7, 1
-        AddMenuItem "Fragment...", "effects_fragment", 6, 7, 2
-        AddMenuItem "Mezzotint...", "effects_mezzotint", 6, 7, 3
-        AddMenuItem "Mosaic...", "effects_mosaic", 6, 7, 4
-        AddMenuItem "Pointillize...", "effects_pointillize", 6, 7, 5
-    AddMenuItem "Render", "effects_render", 6, 8
-        AddMenuItem "Clouds...", "effects_clouds", 6, 8, 0
-        AddMenuItem "Fibers...", "effects_fibers", 6, 8, 1
-        AddMenuItem "Truchet...", "effects_truchet", 6, 8, 2
-    AddMenuItem "Sharpen", "effects_sharpentop", 6, 9
-        AddMenuItem "Sharpen...", "effects_sharpen", 6, 9, 0
-        AddMenuItem "Unsharp mask...", "effects_unsharp", 6, 9, 1
-    AddMenuItem "Stylize", "effects_stylize", 6, 10
-        AddMenuItem "Antique...", "effects_antique", 6, 10, 0
-        AddMenuItem "Diffuse...", "effects_diffuse", 6, 10, 1
-        AddMenuItem "Kuwahara...", "effects_kuwahara", 6, 10, 2
-        AddMenuItem "Outline...", "effects_outline", 6, 10, 3
-        AddMenuItem "Palette...", "effects_palette", 6, 10, 4
-        AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 10, 5
-        AddMenuItem "Solarize...", "effects_solarize", 6, 10, 6
-        AddMenuItem "Twins...", "effects_twins", 6, 10, 7
-        AddMenuItem "Vignetting...", "effects_vignetting", 6, 10, 8
-    AddMenuItem "Transform", "effects_transform", 6, 11
-        AddMenuItem "Offset and zoom...", "effects_panandzoom", 6, 11, 0
-        AddMenuItem "Perspective...", "effects_perspective", 6, 11, 1
-        AddMenuItem "Polar conversion...", "effects_polarconversion", 6, 11, 2
-        AddMenuItem "Rotate...", "effects_rotate", 6, 11, 3
-        AddMenuItem "Shear...", "effects_shear", 6, 11, 4
-        AddMenuItem "Spherize...", "effects_spherize", 6, 11, 5
-    AddMenuItem "-", "-", 6, 12
-    AddMenuItem "Animation...", "effects_animation", 6, 13
-        AddMenuItem "Background...", "effects_animation_background", 6, 13, 0
-        AddMenuItem "Foreground...", "effects_animation_foreground", 6, 13, 1
-        AddMenuItem "Playback speed...", "effects_animation_speed", 6, 13, 2
-    AddMenuItem "Custom filter...", "effects_customfilter", 6, 14
-    AddMenuItem "Photoshop (8bf) plugin...", "effects_8bf", 6, 15
+    AddMenuItem "Repeat", "effects_repeat", 6, 0, , "edit_repeat"
+    AddMenuItem "Re-show", "effects_reshow", 6, 1
+    AddMenuItem "Recently used", "effects_recent_top", 6, 2
+    'Sub-menu isn't handled here
+    AddMenuItem "-", "-", 6, 3
+    AddMenuItem "Artistic", "effects_artistic", 6, 4
+        AddMenuItem "Colored pencil...", "effects_colorpencil", 6, 4, 0
+        AddMenuItem "Comic book...", "effects_comicbook", 6, 4, 1
+        AddMenuItem "Figured glass (dents)...", "effects_figuredglass", 6, 4, 2
+        AddMenuItem "Film noir...", "effects_filmnoir", 6, 4, 3
+        AddMenuItem "Glass tiles...", "effects_glasstiles", 6, 4, 4
+        AddMenuItem "Kaleidoscope...", "effects_kaleidoscope", 6, 4, 5
+        AddMenuItem "Modern art...", "effects_modernart", 6, 4, 6
+        AddMenuItem "Oil painting...", "effects_oilpainting", 6, 4, 7
+        AddMenuItem "Plastic wrap...", "effects_plasticwrap", 6, 4, 8
+        AddMenuItem "Posterize...", "effects_posterize", 6, 4, 9
+        AddMenuItem "Relief...", "effects_relief", 6, 4, 10
+        AddMenuItem "Stained glass...", "effects_stainedglass", 6, 4, 11
+    AddMenuItem "Blur", "effects_blur", 6, 5
+        AddMenuItem "Box blur...", "effects_boxblur", 6, 5, 0
+        AddMenuItem "Gaussian blur...", "effects_gaussianblur", 6, 5, 1
+        AddMenuItem "Surface blur...", "effects_surfaceblur", 6, 5, 2
+        AddMenuItem "-", "-", 6, 5, 3
+        AddMenuItem "Motion blur...", "effects_motionblur", 6, 5, 4
+        AddMenuItem "Radial blur...", "effects_radialblur", 6, 5, 5
+        AddMenuItem "Zoom blur...", "effects_zoomblur", 6, 5, 6
+    AddMenuItem "Distort", "effects_distort", 6, 6
+        AddMenuItem "Correct existing distortion...", "effects_fixlensdistort", 6, 6, 0
+        AddMenuItem "-", "-", 6, 6, 1
+        AddMenuItem "Donut...", "effects_donut", 6, 6, 2
+        AddMenuItem "Droste...", "effects_droste", 6, 6, 3
+        AddMenuItem "Lens...", "effects_lens", 6, 6, 4
+        AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 6, 6, 5
+        AddMenuItem "Poke...", "effects_poke", 6, 6, 6
+        AddMenuItem "Ripple...", "effects_ripple", 6, 6, 7
+        AddMenuItem "Squish...", "effects_squish", 6, 6, 8
+        AddMenuItem "Swirl...", "effects_swirl", 6, 6, 9
+        AddMenuItem "Waves...", "effects_waves", 6, 6, 10
+        AddMenuItem "-", "-", 6, 6, 11
+        AddMenuItem "Miscellaneous...", "effects_miscdistort", 6, 6, 12
+    AddMenuItem "Edge", "effects_edges", 6, 7
+        AddMenuItem "Emboss...", "effects_emboss", 6, 7, 0
+        AddMenuItem "Enhance edges...", "effects_enhanceedges", 6, 7, 1
+        AddMenuItem "Find edges...", "effects_findedges", 6, 7, 2
+        AddMenuItem "Gradient flow...", "effects_gradientflow", 6, 7, 3
+        AddMenuItem "Range filter...", "effects_rangefilter", 6, 7, 4
+        AddMenuItem "Trace contour...", "effects_tracecontour", 6, 7, 5
+    AddMenuItem "Light and shadow", "effects_lightandshadow", 6, 8
+        AddMenuItem "Black light...", "effects_blacklight", 6, 8, 0
+        AddMenuItem "Bump map...", "effects_bumpmap", 6, 8, 1
+        AddMenuItem "Cross-screen...", "effects_crossscreen", 6, 8, 2
+        AddMenuItem "Rainbow...", "effects_rainbow", 6, 8, 3
+        AddMenuItem "Sunshine...", "effects_sunshine", 6, 8, 4
+        AddMenuItem "-", "-", 6, 8, 5
+        AddMenuItem "Dilate...", "effects_dilate", 6, 8, 6
+        AddMenuItem "Erode...", "effects_erode", 6, 8, 7
+    AddMenuItem "Natural", "effects_natural", 6, 9
+        AddMenuItem "Atmosphere...", "effects_atmosphere", 6, 9, 0
+        AddMenuItem "Fog...", "effects_fog", 6, 9, 1
+        AddMenuItem "Ignite...", "effects_ignite", 6, 9, 2
+        AddMenuItem "Lava...", "effects_lava", 6, 9, 3
+        AddMenuItem "Metal...", "effects_metal", 6, 9, 4
+        AddMenuItem "Snow...", "effects_snow", 6, 9, 5
+        AddMenuItem "Underwater...", "effects_underwater", 6, 9, 6
+    AddMenuItem "Noise", "effects_noise", 6, 10
+        AddMenuItem "Add film grain...", "effects_filmgrain", 6, 10, 0
+        AddMenuItem "Add RGB noise...", "effects_rgbnoise", 6, 10, 1
+        AddMenuItem "-", "-", 6, 10, 2
+        AddMenuItem "Anisotropic diffusion...", "effects_anisotropic", 6, 10, 3
+        AddMenuItem "Dust and scratches...", "effects_dustandscratches", 6, 10, 4
+        AddMenuItem "Harmonic mean...", "effects_harmonicmean", 6, 10, 5
+        AddMenuItem "Mean shift...", "effects_meanshift", 6, 10, 6
+        AddMenuItem "Median...", "effects_median", 6, 10, 7
+        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 6, 10, 8
+    AddMenuItem "Pixelate", "effects_pixelate", 6, 11
+        AddMenuItem "Color halftone...", "effects_colorhalftone", 6, 11, 0
+        AddMenuItem "Crystallize...", "effects_crystallize", 6, 11, 1
+        AddMenuItem "Fragment...", "effects_fragment", 6, 11, 2
+        AddMenuItem "Mezzotint...", "effects_mezzotint", 6, 11, 3
+        AddMenuItem "Mosaic...", "effects_mosaic", 6, 11, 4
+        AddMenuItem "Pointillize...", "effects_pointillize", 6, 11, 5
+    AddMenuItem "Render", "effects_render", 6, 12
+        AddMenuItem "Clouds...", "effects_clouds", 6, 12, 0
+        AddMenuItem "Fibers...", "effects_fibers", 6, 12, 1
+        AddMenuItem "Truchet...", "effects_truchet", 6, 12, 2
+    AddMenuItem "Sharpen", "effects_sharpentop", 6, 13
+        AddMenuItem "Sharpen...", "effects_sharpen", 6, 13, 0
+        AddMenuItem "Unsharp mask...", "effects_unsharp", 6, 13, 1
+    AddMenuItem "Stylize", "effects_stylize", 6, 14
+        AddMenuItem "Antique...", "effects_antique", 6, 14, 0
+        AddMenuItem "Diffuse...", "effects_diffuse", 6, 14, 1
+        AddMenuItem "Kuwahara...", "effects_kuwahara", 6, 14, 2
+        AddMenuItem "Outline...", "effects_outline", 6, 14, 3
+        AddMenuItem "Palette...", "effects_palette", 6, 14, 4
+        AddMenuItem "Portrait glow...", "effects_portraitglow", 6, 14, 5
+        AddMenuItem "Solarize...", "effects_solarize", 6, 14, 6
+        AddMenuItem "Twins...", "effects_twins", 6, 14, 7
+        AddMenuItem "Vignetting...", "effects_vignetting", 6, 14, 8
+    AddMenuItem "Transform", "effects_transform", 6, 15
+        AddMenuItem "Offset and zoom...", "effects_panandzoom", 6, 15, 0
+        AddMenuItem "Perspective...", "effects_perspective", 6, 15, 1
+        AddMenuItem "Polar conversion...", "effects_polarconversion", 6, 15, 2
+        AddMenuItem "Rotate...", "effects_rotate", 6, 15, 3
+        AddMenuItem "Shear...", "effects_shear", 6, 15, 4
+        AddMenuItem "Spherize...", "effects_spherize", 6, 15, 5
+    AddMenuItem "-", "-", 6, 16
+    AddMenuItem "Animation...", "effects_animation", 6, 17
+        AddMenuItem "Background...", "effects_animation_background", 6, 17, 0
+        AddMenuItem "Foreground...", "effects_animation_foreground", 6, 17, 1
+        AddMenuItem "Playback speed...", "effects_animation_speed", 6, 17, 2
+    AddMenuItem "Custom filter...", "effects_customfilter", 6, 18
+    AddMenuItem "Photoshop (8bf) plugin...", "effects_8bf", 6, 19
     
     'Tools Menu
     AddMenuItem "Tools", "tools_top", 7
@@ -2219,20 +2224,25 @@ End Sub
 'Whenever the user accesses an Adjustment, we need to update the "Adjustments > Recently used" menu.
 ' (The number of items in menu "floats" up to some arbitrary maximum count; we rely on the caller to
 '  correctly update the number of existing menus *before* calling us - we just handle captions.)
-Public Sub UpdateSpecialMenu_RecentAdjustments()
+Public Sub UpdateSpecialMenu_RepeatReshow(ByVal rrCategory As PD_RepeatReshow)
     
     'Start by retrieving a handle to the menu in question
     Dim hMenu As Long
     hMenu = GetMenu(FormMain.hWnd)
-    hMenu = GetSubMenu(hMenu, 5&)   'Index of the "Adjustments" top-level menu
-    hMenu = GetSubMenu(hMenu, 2&)   'Index of the "Recently used" submenu within the "Adjustments" menu
+    If (rrCategory = rr_Adjustment) Then
+        hMenu = GetSubMenu(hMenu, 5&)   'Index of the "Adjustments" top-level menu
+    Else
+        hMenu = GetSubMenu(hMenu, 6&)   'Index of the "Effects" top-level menu
+    End If
+    
+    hMenu = GetSubMenu(hMenu, 2&)   'Index of the "Recently used" submenu within the "Adjustments" or "Effects" menu
     
     'Failsafe only; this menu should always exist
     If (hMenu <> 0) Then
         
         'Retrieve the number of recent adjustments
         Dim numOfActions As Long
-        numOfActions = Actions.GetNumOfRecentActions(rr_Adjustment)
+        numOfActions = Actions.GetNumOfRecentActions(rrCategory)
         
         'It is possible for there to be "0" actions, in which case a blank "empty" indicator will be shown.
         ' Note that this messes with our ordinal positioning, however, so we need to manually account for
@@ -2259,7 +2269,7 @@ Public Sub UpdateSpecialMenu_RecentAdjustments()
             
             'Retrieve the list of recent actions, then update all menu captions to match
             Dim listOfActions As pdStringStack
-            Set listOfActions = Actions.GetListOfRecentActions(rr_Adjustment)
+            Set listOfActions = Actions.GetListOfRecentActions(rrCategory)
             
             Dim i As Long
             For i = 0 To numOfActions - 1
@@ -2274,7 +2284,7 @@ Public Sub UpdateSpecialMenu_RecentAdjustments()
         End If
         
     Else
-        InternalMenuWarning "UpdateSpecialMenu_RecentAdjustments", "hMenu was null"
+        InternalMenuWarning "UpdateSpecialMenu_RepeatReshow", "hMenu was null"
     End If
     
 End Sub

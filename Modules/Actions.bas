@@ -1959,6 +1959,9 @@ Public Sub BuildActionDatabase()
     AddAction "adj_monochrometogray", "Monochrome to gray", True, True
     
     'AddAction "effects_artistic"
+    AddAction "effects_repeat", "Repeat", False, True
+    AddAction "effects_reshow", "Re-show", False, False
+    'AddAction "effects_recent_top", "Recently used"
     AddAction "effects_colorpencil", "Colored pencil", True, True
     AddAction "effects_comicbook", "Comic book", True, True
     AddAction "effects_figuredglass", "Figured glass", True, True

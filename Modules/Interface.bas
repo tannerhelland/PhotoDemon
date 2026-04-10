@@ -748,7 +748,65 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal forceFullRefresh As 
             End If
             
             'The menu handler takes over from here
-            Menus.UpdateSpecialMenu_RecentAdjustments
+            Menus.UpdateSpecialMenu_RepeatReshow rr_Adjustment
+            
+        End If
+        
+        'Effects menu next.  All behaviors are the same as for the adjustment menu.
+        ' (I've debated condensing this code to an iterative loop, but there are *just* enough
+        '  differences to make the process laborious, so I've copy+pasted and hand-editd instead.)
+        
+        'Activate and correctly caption "Re-show [last adjustment dialog]"
+        If (LenB(Actions.GetLastActionName(rr_Effect, shownProcName)) > 0) Then
+            Menus.RequestCaptionChange_ByName "effects_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
+            Menus.SetMenuEnabled "effects_reshow", True
+        Else
+            Menus.RequestCaptionChange_ByName "effects_reshow", g_Language.TranslateMessage("Nothing to re-show"), True
+            Menus.SetMenuEnabled "effects_reshow", False
+        End If
+        
+        'Activate and correctly caption "Repeat [last adjustment action]"
+        shownProcName = Actions.GetLastActionExecutedName(rr_Effect)
+        If (LenB(shownProcName) > 0) Then
+            Menus.RequestCaptionChange_ByName "effects_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(shownProcName)), True
+            Menus.SetMenuEnabled "effects_repeat", True
+        Else
+            Menus.RequestCaptionChange_ByName "effects_repeat", g_Language.TranslateMessage("Nothing to repeat"), True
+            Menus.SetMenuEnabled "effects_repeat", False
+        End If
+        
+        'Activate and correctly enable/caption the "Recently used" menu and sub-menu
+        If (m_TimestampAdjustments <> Actions.GetTimeStampOfLastAction(rr_Effect)) Or forceFullRefresh Then
+            
+            'Update the local timestamp copy (to prevent redraws until a change occurs to the menu)
+            m_TimestampAdjustments = Actions.GetTimeStampOfLastAction(rr_Effect)
+            
+            'Make a local copy of the list of "recent actions" in this category
+            numOfRecentActions = 0
+            numOfRecentActions = Actions.GetNumOfRecentActions(rr_Effect)
+            
+            'If there are no recent actions, disable the whole menu
+            Menus.SetMenuEnabled "effects_recent_top", (numOfRecentActions > 0)
+            If (numOfRecentActions > 0) Then
+                
+                'Clearing any existing "recently used" sub-menu entries
+                If (numOfRecentActions > 1) Then
+                
+                    For i = FormMain.MnuEffectsRecent.Count - 1 To 1 Step -1
+                        Unload FormMain.MnuEffectsRecent(i)
+                    Next i
+                    
+                    'Next, load all relevant menus in turn
+                    For i = 1 To numOfRecentActions - 1
+                        Load FormMain.MnuEffectsRecent(i)
+                    Next i
+        
+                End If
+            
+            End If
+            
+            'The menu handler takes over from here
+            Menus.UpdateSpecialMenu_RepeatReshow rr_Effect
             
         End If
         
