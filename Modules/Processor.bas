@@ -396,7 +396,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'Update the Adjustment and Effect menus to reflect the latest "shown" and "applied" actions.
     ' (We have to do this regardless of whether the current process was canceled or not, because a process
     '  that was invoked with ShowDialog = True but later canceled is still reflected in the Adjustment/Effect >
-    '  Re-show [last action] sub-menu.)
+    '  Re-show [last action] and Recently Used sub-menus.)
     Interface.SyncRepeatReshowInterfaceElements False
     
     'Re-enable the main form and restore things like selection animations and proper control focus.

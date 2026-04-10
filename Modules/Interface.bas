@@ -431,7 +431,7 @@ Private Sub SyncUI_CurrentImageSettings()
     Interface.SyncUndoRedoInterfaceElements True
     
     'Synchronize any "recently used" submenus (including repeat/reshow) in the adjustment and effect menus
-    SyncRepeatReshowInterfaceElements
+    SyncRepeatReshowInterfaceElements False
     
     'Because Undo/Redo changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
     IconsAndCursors.ResetMenuIcons
@@ -683,13 +683,14 @@ End Sub
 '
 'Finally, if no images are loaded, this function does absolutely nothing.  Refer to SetUIMode_NoImages(),
 ' above, for additional details.
-Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRedraws As Boolean = False)
-
+Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal forceFullRefresh As Boolean = False)
+    
+    'This step can be ignored if no image is active (since the entire parent menu is disabled)
     If PDImages.IsImageActive() Then
         
         'Adjustment menu first.
         
-        'Activate "Re-show [last adjustment dialog]" as relevant
+        'Activate and correctly caption "Re-show [last adjustment dialog]"
         Dim shownProcName As String
         If (LenB(Actions.GetLastActionName(rr_Adjustment, shownProcName)) > 0) Then
             Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
@@ -699,7 +700,7 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
             Menus.SetMenuEnabled "adj_reshow", False
         End If
         
-        'Activate "Repeat [last adjustment action]" as relevant
+        'Activate and correctly caption "Repeat [last adjustment action]"
         shownProcName = Actions.GetLastActionExecutedName(rr_Adjustment)
         If (LenB(shownProcName) > 0) Then
             Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(shownProcName)), True
@@ -710,8 +711,9 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
         End If
         
         'Next comes the "recently used" menu.  We only need to update this when the timestamp changes
-        ' for the "last" action in this category.
-        If (m_TimestampAdjustments <> Actions.GetTimeStampOfLastAction(rr_Adjustment)) Then
+        ' for the "last" action in this category.  (This can be overridden if the caller requests it;
+        ' PD does this when the user changes the active language, for example.)
+        If (m_TimestampAdjustments <> Actions.GetTimeStampOfLastAction(rr_Adjustment)) Or forceFullRefresh Then
             
             'Update the local timestamp copy (to prevent redraws until a change occurs to the menu)
             m_TimestampAdjustments = Actions.GetTimeStampOfLastAction(rr_Adjustment)
@@ -721,11 +723,8 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
             numOfRecentActions = Actions.GetNumOfRecentActions(rr_Adjustment)
             
             'If there are no recent actions, disable the whole menu
-            If (numOfRecentActions <= 0) Then
-                Menus.SetMenuEnabled "adj_recent_top", False
-            Else
-                
-                Menus.SetMenuEnabled "adj_recent_top", True
+            Menus.SetMenuEnabled "adj_recent_top", (numOfRecentActions > 0)
+            If (numOfRecentActions > 0) Then
                 
                 'The "recently used" submenu is enabled, so we need to update it to reflect the latest list
                 ' of "recently used" adjustments.  (This can also be triggered by changing the max number
@@ -753,17 +752,6 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
             
         End If
         
-        'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-        If (Not suspendAssociatedRedraws) Then
-            
-            'Redraw repeat/reshow/recently used menus in other places
-            'TODO: test this to see if it's still relevant!
-            'IconsAndCursors.AddMenuIcon "adj_repeat", 5, 0
-            'IconsAndCursors.AddMenuIcon "adj_reshow", 5, 1
-            'TODO: recently used menu
-            
-        End If
-
     'No /Else is required here because the associated top-level menus are disabled
     End If
     
@@ -2393,6 +2381,7 @@ Public Sub RedrawEntireUI(Optional ByVal useDoEvents As Boolean = False)
         
         'Resync the interface to redraw any remaining text and/or buttons
         Interface.SyncInterfaceToCurrentImage
+        Interface.SyncRepeatReshowInterfaceElements True
         If useDoEvents Then DoEvents
         
         'Redraw any/all toolbars as well

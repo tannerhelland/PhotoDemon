@@ -2264,7 +2264,8 @@ Public Sub UpdateSpecialMenu_RecentAdjustments()
             Dim i As Long
             For i = 0 To numOfActions - 1
                 'Action names need to be localized before applying, and note the reverse index order.
-                ' (Actions are stored in a stack, where the most recent action is at the *TOP* of the stack.)
+                ' (Actions are stored in a stack, where the most recent action is at the *TOP* of the stack;
+                '  menu indices are the opposite of this, with the most recent action at index [0].)
                 tmpString = g_Language.TranslateMessage(Actions.GetProcessNameForAction(listOfActions.GetString(numOfActions - i - 1)))
                 tmpMii.dwTypeData = StrPtr(tmpString)
                 SetMenuItemInfoW hMenu, i, 1&, tmpMii

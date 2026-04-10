@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2026 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 06/January/24
-'Last update: minor hardening against actions like passing null objects
+'Last updated: 09/April/26
+'Last update: new helper functions for checking duplicates when adding a string; if a duplicate is found,
+'             the existing entry will simply be moved to the top of the stack.
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -244,25 +245,26 @@ Friend Sub SwapIndices(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
 End Sub
 
 'Instead of swapping two entries, this function will move a string to a new index, then shift all remaining strings
-' in the list to match.  Obviously there are performance issues with this, so use it sparingly!
+' in the list to match.  This function doesn't perform any string allocations (only string *pointers* are moved)
+' but there are still performance implications with this, so use it sparingly!
 Friend Sub MoveStringToNewPosition(ByVal srcStringIndex As Long, ByVal dstStringIndex As Long)
     
     If (srcStringIndex >= 0) And (srcStringIndex < m_NumOfStrings) And (dstStringIndex >= 0) And (dstStringIndex < m_NumOfStrings) And (srcStringIndex <> dstStringIndex) Then
     
-        Dim i As Long, tmpString As String
-        tmpString = m_Strings(srcStringIndex)
+        Dim i As Long, tmpStrPtr As Long
+        tmpStrPtr = StrPtr(m_Strings(srcStringIndex))
         
         If (srcStringIndex < dstStringIndex) Then
             For i = srcStringIndex To dstStringIndex - 1
-                m_Strings(i) = m_Strings(i + 1)
+                PutMem4 VarPtr(m_Strings(i)), StrPtr(m_Strings(i + 1))
             Next i
         Else
             For i = srcStringIndex To dstStringIndex + 1 Step -1
-                m_Strings(i) = m_Strings(i - 1)
+                PutMem4 VarPtr(m_Strings(i)), StrPtr(m_Strings(i - 1))
             Next i
         End If
         
-        m_Strings(dstStringIndex) = tmpString
+        PutMem4 VarPtr(m_Strings(dstStringIndex)), tmpStrPtr
         
     End If
 
