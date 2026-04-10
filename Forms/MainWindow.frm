@@ -2874,6 +2874,10 @@ Private Sub MnuAdjustments_Click(Index As Integer)
     End Select
 End Sub
 
+Private Sub MnuAdjustmentsRecent_Click(Index As Integer)
+    Actions.ReshowRecentAction Index, rr_Adjustment
+End Sub
+
 Private Sub MnuArtistic_Click(Index As Integer)
     Select Case Index
         Case 0

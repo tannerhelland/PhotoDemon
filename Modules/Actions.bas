@@ -92,7 +92,7 @@ End Enum
 #End If
 Private m_LastActions() As String, m_LastProcessExecuted() As String, m_LastProcessExecutedParams() As String, m_LastProcessExecutedUndo() As PD_UndoType
 Private m_LastActionCategory As PD_RepeatReshow
-Private m_RecentActions() As pdStringStack, m_numActionsToRemember As Long
+Private m_RecentActions() As pdStringStack, m_ChangeTimestamps() As Currency, m_numActionsToRemember As Long
 
 'Given a menu search string, apply the corresponding default processor action.
 Public Function LaunchAction_BySearch(ByRef srcSearchText As String) As Boolean
@@ -125,23 +125,30 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     'Failsafe check for other actions already processing in the background
     If Processor.IsProgramBusy() Then Exit Function
     
-    'Note the name of this action; various UI elements can query it.
-    ' (This enables UI features like the Adjustment > Repeat or Effect > Re-show menus.)
+    'Cache various attributes related to this action.
+    ' (This enables UI features like the Adjustment > Repeat, Re-show, and Recently used menus.)
     Dim idxAction As Long
     
     m_LastActionCategory = GetRepeatReshowCategory(srcMenuName)
     If (m_LastActionCategory <> rr_None) Then
+        
+        'Action ID for this action
         m_LastActions(m_LastActionCategory) = srcMenuName
+        
+        'Reset the "last-executed" action.  (These states won't be set until the user hits OK on a given dialog.)
         m_LastProcessExecuted(m_LastActionCategory) = vbNullString
         m_LastProcessExecutedParams(m_LastActionCategory) = vbNullString
         m_LastProcessExecutedUndo(m_LastActionCategory) = UNDO_Nothing
+        
+        'Add this action to the "recent actions" stack and bump off old items as necessary
         m_RecentActions(m_LastActionCategory).AddString_CheckDuplicatesFirst srcMenuName
         m_RecentActions(m_LastActionCategory).KeepTopNStringsOnly m_numActionsToRemember
-        Debug.Print "[" & m_numActionsToRemember & "]"
-        Dim q As Long
-        For q = 0 To m_RecentActions(m_LastActionCategory).GetNumOfStrings - 1
-            Debug.Print "*" & q & vbTab & m_RecentActions(m_LastActionCategory).GetString(q)
-        Next q
+        
+        'Note the timestamp of this change; the menu manager looks for changes to this value to know when it
+        ' needs to update the "recently used" menu.  (Resetting a full menu and redrawing all text items imposes
+        ' a minor perf penalty; PD avoids this where it can.)
+        m_ChangeTimestamps(m_LastActionCategory) = VBHacks.GetHighResTimeEx()
+        
     End If
     
     'Failsafe check to see if the menu associated with an action is enabled; if it isn't, that's an
@@ -2144,10 +2151,13 @@ Public Sub BuildActionDatabase()
     ReDim m_LastProcessExecutedParams(0 To rr_Count - 1) As String
     ReDim m_LastProcessExecutedUndo(0 To rr_Count - 1) As PD_UndoType
     ReDim m_RecentActions(0 To rr_Count - 1) As pdStringStack
+    ReDim m_ChangeTimestamps(0 To rr_Count - 1) As Currency
     
     Dim i As Long
     For i = 0 To rr_Count - 1
         Set m_RecentActions(i) = New pdStringStack
+        '"Randomize" timestamps to non-zero values at initialization; this ensures a full redraw on first touch from the menu manager
+        m_ChangeTimestamps(i) = VBHacks.GetHighResTimeEx()
     Next i
     
     NotifyMaxNumActionsToRemember
@@ -2255,6 +2265,23 @@ Public Sub ReshowLastAction(ByVal actionType As PD_RepeatReshow)
     If (actionType <> rr_None) Then Actions.LaunchAction_ByName m_LastActions(actionType), pdas_Menu
 End Sub
 
+Public Sub ReshowRecentAction(ByVal idxAction As Long, ByVal actionType As PD_RepeatReshow)
+    
+    'Various failsafes, "just in case" (none of these should ever trigger in PD)
+    If (actionType <> rr_None) And (idxAction >= 0) Then
+        If (Not m_RecentActions(actionType) Is Nothing) Then
+            If (idxAction < m_RecentActions(actionType).GetNumOfStrings) Then
+                
+                'Note that we reverse the requested action, because recent actions are stored in a stack where
+                ' index [0] (the base of the stack) is the *oldest* recent action.
+                Actions.LaunchAction_ByName m_RecentActions(actionType).GetString(m_RecentActions(actionType).GetNumOfStrings - 1 - idxAction), pdas_Menu
+                
+            End If
+        End If
+    End If
+    
+End Sub
+
 Public Sub RepeatLastAction(ByVal actionType As PD_RepeatReshow)
     If (actionType <> rr_None) Then Process m_LastProcessExecuted(actionType), False, m_LastProcessExecutedParams(actionType), m_LastProcessExecutedUndo(actionType)
 End Sub
@@ -2267,6 +2294,29 @@ Public Sub NotifyMaxNumActionsToRemember()
     Dim i As Long
     For i = 0 To rr_Count - 1
         m_RecentActions(i).KeepTopNStringsOnly m_numActionsToRemember
+        m_ChangeTimestamps(i) = VBHacks.GetHighResTimeEx()  'Update timestamps as well; this ensures a redraw on next touch
     Next i
     
 End Sub
+
+Public Function GetTimeStampOfLastAction(ByVal actionType As PD_RepeatReshow) As Currency
+    GetTimeStampOfLastAction = m_ChangeTimestamps(actionType)
+End Function
+
+Public Function GetListOfRecentActions(ByVal actionType As PD_RepeatReshow) As pdStringStack
+    Set GetListOfRecentActions = m_RecentActions(actionType)
+End Function
+
+Public Function GetNumOfRecentActions(ByVal actionType As PD_RepeatReshow) As Long
+    If (m_RecentActions(actionType) Is Nothing) Then
+        GetNumOfRecentActions = 0
+    Else
+        GetNumOfRecentActions = m_RecentActions(actionType).GetNumOfStrings()
+    End If
+End Function
+
+Public Function GetProcessNameForAction(ByRef actionName As String) As String
+    Dim idxAction As Long
+    idxAction = GetActionIndexFromName(actionName, False)
+    If (idxAction >= 0) Then GetProcessNameForAction = m_Actions(idxAction).processName
+End Function

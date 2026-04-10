@@ -134,6 +134,10 @@ Private m_ModalDialogActive As Boolean, m_SystemDialogActive As Boolean
 ' query the flag to know whether to perform intensive processing (or wait until the resize ends)
 Private m_DialogActivelyResizing As Boolean
 
+'Timestamps for the last action in the "Adjustment" and "Effect" menus.  These menus each support their own
+' "Recently used" submenus, and we only want to redraw these menus when absolutely necessary.
+Private m_TimestampAdjustments As Currency, m_TimestampEffects As Currency
+
 'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
 Public Sub InitializeInterfaceBackend()
 
@@ -683,7 +687,9 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
 
     If PDImages.IsImageActive() Then
         
-        'Repeat the above steps, but for adjustment and effect menus (and relevant submenus)
+        'Adjustment menu first.
+        
+        'Activate "Re-show [last adjustment dialog]" as relevant
         Dim shownProcName As String
         If (LenB(Actions.GetLastActionName(rr_Adjustment, shownProcName)) > 0) Then
             Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
@@ -693,6 +699,7 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
             Menus.SetMenuEnabled "adj_reshow", False
         End If
         
+        'Activate "Repeat [last adjustment action]" as relevant
         shownProcName = Actions.GetLastActionExecutedName(rr_Adjustment)
         If (LenB(shownProcName) > 0) Then
             Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(shownProcName)), True
@@ -700,6 +707,50 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal suspendAssociatedRed
         Else
             Menus.RequestCaptionChange_ByName "adj_repeat", g_Language.TranslateMessage("Nothing to repeat"), True
             Menus.SetMenuEnabled "adj_repeat", False
+        End If
+        
+        'Next comes the "recently used" menu.  We only need to update this when the timestamp changes
+        ' for the "last" action in this category.
+        If (m_TimestampAdjustments <> Actions.GetTimeStampOfLastAction(rr_Adjustment)) Then
+            
+            'Update the local timestamp copy (to prevent redraws until a change occurs to the menu)
+            m_TimestampAdjustments = Actions.GetTimeStampOfLastAction(rr_Adjustment)
+            
+            'Make a local copy of the list of "recent actions" in this category
+            Dim numOfRecentActions As Long: numOfRecentActions = 0
+            numOfRecentActions = Actions.GetNumOfRecentActions(rr_Adjustment)
+            
+            'If there are no recent actions, disable the whole menu
+            If (numOfRecentActions <= 0) Then
+                Menus.SetMenuEnabled "adj_recent_top", False
+            Else
+                
+                Menus.SetMenuEnabled "adj_recent_top", True
+                
+                'The "recently used" submenu is enabled, so we need to update it to reflect the latest list
+                ' of "recently used" adjustments.  (This can also be triggered by changing the max number
+                ' of "recent files" - that value also limits this submenu.)
+                
+                'Start by clearing the existing recently used sub-menus, if any
+                Dim i As Long
+                If (numOfRecentActions > 1) Then
+                
+                    For i = FormMain.MnuAdjustmentsRecent.Count - 1 To 1 Step -1
+                        Unload FormMain.MnuAdjustmentsRecent(i)
+                    Next i
+                    
+                    'Next, load all relevant menus in turn
+                    For i = 1 To numOfRecentActions - 1
+                        Load FormMain.MnuAdjustmentsRecent(i)
+                    Next i
+        
+                End If
+            
+            End If
+            
+            'The menu handler takes over from here
+            Menus.UpdateSpecialMenu_RecentAdjustments
+            
         End If
         
         'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)

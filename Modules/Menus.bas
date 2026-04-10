@@ -2089,11 +2089,6 @@ Public Sub UpdateSpecialMenu_RecentFiles()
         hMenu = GetSubMenu(hMenu, 0&)
         hMenu = GetSubMenu(hMenu, 2&)
         
-        'Prepare a MenuItemInfo struct
-        Dim tmpMii As Win32_MenuItemInfoW
-        tmpMii.cbSize = LenB(tmpMii)
-        tmpMii.fMask = MIIM_STRING
-        
         If (hMenu <> 0) Then
             
             'Retrieve the number of MRU files currently being displayed
@@ -2109,6 +2104,11 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             'The position of the "load all" and "erase all" icons are hard-coded, relative to the number of displayed MRU files
             Dim tmpString As String
             tmpString = g_Language.TranslateMessage("Open all recent images")
+            
+            'Prepare a MenuItemInfo struct
+            Dim tmpMii As Win32_MenuItemInfoW
+            tmpMii.cbSize = LenB(tmpMii)
+            tmpMii.fMask = MIIM_STRING
             tmpMii.dwTypeData = StrPtr(tmpString)
             If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 1, 1&, tmpMii
             
@@ -2152,11 +2152,10 @@ Public Sub UpdateSpecialMenu_RecentFiles()
     
 End Sub
 
+'Whenever the "Tools > Open Recent Macro" menu is modified, we need to modify our internal list of recent
+' macro items.  (We manually track this menu so we can handle translations correctly for the item at the
+' bottom of the menu, e.g. "Clear list".)
 Public Sub UpdateSpecialMenu_RecentMacros()
-
-    'Whenever the "Tools > Open Recent Macro" menu is modified, we need to modify our internal list of recent
-    ' macro items.  (We manually track this menu so we can handle translations correctly for the item at the
-    ' bottom of the menu, e.g. "Clear list".)
     
     'Start by retrieving a handle to the menu in question
     If (Not g_RecentMacros Is Nothing) Then
@@ -2165,11 +2164,6 @@ Public Sub UpdateSpecialMenu_RecentMacros()
         hMenu = GetMenu(FormMain.hWnd)
         hMenu = GetSubMenu(hMenu, 7&)
         hMenu = GetSubMenu(hMenu, 7&)
-        
-        'Prepare a MenuItemInfo struct
-        Dim tmpMii As Win32_MenuItemInfoW
-        tmpMii.cbSize = LenB(tmpMii)
-        tmpMii.fMask = MIIM_STRING
         
         If (hMenu <> 0) Then
             
@@ -2185,8 +2179,12 @@ Public Sub UpdateSpecialMenu_RecentMacros()
             
             'The position of the "clear list" icon is hard-coded, relative to the number of displayed MRU files
             Dim tmpString As String
-            
             tmpString = g_Language.TranslateMessage("Clear recent macro list")
+            
+            'Prepare a MenuItemInfo struct
+            Dim tmpMii As Win32_MenuItemInfoW
+            tmpMii.cbSize = LenB(tmpMii)
+            tmpMii.fMask = MIIM_STRING
             tmpMii.dwTypeData = StrPtr(tmpString)
             If (Not listIsEmpty) Then SetMenuItemInfoW hMenu, numOfMRUFiles + 1, 1&, tmpMii Else SetMenuItemInfoW hMenu, 2, 1&, tmpMii
                 
@@ -2214,6 +2212,68 @@ Public Sub UpdateSpecialMenu_RecentMacros()
             InternalMenuWarning "UpdateSpecialMenu_RecentMacros", "hMenu was null"
         End If
         
+    End If
+    
+End Sub
+
+'Whenever the user accesses an Adjustment, we need to update the "Adjustments > Recently used" menu.
+' (The number of items in menu "floats" up to some arbitrary maximum count; we rely on the caller to
+'  correctly update the number of existing menus *before* calling us - we just handle captions.)
+Public Sub UpdateSpecialMenu_RecentAdjustments()
+    
+    'Start by retrieving a handle to the menu in question
+    Dim hMenu As Long
+    hMenu = GetMenu(FormMain.hWnd)
+    hMenu = GetSubMenu(hMenu, 5&)   'Index of the "Adjustments" top-level menu
+    hMenu = GetSubMenu(hMenu, 2&)   'Index of the "Recently used" submenu within the "Adjustments" menu
+    
+    'Failsafe only; this menu should always exist
+    If (hMenu <> 0) Then
+        
+        'Retrieve the number of recent adjustments
+        Dim numOfActions As Long
+        numOfActions = Actions.GetNumOfRecentActions(rr_Adjustment)
+        
+        'It is possible for there to be "0" actions, in which case a blank "empty" indicator will be shown.
+        ' Note that this messes with our ordinal positioning, however, so we need to manually account for
+        ' this case.
+        Dim listIsEmpty As Boolean
+        listIsEmpty = (numOfActions = 0)
+        
+        'Prepare a generic MenuItemInfo struct for updating captions
+        Dim tmpMii As Win32_MenuItemInfoW
+        tmpMii.cbSize = LenB(tmpMii)
+        tmpMii.fMask = MIIM_STRING
+        
+        'The position of the "clear list" icon is hard-coded, relative to the number of displayed actions
+        Dim tmpString As String
+        
+        'Finally, manually place the captions for all recent file filenames, while handling the special
+        ' case of an empty list.
+        If listIsEmpty Then
+            tmpString = g_Language.TranslateMessage("empty")
+            tmpMii.dwTypeData = StrPtr(tmpString)
+            SetMenuItemInfoW hMenu, 0&, 1&, tmpMii
+            
+        Else
+            
+            'Retrieve the list of recent actions, then update all menu captions to match
+            Dim listOfActions As pdStringStack
+            Set listOfActions = Actions.GetListOfRecentActions(rr_Adjustment)
+            
+            Dim i As Long
+            For i = 0 To numOfActions - 1
+                'Action names need to be localized before applying, and note the reverse index order.
+                ' (Actions are stored in a stack, where the most recent action is at the *TOP* of the stack.)
+                tmpString = g_Language.TranslateMessage(Actions.GetProcessNameForAction(listOfActions.GetString(numOfActions - i - 1)))
+                tmpMii.dwTypeData = StrPtr(tmpString)
+                SetMenuItemInfoW hMenu, i, 1&, tmpMii
+            Next i
+            
+        End If
+        
+    Else
+        InternalMenuWarning "UpdateSpecialMenu_RecentAdjustments", "hMenu was null"
     End If
     
 End Sub
