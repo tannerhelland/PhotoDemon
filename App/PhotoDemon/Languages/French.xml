@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.03.28</langversion>
+<langversion>2026.04.11</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -965,7 +965,7 @@
 
 <phrase>
 <original>Apply lens distortion</original>
-<translation>Application de la déformation de l'objectif</translation>
+<translation>Déformation de l'objectif</translation>
 </phrase>
 
 <phrase>
@@ -1866,17 +1866,17 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Re-show: %1</original>
-<translation></translation>
+<translation>Modifier le dernier utilisé</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to re-show</original>
-<translation></translation>
+<translation>Rien à modifier</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to repeat</original>
-<translation></translation>
+<translation>Rien à répéter</translation>
 </phrase>
 
 <phrase>
@@ -5345,7 +5345,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Recently used</original>
-<translation></translation>
+<translation>Utilisé récemment</translation>
 </phrase>
 
 <phrase>
