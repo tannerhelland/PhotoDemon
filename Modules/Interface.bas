@@ -760,9 +760,11 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal forceFullRefresh As 
         If (LenB(Actions.GetLastActionName(rr_Effect, shownProcName)) > 0) Then
             Menus.RequestCaptionChange_ByName "effects_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
             Menus.SetMenuEnabled "effects_reshow", True
+            Menus.SetMenuEnabled "effects_recent_top", True
         Else
             Menus.RequestCaptionChange_ByName "effects_reshow", g_Language.TranslateMessage("Nothing to re-show"), True
             Menus.SetMenuEnabled "effects_reshow", False
+            Menus.SetMenuEnabled "effects_recent_top", False
         End If
         
         'Activate and correctly caption "Repeat [last adjustment action]"
@@ -786,7 +788,6 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal forceFullRefresh As 
             numOfRecentActions = Actions.GetNumOfRecentActions(rr_Effect)
             
             'If there are no recent actions, disable the whole menu
-            Menus.SetMenuEnabled "effects_recent_top", (numOfRecentActions > 0)
             If (numOfRecentActions > 0) Then
                 
                 'Clearing any existing "recently used" sub-menu entries
