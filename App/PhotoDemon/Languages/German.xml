@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,8 +6,8 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha (Build 148).3</langversion>
-<langstatus>Up-to-date</langstatus>
+<langversion>2026.1 Alpha (Build 170)</langversion>
+<langstatus>Auf aktuellem Stand</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
 
@@ -1509,7 +1509,7 @@ Wenn das Problem weiterhin besteht, melden Sie es bitte den PhotoDemon-Developer
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Leider verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Bitte reduzieren Sie die gewünschte Größe und versuchen es erneut.</translation>
+<translation>Leider verfügt dieser PC nicht über genügend Speicher, um ein %1 x %2 Bild zu erstellen. Bitte reduzieren Sie die gewünschte Größe und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -1866,17 +1866,17 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 
 <phrase>
 <original>Re-show: %1</original>
-<translation></translation>
+<translation>Erneut anzeigen: %1</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to re-show</original>
-<translation></translation>
+<translation>Nichts zum erneuten Anzeigen</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to repeat</original>
-<translation></translation>
+<translation>Nichts zum Wiederholen</translation>
 </phrase>
 
 <phrase>
@@ -2279,7 +2279,7 @@ Dieses Bild enthält %2 eindeutige Farbe + Opazitätswerte (RGBA).</translation>
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 <translation>Leider konnte das Bild '%1' nicht gefunden werden.
 
-Wenn dieses Bild sich ursprünglich auf einem Wechseldatenträger (DVD, USB-Laufwerk etc.) befunden hat, legen Sie das Medium bitte wieder ein oder schließen Sie es wieder an und versuchen es erneut.</translation>
+Wenn dieses Bild sich ursprünglich auf einem Wechseldatenträger (DVD, USB-Laufwerk etc.) befunden hat, legen Sie das Medium bitte wieder ein oder schließen Sie es wieder an und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -2298,7 +2298,7 @@ Wenn dieses Bild sich ursprünglich auf einem Wechseldatenträger (DVD, USB-Lauf
 Please close this file in any other running programs, then try again.</original>
 <translation>Leider ist die Datei '%1' derzeit durch ein anderes Programm auf diesem PC gesperrt.
 
-Bitte schließen Sie diese Datei in jeglichen anderen laufenden Programmen, dann versuchen Sie es erneut.</translation>
+Bitte schließen Sie diese Datei in jeglichen anderen laufenden Programmen, dann versuchen Sie es noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -2705,12 +2705,12 @@ Um die Scanner-Unterstützung zu aktivieren, kopieren Sie bitte die Datei EZTW32
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>DIB-Sperre konnte nicht erworben werden. Bitte vergewissern Sie sich, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, rebooten Sie Ihren PC und versuchen es erneut.</translation>
+<translation>DIB-Sperre konnte nicht erworben werden. Bitte vergewissern Sie sich, dass keine anderen Programme auf den Scanner zugreifen. Wenn das Problem weiterhin besteht, rebooten Sie Ihren PC und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Bitte aktivieren Sie Admin-Rechte und versuchen es erneut.</translation>
+<translation>Temporärer Dateizugriffsfehler. Dies kann hervorgerufen werden, wenn ein System mit eingeschränkten Zugriffsrechten ausgeführt wird. Bitte aktivieren Sie Admin-Rechte und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -2830,7 +2830,7 @@ Bitte melden Sie diesen Bug via dem Menü "Hilfe > Bug-Bericht einreichen".</tra
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
-<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Bitte geben Sie Systemspeicher (RAM) frei, indem Sie nicht benötigte Programme beenden - insbesondere Ihren Webbrowser, falls er geöffnet ist - dann versuchen Sie die Aktion erneut.</translation>
+<translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Bitte geben Sie Systemspeicher (RAM) frei, indem Sie nicht benötigte Programme beenden - insbesondere Ihren Webbrowser, falls er geöffnet ist - dann versuchen Sie die Aktion noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -3309,7 +3309,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in einem alternativen Format z
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Bitte versuchen Sie es erneut.</translation>
+<translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Bitte versuchen Sie es noch einmal.</translation>
 </phrase>
 
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -3587,7 +3587,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
-<translation>Update-Suche aufgeschoben (eine Prüfung ist vor Kurzem durchgeführt worden)</translation>
+<translation>Update-Suche aufgeschoben (eine Prüfung ist kürzlich durchgeführt worden)</translation>
 </phrase>
 
 <phrase>
@@ -3642,7 +3642,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation>Sie haben PhotoDemon in einem restriktierten Systemordner platziert. Da PhotoDemon keinen Administratorzugriff hat, kann es keine Dateien für Sie herunterladen. Bitte verschieben Sie PhotoDemon in einen uneingeschränkten Ordner und versuchen es erneut.</translation>
+<translation>Sie haben PhotoDemon in einem restriktierten Systemordner platziert. Da PhotoDemon keinen Administratorzugriff hat, kann es keine Dateien für Sie herunterladen. Bitte verschieben Sie PhotoDemon in einen uneingeschränkten Ordner und versuchen es noch einmal.</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -3716,7 +3716,7 @@ Bitte geben Sie einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation>PhotoDemon kann das Internet nicht erreichen. Bitte prüfen Sie Ihre Verbindung gegen und versuchen es erneut.</translation>
+<translation>PhotoDemon kann das Internet nicht erreichen. Bitte prüfen Sie Ihre Verbindung gegen und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -3793,7 +3793,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Die Zwischenablage ist leer oder enthält kein gültiges Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen es erneut.</translation>
+<translation>Die Zwischenablage ist leer oder enthält kein gültiges Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -3818,7 +3818,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation>Download des Bildes fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL und versuchen es erneut.</translation>
+<translation>Download des Bildes fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -4205,7 +4205,7 @@ Sie werden diese Datei unter Verwendung Ihres Internet-Browsers manuell herunter
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
-<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es erneut mit einem kleineren Set an Bildern.</translation>
+<translation>Leider überschreitet die Anzahl der von Ihnen selektierten Bilder das, was Windows für eine einzelne Laden-Operation erlaubt. Bitte versuchen Sie es mit einem kleineren Set an Bildern noch einmal.</translation>
 </phrase>
 
 <phrase>
@@ -4948,7 +4948,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Open recent</original>
-<translation>Zuletzt geöffnet</translation>
+<translation>Jüngst geöffnet</translation>
 </phrase>
 
 <phrase>
@@ -5343,7 +5343,7 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Recently used</original>
-<translation></translation>
+<translation>Kürzlich verwendet</translation>
 </phrase>
 
 <phrase>
@@ -13579,7 +13579,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
-<translation>Sie haben keinen Zugriff auf diesen Ordner. Bitte loggen Sie sich als Administrator ein und versuchen es erneut.</translation>
+<translation>Sie haben keinen Zugriff auf diesen Ordner. Bitte loggen Sie sich als Administrator ein und versuchen es noch einmal.</translation>
 </phrase>
 
 <phrase>
