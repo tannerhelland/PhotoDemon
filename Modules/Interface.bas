@@ -691,9 +691,12 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal forceFullRefresh As 
         'Adjustment menu first.
         
         'Activate and correctly caption "Re-show [last adjustment dialog]"
-        Dim shownProcName As String
+        Const TEXT_ELLIPSES As String = "..."
+        Dim shownProcName As String, newCaption As String
         If (LenB(Actions.GetLastActionName(rr_Adjustment, shownProcName)) > 0) Then
-            Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
+            newCaption = g_Language.TranslateMessage(shownProcName)
+            If (Not Strings.StringsEqualRight(newCaption, TEXT_ELLIPSES, True)) And Actions.IsActionShowable(Actions.GetLastActionName(rr_Adjustment)) Then newCaption = newCaption & TEXT_ELLIPSES
+            Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Re-show: %1", newCaption), True
             Menus.SetMenuEnabled "adj_reshow", True
         Else
             Menus.RequestCaptionChange_ByName "adj_reshow", g_Language.TranslateMessage("Nothing to re-show"), True
@@ -758,7 +761,9 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal forceFullRefresh As 
         
         'Activate and correctly caption "Re-show [last adjustment dialog]"
         If (LenB(Actions.GetLastActionName(rr_Effect, shownProcName)) > 0) Then
-            Menus.RequestCaptionChange_ByName "effects_reshow", g_Language.TranslateMessage("Re-show: %1", g_Language.TranslateMessage(shownProcName)), True
+            newCaption = g_Language.TranslateMessage(shownProcName)
+            If (Not Strings.StringsEqualRight(newCaption, TEXT_ELLIPSES, True)) And Actions.IsActionShowable(Actions.GetLastActionName(rr_Effect)) Then newCaption = newCaption & TEXT_ELLIPSES
+            Menus.RequestCaptionChange_ByName "effects_reshow", g_Language.TranslateMessage("Re-show: %1", newCaption), True
             Menus.SetMenuEnabled "effects_reshow", True
             Menus.SetMenuEnabled "effects_recent_top", True
         Else

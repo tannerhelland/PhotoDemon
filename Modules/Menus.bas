@@ -2255,12 +2255,13 @@ Public Sub UpdateSpecialMenu_RepeatReshow(ByVal rrCategory As PD_RepeatReshow)
         tmpMii.cbSize = LenB(tmpMii)
         tmpMii.fMask = MIIM_STRING
         
-        'The position of the "clear list" icon is hard-coded, relative to the number of displayed actions
-        Dim tmpString As String
+        Dim tmpString As String, actionString As String
         
         'Finally, manually place the captions for all recent file filenames, while handling the special
         ' case of an empty list.
         If listIsEmpty Then
+            
+            'The user shouldn't ever see this (because the top menu is disabled); this is just a failsafe
             tmpString = g_Language.TranslateMessage("empty")
             tmpMii.dwTypeData = StrPtr(tmpString)
             SetMenuItemInfoW hMenu, 0&, 1&, tmpMii
@@ -2271,14 +2272,20 @@ Public Sub UpdateSpecialMenu_RepeatReshow(ByVal rrCategory As PD_RepeatReshow)
             Dim listOfActions As pdStringStack
             Set listOfActions = Actions.GetListOfRecentActions(rrCategory)
             
+            Const TEXT_ELLIPSES As String = "..."
+            
             Dim i As Long
             For i = 0 To numOfActions - 1
+                
                 'Action names need to be localized before applying, and note the reverse index order.
                 ' (Actions are stored in a stack, where the most recent action is at the *TOP* of the stack;
                 '  menu indices are the opposite of this, with the most recent action at index [0].)
-                tmpString = g_Language.TranslateMessage(Actions.GetProcessNameForAction(listOfActions.GetString(numOfActions - i - 1)))
+                actionString = listOfActions.GetString(numOfActions - i - 1)
+                tmpString = g_Language.TranslateMessage(Actions.GetProcessNameForAction(actionString))
+                If (Not Strings.StringsEqualRight(tmpString, TEXT_ELLIPSES, True)) And Actions.IsActionShowable(actionString) Then tmpString = tmpString & TEXT_ELLIPSES
                 tmpMii.dwTypeData = StrPtr(tmpString)
                 SetMenuItemInfoW hMenu, i, 1&, tmpMii
+                
             Next i
             
         End If

@@ -1053,9 +1053,10 @@ Public Function StringsEqualLeft(ByRef firstString As String, ByRef fixedLengthS
 End Function
 
 Public Function StringsEqualRight(ByRef firstString As String, ByRef fixedLengthString As String, ByVal ignoreCase As Boolean) As Boolean
-    StringsEqualRight = False
     If (LenB(firstString) >= LenB(fixedLengthString)) Then
         StringsEqualRight = StringsEqual(Right$(firstString, Len(fixedLengthString)), fixedLengthString, ignoreCase)
+    Else
+        StringsEqualRight = False
     End If
 End Function
 
