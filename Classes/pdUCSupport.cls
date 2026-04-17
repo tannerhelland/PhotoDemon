@@ -329,6 +329,17 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
     
 End Sub
 
+'USE THIS FUNCTION CAUTIOUSLY: if you call it (passing TRUE), *all* key events will be raised to the caller.
+' This can break things like accelerators if the caller does not handle raised events carefully!
+Friend Sub RequestAllKeys(ByVal newState As Boolean)
+    If (Not m_KeyEvents Is Nothing) And (m_hWnd <> 0) Then
+        If PDMain.IsProgramRunning() Then m_KeyEvents.RequestAllKeys newState
+    Else
+        PDDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
+    End If
+End Sub
+
+'Request only specific keypress notifications.
 Friend Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
     
     If (Not m_KeyEvents Is Nothing) And (m_hWnd <> 0) Then
@@ -854,6 +865,10 @@ Private Sub m_KeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     If m_ControlWantsKeyData Then RaiseEvent KeyUpCustom(Shift, vkCode, markEventHandled)
     
 End Sub
+
+Public Function PeekLastChar() As String
+    PeekLastChar = m_KeyEvents.PeekLastChar()
+End Function
 
 Private Sub m_MouseEvents_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent AppCommand(cmdID, Shift, x, y)

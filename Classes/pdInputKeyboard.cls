@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Keyboard Input Handler class
 'Copyright 2014-2026 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 09/February/17
-'Last update: convert to safer subclassing via comctl32
+'Last updated: 15/April/26
+'Last update: add new "raise events on ALL keys" mode (for listbox searching)
 '
 'As usual, VB has some unpleasant quirks when it comes to keyboard interactions.  For example, things like specifying
 ' a Default control can cause Enter keypresses to become unreportable.  Keys like Tab or Arrows may not be returned
@@ -44,6 +44,8 @@ Attribute VB_Exposed = False
 '    for accessibility purposes, where certain keys may be mapped to global functions that are not to be overridden.
 '
 '    tl;dr, Be careful about intercepting more keypress data than you actually require!
+'
+'    (NOTE April 2026: a new "return all keys" mode is now available.  User discretion advised.)
 '
 '4) Similar to VB's standard key events, Shift/Ctrl/Alt modifiers are reported as part of each event, as is the
 '    *VIRTUAL KEYCODE* of the pressed key.  Everything in this class works by virtual keycodes, which are listed here:
@@ -87,7 +89,10 @@ Private m_SubclassActive As Boolean
 ' I mean, "left to their default handler").
 '
 'IMPORTANT NOTE: virtual keycodes are used, which may or may not correspond to VB key constants.  Plan accordingly!
+'
+'UPDATE April 2026: a new mode is available to "track all keys".
 Private m_TrackedKeys() As Long, m_NumOfTrackedKeys As Long
+Private m_TrackAllKeys As Boolean
 
 'Dynamic hooking requires us to track focus events with care.  When focus is lost, we must relinquish control of the keyboard.
 ' This value will be set to TRUE if the tracked object currently has focus.
@@ -101,6 +106,12 @@ Private m_HookedControlName As String
 Private m_HookID As Long
 Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
+
+'Peeking at characters returned by keypresses
+Private m_lastChar As String    'Might be longer than a char in CJK languages!
+Private m_KeyState(0 To 255) As Byte
+Private Declare Function GetKeyboardState Lib "user32" (ByVal lpDst256ByteKeyState As Long) As Long
+Private Declare Function ToUnicode Lib "user32" (ByVal wVirtKey As Long, ByVal wScanCode As Long, ByVal lpKeyState As Long, ByVal pwszBuff As Long, ByVal cchBuff As Long, ByVal wFlags As Long) As Long
 
 'While inside the hook event, this will be set to TRUE.  Because we raise events directly from the hook, we sometimes need to postpone
 ' crucial actions (like releasing the hook) until the hook proc has exited.
@@ -236,6 +247,16 @@ Friend Sub GetLastKeyAndScanCode(ByRef dstKeyCode As Long, ByRef dstScanCode As 
     dstScanCode = m_lastScanCode
 End Sub
 
+Friend Function PeekLastChar() As String
+    PeekLastChar = m_lastChar
+End Function
+
+'Call this function to raise key events for ALL keyboard keys.  This changes a lot of behavior in this class,
+' and I do not recommend using it in new UI elements.
+Friend Sub RequestAllKeys(Optional ByVal newAllKeyState As Boolean = True)
+    m_TrackAllKeys = newAllKeyState
+End Sub
+
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
 Friend Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
     
@@ -348,7 +369,7 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
     
     'Ensure 1) the user wants key events, and 2) PD's main menu is not dropped (we don't receive a
     ' focus change notification for this, so we need to check it here)
-    If (m_NumOfTrackedKeys > 0) Then
+    If (m_NumOfTrackedKeys > 0) Or m_TrackAllKeys Then
     If (Not Menus.IsMainMenuActive()) Then
         
         'Cache last key-code and scan-code (parents can query us for this data)
@@ -365,50 +386,78 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
         If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
         If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
         
-        'The keycode of the key being pressed is stored in the wParam.  See if it is a key we have been asked to track.
-        Dim i As Long
-        For i = 0 To m_NumOfTrackedKeys - 1
+        'In "request all keys" mode, simply return the press as-is
+        Dim returnThisKey As Boolean: returnThisKey = False
         
-            If (wParam = m_TrackedKeys(i)) Then
+        If m_TrackAllKeys Then
+            returnThisKey = True
             
-                'This is a key we are supposed to be tracking.  Check its state by using isVirtualKeyDown.
-                If IsVirtualKeyDown(wParam) Then
+        'The user only wants *certain* keypresses.  See if this key is in their requested list.
+        Else
+            
+            'The keycode of the key being pressed is stored in the wParam.  See if it is a key we have been asked to track.
+            Dim i As Long
+            For i = 0 To m_NumOfTrackedKeys - 1
+                If (wParam = m_TrackedKeys(i)) Then
+                    returnThisKey = True
+                    Exit For
+                End If
+            Next i
+            
+        End If
+        
+        If returnThisKey Then
+            
+            'This keypress needs to be reported upstream.
+            If IsVirtualKeyDown(wParam) Then
+            
+                'At present, we ignore messages raised by PeekMessage()
+                Const HC_NOREMOVE As Long = 3
+                If (nCode <> HC_NOREMOVE) Then
                     
-                    'At present, we ignore messages raised by PeekMessage()
-                    Const HC_NOREMOVE As Long = 3
-                    If (nCode <> HC_NOREMOVE) Then
-                    
-                        msgEaten = True
-                    
-                        'This key is being pressed.  Raise the associated event.
-                        RaiseEvent KeyDownCustom(retShiftConstants, wParam, msgEaten)
-                        Exit For
-                        
+                    'If the caller wants all keys tracked, we need to translate this keypress into a character and cache it
+                    If m_TrackAllKeys Then
+                        Dim sizeOfLastChar As Long
+                        m_lastChar = Space$(4)
+                        GetKeyboardState VarPtr(m_KeyState(0))
+                        sizeOfLastChar = ToUnicode(m_lastKeyCode, m_lastScanCode, VarPtr(m_KeyState(0)), StrPtr(m_lastChar), Len(m_lastChar), 0&)
+                        If (sizeOfLastChar > 0) Then m_lastChar = Left$(m_lastChar, sizeOfLastChar) Else m_lastChar = vbNullString
                     End If
                     
-                'The key has just been released.
-                Else
+                    'This key is being pressed.  Raise the associated event.
+                    msgEaten = True
+                    RaiseEvent KeyDownCustom(retShiftConstants, wParam, msgEaten)
+                    
+                End If
                 
-                    'This is a little complicated (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms644984%28v=vs.85%29.aspx
-                    ' for details).  Basically, lParam contains detailed key state tracking.  Bits 30 and 31 contain previous state and
-                    ' transition state values, respectively.  By testing these values, we can insure that only one KeyUp event is raised;
-                    ' specifically, it is only raised at the moment when the transition state is UP and the previous state is DOWN.
-                    If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
-                
-                        msgEaten = True
-                        
-                        'This key is being released.  Raise the associated event.
-                        RaiseEvent KeyUpCustom(retShiftConstants, wParam, msgEaten)
-                        Exit For
-                        
+            'The key has just been released.
+            Else
+            
+                'This is a little complicated (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms644984%28v=vs.85%29.aspx
+                ' for details).  Basically, lParam contains detailed key state tracking.  Bits 30 and 31 contain previous state and
+                ' transition state values, respectively.  By testing these values, we can insure that only one KeyUp event is raised;
+                ' specifically, it is only raised at the moment when the transition state is UP and the previous state is DOWN.
+                If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+                    
+                    'Update the last char (in case it changed due to key release)
+                    If m_TrackAllKeys Then
+                        m_lastChar = Space$(4)
+                        GetKeyboardState VarPtr(m_KeyState(0))
+                        sizeOfLastChar = ToUnicode(m_lastKeyCode, m_lastScanCode, VarPtr(m_KeyState(0)), StrPtr(m_lastChar), Len(m_lastChar), 0&)
+                        If (sizeOfLastChar > 0) Then m_lastChar = Left$(m_lastChar, sizeOfLastChar) Else m_lastChar = vbNullString
                     End If
-                
+                    
+                    'This key is being released.  Raise the associated event.
+                    msgEaten = True
+                    RaiseEvent KeyUpCustom(retShiftConstants, wParam, msgEaten)
+                    
                 End If
             
             End If
         
-        Next i
-    
+        '/End "m_TrackAllKeys" on/off
+        End If
+        
     End If
     End If
         
