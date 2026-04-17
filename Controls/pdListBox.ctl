@@ -214,8 +214,8 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
-Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    lbView.NotifyKeyDown Shift, vkCode, markEventHandled
+Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean, Optional ByVal sChar As String = vbNullString)
+    lbView.NotifyKeyDown Shift, vkCode, markEventHandled, sChar
 End Sub
 
 'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will

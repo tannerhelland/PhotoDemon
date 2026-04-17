@@ -604,9 +604,9 @@ End Sub
 
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     If m_PopUpVisible Then
-        lbPrimary.NotifyKeyDown Shift, vkCode, markEventHandled
+        lbPrimary.NotifyKeyDown Shift, vkCode, markEventHandled, ucSupport.PeekLastChar()
     Else
-        listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
+        listSupport.NotifyKeyDown Shift, vkCode, markEventHandled, ucSupport.PeekLastChar()
     End If
 End Sub
 
@@ -677,7 +677,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestCaptionSupport False
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END, VK_RETURN, VK_SPACE, VK_ESCAPE
+    ucSupport.RequestAllKeys True   'Request all key notifications so the user can search the list via keyboard
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

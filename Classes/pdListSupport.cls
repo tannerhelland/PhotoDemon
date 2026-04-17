@@ -567,7 +567,7 @@ End Sub
 'Key events primarily affect the current .ListIndex property.  Note that some shortcuts (like PAGEDOWN/PAGEUP) require
 ' up-to-date rendering information, as we need to know which item lies on the next "page" of the listview - information that
 ' directly correlates to the on-screen size of the listbox's constraining rect.
-Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean, Optional ByVal sChar As String = vbNullString)
     
     markEventHandled = False
     
@@ -627,6 +627,24 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
                 markEventHandled = True
                 RaiseEvent Click
                 Exit Sub
+            End If
+        
+        'TAB is important for navigation; do not handle it here
+        Case VK_TAB
+            markEventHandled = False
+            Exit Sub
+        
+        'For any other keypress, *if* the supplied character has a non-null length, "eat it" and use the string of
+        ' recently supplied characters to select the most relevant matching entry in the list.
+        Case Else
+            If (LenB(sChar) <> 0) Then
+                Debug.Print "key pressed", Timer, sChar
+                markEventHandled = True
+            Else
+                'The passed character has a null-length, meaning this is some kind of control key.  Ignore it.
+                ' (TODO: check "Enter" key here?)
+                ' (TODO: what about ALT+key combos?  ALT keypresses appear here.)
+                Debug.Print "null length char", Timer
             End If
             
     End Select

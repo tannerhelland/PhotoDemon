@@ -230,17 +230,17 @@ Private Sub listSupport_ScrollValueChanged()
     RaiseEvent ScrollValueChanged(Me.ScrollValue)
 End Sub
 
-Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
-End Sub
-
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     listSupport.NotifyMouseClick Button, Shift, x, y
     UpdateMousePosition
 End Sub
 
+Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean, Optional ByVal sChar As String = vbNullString)
+    listSupport.NotifyKeyDown Shift, vkCode, markEventHandled, sChar
+End Sub
+
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    listSupport.NotifyKeyDown Shift, vkCode, markEventHandled
+    listSupport.NotifyKeyDown Shift, vkCode, markEventHandled, ucSupport.PeekLastChar()
 End Sub
 
 Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSysKey As PD_NavigationKey, markEventHandled As Boolean)
@@ -393,7 +393,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, True
     ucSupport.RequestExtraFunctionality True, True
-    ucSupport.SpecifyRequiredKeys VK_DOWN, VK_UP, VK_PAGEDOWN, VK_PAGEUP, VK_HOME, VK_END, VK_RETURN, VK_SPACE
+    ucSupport.RequestAllKeys True   'Request all key notifications so the user can search the list via keyboard
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
