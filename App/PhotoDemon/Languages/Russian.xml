@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2026.1.145</langversion>
+<langversion>2026.1.176</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -1866,17 +1866,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Re-show: %1</original>
-<translation></translation>
+<translation>Повторно показать: %1</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to re-show</original>
-<translation></translation>
+<translation>Нечего показывать</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to repeat</original>
-<translation></translation>
+<translation>Нечего повторять</translation>
 </phrase>
 
 <phrase>
@@ -1931,7 +1931,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Normal</original>
-<translation>Нормально</translation>
+<translation>Базовый</translation>
 </phrase>
 
 <phrase>
@@ -5343,7 +5343,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Recently used</original>
-<translation></translation>
+<translation>Недавно применяемые</translation>
 </phrase>
 
 <phrase>
@@ -10339,17 +10339,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>Сохранение пропорций при фиксированной ширине</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>Сохранение пропорций при фиксированной высоте</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>Трансформация масштабирования с сохранением пропорций сторон</translation>
 </phrase>
 
 <phrase>
