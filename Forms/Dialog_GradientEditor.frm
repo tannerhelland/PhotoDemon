@@ -784,6 +784,9 @@ Private Sub ChangeCollectionOrder(ByVal sortCriteria As GC_SortOptions)
 
     If (m_NumGradientsInCollection <= 1) Then Exit Sub
     
+    lstGradients.SetAutomaticRedraws False, False
+    lstGradients.Clear
+    
     Dim i As Long
     
     Select Case sortCriteria
@@ -828,6 +831,13 @@ Private Sub ChangeCollectionOrder(ByVal sortCriteria As GC_SortOptions)
     QuickSortStringStack sortCriteria
     
     'Repopulate the listbox
+    For i = 0 To m_NumGradientsInCollection - 1
+        If (Not m_GradientCollection(i).gcGradient Is Nothing) Then
+            lstGradients.AddItem m_GradientCollection(i).gcGradient.GetGradientName(), i
+        Else
+            lstGradients.AddItem m_GradientCollection(i).gcFilename, i
+        End If
+    Next i
     lstGradients.SetAutomaticRedraws True, True
     
 End Sub
@@ -1592,13 +1602,8 @@ Private Sub BuildGradientCollection()
         
     End If
     
-    'Add all list items to the list box
-    For i = 0 To m_NumGradientsInCollection - 1
-        lstGradients.AddItem vbNullString, i
-    Next i
-    
     'After adding all files, perform a default sort by filename
-    ChangeCollectionOrder so_Filename
+    ChangeCollectionOrder btsSort.ListIndex
     
     'Render the finished list
     lstGradients.SetAutomaticRedraws True, True
