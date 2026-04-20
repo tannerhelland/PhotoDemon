@@ -424,10 +424,6 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     End If
 End Sub
 
-Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    listSupport.NotifyKeyUp Shift, vkCode, markEventHandled
-End Sub
-
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     UpdateMousePosition x, y
     RedrawBackBuffer
@@ -825,6 +821,9 @@ End Sub
 Private Sub HideListBox()
 
     If m_PopUpVisible And (m_PopUpHwnd <> 0) Then
+        
+        'Notify the list box that it's about to be hidden
+        lbPrimary.NotifyLosingFocus
         
         'Notify the central UserControl tracker that our list box is now inactive.
         UserControls.NotifyDropDownChangeState Me.hWnd, m_PopUpHwnd, False

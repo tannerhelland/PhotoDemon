@@ -106,6 +106,10 @@ Private m_RenderDataCorrect As Boolean
 ' we'll re-translate the listbox to match.
 Private m_LanguageAtLastCheck As String
 
+'When key events are forwarded to use, we use them to assemble a "search" string.  This string is auto-matched against
+' list contents to find the most likely match.
+Private m_SearchText As String
+
 Private Sub Class_Initialize()
     
     m_ListMode = PDLM_ListBox
@@ -510,6 +514,69 @@ Friend Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
     
 End Function
 
+'As a convenience, this function lets the caller retrieve a "best-match" ListIndex given an arbitrary search string.
+' IMPORTANT NOTE: this function doesn't *change* the ListIndex; it only returns a hypothetical one matching the input string.
+Friend Function ListIndexBySearch(ByRef searchText As String, Optional ByVal ignoreCase As Boolean = True) As Long
+    
+    ListIndexBySearch = -1
+    
+    If (m_NumOfItems > 0) Then
+        
+        Dim newIndex As Long
+        newIndex = -1
+        
+        'Look for the first occurrence in the list where an entry left-matches the search string
+        Dim i As Long
+        For i = 0 To m_NumOfItems - 1
+            If Strings.StringsEqualLeft(m_Items(i).textTranslated, searchText, ignoreCase) Then
+                newIndex = i
+                Exit For
+            End If
+        Next i
+        
+        'If we found a perfect match, return it now
+        If (newIndex >= 0) Then
+            ListIndexBySearch = newIndex
+            Exit Function
+        
+        'We didn't find a perfect match.  Look for an imperfect match.
+        Else
+            
+            'I don't have a good way to do phonetic searching, so let's do something simpler and just look for
+            ' least-distance matching.
+            Dim idxBestMatch As Long: idxBestMatch = -1
+            Dim bestDistance As Long: bestDistance = &HFFFF&
+            Dim curDistance As Long
+            
+            'Only compare up to [n] characters of both strings, where [n] is the length of the user's typed character string
+            Dim textToCompare As String
+            
+            For i = 0 To m_NumOfItems - 1
+                textToCompare = Left$(m_Items(i).textTranslated, PDMath.Min2Int(Len(searchText), Len(m_Items(i).textTranslated)))
+                curDistance = Strings.StringDistance(searchText, textToCompare, ignoreCase)
+                If (curDistance < bestDistance) Then
+                    idxBestMatch = i
+                    bestDistance = curDistance
+                End If
+            Next i
+            
+            'If the best-match string is within a couple character operations (delete, insert, substitute) of the target string,
+            ' return it as the "best-match" result.
+            If (bestDistance < PDMath.Min2Int(Len(searchText), 3)) Then
+                Debug.Print bestDistance
+                ListIndexBySearch = idxBestMatch
+            
+            'Otherwise, we didn't find a good match from searching.  Return no hits.
+            Else
+                ListIndexBySearch = -1
+            End If
+            
+        End If
+        
+    End If
+    
+End Function
+
 'This property exists purely for improving UI feedback.  It may or may not be identical to the default .ListIndex value.
 Friend Property Get ListIndexHovered() As Long
     ListIndexHovered = m_ListIndexHover
@@ -611,7 +678,7 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
             markEventHandled = True
             
         'Return only matters for listboxes embedded inside combo boxes.
-        Case VK_RETURN, VK_SPACE
+        Case VK_RETURN
             If (m_ListMode = PDLM_LB_Inside_DD) Then
                 markEventHandled = True
                 RaiseEvent Click
@@ -638,13 +705,52 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
         ' recently supplied characters to select the most relevant matching entry in the list.
         Case Else
             If (LenB(sChar) <> 0) Then
-                Debug.Print "key pressed", Timer, sChar
+                
+                'Handle backspace chars manually
+                Const CHAR_BACKSPACE As Long = &H8, CHAR_DELETE As Long = &H7F, CHAR_SPACE As Long = &H20
+                If (AscW(sChar) = CHAR_BACKSPACE) Or (AscW(sChar) = CHAR_DELETE) Then
+                    If (LenB(m_SearchText) > 1) Then
+                        m_SearchText = Left$(m_SearchText, Len(m_SearchText) - 1)
+                    Else
+                        m_SearchText = vbNullString
+                    End If
+                
+                ElseIf (AscW(sChar) = CHAR_SPACE) Then
+                
+                    'If previous characters were entered, treat this as a space.
+                    If (LenB(m_SearchText) > 0) Then
+                        m_SearchText = m_SearchText & sChar
+                    
+                    'If *no* previous characters have been entered, treat this as "Enter".
+                    ' (No listbox items are prefixed by a space in PhotoDemon)
+                    Else
+                        If (m_ListMode = PDLM_LB_Inside_DD) Then
+                            markEventHandled = True
+                            RaiseEvent Click
+                            Exit Sub
+                        Else
+                            markEventHandled = False
+                            Exit Sub
+                        End If
+                    End If
+                
+                'Treat any other non-control-char as another character to append to the search string
+                ElseIf (AscW(sChar) >= &H20) Then
+                    m_SearchText = m_SearchText & sChar
+                End If
+                
+                'If we've accumulated a non-null search string, try and match it against current list contents.
+                newListIndex = ListIndexBySearch(m_SearchText, True)
+                
+                'If no matches were found, abandon matching entirely and maintain the existing listindex.
+                If (newListIndex < 0) Then newListIndex = m_ListIndex
+                
+                'Character presses while the list box has focus are *always* eaten by us.
                 markEventHandled = True
+                
             Else
                 'The passed character has a null-length, meaning this is some kind of control key.  Ignore it.
-                ' (TODO: check "Enter" key here?)
-                ' (TODO: what about ALT+key combos?  ALT keypresses appear here.)
-                Debug.Print "null length char", Timer
+                markEventHandled = False
             End If
             
     End Select
@@ -675,8 +781,9 @@ Friend Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     
 End Sub
 
-Friend Sub NotifyKeyUp(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
+'When the parent control loses focus, we must unload our keyboard buffer (used for searching the list)
+Friend Sub NotifyLosingFocus()
+    m_SearchText = vbNullString
 End Sub
 
 'Mouse events control a whole bunch of possible things: hover state, .ListIndex, scroll.  As such, their handling is

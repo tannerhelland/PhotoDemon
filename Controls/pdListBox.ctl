@@ -218,6 +218,10 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     lbView.NotifyKeyDown Shift, vkCode, markEventHandled, sChar
 End Sub
 
+Public Sub NotifyLosingFocus()
+    lbView.NotifyLosingFocus
+End Sub
+
 'Listbox-specific functions and subs.  Most of these simply relay the request to the listSupport object, and it will
 ' raise redraw requests as relevant.
 Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)

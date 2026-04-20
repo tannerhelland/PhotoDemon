@@ -239,6 +239,11 @@ Public Sub NotifyKeyDown(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ma
     listSupport.NotifyKeyDown Shift, vkCode, markEventHandled, sChar
 End Sub
 
+'When the parent control loses focus, we must unload our keyboard buffer (used for searching the list)
+Public Sub NotifyLosingFocus()
+    listSupport.NotifyLosingFocus
+End Sub
+
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
     listSupport.NotifyKeyDown Shift, vkCode, markEventHandled, ucSupport.PeekLastChar()
 End Sub
@@ -250,10 +255,6 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
     ' accepted the keypress, meaning we should forward the event down the line.)
     markEventHandled = NavKey.NotifyNavKeypress(Me, whichSysKey, Shift)
     
-End Sub
-
-Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    listSupport.NotifyKeyUp Shift, vkCode, markEventHandled
 End Sub
 
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
@@ -295,6 +296,7 @@ Private Sub ucSupport_GotFocusAPI()
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
+    listSupport.NotifyLosingFocus
     RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub

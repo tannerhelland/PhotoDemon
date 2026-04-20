@@ -536,8 +536,8 @@ End Function
 ' indicate two strings with similar construction, while two strings that mismatch in every position will
 ' return a max distance value (the length of the longest input string).
 '
-'IMPORTANT NOTE: currently assumes a distance < 32k (which allows 2-byte table entries ); change d() to Long
-' if comparing strings with length > 32k.
+'IMPORTANT NOTE: currently assumes a distance < 32k (which allows 2-byte table entries);
+'                change d() to Long if comparing strings with length > 32k.
 Public Function StringDistance(ByRef baseString As String, ByRef compareString As String, Optional ignoreCase As Boolean = True) As Long
     
     'Length of each string determines table size
@@ -560,7 +560,8 @@ Public Function StringDistance(ByRef baseString As String, ByRef compareString A
         Exit Function
     End If
     
-    'Note that long is likely excessive here
+    'Note that long ints are excessive here; we use shorts to conserve space.
+    ' (As noted above, this limits input string length to < 32k chars, which is absolutely fine for PD.)
     Dim d() As Integer
     ReDim d(0 To m, 0 To n) As Integer
     
