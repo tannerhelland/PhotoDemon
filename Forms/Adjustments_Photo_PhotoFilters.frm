@@ -220,12 +220,13 @@ Private Sub Form_Load()
     AddPhotoFilter g_Language.TranslateMessage("Underwater"), RGB(0, 193, 177)
     AddPhotoFilter g_Language.TranslateMessage("Custom"), RGB(127, 127, 127)
     
-    'Add dummy entries to the owner-drawn listbox, so that it's initialized to the proper size and layout
+    'Add dummy entries to the owner-drawn listbox, so that it's initialized to the proper size and layout.
+    ' (The reason we add the strings - even though we don't need them - is to enable searching via keyboard.)
     lstFilters.ListItemHeight = Interface.FixDPI(BLOCKHEIGHT)
     lstFilters.SetAutomaticRedraws False
     Dim i As Long
     For i = 0 To m_numOfFilters - 1
-        lstFilters.AddItem vbNullString, i
+        lstFilters.AddItem m_Filters(i).Name, i
     Next i
     lstFilters.ListIndex = 0
     lstFilters.SetAutomaticRedraws True, True
