@@ -819,9 +819,22 @@ Private Sub UpdateMetadataList()
     lstMetadata.SetAutomaticRedraws False
     lstMetadata.Clear
     
+    Dim useFriendlyName As Boolean
+    useFriendlyName = (btsTechnical(0).ListIndex = 0)
+    
     Dim i As Long
     For i = 0 To m_MDCategories(curCategory).Count - 1
-        lstMetadata.AddItem , i
+        
+        'Generate a searchable name for this item
+        Dim sName As String
+        If useFriendlyName Then
+            sName = m_AllTags(curCategory, i).TagNameFriendly
+        Else
+            sName = m_AllTags(curCategory, i).TagGroupAndName
+        End If
+                
+        lstMetadata.AddItem sName, i
+        
     Next i
     
     lstMetadata.SetAutomaticRedraws True, True
