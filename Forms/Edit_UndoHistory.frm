@@ -167,7 +167,7 @@ Private Sub Form_Load()
     lstUndo.SetAutomaticRedraws False
     Dim i As Long
     For i = 0 To m_numOfUndos - 1
-        lstUndo.AddItem , i
+        lstUndo.AddItem g_Language.TranslateMessage(m_undoEntries(i).srcProcCall.pcID), i
     Next i
     lstUndo.SetAutomaticRedraws True, True
     lstUndo.ListIndex = m_curUndoIndex - 1
