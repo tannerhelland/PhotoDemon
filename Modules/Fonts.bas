@@ -3,8 +3,8 @@ Attribute VB_Name = "Fonts"
 'PhotoDemon Font Manager
 'Copyright 2013-2026 by Tanner Helland
 'Created: 31/May/13
-'Last updated: 07/April/25
-'Last update: add support for rendering from custom user font files (never installed!) at run-time
+'Last updated: 21/April/26
+'Last update: add management for "recently used" fonts, and automatically relay these to font request functions
 '
 'For many years, PhotoDemon has used the pdFont class for GDI text rendering.  Unfortunately, that class
 ' was designed before I knew much about GDI font management, and it has some sketchy design considerations
@@ -279,6 +279,12 @@ Private m_PDFontCache As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 64
 Private m_LastFontAdded As String
 
+'Fonts recently used by the user.  When the user chooses a font for something (like a text layer), it's up to the tool
+' to relay that choice here so we we can keep our list up-to-date.  When we are notified of changes to the recent font list,
+' we'll send out a notification that font selectors can listen for (and respond to).
+Private m_RecentFonts As pdStringStack
+Private Const RECENT_FONTS_FILENAME As String = "recent_fonts.xml"
+
 'This function provides some helper wrappers for selecting fonts into a DC.  Rather than track the previously selected object
 ' (which will only ever be a stock object), we simply re-select a stock font into the DC prior to deleting the temporary font.
 Private Const SYSTEM_FONT As Long = 13
@@ -427,9 +433,11 @@ Public Function GetMatchingUIFont(ByVal srcFontSize As Single, Optional ByVal is
 End Function
 
 'If functions want their own copy of all available fonts on this PC, call this function
-Public Function GetCopyOfSystemFontList(ByRef dstStringStack As pdStringStack) As Boolean
-    If (dstStringStack Is Nothing) Then Set dstStringStack = New pdStringStack
-    dstStringStack.CloneStack m_PDFontCache
+Public Function GetCopyOfSystemFontList(ByRef dstFontsSystem As pdStringStack, ByRef dstFontsRecent As pdStringStack) As Boolean
+    If (dstFontsSystem Is Nothing) Then Set dstFontsSystem = New pdStringStack
+    dstFontsSystem.CloneStack m_PDFontCache
+    If (dstFontsRecent Is Nothing) Then Set dstFontsRecent = New pdStringStack
+    dstFontsRecent.CloneStack m_RecentFonts
 End Function
 
 'If the caller just wants to know the size of a default string, it's better to use this function.  That spares them from having to
@@ -450,12 +458,26 @@ Public Function GetDefaultStringWidth(ByRef srcString As String, ByVal FontSize 
     Set tmpFont = Nothing
 End Function
 
+'When the user uses a font for a tool (e.g. changing the font for a text layer), notify us via this function.
+' We'll update the "recently used" font list and send out notifications to font UI elements so they can update.
+Public Sub NotifyFontUsed(ByRef srcFontName As String)
+    
+    'Update our list of recent fonts
+    If (m_RecentFonts Is Nothing) Then Set m_RecentFonts = New pdStringStack
+    m_RecentFonts.AddString_CheckDuplicatesFirst srcFontName
+    
+    'Notify any loaded font dropdowns of the change, so they can update themselves accordingly.
+    If (Not g_WindowManager Is Nothing) Then UserControls.PostPDMessage WM_PD_FONTSUPDATED
+    
+End Sub
+
 'Build a system font cache.  Note that this is an expensive operation, and should never be called more than once.
 ' RETURNS: 0 if failure, Number of fonts (>= 0) if successful.  (Note that the *total number of all fonts* is returned,
 '          not just TrueType ones.)
 Public Function BuildFontCaches() As Long
     
     Set m_PDFontCache = New pdStringStack
+    Set m_RecentFonts = New pdStringStack
     
     'Retrieve the current system LOGFONT conversion values
     UpdateLogFontValues
@@ -474,6 +496,51 @@ Public Function BuildFontCaches() As Long
     'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
     PDDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.GetNumOfStrings
+    
+    'Next, we need to retrieve the user's previously saved "recent font list", if any
+    Dim recentFontsFile As String
+    recentFontsFile = UserPrefs.GetFontPath() & RECENT_FONTS_FILENAME
+    
+    If Files.FileExists(recentFontsFile) Then
+        
+        'Load the recent fonts file into a serializer class (it will help us retrieve settings from XML)
+        Dim tmpFileContents As String
+        
+        Dim cSerialize As pdSerialize
+        Set cSerialize = New pdSerialize
+        If Files.FileLoadAsString(recentFontsFile, tmpFileContents, True) Then
+            
+            cSerialize.SetParamString tmpFileContents
+            
+            'Next, extract the list of recent fonts
+            Dim tmpFontList As pdStringStack
+            Set tmpFontList = New pdStringStack
+            If tmpFontList.RecreateStackFromSerializedString(cSerialize.GetString("recent-fonts", vbNullString, True)) Then
+                
+                'Validate each font in the file; if one doesn't exist on this PC, don't load it
+                If (tmpFontList.GetNumOfStrings > 0) Then
+                    
+                    Dim i As Long, srcFontName As String
+                    For i = 0 To tmpFontList.GetNumOfStrings() - 1
+                        srcFontName = tmpFontList.GetString(i)
+                        If (m_PDFontCache.ContainsString(srcFontName, True) >= 0) Then
+                            m_RecentFonts.AddString srcFontName
+                        Else
+                            'Font doesn't exist on this PC; don't load it!
+                        End If
+                    Next i
+                    
+                End If
+                
+            Else
+                PDDebug.LogAction "WARNING: recent font list is corrupt!"
+            End If
+        Else
+            PDDebug.LogAction "WARNING: couldn't load recent font file " & recentFontsFile
+        End If
+        
+    'If the recent fonts file *doesn't* exist, that's fine - we don't need to do any additional initialization here.
+    End If
     
     'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions
     ' can use for their own UI painting.  This cache *only* uses the current app font, but in different sizes
@@ -622,6 +689,28 @@ Public Sub ReleaseUserFonts()
             RemoveFontResourceExW StrPtr(srcFontFile), FR_PRIVATE, 0&
         Loop
         
+    End If
+    
+    'Finally, save the user's recently used fonts (in font dropdowns), if any
+    If (Not m_RecentFonts Is Nothing) Then
+        If (m_RecentFonts.GetNumOfStrings > 0) Then
+             
+            'Save the current list of recent fonts to a normal PD XML object
+            Dim cSerialize As pdSerialize
+            Set cSerialize = New pdSerialize
+            cSerialize.Reset
+            cSerialize.AddParam "recent-fonts", m_RecentFonts.SerializeStackToSingleString()
+            
+            'Use the /Data/Fonts folder for storage
+            Dim fontFolder As String
+            fontFolder = UserPrefs.GetFontPath()
+            
+            'Dump the serialized settings to file
+            If (Not Files.FileSaveAsText(cSerialize.GetParamString(), fontFolder & RECENT_FONTS_FILENAME, True, True)) Then
+                PDDebug.LogAction "WARNING: couldn't save recent font list!  Font dropdowns may not store last font correctly."
+            End If
+            
+        End If
     End If
     
 End Sub

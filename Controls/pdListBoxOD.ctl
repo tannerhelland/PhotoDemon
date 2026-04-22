@@ -333,7 +333,7 @@ Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
 End Sub
 
 Private Sub lbView_ScrollValueChanged(ByVal newValue As Long)
-    If vScroll.Visible Then vScroll.Value = newValue
+    vScroll.Value = newValue
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()

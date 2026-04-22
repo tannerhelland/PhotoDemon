@@ -111,6 +111,7 @@ Public Const WM_PD_SHIFT_TAB_KEY_TARGET As Long = (WM_APP + 22&)
 Public Const WM_PD_FLASH_ACTIVE_LAYER As Long = (WM_APP + 23&)
 Public Const WM_PD_DIALOG_RESIZE_FINISHED As Long = (WM_APP + 24&)
 Public Const WM_PD_HIDECHILD As Long = (WM_APP + 25&)
+Public Const WM_PD_FONTSUPDATED As Long = (WM_APP + 26&)
 
 'Inside the IDE, we can't rely on PD's central themer for color decisions (as it won't be initialized).
 ' A few constants are used instead.

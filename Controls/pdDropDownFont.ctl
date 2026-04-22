@@ -42,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Font-specific Drop Down control 2.0
 'Copyright 2016-2026 by Tanner Helland
 'Created: 01/June/16
-'Last updated: 29/April/20
-'Last update: migrate remainder of UI rendering to pd2D
+'Last updated: 21/April/26
+'Last update: add support for "recently used" fonts; these are shared program-wide by all font dropdowns
 '
 'This is a basic dropdown control, with no edit box functionality (by design).  It is very similar in construction to
 ' the pdListBoxOD object, including its reliance on a separate pdListSupport class for managing its data.
@@ -148,7 +148,7 @@ Private WithEvents m_SubclassReleaseTimer As pdTimer
 Attribute m_SubclassReleaseTimer.VB_VarHelpID = -1
 
 'String stack that mirrors the current program font cache.
-Private m_listOfFonts As pdStringStack
+Private m_listOfFonts As pdStringStack, m_listOfRecentFonts As pdStringStack
 
 'This UC will be generating an enormous amount of fonts.  We attempt to alleviate this burden by maintaining a persistent collection of the
 ' past N fonts we've created, on the assumption that we can reuse them at least a few times as the user scrolls the dropdown.
@@ -213,23 +213,58 @@ End Function
 ' own copy of the font list, and if for some reason the list changes, this function can be called again to reset the font list.
 Public Sub InitializeFontList()
     Me.Clear
-    Fonts.GetCopyOfSystemFontList m_listOfFonts
+    Fonts.GetCopyOfSystemFontList m_listOfFonts, m_listOfRecentFonts
     CopyFontsToListManager
 End Sub
 
-'Duplicate a given string inside the API combo box.  We don't actually use this copy of the string (we use our own, so we can support Unicode),
-' but this provides a fallback for accessibility technology.
+'Relay the current list of system fonts (with any user-added folders, and in the future, potentially handling things like
+' "favorited" or "hidden" font settings) to the background list manager.  This list manager is synchronized between the
+' dropdown and the popup list manager, so we don't duplicate list data.
 Private Sub CopyFontsToListManager()
-
+    
+    'Ensure no null string stacks, for safety
+    If (m_listOfFonts Is Nothing) Then Set m_listOfFonts = New pdStringStack
+    If (m_listOfRecentFonts Is Nothing) Then Set m_listOfRecentFonts = New pdStringStack
+    
     listSupport.SetAutomaticRedraws False
-        
-    'Iterate through the string stack, adding fonts as we go
+    listSupport.Clear m_listOfFonts.GetNumOfStrings() + m_listOfRecentFonts.GetNumOfStrings()
+    
     Dim i As Long
+    
+    'Start by adding the recently used fonts (if any)
+    Dim numRecentFonts As Long
+    numRecentFonts = m_listOfRecentFonts.GetNumOfStrings()
+    If (numRecentFonts > 0) Then
+        For i = 0 To numRecentFonts - 1
+            listSupport.AddItem m_listOfRecentFonts.GetString(numRecentFonts - 1 - i), hasTrailingSeparator:=(i = numRecentFonts - 1)
+        Next i
+    End If
+    
+    'Follow the recent list with all system + user location fonts
     For i = 0 To m_listOfFonts.GetNumOfStrings - 1
-        listSupport.AddItem m_listOfFonts.GetString(i), i
+        listSupport.AddItem m_listOfFonts.GetString(i)
     Next i
     
-    listSupport.SetAutomaticRedraws True
+    listSupport.SetAutomaticRedraws True, False
+    
+End Sub
+
+'When we've already built our initial font list, but the list has changed because the user selected a font
+' (so the "recent fonts" list at the top has changed), call this function to perform a faster, lighter font update.
+Private Sub UpdateFontList()
+    
+    listSupport.SetAutomaticRedraws False
+    
+    'Note the currently selected font, if any.
+    Dim curFontName As String
+    curFontName = listSupport.List(listSupport.ListIndex, False)
+    
+    'Retrieve updated font lists and relay them to the background list manager
+    InitializeFontList
+    CopyFontsToListManager
+    
+    'Re-select the active font from the list
+    Me.ListIndex = Me.ListIndexByString(curFontName)
     
 End Sub
 
@@ -389,6 +424,7 @@ End Sub
 Public Sub Clear()
     listSupport.Clear
     Set m_listOfFonts = New pdStringStack
+    Set m_listOfRecentFonts = New pdStringStack
 End Sub
 
 Public Function GetDefaultItemHeight() As Long
@@ -465,8 +501,16 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize)
     textPadding = COMBO_PADDING_HORIZONTAL
     
+    'If the current list index is below the number of recent fonts, pull name from recent fonts instead
+    Dim numRecentFonts As Long
+    If (Not m_listOfRecentFonts Is Nothing) Then numRecentFonts = m_listOfRecentFonts.GetNumOfStrings()
+    
     Dim tmpString As String
-    tmpString = m_listOfFonts.GetString(itemIndex)
+    If (itemIndex < numRecentFonts) Then
+        tmpString = m_listOfRecentFonts.GetString(numRecentFonts - 1 - itemIndex)
+    Else
+        tmpString = m_listOfFonts.GetString(itemIndex - numRecentFonts)
+    End If
     
     tmpFont.SetFontColor itemFontColor
     tmpFont.AttachToDC bufferDC
@@ -575,6 +619,10 @@ Private Sub m_SubclassReleaseTimer_Timer()
     End If
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_FONTSUPDATED) Then UpdateFontList
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     m_FocusRectActive = True
     RedrawBackBuffer
@@ -591,10 +639,19 @@ Private Sub ucSupport_KeyDownSystem(ByVal Shift As ShiftConstants, ByVal whichSy
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
-    If m_PopUpVisible Then HideListBox
+    
+    If m_PopUpVisible Then
+        HideListBox
+    Else
+        'On focus loss, notify the list manager that focus is dropping.  It needs to know this so it can
+        ' update the "last-used font", if any.
+        If (Not listSupport Is Nothing) Then listSupport.NotifyLosingFocus
+    End If
+    
     m_FocusRectActive = False
     RedrawBackBuffer
     RaiseEvent LostFocusAPI
+    
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -674,6 +731,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestCaptionSupport False
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.RequestAllKeys True   'Request all key notifications so the user can search the list via keyboard
+    ucSupport.SubclassCustomMessage WM_PD_FONTSUPDATED, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -688,6 +746,7 @@ Private Sub UserControl_Initialize()
     
     'Prep font-specific managers and renderers
     Set m_listOfFonts = New pdStringStack
+    Set m_listOfRecentFonts = New pdStringStack
     
     'Initialize our font collection.  This is used to store a copy of each font face, as it's encountered, which we use to render preview
     ' text on the right side of the font dropdown.
@@ -797,7 +856,8 @@ Private Sub RaiseListBox()
         Set curFont = Fonts.GetMatchingUIFont(m_FontSize)
         curFont.AttachToDC tmpDC
         
-        'Find the longest font name
+        'Find the longest font name.  (Note that we don't need to touch the "recently used" fonts for this,
+        ' because any recently used fonts already exist in the main system font list.)
         Dim tmpWidth As Long
         For i = 0 To m_listOfFonts.GetNumOfStrings - 1
             tmpWidth = curFont.GetWidthOfString(m_listOfFonts.GetString(i))

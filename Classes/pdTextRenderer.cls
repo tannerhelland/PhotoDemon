@@ -976,6 +976,7 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TextProperty,
         Case ptp_FontFace
             If Strings.StringsNotEqual(m_FontFace, CStr(newValue), True) Then
                 m_FontFace = newValue
+                Fonts.NotifyFontUsed m_FontFace
                 m_FontCacheClean = False
                 m_CurrentBackend = fb_UNKNOWN
                 SetGenericTextProperty = True
