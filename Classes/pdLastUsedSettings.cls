@@ -149,8 +149,13 @@ Private Sub FillXMLSettings(Optional ByVal customSettingsOnly As Boolean = False
                 Case "pdButtonStrip", "pdButtonStripVertical"
                     controlValue = Str$(eControl.ListIndex)
                 
-                Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                Case "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown"
                     controlValue = Str$(eControl.ListIndex)
+                
+                'Font dropdowns store last-used font by name.  (Font list size is *not* guaranteed to be consistent between sessions,
+                ' unlike internal listboxes.)
+                Case "pdDropDownFont"
+                    controlValue = eControl.List(eControl.ListIndex)
                 
                 'Custom values, including those returned as strings
                 Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
@@ -295,13 +300,20 @@ Private Function ReadXMLSettings(Optional ByVal customSettingsOnly As Boolean = 
                         eControl.Value = CBool(controlValue)
                         
                     'Lists need to be checked to make sure we have enough entries to propery assign this value
-                    Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown", "pdDropDownFont"
+                    Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown"
                         If (CLng(controlValue) < eControl.ListCount) Then
                             If (CLng(controlValue) > 0) Then eControl.ListIndex = CLng(controlValue) Else eControl.ListIndex = 0
                         Else
                             If (eControl.ListCount > 0) Then eControl.ListIndex = eControl.ListCount - 1 Else eControl.ListIndex = 0
                         End If
-                        
+                    
+                    'Font dropdowns store last-used font by name.  (Font list size is *not* guaranteed to be consistent between sessions,
+                    ' unlike internal listboxes.)
+                    Case "pdDropDownFont"
+                        Dim fontListIndex As Long
+                        fontListIndex = eControl.ListIndexByString(controlValue, vbTextCompare)
+                        If (fontListIndex >= 0) Then eControl.ListIndex = fontListIndex Else eControl.ListIndex = eControl.ListIndexByString(Fonts.GetUIFontName())
+                    
                     'Various PD controls have their own custom "value"-type properties.
                     Case "pdColorSelector", "pdColorWheel", "pdColorVariants"
                         eControl.Color = CLng(controlValue)
