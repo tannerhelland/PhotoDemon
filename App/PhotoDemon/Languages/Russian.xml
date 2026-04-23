@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2026.1.176</langversion>
+<langversion>2026.1.177</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -14701,11 +14701,21 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
+<original>maximum number of recent fonts to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent fonts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
 <translation>Изменения вступят в силу при следующем запуске PhotoDemon.</translation>
 </phrase>
 
-<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Options_Fonts.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
@@ -14845,10 +14855,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2808</phrasecount>
+<phrasecount>2810</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6008 phrases. -->
-<!-- 3200 are duplicates, so only 2808 unique phrases have been written to file. -->
-<!-- These 2808 phrases contain approximately 12150 total words. -->
+<!-- As of this build, PhotoDemon contains 6012 phrases. -->
+<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
+<!-- These 2810 phrases contain approximately 12159 total words. -->
 
 </pdData>

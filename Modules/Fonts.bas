@@ -284,6 +284,7 @@ Private m_LastFontAdded As String
 ' we'll send out a notification that font selectors can listen for (and respond to).
 Private m_RecentFonts As pdStringStack
 Private Const RECENT_FONTS_FILENAME As String = "recent_fonts.xml"
+Private m_MaxRecentFonts As Long
 
 'This function provides some helper wrappers for selecting fonts into a DC.  Rather than track the previously selected object
 ' (which will only ever be a stock object), we simply re-select a stock font into the DC prior to deleting the temporary font.
@@ -458,6 +459,27 @@ Public Function GetDefaultStringWidth(ByRef srcString As String, ByVal FontSize 
     Set tmpFont = Nothing
 End Function
 
+'When the max number of recent fonts is changed (via Tools > Options > Fonts), notify us via this function.
+' We'll update the "recently used" font list and send out notifications to font UI elements so they can update.
+Public Sub NotifyRecentFontsMaxCount(ByVal newFontMax As Long)
+    
+    'Update our list of recent fonts to reflect the new maximum
+    If (m_MaxRecentFonts <> newFontMax) Then
+        
+        m_MaxRecentFonts = newFontMax
+        
+        'Update the recent font list (as needed), and notify all loaded font dropdowns of the change.
+        If (Not m_RecentFonts Is Nothing) Then
+            If (m_MaxRecentFonts < m_RecentFonts.GetNumOfStrings()) Then
+                m_RecentFonts.KeepTopNStringsOnly m_MaxRecentFonts
+                If (Not g_WindowManager Is Nothing) Then UserControls.PostPDMessage WM_PD_FONTSUPDATED
+            End If
+        End If
+        
+    End If
+    
+End Sub
+
 'When the user uses a font for a tool (e.g. changing the font for a text layer), notify us via this function.
 ' We'll update the "recently used" font list and send out notifications to font UI elements so they can update.
 Public Sub NotifyFontUsed(ByRef srcFontName As String)
@@ -465,6 +487,9 @@ Public Sub NotifyFontUsed(ByRef srcFontName As String)
     'Update our list of recent fonts
     If (m_RecentFonts Is Nothing) Then Set m_RecentFonts = New pdStringStack
     m_RecentFonts.AddString_CheckDuplicatesFirst srcFontName
+    
+    'Ensure the list does not grow past the user's current max number of allowed recent fonts
+    If (m_MaxRecentFonts > 0) Then m_RecentFonts.KeepTopNStringsOnly m_MaxRecentFonts
     
     'Notify any loaded font dropdowns of the change, so they can update themselves accordingly.
     If (Not g_WindowManager Is Nothing) Then UserControls.PostPDMessage WM_PD_FONTSUPDATED
@@ -541,6 +566,10 @@ Public Function BuildFontCaches() As Long
         
     'If the recent fonts file *doesn't* exist, that's fine - we don't need to do any additional initialization here.
     End If
+    
+    'Retrieve the max number of recent fonts we should maintain in the various font dropdowns across the program.
+    m_MaxRecentFonts = UserPrefs.GetPref_Long("Interface", "recent-font-max", 10)
+    m_RecentFonts.KeepTopNStringsOnly m_MaxRecentFonts
     
     'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions
     ' can use for their own UI painting.  This cache *only* uses the current app font, but in different sizes

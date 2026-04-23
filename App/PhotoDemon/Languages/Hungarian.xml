@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>2026.1.152</langversion>
+<langversion>2026.1.153</langversion>
 <langstatus>complete</langstatus>
 
 <author>István Bánszki</author>
@@ -14698,11 +14698,21 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 </phrase>
 
 <phrase>
+<original>maximum number of recent fonts to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent fonts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
 <translation>A változtatások a PhotoDemon legközelebbi indításakor lépnek érvénybe.</translation>
 </phrase>
 
-<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- Options_Fonts.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
@@ -14842,10 +14852,10 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2808</phrasecount>
+<phrasecount>2810</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6008 phrases. -->
-<!-- 3200 are duplicates, so only 2808 unique phrases have been written to file. -->
-<!-- These 2808 phrases contain approximately 12150 total words. -->
+<!-- As of this build, PhotoDemon contains 6012 phrases. -->
+<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
+<!-- These 2810 phrases contain approximately 12159 total words. -->
 
 </pdData>

@@ -51,13 +51,13 @@ Begin VB.Form options_Fonts
       Caption         =   "font folders:"
    End
    Begin PhotoDemon.pdLabel lblInfo 
-      Height          =   615
+      Height          =   495
       Index           =   0
       Left            =   120
-      Top             =   3600
+      Top             =   3480
       Width           =   8055
       _ExtentX        =   14208
-      _ExtentY        =   1085
+      _ExtentY        =   873
       Alignment       =   2
       Caption         =   ""
       Layout          =   1
@@ -83,6 +83,42 @@ Begin VB.Form options_Fonts
       _ExtentY        =   873
       Caption         =   "remove this folder"
    End
+   Begin PhotoDemon.pdLabel lblRecentFontCount 
+      Height          =   240
+      Left            =   135
+      Top             =   4500
+      Width           =   4200
+      _ExtentX        =   7408
+      _ExtentY        =   423
+      Caption         =   "maximum number of recent fonts to remember: "
+      ForeColor       =   4210752
+      Layout          =   2
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   0
+      Left            =   0
+      Top             =   4080
+      Width           =   8100
+      _ExtentX        =   14288
+      _ExtentY        =   503
+      Caption         =   "recent fonts"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdSpinner tudRecentFonts 
+      Height          =   345
+      Left            =   4560
+      TabIndex        =   4
+      Top             =   4470
+      Width           =   1935
+      _ExtentX        =   3413
+      _ExtentY        =   609
+      DefaultValue    =   10
+      Min             =   1
+      Max             =   32
+      Value           =   10
+   End
 End
 Attribute VB_Name = "options_Fonts"
 Attribute VB_GlobalNameSpace = False
@@ -93,8 +129,8 @@ Attribute VB_Exposed = False
 'Tools > Options > Fonts panel
 'Copyright 2025-2026 by Tanner Helland
 'Created: 04/April/25
-'Last updated: 07/April/25
-'Last update: UI for users to add/remove custom font folders
+'Last updated: 23/April/26
+'Last update: UI for users to control the number of recent fonts remembered in font dropdowns
 '
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
@@ -227,12 +263,23 @@ Public Sub LoadUserPreferences()
     'Default to the most appropriate font
     ddFont.ListIndex = ddFont.ListIndexByString(targetName, vbTextCompare)
     
+    'Finally, load any "normal" single-value preferences
+    tudRecentFonts.Value = UserPrefs.GetPref_Long("Interface", "recent-font-max", 10)
+    
 End Sub
 
 Public Sub SaveUserPreferences()
     
     'Settings belong in the central settings file...
     UserPrefs.SetPref_String "Interface", "UIFont", ddFont.List(ddFont.ListIndex, False)
+    
+    'Because a text field is available for the max recent fonts count, validate it before saving
+    Dim maxRecentFonts As Long, fontsMustBeUpdated As Boolean
+    If tudRecentFonts.IsValid Then maxRecentFonts = tudRecentFonts.Value Else maxRecentFonts = 10
+    UserPrefs.SetPref_Long "Interface", "recent-font-max", maxRecentFonts
+    
+    'Notify the font engine of the change, in case it needs to shrink the current recent fonts list
+    Fonts.NotifyRecentFontsMaxCount maxRecentFonts
     
     'Custom font folders are stored in a simple text file
     Dim dstFile As String
@@ -288,6 +335,9 @@ End Function
 'This function is called at least once, immediately following Form_Load(),
 ' but it can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    lblRecentFontCount.Caption = g_Language.TranslateMessage("maximum number of recent fonts to remember: ")
+    tudRecentFonts.SetLeft lblRecentFontCount.GetLeft + lblRecentFontCount.GetWidth + Interface.FixDPI(8)
     
     lblInfo(0).Caption = g_Language.TranslateMessage("Changes will take effect the next time you start PhotoDemon.")
     Interface.ApplyThemeAndTranslations Me
