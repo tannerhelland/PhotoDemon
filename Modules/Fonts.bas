@@ -275,6 +275,7 @@ Private m_LogPixelsX As Long, m_LogPixelsY As Long
 Private m_InterfaceFontName As String
 
 'Internal font caches.  PD uses these to populate things like font selection dropdowns.
+Private m_FontCacheInitialized As Boolean
 Private m_PDFontCache As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 64
 Private m_LastFontAdded As String
@@ -338,6 +339,7 @@ Public Sub DetermineUIFont()
     
     'By default, PD uses "Segoe UI" if present; "Tahoma" otherwise
     Else
+        PDDebug.LogAction "WARNING: couldn't find UI font " & UserPrefs.GetUIFontName() & ". Falling back to system font..."
         If tmpFontCheck.DoesFontExist("Segoe UI") Then m_InterfaceFontName = "Segoe UI" Else m_InterfaceFontName = "Tahoma"
     End If
     
@@ -404,8 +406,6 @@ Public Function GetMatchingUIFont(ByVal srcFontSize As Single, Optional ByVal is
     'Inside the designer, we need to make sure the font collection exists
     If (m_ProgramFontCollection Is Nothing) Then InitProgramFontCollection
     
-    'During compile-time, we don't need access to all of PD's font features.  Just return a dummy UI font
-    ' unless the program is actually running
     If PDMain.IsProgramRunning Then
 
         'Add this font size+style combination to the collection, as necessary
@@ -415,6 +415,8 @@ Public Function GetMatchingUIFont(ByVal srcFontSize As Single, Optional ByVal is
         'Return the handle of the newly created (and/or previously cached) pdFont object
         Set GetMatchingUIFont = m_ProgramFontCollection.GetFontObjectByPosition(fontIndex)
 
+    'During compile-time, we don't need access to all of PD's font features.  Just return a dummy UI font
+    ' unless the program is actually running
     Else
         If (m_DummyFont Is Nothing) Then
             VBHacks.EnableHighResolutionTimers
@@ -435,10 +437,17 @@ End Function
 
 'If functions want their own copy of all available fonts on this PC, call this function
 Public Function GetCopyOfSystemFontList(ByRef dstFontsSystem As pdStringStack, ByRef dstFontsRecent As pdStringStack) As Boolean
+    
+    'If we haven't built a full system font list, now's the time to do it!
+    If (Not m_FontCacheInitialized) Then InitializeFullFontLists
+    
+    'Return two lists: a list of *all* system fonts, and a list of the recently used fonts for this user.
+    ' (PD places those recently used fonts at the top of font selection dropdowns, separated by a horizontal rule.)
     If (dstFontsSystem Is Nothing) Then Set dstFontsSystem = New pdStringStack
     dstFontsSystem.CloneStack m_PDFontCache
     If (dstFontsRecent Is Nothing) Then Set dstFontsRecent = New pdStringStack
     dstFontsRecent.CloneStack m_RecentFonts
+    
 End Function
 
 'If the caller just wants to know the size of a default string, it's better to use this function.  That spares them from having to
@@ -463,6 +472,9 @@ End Function
 ' We'll update the "recently used" font list and send out notifications to font UI elements so they can update.
 Public Sub NotifyRecentFontsMaxCount(ByVal newFontMax As Long)
     
+    'If we haven't built a full system font list, now's the time to do it!
+    If (Not m_FontCacheInitialized) Then InitializeFullFontLists
+    
     'Update our list of recent fonts to reflect the new maximum
     If (m_MaxRecentFonts <> newFontMax) Then
         
@@ -484,6 +496,9 @@ End Sub
 ' We'll update the "recently used" font list and send out notifications to font UI elements so they can update.
 Public Sub NotifyFontUsed(ByRef srcFontName As String)
     
+    'If we haven't built a full system font list, now's the time to do it!
+    If (Not m_FontCacheInitialized) Then InitializeFullFontLists
+    
     'Update our list of recent fonts
     If (m_RecentFonts Is Nothing) Then Set m_RecentFonts = New pdStringStack
     m_RecentFonts.AddString_CheckDuplicatesFirst srcFontName
@@ -499,7 +514,7 @@ End Sub
 'Build a system font cache.  Note that this is an expensive operation, and should never be called more than once.
 ' RETURNS: 0 if failure, Number of fonts (>= 0) if successful.  (Note that the *total number of all fonts* is returned,
 '          not just TrueType ones.)
-Public Function BuildFontCaches() As Long
+Public Function BuildMinimalFontCaches() As Long
     
     Set m_PDFontCache = New pdStringStack
     Set m_RecentFonts = New pdStringStack
@@ -507,9 +522,33 @@ Public Function BuildFontCaches() As Long
     'Retrieve the current system LOGFONT conversion values
     UpdateLogFontValues
     
+    'UPDATE April 2026: PD no longer loads the full system font list here.  Instead, we delay-load it when
+    ' it's first requested by a UI element.  For users who don't touch text tools, we can skip the step entirely
+    ' (and improve app load time in the process!).
+    
+    'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions
+    ' can use for their own UI painting.  This cache *only* uses the current app font, but in different sizes
+    ' and styles.
+    InitProgramFontCollection
+    
+End Function
+
+'Retrieve all fonts available on the system.  PD used to do this during program load, but it can incur a *significant*
+' time cost on old PCs or PCs with large font collections.  Now, we only load this list when a UI element actually
+' requests it.
+Public Sub InitializeFullFontLists()
+    
+    Dim startTime As Currency
+    VBHacks.GetHighResTime startTime
+    
+    'Ensure we don't rebuild the cache again this session (it's *super* expensive to do so)
+    m_FontCacheInitialized = True
+    PDDebug.LogAction "Starting FULL system font list retrieval..."
+    
     'Next, prep a full font list for the advanced text tool.
     '(We won't know the full number of available fonts until the Enum function finishes,
     ' so prep an extra-large buffer in advance.)
+    Set m_PDFontCache = New pdStringStack
     m_PDFontCache.ResetStack INITIAL_PDFONTCACHE_SIZE
     GetAllAvailableFonts
     
@@ -571,12 +610,9 @@ Public Function BuildFontCaches() As Long
     m_MaxRecentFonts = UserPrefs.GetPref_Long("Interface", "recent-font-max", 10)
     m_RecentFonts.KeepTopNStringsOnly m_MaxRecentFonts
     
-    'We have one other piece of initialization to do here.  Prep the program UI font cache that outside functions
-    ' can use for their own UI painting.  This cache *only* uses the current app font, but in different sizes
-    ' and styles.
-    InitProgramFontCollection
+    PDDebug.LogAction "Font cache build time required: " & VBHacks.GetTimeDiffNowAsString(startTime)
     
-End Function
+End Sub
 
 'Converting between normal font sizes and GDI font sizes is convoluted, and it relies on a system-specific LOGPIXELSY value.
 ' We must cache that value before requesting fonts from the system.

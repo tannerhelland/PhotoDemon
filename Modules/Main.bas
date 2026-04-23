@@ -520,11 +520,14 @@ Public Function ContinueLoadingProgram(Optional ByRef suspendAdditionalMessages 
     perfCheck.MarkEvent "Build font cache"
     LogStartupEvent "Building font cache..."
         
-    'PD currently builds two font caches:
-    ' 1) A name-only list of all fonts currently installed.  This is used to populate font dropdown boxes.
-    ' 2) An pdFont-based cache of the current UI font, at various requested sizes.  This cache spares individual controls from needing
-    '     to do their own font management; instead, they can simply request a matching object from the Fonts module.
-    Fonts.BuildFontCaches
+    'Update April 2026: PD used to build a full system font list here.  However, this has very unpredictable
+    ' perf implications.  (On old PCs or PCs with large font collections, this represents the single largest
+    ' chunk of app startup time.)
+    '
+    'So instead, PD now only initializes a few minimal font objects, and delay-loads the rest when accessed
+    ' by a UI element.  If users don't interact with text tools, they can skip *all* system font list loading
+    ' and save a lot of CPU cycles.
+    Fonts.BuildMinimalFontCaches
     
     
     '*************************************************************************************************************************************
