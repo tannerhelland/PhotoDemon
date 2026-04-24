@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2026.1.177</langversion>
+<langversion>2026.1.192</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -14702,12 +14702,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>maximum number of recent fonts to remember</original>
-<translation></translation>
+<translation>Количество последних шрифтов для запоминания</translation>
 </phrase>
 
 <phrase>
 <original>recent fonts</original>
-<translation></translation>
+<translation>Последние шрифты</translation>
 </phrase>
 
 <phrase>
