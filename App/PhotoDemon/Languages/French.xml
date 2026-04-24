@@ -1,17 +1,146 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
 <pdDataType>Translation</pdDataType>
 
 <langid>fr-FR</langid>
-<langname>Français</langname>
-<langversion>2026.04.12</langversion>
+<langname>Français (France)</langname>
+<langversion>2026.04</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
+
+<phrase>
+<original>Resource editor</original>
+<translation>Éditeur de ressources</translation>
+</phrase>
+
+<phrase>
+<original>current resource file</original>
+<translation>Fichier de ressources actuel</translation>
+</phrase>
+
+<phrase>
+<original>current resources</original>
+<translation>Ressources actuelles</translation>
+</phrase>
+
+<phrase>
+<original>edit current resource</original>
+<translation>Modifier la ressource actuelle</translation>
+</phrase>
+
+<phrase>
+<original>resource name</original>
+<translation>Nom de la ressource</translation>
+</phrase>
+
+<phrase>
+<original>resource location</original>
+<translation>Emplacement de la ressource</translation>
+</phrase>
+
+<phrase>
+<original>resource type</original>
+<translation>Type de ressource</translation>
+</phrase>
+
+<phrase>
+<original>image resource properties</original>
+<translation>Propriétés de la ressource image </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
+</phrase>
+
+<phrase>
+<original>run-time coloration</original>
+<translation>Coloration à l'exécution</translation>
+</phrase>
+
+<phrase>
+<original>light theme color</original>
+<translation>Couleur du thème clair</translation>
+</phrase>
+
+<phrase>
+<original>dark theme color</original>
+<translation>Couleur du thème sombre</translation>
+</phrase>
+
+<phrase>
+<original>use custom menu color</original>
+<translation>Utiliser une couleur de menu personnalisée</translation>
+</phrase>
+
+<phrase>
+<original>custom menu color</original>
+<translation>Couleur du menu</translation>
+</phrase>
+
+<phrase>
+<original>menu</original>
+<translation>Menu</translation>
+</phrase>
+
+<phrase>
+<original>other</original>
+<translation>Autre</translation>
+</phrase>
+
+<phrase>
+<original>mark resource for deletion</original>
+<translation>Marquer la ressource pour suppression</translation>
+</phrase>
+
+<phrase>
+<original>add a new resource</original>
+<translation>Ajouter une nouvelle ressource</translation>
+</phrase>
+
+<phrase>
+<original>force save resource package</original>
+<translation>Forcer l'enregistrement du package de ressources</translation>
+</phrase>
+
+<phrase>
+<original>sort before saving</original>
+<translation>Trier avant l'enregistrement</translation>
+</phrase>
+
+<phrase>
+<original>export finished resource file</original>
+<translation>Exporter le fichier de ressources final</translation>
+</phrase>
+
+		<!-- Tools_ThemeEditor.frm contains ? phrases. 0 were duplicates of existing phrases, so 19 new phrases were written to file. -->
+
+<phrase>
+<original>add file(s) to the package</original>
+<translation>Ajouter des fichiers au package</translation>
+</phrase>
+
+<phrase>
+<original>Create standalone pdPackage</original>
+<translation>Créer un package pdPackage autonome</translation>
+</phrase>
+
+<phrase>
+<original>compress individual files</original>
+<translation>Compresser les fichiers individuels</translation>
+</phrase>
+
+<phrase>
+<original>files in this package</original>
+<translation>Fichiers dans ce package </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
+</phrase>
+
+<phrase>
+<original>save the final package</original>
+<translation>Enregistrer le package final</translation>
+</phrase>
+
+		<!-- Tools_BuildPackage.frm contains ? phrases. 0 were duplicates of existing phrases, so 5 new phrases were written to file. -->
 
 <phrase>
 <original>New image</original>
@@ -40,7 +169,7 @@
 
 <phrase>
 <original>Internet import</original>
-<translation>Importation d'Internet</translation>
+<translation>Importation depuis Internet</translation>
 </phrase>
 
 <phrase>
@@ -90,12 +219,12 @@
 
 <phrase>
 <original>Export animation</original>
-<translation>Export de l'animation</translation>
+<translation>Exporter l'animation</translation>
 </phrase>
 
 <phrase>
 <original>Export color lookup</original>
-<translation>Exportation de la correspondance de couleur</translation>
+<translation>Exporter la correspondance de couleur</translation>
 </phrase>
 
 <phrase>
@@ -125,12 +254,12 @@
 
 <phrase>
 <original>Undo</original>
-<translation>Annuler</translation>
+<translation>Annuler </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>Redo</original>
-<translation>Refaire</translation>
+<translation>Refaire </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -195,7 +324,7 @@
 
 <phrase>
 <original>Empty clipboard</original>
-<translation>Vider le Presse papier</translation>
+<translation>Vider le presse-papiers</translation>
 </phrase>
 
 <phrase>
@@ -220,7 +349,7 @@
 
 <phrase>
 <original>Duplicate image</original>
-<translation>Duplication de l'image</translation>
+<translation>Dupliquer l'image</translation>
 </phrase>
 
 <phrase>
@@ -315,12 +444,12 @@
 
 <phrase>
 <original>Compare similarity</original>
-<translation>Comparer similitairement</translation>
+<translation>Comparer similairement</translation>
 </phrase>
 
 <phrase>
 <original>Edit metadata</original>
-<translation>Modification des métadonnées</translation>
+<translation>Édition des métadonnées</translation>
 </phrase>
 
 <phrase>
@@ -380,7 +509,7 @@
 
 <phrase>
 <original>Replace layer from clipboard</original>
-<translation>Remplacement du calque par le contenu du presse paier</translation>
+<translation>Remplacement du calque par le contenu du presse-papier</translation>
 </phrase>
 
 <phrase>
@@ -475,17 +604,17 @@
 
 <phrase>
 <original>Crop layer to selection</original>
-<translation>Rognage du calque selon la sélection</translation>
+<translation>Rogner le calque selon la sélection</translation>
 </phrase>
 
 <phrase>
 <original>Pad layer to image size</original>
-<translation>Adaptation du calque à la taille de l'image</translation>
+<translation>Adapter le calque à la taille de l'image</translation>
 </phrase>
 
 <phrase>
 <original>Trim empty layer borders</original>
-<translation>Découpe des bordures vides des calques</translation>
+<translation>Découper les bordures vides des calques</translation>
 </phrase>
 
 <phrase>
@@ -680,7 +809,7 @@
 
 <phrase>
 <original>Black and white</original>
-<translation>Noir et Blanc</translation>
+<translation>Noir et blanc</translation>
 </phrase>
 
 <phrase>
@@ -750,7 +879,7 @@
 
 <phrase>
 <original>Hue and saturation</original>
-<translation>Teinte / Saturation</translation>
+<translation>Teinte-pure / Saturation</translation>
 </phrase>
 
 <phrase>
@@ -810,7 +939,7 @@
 
 <phrase>
 <original>Invert hue</original>
-<translation>Inverser la teinte</translation>
+<translation>Inverser la teinte-pure</translation>
 </phrase>
 
 <phrase>
@@ -970,7 +1099,7 @@
 
 <phrase>
 <original>Pinch and whirl</original>
-<translation>Pincement et Tourbillon</translation>
+<translation>Pincement et tourbillon</translation>
 </phrase>
 
 <phrase>
@@ -1065,7 +1194,7 @@
 
 <phrase>
 <original>Erode (minimum rank)</original>
-<translation>Erosion (rang minimum)</translation>
+<translation>Érosion (rang minimum)</translation>
 </phrase>
 
 <phrase>
@@ -1115,7 +1244,7 @@
 
 <phrase>
 <original>Anisotropic diffusion</original>
-<translation>Diffusion anisotrope</translation>
+<translation>Diffusion anisotropique</translation>
 </phrase>
 
 <phrase>
@@ -1245,7 +1374,7 @@
 
 <phrase>
 <original>Offset and zoom</original>
-<translation>Translation et Zoom</translation>
+<translation>Translation et zoom</translation>
 </phrase>
 
 <phrase>
@@ -1275,7 +1404,7 @@
 
 <phrase>
 <original>Animation background</original>
-<translation>Arrière plan d'animation</translation>
+<translation>Arrière-plan d'animation</translation>
 </phrase>
 
 <phrase>
@@ -1310,7 +1439,7 @@
 
 <phrase>
 <original>Play macro</original>
-<translation>Executer une macro</translation>
+<translation>Exécuter une macro</translation>
 </phrase>
 
 <phrase>
@@ -1344,12 +1473,12 @@
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>Recupération de sauvegarde automatique terminée pour %1</translation>
+<translation>Récupération de sauvegarde automatique terminée pour %1</translation>
 </phrase>
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>La sauvegarde automatique ne peut être complètement éffectuée. Une reconstruction partielle est tentée.</translation>
+<translation>La sauvegarde automatique ne peut être complètement effectuée. Une reconstruction partielle est tentée.</translation>
 </phrase>
 
 <!-- AutosaveEngine.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1390,7 +1519,7 @@
 
 <phrase>
 <original>How would you like to load this image?</original>
-<translation>Comment voulez vous utiliser cette image ?</translation>
+<translation>Comment voulez-vous utiliser cette image ?</translation>
 </phrase>
 
 <phrase>
@@ -1487,7 +1616,7 @@ Les copies sans perte seront enregistrées dans le même dossier où l'image ini
 <original>An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format.
 
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
-<translation>Une erreur non spécifiée s'est produite lors de la tentative de sauvegarde de cette image. Veuillez essayez d'enregistrer l'image dans un autre format. 
+<translation>Une erreur non spécifiée s'est produite lors de la tentative de sauvegarde de cette image. Veuillez essayer d'enregistrer l'image dans un autre format. 
 
 Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via photodemon.org/contact</translation>
 </phrase>
@@ -1499,7 +1628,7 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 
 <phrase>
 <original>background</original>
-<translation>Arrière plan</translation>
+<translation>Arrière-plan</translation>
 </phrase>
 
 <phrase>
@@ -1509,7 +1638,7 @@ Si le problème persiste, veuillez le signaler aux développeurs PhotoDemon via 
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation>Malheureusement, ce PC n'a pas assez de mémoire pour créer une image %1x %2. Veuillez réduire la taille demandée et réessayer.</translation>
+<translation>Malheureusement, ce PC n'a pas assez de mémoire pour créer une image %1x %2. Veuillez réduire la taille demandée et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
@@ -1633,7 +1762,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>chain</original>
-<translation>Chaine</translation>
+<translation>Chaîne</translation>
 </phrase>
 
 <phrase>
@@ -1648,7 +1777,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>line</original>
-<translation>Linéaire</translation>
+<translation>Ligne</translation>
 </phrase>
 
 <phrase>
@@ -1692,7 +1821,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
-<translation>L'image est déjà recadrée intelligemment. Rognage automatique abandonné. (Aucune modification n'a été apportée à l'image)</translation>
+<translation>L'image est déjà recadrée intelligemment. Rognage automatique abandonné. (Aucune modification n'a été apportée à l'image.)</translation>
 </phrase>
 
 <phrase>
@@ -1820,7 +1949,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>%1 save failed. Please report this error using Help -> Submit Bug Report.</original>
-<translation>L'enregistrement de %1 a échoué. Veuillez signaler cette erreur via Aide -> Envoyer le rapport de bogue.</translation>
+<translation>L'enregistrement de %1 a échoué. Veuillez signaler cette erreur via "Aide -> Soumettre un rapport de bogue, une suggestion".</translation>
 </phrase>
 
 <!-- ImageExporter.bas contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -2031,12 +2160,12 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Hue</original>
-<translation>Teinte</translation>
+<translation>Teinte-pure </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>Saturation</original>
-<translation>Saturation</translation>
+<translation>Saturation </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -2111,7 +2240,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>luminance</original>
-<translation>Luminance</translation>
+<translation>Luminance </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -2149,7 +2278,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Aperçu non disponible</translation>
 </phrase>
 
-<!-- Interface.bas contains 101 phrases. 41 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 85 phrases. 28 were duplicates of existing phrases, so only 57 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -2188,7 +2317,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Layer updated successfully.</original>
-<translation>Calque mis a jour avec succès.</translation>
+<translation>Calque mis à jour avec succès.</translation>
 </phrase>
 
 <phrase>
@@ -2223,7 +2352,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Are you sure you want to continue?</original>
-<translation>Êtes vous sûr de vouloir continuer ?</translation>
+<translation>Êtes-vous sûr de vouloir continuer ?</translation>
 </phrase>
 
 <phrase>
@@ -2270,14 +2399,14 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 
 <phrase>
 <original>Warning - file not found: %1</original>
-<translation>ATTENTION - fichier non trouvé : '%1'</translation>
+<translation>Attention - fichier non trouvé : %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the image '%1' could not be found.
 
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Malheureusement, l'image '%1' ne peut être trouvée.
+<translation>Malheureusement, l'image "%1" ne peut être trouvée.
 
 Si cette image était sur un support amovible (DVD, clé USB, etc), veuillez réinsérer ce support et essayer à nouveau.</translation>
 </phrase>
@@ -2289,16 +2418,16 @@ Si cette image était sur un support amovible (DVD, clé USB, etc), veuillez ré
 
 <phrase>
 <original>Warning - file locked: %1</original>
-<translation>ATTENTION - fichier verrouillé : '%1'</translation>
+<translation>Attention - fichier verrouillé : %1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the file '%1' is currently locked by another program on this PC.
 
 Please close this file in any other running programs, then try again.</original>
-<translation>Malheureusement, l'image '%1' est en ce moment bloquée par un autre programme sur ce PC.
+<translation>Malheureusement, l'image "%1" est en ce moment bloquée par un autre programme sur ce PC.
 
-Veuillez fermer ce fichier dans tout autre programme l'utilisant et essayez à nouveau</translation>
+Veuillez fermer ce fichier dans tout autre programme l'utilisant et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
@@ -2308,7 +2437,7 @@ Veuillez fermer ce fichier dans tout autre programme l'utilisant et essayez à n
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation>Ce fichier a l'extension '%1', mais est actuellement en format '%2'.</translation>
+<translation>Ce fichier a l'extension "%1", mais est actuellement en format '%2'.</translation>
 </phrase>
 
 <phrase>
@@ -2318,7 +2447,7 @@ Veuillez fermer ce fichier dans tout autre programme l'utilisant et essayez à n
 
 <phrase>
 <original>(If you choose "Yes", the file will be renamed to "%1")</original>
-<translation>(Si vous choisissez 'Oui', le fichier sera renommé en '%1')</translation>
+<translation>(Si vous choisissez "Oui", le fichier sera renommé en "%1")</translation>
 </phrase>
 
 <phrase>
@@ -2351,7 +2480,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 
-Veuillez utiliser un autre programme afin d'enregistrer l'image dans un format générique (tel JPEG ou PNG) avant de la recharger ici. Merci !</translation>
+Veuillez utiliser un autre programme afin d'enregistrer l'image dans un format générique (tel que JPEG ou PNG) avant de la recharger ici. Merci !</translation>
 </phrase>
 
 <phrase>
@@ -2387,7 +2516,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Malheureusement, PhotoDemon est dans l'incapacité de charger la ou les image(s) suivante(s) :
 
 %1
-Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est supporté (tel JPEG ou PNG). Merci !</translation>
+Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est supporté (tel que JPEG ou PNG). Merci !</translation>
 </phrase>
 
 <phrase>
@@ -2413,7 +2542,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 (Press No to continue recording.)</original>
 <translation>Cette macro ne contient aucune action enregistrable. Êtes-vous sûr de vouloir arrêter l'enregistrement ? 
 
- (Appuyez sur 'Non' pour continuer l'enregistrement.)</translation>
+ (Appuyez sur "Non" pour continuer l'enregistrement.)</translation>
 </phrase>
 
 <phrase>
@@ -2437,12 +2566,12 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
 <translation>Si vous n'enregistrez pas cette macro, toutes les actions enregistrées au cours de cette session seront définitivement perdus. Êtes-vous sûr de vouloir annuler ?
 
-(Appuyez sur 'Non' pour revenir à l'écran d'Enregistrement de Macro. Notez que vous pouvez toujours supprimer cette macro plus tard si vous décidez que vous n'en voulez pas).</translation>
+(Appuyez sur "Non" pour revenir à l'écran d'enregistrement de macro. Note : vous pourrez toujours supprimer cette macro plus tard si vous décidez que vous n'en voulez plus.)</translation>
 </phrase>
 
 <phrase>
 <original>Warning: last chance to save macro</original>
-<translation>ATTENTION : dernière chance pour enregistrer la macro</translation>
+<translation>Attention : dernière chance pour enregistrer la macro</translation>
 </phrase>
 
 <phrase>
@@ -2457,12 +2586,12 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Macro recording started.</original>
-<translation>Début de l'enregistrement de Macro.</translation>
+<translation>Début d'enregistrement de la macro.</translation>
 </phrase>
 
 <phrase>
 <original>Macro recording stopped.</original>
-<translation>Enregistrement de la Macro stoppé.</translation>
+<translation>Arrêt d'enregistrement de la macro.</translation>
 </phrase>
 
 <phrase>
@@ -2499,10 +2628,10 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Clear recent macro list</original>
-<translation>Effacer la liste récente des macros</translation>
+<translation>Effacer la liste des macros récentes</translation>
 </phrase>
 
-<!-- Menus.bas contains 14 phrases. 12 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -2516,7 +2645,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Adobe Color Table</original>
-<translation>Adobe Color Swatch</translation>
+<translation>Adobe Color Table</translation>
 </phrase>
 
 <phrase>
@@ -2546,7 +2675,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 
 <phrase>
 <original>Select a palette</original>
-<translation>Sélectionnez une palette</translation>
+<translation>Sélectionner une palette</translation>
 </phrase>
 
 <phrase>
@@ -2675,7 +2804,7 @@ Assurez-vous que l'appareil est allumé et prêt à l'emploi.</translation>
 To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.</original>
 <translation>Le plug-in interface scanner/appareil photo numérique (EZTW32.dll) a été marqué comme manquant lors de l'initialisation du programme.
 
-Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (disponible en téléchargement sur http:// eztwain.com/ezt1_download.htm) dans le répertoire plug-in et relancer le programme.</translation>
+Pour activer le support du scanner, veuillez copier le fichier EZTW32.dll (disponible en téléchargement sur http:// eztwain.com/ezt1_download.htm) dans le répertoire plug-in et relancer le programme.</translation>
 </phrase>
 
 <phrase>
@@ -2705,12 +2834,12 @@ Pour activer le support du scanner, veuillez copiez le fichier EZTW32.dll (dispo
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>Impossible d'acquerir la fermeture DIB. Veuillez vous assurer qu'aucun autre programme n'accède au scanner. Si le problème persiste, redémarrez et essayez à nouveau.</translation>
+<translation>Impossible d'acquerir la fermeture DIB. Veuillez vous assurer qu'aucun autre programme n'accède au scanner. Si le problème persiste, redémarrez et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
 <original>Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.</original>
-<translation>Erreur d'accès au fichier temporaire. Cela peut être causé lors de l'exécution sur un système avec des droits d'accès limités. Veuillez donner des droits d'administrateur et essayez à nouveau.</translation>
+<translation>Erreur d'accès au fichier temporaire. Cela peut être causé lors de l'exécution sur un système avec des droits d'accès limités. Veuillez donner des droits d'administrateur et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
@@ -2778,27 +2907,27 @@ Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoD
 
 <phrase>
 <original>BSD license</original>
-<translation>licence BSD</translation>
+<translation>Licence BSD</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation>licence MIT</translation>
+<translation>Licence MIT</translation>
 </phrase>
 
 <phrase>
 <original>artistic license</original>
-<translation>licence artistique</translation>
+<translation>Licence artistique</translation>
 </phrase>
 
 <phrase>
 <original>public domain</original>
-<translation>domaine public</translation>
+<translation>Domaine publique</translation>
 </phrase>
 
 <phrase>
 <original>FreeImage public license</original>
-<translation>licence publique FreeImage</translation>
+<translation>Licence publique FreeImage</translation>
 </phrase>
 
 <phrase>
@@ -2815,7 +2944,7 @@ Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoD
 
 <phrase>
 <original>Image successfully sent to Windows Photo Printer.</original>
-<translation>Image envoyée avec succès à l'imprimante photo Windows.</translation>
+<translation>Image envoyée avec succès à l'imprimante photo Windows®.</translation>
 </phrase>
 
 <!-- Printing.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -2826,12 +2955,12 @@ Pour activer cette fonction, veuillez télécharger une nouvelle copie de PhotoD
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Requête inconnue transmise au processeur : %1
 
-Merci d'envoyer le rapport de bug via le menu "Aide -> Soumettre un rapport de bug".</translation>
+Veuillez envoyer le rapport de bogue via le menu "Aide -> Soumettre un rapport de bogue, une suggestion".</translation>
 </phrase>
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
-<translation>Il n'y a pas assez de mémoire disponible pour continuer cette opération. Veuillez libérer la mémoire vive du système (RAM) en fermant des programmes inutiles - en particulier votre navigateur, si il est ouvert - puis essayez l'action à nouveau.</translation>
+<translation>Il n'y a pas assez de mémoire disponible pour continuer cette opération. Veuillez libérer la mémoire vive du système (RAM) en fermant des programmes inutiles - en particulier votre navigateur Internet, si il est ouvert - puis essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
@@ -2843,8 +2972,8 @@ Merci d'envoyer le rapport de bug via le menu "Aide -> Soumettre un rapport de b
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon ne peut pas trouver d'informations supplémentaires pour cette erreur. Cela induit probablement que cette erreur est un bogue, et cela a besoin d'être réparé !
- Voulez-vous soumettre un rapport de bogue ? (cela prend moins d'une minute, et aide tous ceux qui utilisent le logiciel.)</translation>
+<translation>PhotoDemon ne peut pas trouver d'informations supplémentaires pour cette erreur. Cela signifie probablement que cette erreur est un bogue et cette erreur doit être réparée !
+ Voulez-vous soumettre un rapport de bogue ? (Cela prend moins d'une minute, et aide tous ceux qui utilisent le logiciel.)</translation>
 </phrase>
 
 <phrase>
@@ -2884,7 +3013,7 @@ Description : %2
 
 <phrase>
 <original>opacity</original>
-<translation>Opacité</translation>
+<translation>Opacité </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -2904,17 +3033,17 @@ Description : %2
 
 <phrase>
 <original>width</original>
-<translation>Largeur</translation>
+<translation>Largeur </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>height</original>
-<translation>Hauteur</translation>
+<translation>Hauteur </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>angle</original>
-<translation>Angle</translation>
+<translation>Angle </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -3024,7 +3153,7 @@ Description : %2
 
 <phrase>
 <original>hinting</original>
-<translation>Optimisation</translation>
+<translation>Allusions</translation>
 </phrase>
 
 <phrase>
@@ -3054,17 +3183,17 @@ Description : %2
 
 <phrase>
 <original>background style</original>
-<translation>Style d'arrière plan</translation>
+<translation>Style d'arrière-plan</translation>
 </phrase>
 
 <phrase>
 <original>background border</original>
-<translation>Bordure de l'arrière plan</translation>
+<translation>Bordure de l'arrière-plan</translation>
 </phrase>
 
 <phrase>
 <original>background border style</original>
-<translation>Style de bordure de l'arrière plan</translation>
+<translation>Style de bordure de l'arrière-plan</translation>
 </phrase>
 
 <phrase>
@@ -3109,27 +3238,27 @@ Description : %2
 
 <phrase>
 <original>mirroring</original>
-<translation>Réflection</translation>
+<translation>Réflexion</translation>
 </phrase>
 
 <phrase>
 <original>last line justify</original>
-<translation>Justification de derniere ligne</translation>
+<translation>Justification de dernière ligne</translation>
 </phrase>
 
 <phrase>
 <original>outline on top</original>
-<translation>Contour au dessus</translation>
+<translation>Contour au-dessus</translation>
 </phrase>
 
 <phrase>
 <original>horizontal scaling</original>
-<translation>Échelle horizontale</translation>
+<translation>Mise à l'échelle horizontale</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation>Échelle verticale</translation>
+<translation>Mise à l'échelle verticale</translation>
 </phrase>
 
 <phrase>
@@ -3141,7 +3270,7 @@ Description : %2
 <original>PhotoDemon has automatically opened the bug report webpage for you.  Please click the "New Issue" button, then select "Bug Report".  Answer the questions as best you can, and please include the following error number somewhere in your report: %1
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon a automatiquement ouvert une page de rapport de bogue pour vous . Veuillez cliquer le bouton "New issue" puis sélectionner "Bug Report". Répondez aux questions du mieux que vous pouvez et merci d'inclure le numero d'erreur quelque part dans votre rapport : "%1"
+<translation>PhotoDemon a ouvert automatiquement une page Internet de rapport de bogue pour vous. Veuillez cliquer le bouton "New Issue" puis sélectionner "Bug Report". Répondez aux questions du mieux que vous pouvez et pensez à inclure le numéro d'erreur quelque part dans votre rapport : "%1"
 
 Une fois terminé, cliquez sur le bouton "Submit New Issue". Merci !</translation>
 </phrase>
@@ -3151,7 +3280,7 @@ Une fois terminé, cliquez sur le bouton "Submit New Issue". Merci !</translatio
 <translation>Instructions pour les rapports de bogues</translation>
 </phrase>
 
-<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 129 phrases. 69 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3170,7 +3299,7 @@ Une fois terminé, cliquez sur le bouton "Submit New Issue". Merci !</translatio
 
 <phrase>
 <original>cosine</original>
-<translation>Cosinuïdal</translation>
+<translation>Co-sinusoïdal</translation>
 </phrase>
 
 <phrase>
@@ -3210,12 +3339,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-En attendant, veuillez essayez d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu "Aide -> Soumettre un rapport de bogue".</translation>
+En attendant, veuillez essayer d'enregistrer l'image dans un autre format. Vous pouvez également laisser les développeurs PhotoDemon connaître ceci via le menu "Aide -> Soumettre un rapport de bogue, une suggestion".</translation>
 </phrase>
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Format de sortie non reconnu. Enregistrement abandonné. Veuillez utiliser le menu "Aide -> Envoyer un rapport de bogue pour signaler l'incident".</translation>
+<translation>Format de sortie non reconnu. Enregistrement abandonné. Veuillez utiliser le menu "Aide -> Soumettre un rapport de bogue, une suggestion" pour signaler l'incident.</translation>
 </phrase>
 
 <phrase>
@@ -3311,7 +3440,7 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>Une erreur inconnue s'est produite. Sélection non sauvegardée. Veuillez essayer de nouveau.</translation>
+<translation>Une erreur inconnue s'est produite. La sélection n'a pas été sauvegardée. Veuillez essayer à nouveau.</translation>
 </phrase>
 
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -3382,7 +3511,7 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 
 <phrase>
 <original>Click on the first point to complete the polygon selection</original>
-<translation>Cliquez sur le premier point pour terminer la sélection polygonale</translation>
+<translation>Cliquer sur le premier point pour terminer la sélection polygonale</translation>
 </phrase>
 
 <!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -3469,7 +3598,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Ctrl+click to move the active layer here</original>
-<translation>Ctrl+click pour déplacer le calque actif ici</translation>
+<translation>Ctrl+Clic pour déplacer le calque actif ici</translation>
 </phrase>
 
 <phrase>
@@ -3510,7 +3639,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>(enter text here)</original>
-<translation>(Insérez le texte ici)</translation>
+<translation>(Insérer le texte ici)</translation>
 </phrase>
 
 <phrase>
@@ -3589,7 +3718,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
-<translation>Recherhche de mise à jour reportée (une recherche a été effectuée récemment)</translation>
+<translation>Recherche de mise à jour reportée (une recherche a été effectuée récemment)</translation>
 </phrase>
 
 <phrase>
@@ -3609,7 +3738,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>alpha</original>
-<translation>Alpha</translation>
+<translation>Alpha </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -3634,7 +3763,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Would you like PhotoDemon to update this plugin for you?</original>
-<translation>Voulez vous que PhotoDemon mette à jour ce plugin pour vous ?</translation>
+<translation>Voulez-vous que PhotoDemon mette à jour ce plugin pour vous ?</translation>
 </phrase>
 
 <phrase>
@@ -3644,14 +3773,14 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation>Vous avez placé PhotoDemon dans un dossier système dont les droits sont limités.  PhotoDemon ne disposant pas d'un accès administrateur, ne peut donc pas télécharger de fichiers pour vous.  Veuillez déplacer PhotoDemon dans un dossier sans droits limités et réessayez.</translation>
+<translation>Vous avez placé PhotoDemon dans un dossier système dont les droits sont limités.  PhotoDemon ne disposant pas d'un accès administrateur, ne peut donc pas télécharger de fichiers pour vous.  Veuillez déplacer PhotoDemon dans un dossier sans droits limités et essayer à nouveau.</translation>
 </phrase>
 
 <!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation>Basculer entre 1x et repéter les aperçus</translation>
+<translation>Basculer entre 1x et répéter les aperçus</translation>
 </phrase>
 
 <phrase>
@@ -3696,7 +3825,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>Generate a new random number seed.</original>
-<translation>Génération d'une nouvelle serie aléatoire de nombres.</translation>
+<translation>Génération d'une nouvelle série aléatoire de nombres.</translation>
 </phrase>
 
 <!-- UserControl_Support.bas contains 20 phrases. 10 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -3718,7 +3847,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>PhotoDemon cannot reach the Internet.  Please double-check your connection and try again.</original>
-<translation>PhotoDemon ne peut pas se connecter a Internet.  Veuillez verifier votre connexion et essayez à nouveau</translation>
+<translation>PhotoDemon ne peut pas se connecter à Internet.  Veuillez vérifier votre connexion et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
@@ -3728,7 +3857,7 @@ Veuillez entrer une valeur numérique.</translation>
 
 <phrase>
 <original>PhotoDemon could not reach the target URL (%1).  If the problem persists, try downloading the file manually using your Internet browser.</original>
-<translation>PhotoDemon n'a pas pu trouver l'URL cible (%1).  Si le problème persiste, tentez de télécharger le fichier manuellement en utilisant votre navigateur</translation>
+<translation>PhotoDemon n'a pas pu trouver l'URL cible (%1).  Si le problème persiste, tentez de télécharger le fichier manuellement en utilisant votre navigateur Internet.</translation>
 </phrase>
 
 <phrase>
@@ -3769,12 +3898,12 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Fit width</original>
-<translation>À la Largeur</translation>
+<translation>À la largeur</translation>
 </phrase>
 
 <phrase>
 <original>Fit height</original>
-<translation>À la Hauteur</translation>
+<translation>À la hauteur</translation>
 </phrase>
 
 <phrase>
@@ -3795,17 +3924,17 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Le presse-papiers est vide ou ne contient pas un format d'image valide. Veuillez copier une image valide dans le presse papier et essayez à nouveau.</translation>
+<translation>Le presse-papiers est vide ou ne contient pas un format d'image valide. Veuillez copier une image valide dans le presse-papiers et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
 <original>Clipboard Image</original>
-<translation>Image du Presse papiers</translation>
+<translation>Image du presse-papiers</translation>
 </phrase>
 
 <phrase>
 <original>Clipboard data imported successfully</original>
-<translation>Données du Presse-papiers importées avec succès</translation>
+<translation>Données du presse-papiers importées avec succès</translation>
 </phrase>
 
 <phrase>
@@ -3820,7 +3949,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation>Le téléchargement d'image a échoué. Veuillez copier une URL d'image valide et réessayer.</translation>
+<translation>Le téléchargement d'image a échoué. Veuillez copier une URL d'image valide et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
@@ -4207,7 +4336,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
-<translation>Malheureusement, le nombre d'images que vous avez sélectionné dépasse ce que Windows® permet pour une seule opération de chargement. Veuillez essayer de nouveau avec un petit nombre d'images sélectionnées.</translation>
+<translation>Malheureusement, le nombre d'images que vous avez sélectionné dépasse ce que Windows® permet pour une seule opération de chargement. Veuillez essayer à nouveau avec un plus petit nombre d'images sélectionnées.</translation>
 </phrase>
 
 <phrase>
@@ -4252,7 +4381,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Background</original>
-<translation>Arrière plan</translation>
+<translation>Arrière-plan</translation>
 </phrase>
 
 <!-- pdPSD.cls contains 16 phrases. 14 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4334,7 +4463,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Import from clipboard</original>
-<translation>Importer du Presse papier</translation>
+<translation>Importer du presse-papiers</translation>
 </phrase>
 
 <phrase>
@@ -4470,7 +4599,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation>Cliquez pour voir la fenêtre complète de sélection des couleurs.</translation>
+<translation>Cliquer pour voir la fenêtre complète de sélection des couleurs.</translation>
 </phrase>
 
 <phrase>
@@ -4480,7 +4609,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation>Cliquez pour que la couleur sélectionnée à l'écran principal devienne la couleur active.</translation>
+<translation>Cliquer pour que la couleur sélectionnée actuellement (à l'écran principal) devienne la couleur active.</translation>
 </phrase>
 
 <phrase>
@@ -4497,7 +4626,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Rotate hue clockwise</original>
-<translation>Tourner la teinte dans le sens horaire</translation>
+<translation>Tourner la teinte-pure dans le sens horaire</translation>
 </phrase>
 
 <phrase>
@@ -4537,7 +4666,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Rotate hue counterclockwise</original>
-<translation>Tourner la teinte dans le sens antihoraire</translation>
+<translation>Tourner la teinte-pure dans le sens antihoraire</translation>
 </phrase>
 
 <phrase>
@@ -4591,12 +4720,12 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>This button will open a new issue page in your web browser.  You will need a GitHub account to proceed.</original>
-<translation>Ce bouton ouvre dans le navigateur une nouvelle page de signalement .Vous aurez besoin d'avoir un compte GitHub pour la remplir.</translation>
+<translation>Ce bouton ouvre une page de nouveau signalement dans votre navigateur Internet. Vous aurez besoin d'avoir un compte GitHub pour la remplir.</translation>
 </phrase>
 
 <phrase>
 <original>Submit bug report or feedback</original>
-<translation>Soumettez un bug, un commentaire, une suggestion</translation>
+<translation>Soumettre un rapport de bogue, une suggestion</translation>
 </phrase>
 
 <!-- pdCommandBar.ctl contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
@@ -4639,7 +4768,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation>Survolez une vignette de l'image pour voir son nom et l'emplacement du fichier actuel.</translation>
+<translation>Survoler une vignette de l'image pour voir son nom et l'emplacement du fichier actuel.</translation>
 </phrase>
 
 <!-- pdImageStrip.ctl contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -4724,12 +4853,12 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 
 <phrase>
 <original>new</original>
-<translation>Nouveau</translation>
+<translation>Nouveau </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>original</original>
-<translation>Original</translation>
+<translation>Original </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4895,7 +5024,7 @@ Vous devrez télécharger ce fichier manuellement à l’aide de votre navigateu
 <phrase>
 <original>"%1" produces an out of range result (%2).
 The final value must be between %3 and %4.</original>
-<translation>'%1' produit un résultat hors limite (%2).
+<translation>"%1" produit un résultat hors limite (%2).
 La valeur finale doit être entre %3 et %4.</translation>
 </phrase>
 
@@ -4955,17 +5084,17 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Import</original>
-<translation>Importation</translation>
+<translation>Importer</translation>
 </phrase>
 
 <phrase>
 <original>From clipboard</original>
-<translation>Du "Presse-papiers"</translation>
+<translation>Du presse-papiers</translation>
 </phrase>
 
 <phrase>
 <original>From scanner or camera</original>
-<translation>D'un scanner ou un appareil photo</translation>
+<translation>D'un scanner ou d'un appareil photo</translation>
 </phrase>
 
 <phrase>
@@ -5035,7 +5164,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Edit</original>
-<translation>Modifier</translation>
+<translation>Édition</translation>
 </phrase>
 
 <phrase>
@@ -5140,7 +5269,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation>Calque</translation>
+<translation>Calque basique</translation>
 </phrase>
 
 <phrase>
@@ -5285,7 +5414,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation>Ouvrir les autres images (comme calques) dans celle ci</translation>
+<translation>Ouvrir les autres images (comme calques) dans celle-ci</translation>
 </phrase>
 
 <phrase>
@@ -5310,7 +5439,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Shrink</original>
-<translation>Reduire</translation>
+<translation>Réduire</translation>
 </phrase>
 
 <phrase>
@@ -5540,17 +5669,17 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Create macro</original>
-<translation>Créer une Macro (enregistrement d'actions)</translation>
+<translation>Créer une macro (enregistrement d'actions)</translation>
 </phrase>
 
 <phrase>
 <original>From history</original>
-<translation>À partir de l'historique</translation>
+<translation>À partir de l'historique d'actions</translation>
 </phrase>
 
 <phrase>
 <original>Start recording</original>
-<translation>Début de l'enregistrement</translation>
+<translation>Démarrer l'enregistrement</translation>
 </phrase>
 
 <phrase>
@@ -5585,7 +5714,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation>Voir le log de débug pour cette session</translation>
+<translation>Voir le journal de débogage (log) pour cette session</translation>
 </phrase>
 
 <phrase>
@@ -5605,7 +5734,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Test</original>
-<translation>Test</translation>
+<translation>Tester</translation>
 </phrase>
 
 <phrase>
@@ -5815,7 +5944,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>PhotoDemon website</original>
-<translation>Visiter le site web de PhotoDemon</translation>
+<translation>Visiter le site Web de PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5825,7 +5954,7 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>About</original>
-<translation>À Propos</translation>
+<translation>À propos</translation>
 </phrase>
 
 <phrase>
@@ -5891,7 +6020,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 417 phrases. 228 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 409 phrases. 221 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -5984,17 +6113,17 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>red</original>
-<translation>Rouge</translation>
+<translation>Rouge </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>green</original>
-<translation>Vert</translation>
+<translation>Vert </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>blue</original>
-<translation>Bleu</translation>
+<translation>Bleu </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6127,7 +6256,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Converting image to black and white</original>
-<translation>Convertion de l'image en noir et blanc</translation>
+<translation>Conversion de l'image en noir et blanc</translation>
 </phrase>
 
 <phrase>
@@ -6174,7 +6303,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>hue</original>
-<translation>Teinte</translation>
+<translation>Teinte-pure </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6184,7 +6313,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Adjusting hue, saturation, and luminance values</original>
-<translation>Réglage des valeurs de teinte, saturation, luminosité</translation>
+<translation>Ajustement des valeurs de teinte-pure, saturation et luminosité</translation>
 </phrase>
 
 <!-- Adjustments_Color_HSL.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6216,12 +6345,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Your LUT collection is stored in the "%1" folder</original>
-<translation>Votre collection LUT est stockée dans le dossier '%1'</translation>
+<translation>Votre collection LUT est stockée dans le dossier "%1"</translation>
 </phrase>
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation>Cliquer pour ouvrir ce dossier dans l'Explorateur Windows</translation>
+<translation>Cliquer pour ouvrir ce dossier dans l'Explorateur Windows®</translation>
 </phrase>
 
 <!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6238,7 +6367,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>Couleur à remplacer (clic droit pour sélectionner)</translation>
+<translation>Couleur à remplacer (clic droit sur l'aperçu pour sélectionner)</translation>
 </phrase>
 
 <phrase>
@@ -6331,7 +6460,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>vibrance</original>
-<translation>Vibrance</translation>
+<translation>Éclat (vibrance)</translation>
 </phrase>
 
 <phrase>
@@ -6388,7 +6517,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>instructions</original>
-<translation>Indications</translation>
+<translation>Instructions </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6398,7 +6527,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>right-click to remove nodes</original>
-<translation>Clic droit pour supprimer des nœuds</translation>
+<translation>Clic droit pour supprimer des noeuds</translation>
 </phrase>
 
 <phrase>
@@ -6420,7 +6549,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>fill histogram curves</original>
-<translation>Remplir les courbes</translation>
+<translation>Remplir les courbes de l'histo.</translation>
 </phrase>
 
 <phrase>
@@ -6435,7 +6564,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>(Note: move the mouse over the histogram to calculate these values)</original>
-<translation>(REMARQUE : déplacez la souris sur l'histogramme pour calculer les valeurs)</translation>
+<translation>Remarque : déplacez la souris sur l'histogramme pour calculer les valeurs.</translation>
 </phrase>
 
 <phrase>
@@ -6445,7 +6574,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>level</original>
-<translation>Niveau</translation>
+<translation>Niveau </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6455,7 +6584,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>total pixels</original>
-<translation>Nombre total de pixels</translation>
+<translation>Nombre total de pixels </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6465,7 +6594,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>max count</original>
-<translation>Nombre maxi</translation>
+<translation>Nombre maxi </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6502,7 +6631,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>value</original>
-<translation>Valeur</translation>
+<translation>Valeur </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6595,7 +6724,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>new gamma curve</original>
-<translation>Nouvelle courbe gamma</translation>
+<translation>Nouvelle courbe gamma </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -6639,7 +6768,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Comme tous les outils de monochrome vers niveaux de gris, cet outil va produire une image floue. Vous pouvez utiliser "Effets -> Netteté -> Masque flou" pour résoudre ce problème. (Pour obtenir les meilleurs résultats, utilisez un rayon de Masque flou au moins aussi grand que ce rayon.)</translation>
+<translation>Comme tous les outils de monochrome vers niveaux de gris, cet outil va produire une image floue. Vous pouvez utiliser le menu "Effets -> Netteté -> Masque flou" pour résoudre ce problème. (Pour obtenir les meilleurs résultats, utilisez un rayon de masque flou au moins aussi grand que ce rayon.)</translation>
 </phrase>
 
 <!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6831,12 +6960,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation>Si vous quittez maintenant, ces données de sauvegarde automatique seront perdues à jamais. Etes-vous sûr de vouloir quitter ?</translation>
+<translation>Si vous quittez maintenant, ces données de sauvegarde automatique seront perdues à jamais. Êtes-vous sûr de vouloir quitter ?</translation>
 </phrase>
 
 <phrase>
 <original>Warning: autosave data will be deleted</original>
-<translation>ATTENTION : les données de sauvegarde automatique seront supprimées</translation>
+<translation>Attention : les données de sauvegarde automatique seront supprimées</translation>
 </phrase>
 
 <!-- Dialog_AutosaveFound.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6875,7 +7004,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>HTML / CSS</original>
-<translation>HTML / CSS</translation>
+<translation>HTML / CSS </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <!-- Dialog_ColorSelector.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6917,12 +7046,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Overwrite existing preset</original>
-<translation>Écrasage du réglage prédéfini existant</translation>
+<translation>Écraser le réglage prédéfini existant</translation>
 </phrase>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation>Veuillez entrez un nom pour ce réglage prédéfini.</translation>
+<translation>Entrer un nom pour ce réglage prédéfini.</translation>
 </phrase>
 
 <phrase>
@@ -7055,7 +7184,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>import / export</original>
-<translation>Importer / exporter</translation>
+<translation>Importer / Exporter</translation>
 </phrase>
 
 <phrase>
@@ -7090,7 +7219,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>generate new pattern</original>
-<translation>Générer un mouveau motif</translation>
+<translation>Générer un nouveau motif</translation>
 </phrase>
 
 <phrase>
@@ -7110,7 +7239,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>vary hue</original>
-<translation>Varier la teinte</translation>
+<translation>Varier la teinte-pure</translation>
 </phrase>
 
 <phrase>
@@ -7145,7 +7274,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>Un dégradé avec le nom '%1' existe déjà dans votre collection . Voulez vous enregister par dessus et l'écraser ?</translation>
+<translation>Un dégradé avec le nom "%1" existe déjà dans votre collection . Voulez-vous enregistrer par dessus et l'écraser ?</translation>
 </phrase>
 
 <phrase>
@@ -7185,7 +7314,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
-<translation>Malhaureusement, le fichier de dégradé '%1' se semble pas être un fichier de dégradé valide</translation>
+<translation>Malheureusement, le fichier de dégradé "%1" se semble pas être un fichier de dégradé valide.</translation>
 </phrase>
 
 <phrase>
@@ -7205,7 +7334,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
-<translation>Cliquez avec le bouton gauche pour ajouter des noeuds ou modifier des noeuds existants. Cliquez avec le bouton droit sur un noeud pour le supprimer.</translation>
+<translation>Cliquer avec le bouton gauche pour ajouter des noeuds ou modifier des noeuds existants. Cliquez avec le bouton droit sur un noeud pour le supprimer.</translation>
 </phrase>
 
 <phrase>
@@ -7235,7 +7364,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>Votre collection de dégradés est stockée dans le dossier '%1'</translation>
+<translation>Votre collection de dégradés est stockée dans le dossier "%1"</translation>
 </phrase>
 
 <phrase>
@@ -7260,7 +7389,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Foreground to transparent</original>
-<translation>De la couleur de premier plan à transparent</translation>
+<translation>De la couleur de premier plan à la transparence</translation>
 </phrase>
 
 <phrase>
@@ -7270,7 +7399,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>please select a node</original>
-<translation>Veuillez sélectionner un noeud</translation>
+<translation>Sélectionner un noeud</translation>
 </phrase>
 
 <!-- Dialog_GradientEditor.frm contains 79 phrases. 29 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
@@ -7329,12 +7458,12 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>The range "%1" is not valid.</original>
-<translation>La quantité '%1' n'est pas valide</translation>
+<translation>La quantité "%1" n'est pas valide.</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for user to specify import options</original>
-<translation>En attente : spécifiez les options d'importation</translation>
+<translation>En attente : spécifier les options d'importation.</translation>
 </phrase>
 
 <phrase>
@@ -7527,7 +7656,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>This image contains more than 16 million colors.  Before it can be displayed on your screen, it must be converted to a simpler format.  This process is called tone mapping.</original>
-<translation>Cette image contient plus de 16 millions de couleurs. Avant qu'elle puisse être affichée sur votre écran, elle doit être convertie à un format plus simple. Ce processus est appelé tone mapping.</translation>
+<translation>Cette image contient plus de 16 millions de couleurs. Avant qu'elle puisse être affichée sur votre écran, elle doit être convertie à un format plus simple. Ce processus est appelé tone mapping (définition de tonalité).</translation>
 </phrase>
 
 <phrase>
@@ -7537,7 +7666,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>Proceeding with tone mapping</original>
-<translation>Effectuation de définition de tonalité</translation>
+<translation>Définition de la tonalité en cours</translation>
 </phrase>
 
 <phrase>
@@ -7639,7 +7768,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation>Vous pouvez modifier les paramètres de la langue et du thème à tout moment à partir du menu "Outils".</translation>
+<translation>À tout moment vous pouvez modifier les paramètres de langue et thème depuis le menu "Outils".</translation>
 </phrase>
 
 <phrase>
@@ -7683,9 +7812,9 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <original>NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.
 
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
-<translation>REMARQUE : si vous cliquez sur 'Enregistrer', PhotoDemon sauvegardera cette image (et ses changements) en utilisant son nom de fichier actuel. 
+<translation>Remarque : si vous cliquez sur "Enregistrer", PhotoDemon sauvegardera cette image (et ses changements) en utilisant son nom de fichier actuel. 
 
- Si vous voulez l'enregistrer sous un autre nom de fichier, (et conserver le fichier initial), veuillez sélectionner 'Annuler', puis utilisez le menu "Fichier -> Enregistrer sous".</translation>
+ Si vous voulez l'enregistrer sous un autre nom de fichier, (et conserver le fichier initial), veuillez sélectionner "Annuler", puis utilisez le menu "Fichier -> Enregistrer sous".</translation>
 </phrase>
 
 <phrase>
@@ -7856,7 +7985,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>below</original>
-<translation>Vers le bas</translation>
+<translation>En dessous</translation>
 </phrase>
 
 <phrase>
@@ -8016,29 +8145,31 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation>Les plugins Photoshop (8bf) sont des fichiers avec une extension '8bf'.  Ces plugins fournissent de nouveaux effets d'image. Des milliers de plugins '8bf' sont disponibles en ligne.</translation>
+<translation>Les plugins Photoshop (8bf) sont des fichiers avec une extension ".8bf".
+Ces plugins fournissent de nouveaux effets d'image.
+Des milliers de plugins (8bf) sont disponibles en ligne.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation>PhotoDemon n'est pas livré avec des plugins 8bf, mais si vous trouvez des plugins en ligne, vous pouvez les télécharger et les ajouter à PhotoDemon.  (PhotoDemon prend en charge la plupart des plugins 8bf 32 bits.  Les plugins 64 bits ne sont pas pris en charge).</translation>
+<translation>PhotoDemon n'est pas livré avec des plugins (8bf), mais si vous trouvez des plugins en ligne, vous pouvez les télécharger et les ajouter à PhotoDemon.  (PhotoDemon prend en charge la plupart des plugins (8bf) 32 bits.  Les plugins (8bf) 64 bits ne sont pas pris en charge).</translation>
 </phrase>
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>Après avoir téléchargé un ou plusieurs fichiers 8bf, utilisez le bouton de réglage (ci-dessus) pour indiquer à PhotoDemon où les trouver. PhotoDemon les ajoutera alors à votre collection d'effets.</translation>
+<translation>Après avoir téléchargé un ou plusieurs fichiers (8bf), utilisez le bouton de réglage (ci-dessus) pour indiquer à PhotoDemon où les trouver. PhotoDemon les ajoutera alors à votre collection d'effets.</translation>
 </phrase>
 
 <!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
-<translation>Après effectuation, supprimer ce calque</translation>
+<translation>Après exécution, supprimer ce calque</translation>
 </phrase>
 
 <phrase>
 <original>background layer</original>
-<translation>Calque d'arrière plan</translation>
+<translation>Calque d'arrière-plan</translation>
 </phrase>
 
 <phrase>
@@ -8053,7 +8184,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying background</original>
-<translation>Application de l'arrière plan</translation>
+<translation>Application de l'arrière-plan</translation>
 </phrase>
 
 <phrase>
@@ -8075,7 +8206,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>speed modifier</original>
-<translation>Modificateur de vitese</translation>
+<translation>Modificateur de vitesse</translation>
 </phrase>
 
 <!-- Effects_Animation_Speed.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8497,7 +8628,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>distance</original>
-<translation>Distance</translation>
+<translation>Distance </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -8687,12 +8818,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>pull in</original>
-<translation>Pousser au loin</translation>
+<translation>Tirer vers soi</translation>
 </phrase>
 
 <phrase>
 <original>push out</original>
-<translation>Tirer vers soi</translation>
+<translation>Pousser au loin</translation>
 </phrase>
 
 <phrase>
@@ -8897,7 +9028,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>background color and opacity</original>
-<translation>Couleur et opacité de l'arrière plan</translation>
+<translation>Couleur et opacité de l'arrière-plan</translation>
 </phrase>
 
 <phrase>
@@ -9024,7 +9155,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Sprinkling image with shimmering rainbows</original>
-<translation>Remplissage par d'étincelants arc-en-ciels</translation>
+<translation>Remplissage par d'étincelants arcs-en-ciel</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_Rainbow.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9149,7 +9280,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>directionality</original>
-<translation>Directionalité</translation>
+<translation>Directionnalité</translation>
 </phrase>
 
 <phrase>
@@ -9215,7 +9346,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying harmonic mean filter</original>
-<translation>Application du filtre de moyenne harmonique</translation>
+<translation>Application du filtre d'harmonique moyen</translation>
 </phrase>
 
 <!-- Effects_Noise_HarmonicMean.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9302,7 +9433,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>randomness</original>
-<translation>Variation</translation>
+<translation>Aléatoire</translation>
 </phrase>
 
 <phrase>
@@ -9312,7 +9443,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Mezzotinting image</original>
-<translation>Mezzoteinte de l'image</translation>
+<translation>Mezzo-tinto de l'image</translation>
 </phrase>
 
 <phrase>
@@ -9559,7 +9690,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>WARNING!  Palette file invalid.</original>
-<translation>ATTENTION : fichier de palette non valide.</translation>
+<translation>Attention : fichier de palette non valide.</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 31 phrases. 14 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -9740,7 +9871,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.</original>
-<translation>Pour agrandir la zone de travail afin de l'adapter à l'image pivotée, utilisez plutôt le menu "Image -> Rotation -> rotation paramétrée".</translation>
+<translation>Pour agrandir la zone de travail afin de l'adapter à l'image pivotée, utilisez plutôt le menu "Image -> Rotation -> Rotation paramétrée".</translation>
 </phrase>
 
 <!-- Effects_Transform_Rotate.frm contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9791,7 +9922,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation>Cliquez sur OK pour commencer l'opération de réparation</translation>
+<translation>Cliquer sur OK pour commencer l'opération de réparation</translation>
 </phrase>
 
 <phrase>
@@ -9821,7 +9952,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>attempt to repair video and audio files</original>
-<translation>Tentative de réparer des fichiers vidéo et audio</translation>
+<translation>Tenter de réparer les fichiers vidéo et audio</translation>
 </phrase>
 
 <phrase>
@@ -9853,9 +9984,10 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>%1 fichier(s) réparés
+<translation>%1 fichier(s) réparé(s).
 
-Les fichiers réparés ont été sauvegardés dans le dossier de destination. Les fichiers non réparés sont restés dans leur dossier d'origine</translation>
+Les fichiers réparés ont été sauvegardés dans le dossier de destination.
+Les fichiers non réparés sont restés dans leur dossier d'origine.</translation>
 </phrase>
 
 <phrase>
@@ -10032,7 +10164,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>select destination folder</original>
-<translation>Sélectionnez le dossier de destination</translation>
+<translation>Sélectionner le dossier de destination</translation>
 </phrase>
 
 <phrase>
@@ -10042,22 +10174,22 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>add a prefix to each filename</original>
-<translation>Ajouter un préfixe à chaque nom de fichier</translation>
+<translation>Ajouter un préfixe à chaque nom de fichier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>add a suffix to each filename</original>
-<translation>Ajouter un suffixe à chaque nom de fichier</translation>
+<translation>Ajouter un suffixe à chaque nom de fichier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>remove the following text (if found) from each filename</original>
-<translation>Supprimer le texte suivant (si trouvé) de chaque nom de fichier</translation>
+<translation>Supprimer le texte suivant (si trouvé) dans chaque nom de fichier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>force each filename, including extension, to the following case</original>
-<translation>Forcer chaque nom de fichier, y compris l'extension, à la casse typographique suivante</translation>
+<translation>Forcer chaque nom de fichier, y compris l'extension, à la casse typographique suivante </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -10077,7 +10209,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>after images are processed, save them with the following name</original>
-<translation>Après le traitement des images, les enregistrer avec le nom suivant</translation>
+<translation>Après le traitement des images, les enregistrer avec le nom suivant </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -10087,7 +10219,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 
 <phrase>
 <original>output images to this folder</original>
-<translation>Enregistrer les images dans ce dossier</translation>
+<translation>Enregistrer les images dans ce dossier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -10111,7 +10243,7 @@ Les fichiers réparés ont été sauvegardés dans le dossier de destination. Le
 Would you like to save your batch list before exiting?</original>
 <translation>Si vous quittez maintenant, votre liste de lots (la liste des images à traiter) sera perdue. En enregistrant votre liste, vous pouvez facilement poursuivre cette opération à une date ultérieure.
 
-Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
+Voulez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 </phrase>
 
 <phrase>
@@ -10196,7 +10328,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Welcome to PhotoDemon's batch wizard.  This tool can be used to edit multiple images at once, in what is called a "batch process".</original>
-<translation>Bienvenue dans l'assistant de traitement par lots d'images de PhotoDemon. Cet outil peut être utilisé pour modifier plusieurs images à la fois, dans ce qu'on appelle un "Traitement par lots".</translation>
+<translation>Bienvenue dans l'assistant de traitement d'images par lots de PhotoDemon. Cet outil peut être utilisé pour modifier plusieurs images à la fois, dans ce que l'on appelle un "Traitement par lots".</translation>
 </phrase>
 
 <phrase>
@@ -10206,7 +10338,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>REMARQUE : une "macro" est tout simplement un enregistrement d'une suite d'actions d'édition photo. Elle peut inclure tout ajustement, filtre, ou un effet appliqué à l'image. Vous pouvez créer une nouvelle macro en utilisant le menu "Configuration -> Créer une macro -> Début de l'Enregistrement" dans la fenêtre principale PhotoDemon.</translation>
+<translation>Remarque : une "macro" est tout simplement un enregistrement d'une suite d'actions d'édition photo. Elle peut inclure tout ajustement, filtre, ou un effet appliqué à l'image. Vous pouvez créer une nouvelle macro en utilisant le menu "Outils -> Créer une macro -> Débuter l'enregistrement" dans la fenêtre principale PhotoDemon.</translation>
 </phrase>
 
 <phrase>
@@ -10221,7 +10353,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>You can add files to the batch list in two ways</original>
-<translation>Vous pouvez ajouter des fichiers à la liste de lots de deux manières</translation>
+<translation>Vous pouvez ajouter des fichiers à la liste de lots de deux manières </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -10231,12 +10363,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation>2) En ajoutant des dossiers entiers à la fois. Les fichiers d'image dans le(s) dossier(s) (ou les sous-dossiers, s'ils sont sélectionnés) seront automatiquement identifiés.</translation>
+<translation>2) En ajoutant des dossiers entiers à la fois. Les fichiers d'image seront automatiquement identifiés dans le(s) dossier(s) (et dans les sous-dossiers s'ils sont sélectionnés).</translation>
 </phrase>
 
 <phrase>
 <original>In the next step, you will choose how you want the processed images saved.</original>
-<translation>Dans la prochaine étape, vous choisirez les options de sauvegarde que vous désirez pour les images traitées.</translation>
+<translation>À l'étape suivante, vous choisirez les options de sauvegarde que vous désirez pour les images traitées.</translation>
 </phrase>
 
 <phrase>
@@ -10251,12 +10383,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Si "Garder les images dans leur format original" est sélectionné, PhotoDemon va tenter de sauvegarder chaque image dans son format original. Si le format d'origine n'est pas pris en charge, un format standard (JPEG ou PNG, en fonction de la profondeur de couleur) sera utilisé.</translation>
+<translation>Si "Garder les images dans leur format original" est sélectionné, PhotoDemon tentera de sauvegarder chaque image dans son format original. Si le format d'origine n'est pas pris en charge, un format standard (JPEG ou PNG, en fonction de la profondeur de couleur) sera utilisé.</translation>
 </phrase>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Si vous choisissez d'enregistrer des images dans un nouveau format, Veuillez vous assurer que le format que vous avez choisi est approprié pour toutes les images de votre liste. (Par exemple, des images avec transparence doivent être enregistrées dans un format tel que le PNG ou le TIFF qui supportent la transparence !)</translation>
+<translation>Si vous choisissez d'enregistrer des images dans un nouveau format, veuillez vous assurer que le format que vous avez choisi est approprié pour toutes les images de votre liste. (Par exemple, des images avec transparence doivent être enregistrées dans un format qui supportent la transparence tel que le PNG ou le TIFF !)</translation>
 </phrase>
 
 <phrase>
@@ -10326,17 +10458,17 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>fixed size, stretch to fit</original>
-<translation>Étirement pour adapter</translation>
+<translation>Taille fixe, adaptation par étirement</translation>
 </phrase>
 
 <phrase>
 <original>fixed size, fit inclusive</original>
-<translation>Adaptation inclusive</translation>
+<translation>Taille fixe, adaptation inclusive</translation>
 </phrase>
 
 <phrase>
 <original>fixed size, fit exclusive</original>
-<translation>Adaptation exclusive</translation>
+<translation>Taille fixe, adaptation exclusive</translation>
 </phrase>
 
 <phrase>
@@ -10376,12 +10508,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
-<translation>si PhotoDemon ne supporte pas le format d'origine d'une image, un format standard sera utilisé</translation>
+<translation>Si PhotoDemon ne supporte pas le format d'origine d'une image, un format standard sera utilisé</translation>
 </phrase>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(Plus précisément, à la qualité JPEG de 92% pour les photographies, et PNG sans perte pour les non-photos)</translation>
+<translation>(plus précisément, à la qualité JPEG de 92% pour les photographies, et PNG sans perte pour les non-photos)</translation>
 </phrase>
 
 <phrase>
@@ -10416,7 +10548,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Batch conversion canceled.  %1 image(s) were processed before cancelation.  Last processed image was "%2".</original>
-<translation>Conversion par lots annulée. %1 image(s) déjà traitée(s) avant annulation. La dernière image traitée est '%2'</translation>
+<translation>Conversion par lots annulée. %1 image(s) déjà traitée(s) avant annulation. La dernière image traitée est "%2".</translation>
 </phrase>
 
 <phrase>
@@ -10483,12 +10615,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>frame time (in ms)</original>
-<translation>Intervale d'image (en ms)</translation>
+<translation>Intervalle d'image (en ms)</translation>
 </phrase>
 
 <phrase>
 <original>frame time for undefined layers (in ms)</original>
-<translation>Intervale d'image pour les calques non définis (en ms)</translation>
+<translation>Intervalle d'image pour les calques non définis (en ms)</translation>
 </phrase>
 
 <!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10645,7 +10777,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Adobe Swatch Exchange (ASE) files can store multiple palettes inside a single file.  If you select the "append" option, PhotoDemon will add this palette to your existing ASE file.  Any palettes already inside the file will not be modified.</original>
-<translation>Les fichiers Adobe Swatch Exchange (ASE) peuvent contenir plusieurs palettes en un seul ficheir.  Si vous sélectionnez l'option "Ajout" PhotoDemon mettra cette palette dans votre fichier ASE existant. Les palettes déjà présentes dans le fichier ne seront pas modifiées.</translation>
+<translation>Les fichiers Adobe Swatch Exchange (ASE) peuvent contenir plusieurs palettes en un seul fichier.  Si vous sélectionnez l'option "Ajout" PhotoDemon mettra cette palette dans votre fichier ASE existant. Les palettes déjà présentes dans le fichier ne seront pas modifiées.</translation>
 </phrase>
 
 <!-- File_Export_Palette.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10714,7 +10846,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Please select a window to capture.</original>
-<translation>Veuillez sélectionner une fenêtre à capturer.</translation>
+<translation>Sélectionner une fenêtre à capturer.</translation>
 </phrase>
 
 <phrase>
@@ -10739,7 +10871,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>Certains programmes (y compris les applications Windows Store) n'autorisent pas les captures d'écran directes. Si un aperçu de l'application apparaît sous la forme d'un carré noir, vous devrez effectuer une capture d'écran complète du bureau, puis recadrer manuellement la région de fenêtre souhaitée.</translation>
+<translation>Certains programmes (y compris les applications Windows® Store) n'autorisent pas les captures d'écran directes. Si un aperçu de l'application apparaît sous la forme d'un carré noir, vous devrez effectuer une capture d'écran complète du bureau, puis recadrer manuellement la région de fenêtre souhaitée.</translation>
 </phrase>
 
 <phrase>
@@ -10749,7 +10881,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Please select another one.</original>
-<translation>Veuillez en sélectionner un autre.</translation>
+<translation>Merci d'en sélectionner un autre.</translation>
 </phrase>
 
 <!-- File_Import_ScreenCapture.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10793,7 +10925,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Image printed successfully. (Note: depending on your printer, additional print confirmation screens may appear.)</original>
-<translation>L'image est imprimée avec succès. (REMARQUE : en fonction de votre imprimante des écrans de confirmation supplémentaires peuvent apparaître.)</translation>
+<translation>L'image a été imprimée avec succès. (Remarque : en fonction de votre imprimante des écrans de confirmation supplémentaires peuvent apparaître.)</translation>
 </phrase>
 
 <phrase>
@@ -10964,7 +11096,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>box</original>
-<translation>Boite</translation>
+<translation>Boîte</translation>
 </phrase>
 
 <!-- File_Save_DDS.frm contains 23 phrases. 14 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -11045,27 +11177,27 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>app - Windows 10</original>
-<translation>App - Windows 10</translation>
+<translation>App - Windows® 10</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows Vista, 7, 8</original>
-<translation>App - Windows Vista, 7, 8</translation>
+<translation>App - Windows® Vista, 7, 8</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows XP</original>
-<translation>App - Windows XP</translation>
+<translation>App - Windows® XP</translation>
 </phrase>
 
 <phrase>
 <original>app - Windows 95, 98, ME</original>
-<translation>App - Windows 95, 98, ME</translation>
+<translation>App - Windows® 95, 98, ME</translation>
 </phrase>
 
 <phrase>
 <original>web - favicon</original>
-<translation>Web - favicon</translation>
+<translation>Icône favorite - Web</translation>
 </phrase>
 
 <phrase>
@@ -11488,7 +11620,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Peak signal-to-noise ratio (PSNR) between these images</original>
-<translation>Ratio signal-de-crete - bruit (PSNR) entre deux images</translation>
+<translation>Ratio signal-de-crête - bruit (PSNR) entre deux images</translation>
 </phrase>
 
 <phrase>
@@ -11525,7 +11657,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Note: this operation will flatten the image before resizing it.</original>
-<translation>REMARQUE : cette opération va aplatir tous les calques de l'image avant de la redimensionner.</translation>
+<translation>Remarque : cette opération va aplatir tous les calques de l'image avant de la redimensionner.</translation>
 </phrase>
 
 <phrase>
@@ -11599,7 +11731,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation>%1 groupes dans cette image</translation>
+<translation>%1 groupes dans cette image </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -11624,7 +11756,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Copy this tag to the clipboard</original>
-<translation>Copier cette étiquette dans le presse papiers</translation>
+<translation>Copier cette étiquette dans le presse-papiers</translation>
 </phrase>
 
 <phrase>
@@ -11639,7 +11771,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Copy all tags in this group to the clipboard</original>
-<translation>Copier toutes les étiquettes de groupe dans le presse papiers</translation>
+<translation>Copier toutes les étiquettes de groupe dans le presse-papiers</translation>
 </phrase>
 
 <phrase>
@@ -11659,7 +11791,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation>%1 étiquettes dans cette catégorie</translation>
+<translation>%1 étiquettes dans cette catégorie :</translation>
 </phrase>
 
 <phrase>
@@ -11684,12 +11816,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
-<translation>Les balises "Inférées" sont des valeurs hypothétiques déduites d'autres métadonnées. Elles ne sont pas intégrés en tant que métadonnées traditionnelles.</translation>
+<translation>Les balises "Inférées" sont des valeurs hypothétiques déduites d'autres métadonnées. Elles ne sont pas intégrées en tant que métadonnées traditionnelles.</translation>
 </phrase>
 
 <phrase>
 <original>tag restrictions</original>
-<translation>Restrictions d'étiquette</translation>
+<translation>Restrictions d'étiquette </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -11791,12 +11923,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>when changing aspect ratio, fit image to new size by</original>
-<translation>Lors du changement de rapport d'aspect, adapter l'image au nouveau format par</translation>
+<translation>Lors du changement de rapport d'aspect, adapter l'image au nouveau format par :</translation>
 </phrase>
 
 <phrase>
 <original>resampling</original>
-<translation>Ré-échantillonnage</translation>
+<translation>Rééchantillonnage</translation>
 </phrase>
 
 <phrase>
@@ -11902,7 +12034,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>default (above current layer)</original>
-<translation>Par défaut (au dessus du calque actif)</translation>
+<translation>Par défaut (au-dessus du calque actif)</translation>
 </phrase>
 
 <phrase>
@@ -11912,12 +12044,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>top of layer stack</original>
-<translation>Calque en haut de la pile</translation>
+<translation>Haut de la pile de calques</translation>
 </phrase>
 
 <phrase>
 <original>bottom of layer stack</original>
-<translation>Calque au bas de la pile</translation>
+<translation>Bas de la pile de calques</translation>
 </phrase>
 
 <!-- Layer_Add_RasterLayer.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12068,7 +12200,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>blend</original>
-<translation>Mélange</translation>
+<translation>Mélange </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -12088,17 +12220,17 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Click: delete this layer</original>
-<translation>Clic : Supprime ce calque</translation>
+<translation>Clic : supprimer ce calque</translation>
 </phrase>
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation>Clic : monte ce calque vers le haut de la pile</translation>
+<translation>Clic : monter ce calque vers le haut de la pile</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation>Maj + Clic : fusionne ce calque avec le calque au dessus</translation>
+<translation>Maj + Clic : fusionner ce calque avec le calque du dessus</translation>
 </phrase>
 
 <phrase>
@@ -12108,12 +12240,12 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Click: move this layer down the layer stack</original>
-<translation>Clic : descend le calque vers le bas de la pile</translation>
+<translation>Clic : descendre le calque vers le bas de la pile</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer beneath it</original>
-<translation>Maj + Clic : fusionne ce calque avec le calque en dessous</translation>
+<translation>Maj + Clic : fusionner ce calque avec le calque du dessous</translation>
 </phrase>
 
 <phrase>
@@ -12123,7 +12255,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Click: add a duplicate of this layer</original>
-<translation>Clic : duplique ce calque</translation>
+<translation>Clic : dupliquer ce calque</translation>
 </phrase>
 
 <!-- Layerpanel_Layers.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -12198,7 +12330,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 
 <phrase>
 <original>Undo/Redo tools: revert changes made to an image or layer</original>
-<translation>Outils Annuler/Refaire : inverse les changements apportés à une image ou un calque</translation>
+<translation>Outils "Annuler / Refaire" : inverser les changements apportés à une image ou un calque</translation>
 </phrase>
 
 <phrase>
@@ -12224,7 +12356,7 @@ Souhaitez vous sauvegarder votre liste de lots avant de quitter ?</translation>
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
 <translation>Cette option permet de créer une image vide. Un autre moyen de créer des images est d'utiliser une image existante et de la modifier. Pour cela passer par le menu "Fichier -> Importer". 
-Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image si vous la modifiez et que vous désirez garder l'image originale</translation>
+Pensez ensuite à "Enregistrer sous" pour donner un nouveau nom à cette image si vous la modifiez et que vous désirez garder l'image originale.</translation>
 </phrase>
 
 <phrase>
@@ -12234,7 +12366,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>Une autre façon d'ouvrir des images est de les prendre à partir de votre bureau ou d'un dossier de l'Explorateur Windows et ensuite de les glisser-déposer dans PhotoDemon.</translation>
+<translation>Une autre façon d'ouvrir des images est de les prendre à partir de votre bureau ou d'un dossier de l'Explorateur Windows® et ensuite de les glisser-déposer dans PhotoDemon.</translation>
 </phrase>
 
 <phrase>
@@ -12259,7 +12391,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
-<translation>ATTENTION : ceci va écraser le fichier de l'image actuelle. Pour enregistrer dans un fichier différent, utilisez l'icône ou l'option "Enregistrer sous".</translation>
+<translation>Attention : ceci va écraser le fichier de l'image actuelle. Pour enregistrer dans un fichier différent, utilisez l'icône ou l'option "Enregistrer sous".</translation>
 </phrase>
 
 <phrase>
@@ -12284,7 +12416,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation>La commande "Enregistrer sous", ouvre toujours une boîte de dialogue, vous pouvez alors selon vos besoins
+<translation>La commande "Enregistrer sous", ouvre toujours une boîte de dialogue, vous pouvez alors selon vos besoins :
  - indiquer le dossier de destination de l'enregistrement,
  - spécifier un nouveau nom de fichier,
  - changer le format de l'image à sauvegarder.
@@ -12293,13 +12425,13 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Save As (export to new format or filename)</original>
-<translation>Enregistrer sous (pour enregistrer dans un autre format ou sous un nouveau nom de fichier)</translation>
+<translation>Enregistrer sous (exporter dans un autre format ou nom de fichier)</translation>
 </phrase>
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
 <translation>Déplacement manuel
-(cliquer et déplacer l'image dans la zone de travail)</translation>
+(glisser et déplacer l'image dans la zone de travail)</translation>
 </phrase>
 
 <phrase>
@@ -12479,7 +12611,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Decrease brush size</original>
-<translation>Diminuer la taile de brosse</translation>
+<translation>Diminuer la taille de brosse</translation>
 </phrase>
 
 <phrase>
@@ -12675,12 +12807,12 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Allow cropping outside image boundaries (which will enlarge the image).</original>
-<translation>Autoriser le recadrage au delà de la délimitation de l'image (ce qui agrandira l'image)</translation>
+<translation>Autoriser le recadrage au-delà de la délimitation de l'image (ce qui agrandira l'image)</translation>
 </phrase>
 
 <phrase>
 <original>Resolution is used to convert real-world measurements to pixels.  It is ignored for measurements already in pixels.</original>
-<translation>La résolution est utilisée pour convertir les mesures réelles en pixels. Celà est ignoré pour les mesures qui sont déjà en pixels.</translation>
+<translation>La résolution est utilisée pour convertir les mesures réelles en pixels. (les mesures déjà en pixels seront ignorées)</translation>
 </phrase>
 
 <phrase>
@@ -12697,7 +12829,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>This setting forcibly aligns paint strokes to pixel grid centerpoints.  This improves precision (especially at small brush sizes), but brush strokes may appear less natural.</original>
-<translation>Ce paramétrage force l'alignement des tracés de peinture sur les points centraux de la grille de pixels. Ceci augmente la précision (particulièrement pour les petites tailles de brosses), mais le tracé de la brosse peut paraïtre moins naturel.</translation>
+<translation>Ce paramétrage force l'alignement des tracés de peinture sur les points centraux de la grille de pixels. Ceci augmente la précision (particulièrement pour les petites tailles de brosses), mais le tracé de la brosse peut paraître moins naturel.</translation>
 </phrase>
 
 <!-- Toolpanel_Eraser.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13041,7 +13173,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, use the Select -> Feathering menu.</original>
-<translation>Ce curseur d'adoucissement permet des ajustements immédiats pour adoucir la frange en bordure. Pour des raisons de performances, il est limité à de petits rayons. Pour de plus grands rayons d'adoucissement, veuillez utiliser le menu "Sélection -> Atténuation des bords".</translation>
+<translation>Ce curseur d'adoucissement permet des ajustements immédiats pour adoucir la frange en bordure. Pour des raisons de performances, il est limité à de petits rayons. Pour de plus grands rayons d'adoucissement, veuillez utiliser le menu "Sélection -> Adoucissement".</translation>
 </phrase>
 
 <phrase>
@@ -13128,7 +13260,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>(This action is non-destructive.)</original>
-<translation>(Cette action est non-destructive).</translation>
+<translation>(Cette action est non-destructive.)</translation>
 </phrase>
 
 <phrase>
@@ -13185,12 +13317,12 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>fill background</original>
-<translation>Remplir l'arrière plan</translation>
+<translation>Remplir l'arrière-plan</translation>
 </phrase>
 
 <phrase>
 <original>outline background</original>
-<translation>Contour d'arrière plan</translation>
+<translation>Contour d'arrière-plan</translation>
 </phrase>
 
 <phrase>
@@ -13200,7 +13332,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>fill and outline</original>
-<translation>Remplir, Contourer</translation>
+<translation>Remplir / Contourer</translation>
 </phrase>
 
 <phrase>
@@ -13287,7 +13419,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>this hotkey</original>
-<translation>Cette combinaison de touches</translation>
+<translation>Combinaison de touches du raccourci</translation>
 </phrase>
 
 <phrase>
@@ -13347,7 +13479,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>If you proceed, PhotoDemon will only keep the first occurrence of any duplicated hotkeys.</original>
-<translation>Si vous procédez, PhotoDemon gardera seulement la première occurence de n'importe quelle combinaison dupliquée.</translation>
+<translation>Si vous procédez, PhotoDemon gardera seulement la première occurrence de n'importe quelle combinaison dupliquée.</translation>
 </phrase>
 
 <phrase>
@@ -13367,7 +13499,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Please use this hotkey on just one action</original>
-<translation>Svp utilisez cette combinaison de touches clavier pour seulement une action</translation>
+<translation>Veuillez utiliser cette combinaison pour une seule et unique action </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -13377,7 +13509,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Hotkeys must be unique.</original>
-<translation>La combinaison doit être unique</translation>
+<translation>La combinaison de touches doit être unique.</translation>
 </phrase>
 
 <phrase>
@@ -13392,14 +13524,14 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>This will overwrite any hotkey edits.  Are you sure you want to continue?</original>
-<translation>Ceci va réécrire toute combinaison de raccourci éditée. Êtes vous sûr de continuer ?</translation>
+<translation>Ceci va réécrire toute combinaison de raccourci éditée. Êtes-vous sûr de continuer ?</translation>
 </phrase>
 
 <!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
-<translation>Cliquez ici pour des instructions plus détaillées (en Anglais)</translation>
+<translation>Cliquer ici pour des instructions plus détaillées (en Anglais)</translation>
 </phrase>
 
 <phrase>
@@ -13419,7 +13551,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>phrase groups</original>
-<translation>Groupes de phrases</translation>
+<translation>Groupe de phrases</translation>
 </phrase>
 
 <phrase>
@@ -13449,7 +13581,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation>(REMARQUE : CTRL+ENTRÉE sauvegarde automatiquement et va à la phrase suivante).</translation>
+<translation>Remarque : Ctrl+Entrée sauvegarde automatiquement et passe à la phrase suivante.</translation>
 </phrase>
 
 <phrase>
@@ -13479,7 +13611,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation>Fichiers où cette phrase apparait</translation>
+<translation>Fichiers où cette phrase apparait </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -13544,7 +13676,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation>Ces paramètres optionels peuvent accélerer le processus de traduction. Ils ne sont pas sauvegardés avec le fichier de langue.</translation>
+<translation>Ces paramètres optionnels peuvent accélérer le processus de traduction. Ils ne sont pas sauvegardés avec le fichier de langue.</translation>
 </phrase>
 
 <phrase>
@@ -13559,7 +13691,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>edit existing language</original>
-<translation>Éditer un fichier de langue existant</translation>
+<translation>Éditer un fichier de langue existant </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -13579,7 +13711,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Are you sure you want to delete %1?  (This action cannot be undone.)</original>
-<translation>Êtes vous sûr de supprimer %1 ? (cette action ne peut être annulée)</translation>
+<translation>Êtes-vous sûr de supprimer %1 ? (cette action ne peut être annulée)</translation>
 </phrase>
 
 <phrase>
@@ -13589,7 +13721,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>You do not have access to this folder.  Please log in as an administrator and try again.</original>
-<translation>Vous n'avez pas accès à ce dossier. SVP loggez vous comme administrater et réessayez.</translation>
+<translation>Vous n'avez pas accès à ce dossier. Veuillez vous logger comme administrateur et essayer à nouveau.</translation>
 </phrase>
 
 <phrase>
@@ -13611,7 +13743,7 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 <original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>Malheureusement, le fichier de langue en-US de PhotoDemon ne peut être trouvé sur ce PC. Ce fichier est inclus dans la version officielle de PhotoDemon, mais il peut ne pes être inclus dans les versions betas ou en développement.
+<translation>Malheureusement, le fichier de langue en-US de PhotoDemon ne peut être trouvé sur ce PC. Ce fichier est inclus dans la version officielle de PhotoDemon, mais il peut ne pas être inclus dans les versions betas ou en développement.
 
 Pour démarrer une nouvelle traduction, veuillez télécharger une nouvelle copie de PhotoDemon sur photodemon.org</translation>
 </phrase>
@@ -13647,17 +13779,17 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>Save and exit</original>
-<translation>Sauvegarder et fermer.</translation>
+<translation>Sauvegarder et fermer</translation>
 </phrase>
 
 <phrase>
 <original>Step %1</original>
-<translation>Étape %1</translation>
+<translation>Étape %1 </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>select language</original>
-<translation>Sélectionner une langue.</translation>
+<translation>Sélectionner une langue</translation>
 </phrase>
 
 <phrase>
@@ -13672,7 +13804,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>(NOT YET SAVED)</original>
-<translation>(N'EST PAS ENCORE SAUVEGARDÉE)</translation>
+<translation>« EN ATTENTE D'ÊTRE SAUVEGARDÉE »</translation>
 </phrase>
 
 <phrase>
@@ -13682,7 +13814,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>translated phrases</original>
-<translation>Phrases déjà traduites</translation>
+<translation>Phrase(s) déjà traduite(s)</translation>
 </phrase>
 
 <phrase>
@@ -13725,11 +13857,16 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 <translation>(sauvegarde automatique sur %1)</translation>
 </phrase>
 
+<phrase>
+<original>You must select a language file to edit.</original>
+<translation>Vous devez sélectionner un fichier de langue pour pouvoir l'éditer.</translation>
+</phrase>
+
 <!-- Tools_LanguageEditor.frm contains 108 phrases. 44 were duplicates of existing phrases, so only 64 new phrases were written to file. -->
 
 <phrase>
 <original>Create macro from session history</original>
-<translation>Créer une Macro à partir de l'historique</translation>
+<translation>Créer une macro à partir de l'historique d'actions</translation>
 </phrase>
 
 <phrase>
@@ -13744,7 +13881,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>WARNING: this is not a valid macro.  You must include at least one action that modifies the image.</original>
-<translation>ATTENTION : cette macro n'est pas valide. Vous devez inclure au moins une action qui modifie l'image.</translation>
+<translation>Attention : cette macro n'est pas valide. Vous devez inclure au moins une action qui modifie l'image.</translation>
 </phrase>
 
 <phrase>
@@ -13754,7 +13891,7 @@ Pour continuer, veuillez télécharger une copie récente de PhotoDemon sur phot
 
 <phrase>
 <original>WARNING: this is not a valid macro.  The last action cannot occur after the first action.</original>
-<translation>ATTENTION : cette macro n'est pas valide. La dernière action ne peut pas s'effectuer après la première action.</translation>
+<translation>Attention : cette macro n'est pas valide. La dernière action ne peut pas s'effectuer avant la première action.</translation>
 </phrase>
 
 <phrase>
@@ -13847,12 +13984,12 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>library details</original>
-<translation>Détails de la bibliothèque</translation>
+<translation>Détails des bibliothèques </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>library status</original>
-<translation>Statut de la bibliothèque</translation>
+<translation>Statut </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -13862,37 +13999,37 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>library folder</original>
-<translation>Dossier de la bibliothèque</translation>
+<translation>Dossier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>forcibly disable</original>
-<translation>Désactiver de force</translation>
+<translation>Désactiver de force </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>homepage</original>
-<translation>Page d'accueil</translation>
+<translation>Page d'accueil </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>license</original>
-<translation>Licence</translation>
+<translation>Licence </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>%1 summary</original>
-<translation>%1 résumé</translation>
+<translation>Résumé pour "%1"</translation>
 </phrase>
 
 <phrase>
 <original>expected version</original>
-<translation>Version attendue</translation>
+<translation>Version attendue </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>version found</original>
-<translation>Version trouvée</translation>
+<translation>Version trouvée </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -13902,7 +14039,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>Overview</original>
-<translation>Résumé</translation>
+<translation>Aperçu</translation>
 </phrase>
 
 <phrase>
@@ -13922,12 +14059,12 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>incompatible with Windows XP</original>
-<translation>Incompatible avec Windows XP</translation>
+<translation>Incompatible avec Windows® XP</translation>
 </phrase>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation>Incompatible avec Windows 7</translation>
+<translation>Incompatible avec Windows® 7</translation>
 </phrase>
 
 <phrase>
@@ -13962,12 +14099,12 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>This library does not ship with PhotoDemon.</original>
-<translation>Cette bibliothèque n'est pas livrée avec PhotoDemon</translation>
+<translation>Cette bibliothèque n'est pas livrée avec PhotoDemon.</translation>
 </phrase>
 
 <phrase>
 <original>If you interact with %1, PhotoDemon will offer to download and configure this library for you.</original>
-<translation>Si vous interagissez avec %1, PhotoDemon vous proposera de télécharger et configuer cette bibliothèque pour vous.</translation>
+<translation>Si vous interagissez avec %1, PhotoDemon vous proposera de télécharger et configurer cette bibliothèque pour vous.</translation>
 </phrase>
 
 <!-- Tools_PluginManager.frm contains 52 phrases. 26 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
@@ -14058,7 +14195,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>title bar text</original>
-<translation>Texte de la barre de titre</translation>
+<translation>Texte de la barre de titre </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14068,17 +14205,17 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>grid size</original>
-<translation>Taille du damier</translation>
+<translation>Taille du damier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>grid colors</original>
-<translation>Couleurs du damier</translation>
+<translation>Couleurs du damier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>canvas background color</original>
-<translation>Couleur d'arrière plan de la zone de travail</translation>
+<translation>Couleur d'arrière-plan de la zone de travail </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14088,7 +14225,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>after pasting a new layer, activate the Move tool</original>
-<translation>Après avoir collé un nouveau calque, activer l'outil 'Déplacement'</translation>
+<translation>Après avoir collé un nouveau calque, activer l'outil "Déplacement"</translation>
 </phrase>
 
 <phrase>
@@ -14113,7 +14250,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>To help identify transparent pixels, a special grid appears "behind" them.  This setting modifies the grid's appearance.</original>
-<translation>Pour aider la localisation des pixels transparents un damier apparait "derrière" ceux ci. Ces paramètres modifient l'apparence de ce damier.</translation>
+<translation>Pour aider la localisation des pixels transparents un damier apparait "derrière" ceux-ci. Ces paramètres modifient l'apparence de ce damier.</translation>
 </phrase>
 
 <phrase>
@@ -14135,7 +14272,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>Quand des images viennent d'une source extérieure (tel que l'Explorateur de Windows).</translation>
+<translation>Quand des images viennent d'une source extérieure (tel que l'Explorateur de Windows®) </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14160,7 +14297,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>Restaurer automatiquement les sessions interrompues par les mises à jour ou reboot du système</translation>
+<translation>Restaurer automatiquement les sessions interrompues par un redémarrage du système Windows®</translation>
 </phrase>
 
 <phrase>
@@ -14185,7 +14322,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>Si votre PC reboote pendant l'utilisation de PhotoDemon, PhotoDemon peut restaurer automatiquement votre session précédente.</translation>
+<translation>Si votre PC redémarre pendant l'utilisation de PhotoDemon, PhotoDemon peut restaurer automatiquement votre session précédente.</translation>
 </phrase>
 
 <!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
@@ -14197,12 +14334,12 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>when using "Save As", suggest this file format</original>
-<translation>Pour la commande "Enregistrer sous", utiliser comme format de fichier par défaut</translation>
+<translation>Pour la commande "Enregistrer sous", suggérer ce format de fichier </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>Quand "Enregistrer" est utilisé</translation>
+<translation>Quand "Enregistrer" est utilisé </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14227,17 +14364,17 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>Pour la commande "Enregistrer sous", utiliser comme dossier de destination</translation>
+<translation>Pour la commande "Enregistrer sous", utiliser comme dossier de destination </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation>Quand "Enregistrer sous" est utilisé</translation>
+<translation>Quand "Enregistrer sous" est utilisé </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation>Quand "Enregistrer" est utilisé pour une nouvelle image, proposer ce format</translation>
+<translation>En utilisant "Enregistrer" sur une nouvelle image, ce format de fichier est suggéré </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14257,17 +14394,17 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>La plupart des éditeurs photo utilisent le dossier de l'image en cours,. Pour les flux de travail nécessitant de charger les images d'un dossier mais de les sauvegarder dans un dossier différent, indiquez "Le dernier dossier utilisé" pour gagner du temps</translation>
+<translation>La plupart des éditeurs photo utilisent le dossier de l'image en cours. Pour les flux de travail nécessitant de charger les images d'un dossier mais de les sauvegarder dans un dossier différent, indiquer "Le dernier dossier utilisé" pour gagner du temps.</translation>
 </phrase>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation>Automatique (format correspondant aux propriétés de l'image)</translation>
+<translation>Automatique (adapter le format aux propriétés de l'image)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation>Ce paramètre détermine le format initial proposé pour les images jamais sauvegardées auparavant. Le paramètre "Automatique" enregistre par défaut en PDI (format natif PhotoDemon) pour les images avec calques, en JPEG pour les images d'une seule couche sans transparence, et en PNG pour les images d'une seule couche avec transparence.</translation>
+<translation>Ce paramètre détermine le format de fichier suggéré initialement pour les images qui n'ont jamais été enregistrées auparavant. Le paramètre "Automatique" utilise par défaut le format PDI (format natif de PhotoDemon) pour les images à calques, le format JPEG pour les images à calque unique sans transparence et le format PNG pour les images à calque unique avec transparence.</translation>
 </phrase>
 
 <phrase>
@@ -14282,7 +14419,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>Most photo editors default to the current image's format.  For workflows that involve loading images in one format (e.g. RAW) but saving to a new format (e.g. JPEG), use the last-used format to save time.</original>
-<translation>La plupart des éditeurs photo utilisent le format de l'image en cours. Pour les flux de travail nécessitant de charger l'image dans un format (par ex : RAW) mais de la sauvegarder dans un autre format (par ex : JPEG), indiquez "Le dernier format d'image utilisé" pour gagner du temps.</translation>
+<translation>La plupart des éditeurs photo utilisent le format de l'image en cours. Pour les flux de travail nécessitant de charger l'image dans un format (par ex : RAW) mais de la sauvegarder dans un autre format (par ex : JPEG), indiquer "Le dernier format d'image utilisé" pour gagner du temps.</translation>
 </phrase>
 
 <phrase>
@@ -14319,22 +14456,22 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>Compresser les données annuler/refaire au niveau suivant</translation>
+<translation>Compresser les données "Annuler / Refaire" au niveau suivant </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>when decorating interface elements</original>
-<translation>Lors de la décoration des éléments d'interface</translation>
+<translation>Lors de la décoration des éléments d'interface </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>when generating image and layer thumbnail images</original>
-<translation>Lors de la génération des miniatures d'images et de calques</translation>
+<translation>Lors de la génération des miniatures d'images et de calques </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>when rendering the image canvas</original>
-<translation>Lors du rendu de la zone de travail de l'image</translation>
+<translation>Lors du rendu de la zone de travail de l'image </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14344,17 +14481,17 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>no compression (fastest)</original>
-<translation>Aucune compression (plus rapide)</translation>
+<translation>Aucune compression (rapide)</translation>
 </phrase>
 
 <phrase>
 <original>maximum compression (slowest)</original>
-<translation>Compression maximale (plus lent)</translation>
+<translation>Compression maximale (lent)</translation>
 </phrase>
 
 <phrase>
 <original>undo/redo</original>
-<translation>Annuler/refaire</translation>
+<translation>Annuler / Refaire</translation>
 </phrase>
 
 <phrase>
@@ -14399,8 +14536,8 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>Low compression settings require more disk space, but undo/redo operations will be faster.  High compression settings require less disk space, but undo/redo operations will be slower.  Undo data is erased when images are closed, so this setting only affects disk space while images are actively being edited.</original>
-<translation>Un bas taux de compression requiert plus d'espace disque, mais les opérations annuler/refaire seront plus rapides.
-la compression forte requiert moins d'espace disque, mais les opération annuler/refaire seront plus lentes. les données d'annulation sont effacées quand l'image est fermée, donc ce paramètre affecte l'espace disque seulement durant le temps où les images sont éditées</translation>
+<translation>Un bas taux de compression requiert plus d'espace disque, mais les opérations "Annuler / Refaire" seront plus rapides.
+La compression forte requiert moins d'espace disque, mais les opération "Annuler / Refaire" seront plus lentes. les données d'annulation sont effacées quand l'image est fermée, donc ce paramètre affecte l'espace disque seulement durant le temps où les images sont éditées.</translation>
 </phrase>
 
 <!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
@@ -14417,12 +14554,12 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>display rendering intent</original>
-<translation>Afficher l'intention de rendu</translation>
+<translation>Afficher l'intention de rendu </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation>Affichages disponibles</translation>
+<translation>Affichages disponibles </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14437,12 +14574,12 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>color profile for this display</original>
-<translation>Profil de couleur pour cet affichage</translation>
+<translation>Profil de couleur pour cet affichage </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation>Afficher les stratégies</translation>
+<translation>Stratégies d'affichage</translation>
 </phrase>
 
 <phrase>
@@ -14457,22 +14594,22 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>use format-specific color management data, when available</original>
-<translation>Utiliser les données de gestion des couleurs spécifiquesau format, quand elles sont disponibles</translation>
+<translation>Utiliser les données de gestion des couleurs spécifiques au format, quand elles sont disponibles</translation>
 </phrase>
 
 <phrase>
 <original>Please select a color profile</original>
-<translation>Veuillez sélectionner un profil de couleur</translation>
+<translation>Sélectionner un profil de couleur</translation>
 </phrase>
 
 <phrase>
 <original>Primary display</original>
-<translation>Affichage principal</translation>
+<translation>Affichage principal </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>Secondary display</original>
-<translation>Affichage secondaire</translation>
+<translation>Affichage secondaire </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14482,7 +14619,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Ce paramètre est le meilleur choix pour la plupart des utilisateurs. Si vous n'avez aucune idée de ce qu'est la gestion de couleur est, utilisez ce paramètre. Si vous avez correctement configuré un profil d'affichage via le panneau de configuration de Windows, utilisez également ce paramètre.</translation>
+<translation>Ce paramètre est le meilleur choix pour la plupart des utilisateurs. Si vous n'avez aucune idée de ce qu'est la gestion de couleur est, utilisez ce paramètre. Si vous avez correctement configuré un profil d'affichage via le panneau de configuration de Windows®, utilisez également ce paramètre.</translation>
 </phrase>
 
 <phrase>
@@ -14497,7 +14634,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Cliquez sur ce bouton pour faire apparaître une boîte de dialogue "Parcourir" pour trouver le profil de couleur.</translation>
+<translation>Cliquer sur ce bouton pour faire apparaître une boîte de dialogue "Parcourir" pour trouver le profil de couleur.</translation>
 </phrase>
 
 <phrase>
@@ -14507,17 +14644,17 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide a préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à executer, BPC devrait être coché.</translation>
+<translation>BPC est surtout pertinent pour les intentions de rendu colorimétrique, il aide à préserver les détails dans les régions obscures (ombres) de l'image. Pour la plupart des travaux à exécuter, BPC devrait être coché.</translation>
 </phrase>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation>Les profils ICC améliorent la fidélité des couleurs.Même si ce paramètre est éteint, PhotoDemon peut toujours utiliser les profils ICC pour certaines tâches (tel que le tratement de données CMJN),</translation>
+<translation>Les profils ICC améliorent la fidélité des couleurs. Même si ce paramètre est éteint, PhotoDemon peut toujours utiliser les profils ICC pour certaines tâches (tel que le traitement de données CMJN).</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation>Certains formats d'image supportent à la fois les profils ICC et leur propre solution de gestion des couleurs. PhotoDemon préfère toujours les profils ICC, mais quand aucun n'est inclus, les autres solutions de gestion des couleurs peuvent ëtre essayées</translation>
+<translation>Certains formats d'image supportent à la fois les profils ICC et leur propre solution de gestion des couleurs. PhotoDemon préfère toujours les profils ICC, mais quand aucun n'est inclus, les autres solutions de gestion des couleurs peuvent être essayées.</translation>
 </phrase>
 
 <!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -14529,17 +14666,17 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>automatically check for updates</original>
-<translation>Vérification automatique des mises à jour</translation>
+<translation>Vérification automatique des mises à jour </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>allow updates from these tracks</original>
-<translation>Permettre des mises à jour selon ces canaux</translation>
+<translation>Permettre les mises à jour selon ce(s) canal(aux) </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>update options</original>
-<translation>Options de mise à jour</translation>
+<translation>Options de mises à jour</translation>
 </phrase>
 
 <phrase>
@@ -14569,7 +14706,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>Parce que  PhotoDemon est une application portable, les mises à jour ne peuvent être vérifiées lorsque le programme est en cours d'exécution. Par défaut, PhotoDemon va vérifier les mises à jour chaque fois que le programme est lancé, mais vous pouvez réduire cette fréquence, si désiré.</translation>
+<translation>Parce que  PhotoDemon est une application portable, les mises à jour ne peuvent être vérifiées lorsque le programme est en cours d'exécution. Par défaut, PhotoDemon vérifie les mises à jour chaque fois que le programme est lancé, mais vous pouvez réduire cette fréquence, si vous le désirez.</translation>
 </phrase>
 
 <phrase>
@@ -14589,7 +14726,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation>Une des meilleures façons de soutenir PhotoDemon est d'aider les tests de nouvelles versions. Par défaut, PhotoDemon proposera deux versions, stable et bêta, mais les vrais aventuriers peut également essayer les  versions de développeur. (les Versions Développeurs donnent un accès immédiat aux dernières améliorations de programme, mais vous pourriez rencontrer quelques bugs.)</translation>
+<translation>Une des meilleures façons de soutenir PhotoDemon est d'aider les tests de nouvelles versions. Par défaut, PhotoDemon proposera deux versions, "Stable" et "Bêta", mais les vrais aventuriers peuvent également essayer les  versions de "Développeur". (les versions développeurs donnent un accès immédiat aux dernières améliorations de programme, mais vous pourriez rencontrer quelques bogues.)</translation>
 </phrase>
 
 <phrase>
@@ -14601,7 +14738,7 @@ la compression forte requiert moins d'espace disque, mais les opération annuler
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>Vous avez placé PhotoDemon dans un dossier système restreint. Les mesures de sécurité empêchant PhotoDemon de modifier ce dossier, les mises à jour automatiques sont désormais désactivées. Pour les restaurer, vous devez déplacer PhotoDemon vers un dossier non-administrateur, comme Bureau, Documents, ou Téléchargements.
+<translation>Vous avez placé PhotoDemon dans un dossier système restreint. Les mesures de sécurité empêchant PhotoDemon de modifier ce dossier, les mises à jour automatiques sont désormais désactivées. Pour les restaurer, vous devez déplacer PhotoDemon vers un dossier non-administrateur, comme "Bureau", "Documents", ou "Téléchargements".
 
  (Si vous laissez PhotoDemon où il est, n'oubliez pas de visiter de temps en temps photodemon.org pour vérifier les nouvelles versions.)</translation>
 </phrase>
@@ -14658,7 +14795,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation>ATTENTION : ce dossier n'est pas valide (accès interdit). Veuillez fournir un dossier valide. Si un nouveau dossier n'est pas fourni, PhotoDemon utilisera le dossier temporaire du système.</translation>
+<translation>Attention : ce dossier n'est pas valide (accès interdit). Veuillez fournir un dossier valide. Si un nouveau dossier n'est pas fourni, PhotoDemon utilisera le dossier temporaire du système.</translation>
 </phrase>
 
 <phrase>
@@ -14668,27 +14805,27 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>In developer builds, debug data is automatically logged to the program's \Data\Debug folder.  If you encounter bugs in a stable release, please manually activate this setting.  This will help developers resolve your problem.</original>
-<translation>Dans les versions développeur, les données de déboggage sont stockées dans \Data\Debug . Si vous rencontrez des bugs dans une version stable, veuillez activer manuellement ce paramètre. Cela aidera les développeurs à résoudre ces problèmes</translation>
+<translation>Dans les versions développeur, les données de déboggage sont stockées dans \Data\Debug . Si vous rencontrez des bogues dans une version stable, veuillez activer manuellement ce paramètre. Cela aidera les développeurs à résoudre ces problèmes.</translation>
 </phrase>
 
 <phrase>
 <original>current PhotoDemon memory usage</original>
-<translation>Utilisation actuelle de la mémoire par PhotoDemon</translation>
+<translation>Utilisation actuelle de la mémoire par PhotoDemon </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>max PhotoDemon memory usage this session</original>
-<translation>Maximum d'utilisation de la mémoire par PhotoDemon pour cette session</translation>
+<translation>Utilisation maximum de la mémoire par PhotoDemon pour cette session </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>Click to select a new temporary folder.</original>
-<translation>Cliquer pour sélectionner un dossier temporaire</translation>
+<translation>Cliquer pour sélectionner un nouveau dossier temporaire.</translation>
 </phrase>
 
 <phrase>
 <original>This button resets all PhotoDemon settings.  If the program is behaving unexpectedly, this may resolve the problem.</original>
-<translation>Ce bouton réinitialise tous les paramètres de PhotoDemon. Si le programme a un comportement inattendu, cela peut résoude le problème.</translation>
+<translation>Ce bouton réinitialise tous les paramètres de PhotoDemon. Si le programme a un comportement inattendu, cela peut résoudre le problème.</translation>
 </phrase>
 
 <!-- Options_Advanced.frm contains 23 phrases. 9 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -14700,12 +14837,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>font folders</original>
-<translation>Dossiers des polices</translation>
+<translation>Dossiers des polices </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation>Police d'interface</translation>
+<translation>Police de l'interface</translation>
 </phrase>
 
 <phrase>
@@ -14714,21 +14851,11 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 </phrase>
 
 <phrase>
-<original>maximum number of recent fonts to remember</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>recent fonts</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Changes will take effect the next time you start PhotoDemon.</original>
 <translation>Les changements prendront effet au redémarrage de PhotoDemon.</translation>
 </phrase>
 
-<!-- Options_Fonts.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Options_Fonts.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <phrase>
 <original>mouse wheel behavior</original>
@@ -14757,7 +14884,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>Lorsque vous utilisez le Bureau à distance ou une VM (machine virtuelle), l'entrée de la souris à haute résolution peut ne pas fonctionner correctement. C'est un bug Windows de longue date. Dans ces situations, vous pouvez utiliser ce paramètre pour restaurer le comportement correct de la souris.</translation>
+<translation>Lorsque vous utilisez le "Bureau à distance" ou une "VM" (machine virtuelle), l'entrée de la souris à haute résolution peut ne pas fonctionner correctement. C'est un bogue Windows® de longue date. Dans ces situations, vous pouvez utiliser ce paramètre pour restaurer le comportement correct de la souris.</translation>
 </phrase>
 
 <!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14769,17 +14896,17 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>maximum number of recent files to remember</original>
-<translation>Nombre maximum de fichiers récents à indiquer</translation>
+<translation>Nombre maximum de fichiers récents à indiquer </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>recent files</original>
-<translation>Fichiers récents</translation>
+<translation>Fichiers récents </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
 <original>recent file menu text</original>
-<translation>Texte du menu des fichiers récents</translation>
+<translation>Texte du menu des fichiers récents </translation><!-- [This text is before a "colon"] for unbreakable space (Alt + 255) -->
 </phrase>
 
 <phrase>
@@ -14789,7 +14916,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>La largeur du menu "Fichiers récents" est limitée par Windows. Pour éviter que ce menu ne déborde, PhotoDemon peut afficher les noms d'image seulement au lieu du chemin complet des images.</translation>
+<translation>La largeur du menu "Fichiers -> Fichiers récents" est limitée par Windows®. Pour éviter que ce menu ne déborde, PhotoDemon peut n'afficher que les noms d'image, au lieu d'afficher le chemin complet de ces images.</translation>
 </phrase>
 
 <!-- Options_Menus.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14836,7 +14963,7 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Older cameras and photo-editing software may not embed metadata correctly, leading to multiple metadata copies within a single file.  PhotoDemon can automatically resolve duplicate entries for you.</original>
-<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement , impliquant plusieurs copies de métadonnées en un seul fichier. PhotoDemon peut résoudre les entrées en doublons pour vous</translation>
+<translation>Les appareils photo et caméras anciennes peuvent ne pas inclure les métadonnées correctement, impliquant plusieurs copies de métadonnées en un seul fichier. PhotoDemon peut résoudre les entrées en doublons pour vous.</translation>
 </phrase>
 
 <phrase>
@@ -14846,12 +14973,12 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrase>
 <original>Some camera manufacturers store proprietary metadata tags inside image files.  These tags are not generally useful to humans, but PhotoDemon can attempt to extract them anyway.</original>
-<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais PhotoDemon peut toujours tenter de les extraire</translation>
+<translation>Certains fabricants de caméras et appareils photo insèrent des tags de métadonnées dans leurs images. Ces données ne sont pas toujours utiles, mais PhotoDemon peut toujours tenter de les extraire.</translation>
 </phrase>
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces donnnées, PhotoDemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
+<translation>Par défaut, les tags binaires trop longs (comme les miniatures) ne sont pas traités. A la place, Photodeon restitue la taille selon les données incluses. Si vous avez besoin de ces données, PhotoDemon peut convertir en base54 pour une analyse reportée à plus tard.</translation>
 </phrase>
 
 <phrase>
@@ -14868,10 +14995,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2840</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6040 phrases. -->
+<!-- 3232 are duplicates, so only 2840 unique phrases have been written to file. -->
+<!-- These 2840 phrases contain approximately 12182 total words. -->
 
 </pdData>
