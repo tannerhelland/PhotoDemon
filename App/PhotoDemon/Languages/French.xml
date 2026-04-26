@@ -5,7 +5,7 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>fr-FR</langid>
-<langname>Français 1/2 (France)</langname>
+<langname>Français (France)</langname>
 <langversion>2026.04</langversion>
 <langstatus>Complète</langstatus>
 
@@ -14716,6 +14716,16 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 <phrase>
 <original>remove this folder</original>
 <translation>Supprimer ce dossier</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent fonts to remember</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>recent fonts</original>
+<translation></translation>
 </phrase>
 
 <phrase>
