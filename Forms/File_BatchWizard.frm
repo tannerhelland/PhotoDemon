@@ -586,7 +586,7 @@ Begin VB.Form FormBatchWizard
          FontSize        =   9
       End
       Begin PhotoDemon.pdCheckBox chkAddSubfoldersToo 
-         Height          =   375
+         Height          =   330
          Left            =   225
          TabIndex        =   3
          Top             =   5670
@@ -730,6 +730,16 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   661
          Caption         =   "include subfolders"
          Value           =   0   'False
+      End
+      Begin PhotoDemon.pdButton cmdSortList 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   47
+         Top             =   6045
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "sort list"
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -955,10 +965,10 @@ Private Sub cmdAddFiles_Click()
         
         lstFiles.SetAutomaticRedraws False
         
-        Dim tmpFilename As String
-        Do While listOfFiles.PopString(tmpFilename)
-            lstFiles.AddItem tmpFilename
-        Loop
+        Dim i As Long, tmpFilename As String
+        For i = 0 To listOfFiles.GetNumOfStrings() - 1
+            lstFiles.AddItem listOfFiles.GetString(i)
+        Next i
         
         lstFiles.SetAutomaticRedraws True, True
         
@@ -988,10 +998,13 @@ Private Sub cmdAddFolders_Click()
                 
             lstFiles.SetAutomaticRedraws False
             
-            Dim tmpFilename As String
-            Do While listOfFiles.PopString(tmpFilename)
-                lstFiles.AddItem tmpFilename
-            Loop
+            'Ensure the added files appear in the same order they appeared in Explorer
+            listOfFiles.SortLogically False
+            
+            Dim i As Long
+            For i = 0 To listOfFiles.GetNumOfStrings() - 1
+                lstFiles.AddItem listOfFiles.GetString(i)
+            Next i
             
             lstFiles.SetAutomaticRedraws True, True
             
@@ -1621,6 +1634,37 @@ Private Sub cmdSelectOutputPath_Click()
         'Save this new directory as the default path for future usage
         UserPrefs.SetPref_String "Batch Process", "Output Folder", tString
     End If
+    
+End Sub
+
+Private Sub cmdSortList_Click()
+    
+    If (lstFiles.ListCount <= 1) Then Exit Sub
+    
+    'Prep our internal stack
+    Dim tmpList As pdStringStack
+    Set tmpList = New pdStringStack
+    
+    Dim i As Long
+    For i = 0 To lstFiles.ListCount - 1
+        tmpList.AddString lstFiles.List(i, False)
+    Next i
+    
+    'Sort identically to Explorer
+    tmpList.SortLogically False
+    
+    'Rebuild the list
+    lstFiles.SetAutomaticRedraws False, False
+    lstFiles.Clear
+    
+    For i = 0 To tmpList.GetNumOfStrings() - 1
+        lstFiles.AddItem tmpList.GetString(i)
+    Next i
+    
+    Set tmpList = Nothing
+    
+    m_ImageListSaved = False
+    lstFiles.SetAutomaticRedraws True, True
     
 End Sub
 
