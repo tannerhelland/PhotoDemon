@@ -50,7 +50,7 @@ Begin VB.Form FormConvert24bpp
       Width           =   5055
       _ExtentX        =   8916
       _ExtentY        =   2143
-      Caption         =   "background color:"
+      Caption         =   "background color"
    End
 End
 Attribute VB_Name = "FormConvert24bpp"

@@ -115,7 +115,7 @@ Begin VB.Form FormSpherize
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   1296
-      Caption         =   "if pixels lie outside the image..."
+      Caption         =   "if pixels lie outside the image"
    End
 End
 Attribute VB_Name = "FormSpherize"

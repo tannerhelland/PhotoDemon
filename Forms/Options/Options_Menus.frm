@@ -70,7 +70,7 @@ Begin VB.Form options_Menus
       Width           =   7815
       _ExtentX        =   13785
       _ExtentY        =   1508
-      Caption         =   "recent file menu text:"
+      Caption         =   "recent file menu text"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdSpinner tudRecentFiles 

@@ -47,7 +47,7 @@ Begin VB.Form options_Saving
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   1270
-      Caption         =   "when using ""Save As"", suggest this file format:"
+      Caption         =   "when using ""Save As"", suggest this file format"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboSaveBehavior 
@@ -58,7 +58,7 @@ Begin VB.Form options_Saving
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   1270
-      Caption         =   "when ""Save"" is used:"
+      Caption         =   "when ""Save"" is used"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdLabel lblTitle 
@@ -117,7 +117,7 @@ Begin VB.Form options_Saving
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   582
-      Caption         =   "when using ""Save As"", set the initial folder to:"
+      Caption         =   "when using ""Save As"", set the initial folder to"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboSaveAsBehavior 
@@ -128,7 +128,7 @@ Begin VB.Form options_Saving
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   1270
-      Caption         =   "when ""Save as"" is used:"
+      Caption         =   "when ""Save as"" is used"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboSaveFormat 
@@ -139,7 +139,7 @@ Begin VB.Form options_Saving
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   1270
-      Caption         =   "when using ""Save"" on a new image, suggest this file format:"
+      Caption         =   "when using ""Save"" on a new image, suggest this file format"
       FontSizeCaption =   10
    End
 End

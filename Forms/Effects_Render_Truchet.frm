@@ -117,7 +117,7 @@ Begin VB.Form FormFxTruchet
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   1296
-      Caption         =   "random seed:"
+      Caption         =   "random seed"
       MaxLength       =   15
    End
    Begin PhotoDemon.pdColorSelector cpForeground 

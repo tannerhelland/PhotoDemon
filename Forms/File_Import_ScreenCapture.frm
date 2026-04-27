@@ -51,7 +51,7 @@ Begin VB.Form FormScreenCapture
          Width           =   5775
          _ExtentX        =   10186
          _ExtentY        =   5530
-         Caption         =   "currently available programs (listed by window title):"
+         Caption         =   "currently available programs (listed by window title)"
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdCheckBox chkChrome 

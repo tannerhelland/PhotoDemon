@@ -92,7 +92,7 @@ Begin VB.Form FormSquish
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1296
-      Caption         =   "if pixels lie outside the image..."
+      Caption         =   "if pixels lie outside the image"
    End
 End
 Attribute VB_Name = "FormSquish"

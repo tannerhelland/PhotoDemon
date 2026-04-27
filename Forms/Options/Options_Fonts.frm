@@ -48,7 +48,7 @@ Begin VB.Form options_Fonts
       Width           =   8175
       _ExtentX        =   14420
       _ExtentY        =   2990
-      Caption         =   "font folders:"
+      Caption         =   "font folders"
    End
    Begin PhotoDemon.pdLabel lblInfo 
       Height          =   495

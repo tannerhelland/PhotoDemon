@@ -184,7 +184,7 @@ Begin VB.Form FormPalettize
          Width           =   6015
          _ExtentX        =   10610
          _ExtentY        =   3836
-         Caption         =   "palettes in this file:"
+         Caption         =   "palettes in this file"
          FontSizeCaption =   11
       End
       Begin PhotoDemon.pdButton cmdLoadPalette 
@@ -213,7 +213,7 @@ Begin VB.Form FormPalettize
          Width           =   6015
          _ExtentX        =   10610
          _ExtentY        =   450
-         Caption         =   "choose a palette file:"
+         Caption         =   "choose a palette file"
          FontSize        =   11
       End
       Begin PhotoDemon.pdDropDown cboDither 

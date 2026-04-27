@@ -107,7 +107,7 @@ Begin VB.Form FormPerspective
          Width           =   5775
          _ExtentX        =   10186
          _ExtentY        =   1508
-         Caption         =   "if pixels lie outside the image..."
+         Caption         =   "if pixels lie outside the image"
       End
       Begin PhotoDemon.pdSlider sldForeshortening 
          Height          =   495

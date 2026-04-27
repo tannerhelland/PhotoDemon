@@ -49,7 +49,7 @@ Begin VB.Form options_Updates
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   661
-      Caption         =   "automatically check for updates:"
+      Caption         =   "automatically check for updates"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboUpdates 
@@ -61,7 +61,7 @@ Begin VB.Form options_Updates
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   661
-      Caption         =   "allow updates from these tracks:"
+      Caption         =   "allow updates from these tracks"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdLabel lblTitle 

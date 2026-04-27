@@ -113,7 +113,7 @@ Begin VB.Form FormFxClouds
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
-      Caption         =   "random seed:"
+      Caption         =   "random seed"
    End
    Begin PhotoDemon.pdColorSelector cpHighlight 
       Height          =   855

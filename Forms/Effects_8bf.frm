@@ -49,6 +49,110 @@ Begin VB.Form FormEffects8bf
    End
    Begin PhotoDemon.pdContainer pnlOptions 
       Height          =   5175
+      Index           =   1
+      Left            =   120
+      Top             =   960
+      Width           =   10095
+      _ExtentX        =   17806
+      _ExtentY        =   9128
+      Begin PhotoDemon.pdButton cmdFolders 
+         Height          =   615
+         Index           =   1
+         Left            =   7080
+         TabIndex        =   3
+         Top             =   4440
+         Width           =   3015
+         _ExtentX        =   5318
+         _ExtentY        =   1085
+         Caption         =   "add folder..."
+      End
+      Begin PhotoDemon.pdListBox lstFolders 
+         Height          =   2775
+         Left            =   0
+         TabIndex        =   2
+         Top             =   1560
+         Width           =   10095
+         _ExtentX        =   17806
+         _ExtentY        =   4895
+      End
+      Begin PhotoDemon.pdHyperlink hypPlugins 
+         Height          =   375
+         Left            =   0
+         TabIndex        =   8
+         Top             =   600
+         Width           =   10095
+         _ExtentX        =   17806
+         _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   ""
+         RaiseClickEvent =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   0
+         Left            =   0
+         Top             =   120
+         Width           =   10095
+         _ExtentX        =   17806
+         _ExtentY        =   661
+         Caption         =   "default plugin folder"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   375
+         Index           =   1
+         Left            =   0
+         Top             =   1080
+         Width           =   10095
+         _ExtentX        =   17806
+         _ExtentY        =   661
+         Caption         =   "additional folders"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdButton cmdFolders 
+         Height          =   615
+         Index           =   0
+         Left            =   0
+         TabIndex        =   4
+         Top             =   4440
+         Width           =   3015
+         _ExtentX        =   5318
+         _ExtentY        =   1085
+         Caption         =   "remove folder"
+         Enabled         =   0   'False
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   5175
+      Index           =   2
+      Left            =   120
+      Top             =   960
+      Width           =   10095
+      _ExtentX        =   17806
+      _ExtentY        =   9128
+      Begin PhotoDemon.pdProgressBar prgUpdate 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   5
+         Top             =   720
+         Width           =   9855
+         _ExtentX        =   17383
+         _ExtentY        =   873
+      End
+      Begin PhotoDemon.pdLabel lblUpdate 
+         Height          =   375
+         Left            =   0
+         Top             =   240
+         Width           =   10095
+         _ExtentX        =   17806
+         _ExtentY        =   661
+         Alignment       =   2
+         Caption         =   ""
+         FontSize        =   12
+      End
+   End
+   Begin PhotoDemon.pdContainer pnlOptions 
+      Height          =   5175
       Index           =   0
       Left            =   120
       Top             =   960
@@ -97,110 +201,6 @@ Begin VB.Form FormEffects8bf
          Alignment       =   1
          Caption         =   "about this plugin"
          RaiseClickEvent =   -1  'True
-      End
-   End
-   Begin PhotoDemon.pdContainer pnlOptions 
-      Height          =   5175
-      Index           =   1
-      Left            =   120
-      Top             =   960
-      Width           =   10095
-      _ExtentX        =   17806
-      _ExtentY        =   9128
-      Begin PhotoDemon.pdButton cmdFolders 
-         Height          =   615
-         Index           =   1
-         Left            =   7080
-         TabIndex        =   3
-         Top             =   4440
-         Width           =   3015
-         _ExtentX        =   5318
-         _ExtentY        =   1085
-         Caption         =   "add folder..."
-      End
-      Begin PhotoDemon.pdListBox lstFolders 
-         Height          =   2775
-         Left            =   0
-         TabIndex        =   2
-         Top             =   1560
-         Width           =   10095
-         _ExtentX        =   17806
-         _ExtentY        =   4895
-      End
-      Begin PhotoDemon.pdHyperlink hypPlugins 
-         Height          =   375
-         Left            =   0
-         TabIndex        =   8
-         Top             =   600
-         Width           =   10095
-         _ExtentX        =   17806
-         _ExtentY        =   661
-         Alignment       =   2
-         Caption         =   ""
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   375
-         Index           =   0
-         Left            =   0
-         Top             =   120
-         Width           =   10095
-         _ExtentX        =   17806
-         _ExtentY        =   661
-         Caption         =   "default plugin folder:"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   375
-         Index           =   1
-         Left            =   0
-         Top             =   1080
-         Width           =   10095
-         _ExtentX        =   17806
-         _ExtentY        =   661
-         Caption         =   "additional folders:"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdButton cmdFolders 
-         Height          =   615
-         Index           =   0
-         Left            =   0
-         TabIndex        =   4
-         Top             =   4440
-         Width           =   3015
-         _ExtentX        =   5318
-         _ExtentY        =   1085
-         Caption         =   "remove folder"
-         Enabled         =   0   'False
-      End
-   End
-   Begin PhotoDemon.pdContainer pnlOptions 
-      Height          =   5175
-      Index           =   2
-      Left            =   120
-      Top             =   960
-      Width           =   10095
-      _ExtentX        =   17806
-      _ExtentY        =   9128
-      Begin PhotoDemon.pdProgressBar prgUpdate 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   5
-         Top             =   720
-         Width           =   9855
-         _ExtentX        =   17383
-         _ExtentY        =   873
-      End
-      Begin PhotoDemon.pdLabel lblUpdate 
-         Height          =   375
-         Left            =   0
-         Top             =   240
-         Width           =   10095
-         _ExtentX        =   17806
-         _ExtentY        =   661
-         Alignment       =   2
-         Caption         =   ""
-         FontSize        =   12
       End
    End
 End

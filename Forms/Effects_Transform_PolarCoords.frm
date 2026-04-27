@@ -86,7 +86,7 @@ Begin VB.Form FormPolar
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
-      Caption         =   "if pixels lie outside the image..."
+      Caption         =   "if pixels lie outside the image"
    End
    Begin PhotoDemon.pdDropDown cboConvert 
       Height          =   735
