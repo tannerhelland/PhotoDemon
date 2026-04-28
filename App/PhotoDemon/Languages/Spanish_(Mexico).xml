@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>español (México)</langname>
-<langversion>9.0.83</langversion>
+<langversion>9.0.84</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia, Miguel Chamorro, DeepL.com</author>
@@ -7951,16 +7951,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>búsqueda de nuevos plugins</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>sobre este plugin</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>añadir carpeta</translation>
 </phrase>
@@ -7978,6 +7968,16 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <phrase>
 <original>remove folder</original>
 <translation>eliminar la carpeta</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>búsqueda de nuevos plugins</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>sobre este plugin</translation>
 </phrase>
 
 <phrase>
@@ -8632,7 +8632,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Imagen de fritura profunda</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9887,6 +9887,71 @@ Los archivos reparados se han guardado en la carpeta de destino.  Los archivos n
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>conservar la estructura de las carpetas de entrada</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Seleccione una carpeta de destino</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>minúsculas</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>agregar un prefijo a cada nombre de archivo</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>añadir un sufijo a cada nombre de archivo</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>quitar el texto siguiente (si se encuentra) de cada nombre de archivo</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>obligar a cada nombre de archivo, incluida la extensión, para el siguiente caso</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>MAYÚSCULAS</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>reemplazar los espacios en los nombres de archivo con caracteres de subrayado</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>utilizar la concordancia entre mayúsculas y minúsculas</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>tras haber sido las imágenes, guardarlas con el siguiente nombre</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>Opciones de cambio de nombre adicionales</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>imágenes de salida a esta carpeta</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>al importar imágenes vectoriales</translation>
 </phrase>
@@ -10017,73 +10082,13 @@ Los archivos reparados se han guardado en la carpeta de destino.  Los archivos n
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(proceso de conversión por lotes aparecerá aquí en tiempo de ejecución)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>conservar la estructura de las carpetas de entrada</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>Seleccione una carpeta de destino</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>minúsculas</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>agregar un prefijo a cada nombre de archivo</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>añadir un sufijo a cada nombre de archivo</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>quitar el texto siguiente (si se encuentra) de cada nombre de archivo</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>obligar a cada nombre de archivo, incluida la extensión, para el siguiente caso</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>MAYÚSCULAS</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>reemplazar los espacios en los nombres de archivo con caracteres de subrayado</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>utilizar la concordancia entre mayúsculas y minúsculas</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>tras haber sido las imágenes, guardarlas con el siguiente nombre</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>Opciones de cambio de nombre adicionales</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>imágenes de salida a esta carpeta</translation>
 </phrase>
 
 <phrase>
@@ -10425,7 +10430,7 @@ Would tarde te gusta guardar su lista de lotes antes de salir?</translation>
 <translation>Estimación de tiempo restante</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14853,10 +14858,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2811</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6014 phrases. -->
+<!-- 3203 are duplicates, so only 2811 unique phrases have been written to file. -->
+<!-- These 2811 phrases contain approximately 12161 total words. -->
 
 </pdData>

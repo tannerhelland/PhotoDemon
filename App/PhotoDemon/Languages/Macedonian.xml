@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>8.9.1780</langversion>
+<langversion>8.9.1781</langversion>
 <langstatus>80% complete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -7941,16 +7941,6 @@ If сакате да ја спаси со друго име на датотек�
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation></translation>
 </phrase>
@@ -7967,6 +7957,16 @@ If сакате да ја спаси со друго име на датотек�
 
 <phrase>
 <original>remove folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
 <translation></translation>
 </phrase>
 
@@ -8622,7 +8622,7 @@ If сакате да ја спаси со друго име на датотек�
 <translation>Длабоко пржење слика</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9877,6 +9877,71 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Изберете папка дестинација</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>мали букви</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>додадете префиксот на секое име на датотека</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>додадете наставката на секое име на датотека</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>отстранување на следниов текст (доколку постои) од секое име на датотека</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>сила секое име на датотека, вклучувајќи ги и проширувањето, до следниот случај</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>ГОЛЕМИТЕ</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>замени простори во имиња на датотеки со Долни</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>користат мали букви појавување</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>по сликите се обработуваат, спаси ги со следново име</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>дополнителни опции преименување</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>излез слики во оваа папка</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation></translation>
 </phrase>
@@ -10007,73 +10072,13 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
-<original>(batch conversion process will appear here at run-time)</original>
-<translation>(Процес серија конверзија тука ќе се појави во време на извршување)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
+<original>sort list</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>select destination folder</original>
-<translation>Изберете папка дестинација</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>мали букви</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>додадете префиксот на секое име на датотека</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>додадете наставката на секое име на датотека</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>отстранување на следниов текст (доколку постои) од секое име на датотека</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>сила секое име на датотека, вклучувајќи ги и проширувањето, до следниот случај</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>ГОЛЕМИТЕ</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>замени простори во имиња на датотеки со Долни</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>користат мали букви појавување</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>по сликите се обработуваат, спаси ги со следново име</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>дополнителни опции преименување</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>излез слики во оваа папка</translation>
+<original>(batch conversion process will appear here at run-time)</original>
+<translation>(Процес серија конверзија тука ќе се појави во време на извршување)</translation>
 </phrase>
 
 <phrase>
@@ -10415,7 +10420,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>Проценка на преостанатото време</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14839,10 +14844,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2811</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6014 phrases. -->
+<!-- 3203 are duplicates, so only 2811 unique phrases have been written to file. -->
+<!-- These 2811 phrases contain approximately 12161 total words. -->
 
 </pdData>

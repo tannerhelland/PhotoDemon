@@ -1976,6 +1976,14 @@ Private Sub PrepareForBatchConversion()
         
     End If
     
+    'To correctly supply leading 0s (when the user has requested "output files with ascending numeric filenames"),
+    ' we need to know the length - in characters - of the total number of files in this batch list.
+    Dim numOfFilesAsString As String
+    numOfFilesAsString = Trim$(Str$(totalNumOfFiles))
+    
+    Dim formatStringForNumbers As String
+    formatStringForNumbers = String$(Len(numOfFilesAsString), "0")
+    
     'This is where the fun begins.  Loop through every file in the list, and process them one-by-one using the options requested
     ' by the user.
     For curBatchFile = 0 To totalNumOfFiles - 1
@@ -2009,7 +2017,7 @@ Private Sub PrepareForBatchConversion()
                 
                 'With the macro complete, prepare the file for saving.  (This function will determine both
                 ' a final filename and a proper file extension.)
-                dstFilename = GetFinalFilename(srcFilename, outputPath, dstListFiles, curBatchFile)
+                dstFilename = GetFinalFilename(srcFilename, outputPath, dstListFiles, curBatchFile, formatStringForNumbers)
                 
                 'Request a save from the PhotoDemon_SaveImage method, and pass it the parameter string created by the user
                 ' on the matching wizard panel.  Note that we need to silently swap-in animation parameters instead of
@@ -2108,24 +2116,27 @@ Private Sub ApplyEditOperations()
 End Sub
 
 'Do not pass invalid files or paths to this function.  It does not validate inputs.
-Private Function GetFinalFilename(ByRef originalFilename As String, ByVal outputPath As String, ByRef dstListFiles As pdStringStack, ByVal curBatchFile As Long) As String
+Private Function GetFinalFilename(ByRef originalFilename As String, ByVal outputPath As String, ByRef dstListFiles As pdStringStack, ByVal curBatchFile As Long, ByRef formatStringForNumbers As String) As String
     
-    'Before we even think about output path, start by stripping the incoming filename
-    ' down to just its filename.
+    'Before we even think about output path, we need to build a base filename.
+    ' The user currently has two settings for this:
+    ' 1) Original filename
+    ' 2) Ascending numbers
     Dim tmpFilename As String
-    tmpFilename = Files.FileGetName(originalFilename, True)
     
-    'Start working on building a filename that matches the user's output settings.
-    
-    'First, append any prefix/suffix text
     If (cmbOutputOptions.ListIndex = 0) Then
-        If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
-        If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
+        tmpFilename = Files.FileGetName(originalFilename, True)
     Else
-        tmpFilename = curBatchFile + 1
-        If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
-        If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
+        
+        '(The caller is responsible for giving us the format string they want to use for ascending numbers.
+        ' PD uses this to enforce leading zeroes in numeric output, to ensure consistent sorting in other tools.)
+        tmpFilename = Format$(curBatchFile + 1, formatStringForNumbers)
+        
     End If
+    
+    'Next, append any prefix/suffix text
+    If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
+    If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
     
     'If requested, remove any specified text from the filename
     If chkRenameRemove.Value And (LenB(txtRenameRemove) <> 0) Then
@@ -2133,11 +2144,11 @@ Private Function GetFinalFilename(ByRef originalFilename As String, ByVal output
         'Use case-sensitive or case-insensitive matching as requested
         If chkRenameCaseSensitive.Value Then
             If (InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) <> 0) Then
-                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbBinaryCompare)
+                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, Compare:=vbBinaryCompare)
             End If
         Else
             If (InStr(1, tmpFilename, txtRenameRemove, vbTextCompare) <> 0) Then
-                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbTextCompare)
+                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, Compare:=vbTextCompare)
             End If
         End If
         

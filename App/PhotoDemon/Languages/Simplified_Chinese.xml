@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（2026.1 build 120）</langname>
-<langversion>2026.2.16</langversion>
+<langversion>2026.2.17</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on Feb 9, 2026</author>
@@ -7948,16 +7948,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>扫描新插件</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>关于这个插件</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>添加文件夹</translation>
 </phrase>
@@ -7975,6 +7965,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>remove folder</original>
 <translation>移除文件夹</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>扫描新插件</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>关于这个插件</translation>
 </phrase>
 
 <phrase>
@@ -8629,7 +8629,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>应用甜甜圈效果到图像</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9884,6 +9884,71 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>保留输入文件夹结构</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>选择目录文件夹</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>小写</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>为每个文件名添加一个前缀</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>为每个文件名添加后缀</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>从每个文件名中删除以下文本（如果有的话）</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>强制每个文件名（包括扩展名）如下</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>大写</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>用下划线替换文件名中的空格</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>区分大小写</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>图像处理后，用以下名称保存</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>其他重命名选项</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>输出图像到这个文件夹</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>导入矢量图像时</translation>
 </phrase>
@@ -10014,73 +10079,13 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>（批量转换过程中运行时会出现在这里）</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>保留输入文件夹结构</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>选择目录文件夹</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>小写</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>为每个文件名添加一个前缀</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>为每个文件名添加后缀</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>从每个文件名中删除以下文本（如果有的话）</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>强制每个文件名（包括扩展名）如下</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>大写</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>用下划线替换文件名中的空格</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>区分大小写</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>图像处理后，用以下名称保存</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>其他重命名选项</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>输出图像到这个文件夹</translation>
 </phrase>
 
 <phrase>
@@ -10422,7 +10427,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>估计剩余时间</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14850,11 +14855,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2811</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6014 phrases. -->
+<!-- 3203 are duplicates, so only 2811 unique phrases have been written to file. -->
+<!-- These 2811 phrases contain approximately 12161 total words. -->
 
 <special-translations>
 

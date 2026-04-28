@@ -6,7 +6,7 @@
 
 <langid>nl-NL</langid>
 <langname>Dutch (Nederlands)</langname>
-<langversion>2025.12.10</langversion>
+<langversion>2025.12.11</langversion>
 <langstatus>99% complete</langstatus>
 
 <author>Rudi Klein</author>
@@ -7955,16 +7955,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>scan voor nieuwe plugins</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>over deze plugin</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>map toevoegen</translation>
 </phrase>
@@ -7982,6 +7972,16 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>remove folder</original>
 <translation>map verwijderen</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>scan voor nieuwe plugins</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>over deze plugin</translation>
 </phrase>
 
 <phrase>
@@ -8636,7 +8636,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Frituren afbeelding</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9891,6 +9891,71 @@ Gerepareerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden bl
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>behoud invoermapstructuur</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Selecteer doelmap</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>kleine letters</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>voeg een voorvoegsel toe aan elke bestandsnaam</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>voeg een achtervoegsel toe aan elke bestandsnaam</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>verwijder de volgende tekst (indien gevonden) van elke bestandsnaam</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>forceer elke bestandsnaam, inclusief de extensie, tot het volgende geval</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>HOOFDLETTERS</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>vervang spaties in bestandsnamen met onderstrepingstekens</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>gebruik hoofdlettergevoelige matching</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>nadat ze zijn verwerkt, sla de afbeeldingen op met volgende naam</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>bijkomende hernoemen opties</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>Bewaar afbeeldingen in deze map</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>bij het importeren van vectorafbeeldingen</translation>
 </phrase>
@@ -10021,73 +10086,13 @@ Gerepareerde bestanden zijn opgeslagen in de doelmap. Onherstelbare bestanden bl
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(batch-conversie proces zal hier verschijnen in run-time)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>behoud invoermapstructuur</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>Selecteer doelmap</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>kleine letters</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>voeg een voorvoegsel toe aan elke bestandsnaam</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>voeg een achtervoegsel toe aan elke bestandsnaam</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>verwijder de volgende tekst (indien gevonden) van elke bestandsnaam</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>forceer elke bestandsnaam, inclusief de extensie, tot het volgende geval</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>HOOFDLETTERS</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>vervang spaties in bestandsnamen met onderstrepingstekens</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>gebruik hoofdlettergevoelige matching</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>nadat ze zijn verwerkt, sla de afbeeldingen op met volgende naam</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>bijkomende hernoemen opties</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>Bewaar afbeeldingen in deze map</translation>
 </phrase>
 
 <phrase>
@@ -10429,7 +10434,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Geschatte resterende tijd</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14857,10 +14862,10 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2811</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6014 phrases. -->
+<!-- 3203 are duplicates, so only 2811 unique phrases have been written to file. -->
+<!-- These 2811 phrases contain approximately 12161 total words. -->
 
 </pdData>

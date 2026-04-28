@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.44</langversion>
+<langversion>1.0.45</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -8388,18 +8388,6 @@ Pokud jej chcete uložit pod jiným názvem souboru, vyberte 'Zrušit' a poté p
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>hledat nové pluginy
-</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>o tomto pluginu
-</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>přidat složku
 </translation>
@@ -8420,6 +8408,18 @@ Pokud jej chcete uložit pod jiným názvem souboru, vyberte 'Zrušit' a poté p
 <phrase>
 <original>remove folder</original>
 <translation>odstranit složku
+</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>hledat nové pluginy
+</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>o tomto pluginu
 </translation>
 </phrase>
 
@@ -9143,7 +9143,7 @@ Pokud jej chcete uložit pod jiným názvem souboru, vyberte 'Zrušit' a poté p
 </translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -10457,6 +10457,71 @@ Zkuste prosím jinou složku.</translation>
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>zachovat strukturu vstupní složky</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Vyberte cílovou složku</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>malá písmena</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>přidat předponu ke každému souboru</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>přidat příponu ke každému souboru</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>odstraňte následující text (pokud byl nalezen) z každého souboru</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>vynutit každý název souboru, včetně přípony, na následující případ</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>VELKÁ PÍSMENA</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>nahraďte mezery v názvech souborů podtržítky</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>používejte přiřazování rozlišující malá a velká písmena</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>po zpracování obrázků je uložte s následujícím názvem</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>další možnosti přejmenování</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>výstup obrázků do této složky</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>při importu vektorových obrázků</translation>
 </phrase>
@@ -10587,73 +10652,13 @@ Zkuste prosím jinou složku.</translation>
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(proces dávkové konverze se zde objeví za běhu)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>zachovat strukturu vstupní složky</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>Vyberte cílovou složku</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>malá písmena</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>přidat předponu ke každému souboru</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>přidat příponu ke každému souboru</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>odstraňte následující text (pokud byl nalezen) z každého souboru</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>vynutit každý název souboru, včetně přípony, na následující případ</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>VELKÁ PÍSMENA</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>nahraďte mezery v názvech souborů podtržítky</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>používejte přiřazování rozlišující malá a velká písmena</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>po zpracování obrázků je uložte s následujícím názvem</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>další možnosti přejmenování</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>výstup obrázků do této složky</translation>
 </phrase>
 
 <phrase>
@@ -11000,7 +11005,7 @@ Chcete před ukončením uložit seznam dávek?</translation>
 <translation>Odhad zbývajícího času</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -15490,10 +15495,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2811</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6014 phrases. -->
+<!-- 3203 are duplicates, so only 2811 unique phrases have been written to file. -->
+<!-- These 2811 phrases contain approximately 12161 total words. -->
 
 </pdData>

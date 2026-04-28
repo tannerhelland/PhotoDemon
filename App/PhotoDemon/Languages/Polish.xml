@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.80</langversion>
+<langversion>9.0.81</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -7945,16 +7945,6 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>Skanuj w poszukiwaniu nowych wtyczek</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>Informacje o tej wtyczce</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>Dodaj folder</translation>
 </phrase>
@@ -7972,6 +7962,16 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <phrase>
 <original>remove folder</original>
 <translation>Usuń folder</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>Skanuj w poszukiwaniu nowych wtyczek</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>Informacje o tej wtyczce</translation>
 </phrase>
 
 <phrase>
@@ -8626,7 +8626,7 @@ Jeśli chcesz zapisać go pod inną nazwą pliku, wybierz 'Anuluj', a następnie
 <translation>Głębokie wypalanie obrazu</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9880,6 +9880,71 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>Zachowaj strukturę folderów wejściowych</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Wybierz folder docelowy</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>małe litery</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>Dodaj prefiks do każdej nazwy pliku</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>Dodaj suffix do każdej nazwy pliku</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>Usuń następujący tekst (jeśli znaleziono) z każdej nazwy pliku</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>Wymuś każdą nazwę pliku, łącznie z rozszerzeniem, w następującym przypadku</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>DUŻE LITERY</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>Zamień spacje w nazwach plików na podkreślenia (_)</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>Uwzględnij wielkość liter</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>Po przetworzeniu obrazów, zapisz z następującą nazwą</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>Dodatkowe opcje zmiany nazwy</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>Wyślij obrazy do tego folderu</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>Podczas importu obrazów wektorowych</translation>
 </phrase>
@@ -10010,73 +10075,13 @@ Naprawione pliki zostały zapisane w folderze docelowym. Pliki nie naprawione po
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(proces konwersji wsadowej pojawi się tutaj w czasie wykonywania)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>Zachowaj strukturę folderów wejściowych</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>Wybierz folder docelowy</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>małe litery</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>Dodaj prefiks do każdej nazwy pliku</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>Dodaj suffix do każdej nazwy pliku</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>Usuń następujący tekst (jeśli znaleziono) z każdej nazwy pliku</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>Wymuś każdą nazwę pliku, łącznie z rozszerzeniem, w następującym przypadku</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>DUŻE LITERY</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>Zamień spacje w nazwach plików na podkreślenia (_)</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>Uwzględnij wielkość liter</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>Po przetworzeniu obrazów, zapisz z następującą nazwą</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>Dodatkowe opcje zmiany nazwy</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>Wyślij obrazy do tego folderu</translation>
 </phrase>
 
 <phrase>
@@ -10418,7 +10423,7 @@ Czy chcesz zapisać swoją listę wsadową przed wyjściem?</translation>
 <translation>Szacowany pozostały czas</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -14846,10 +14851,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2811</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6014 phrases. -->
+<!-- 3203 are duplicates, so only 2811 unique phrases have been written to file. -->
+<!-- These 2811 phrases contain approximately 12161 total words. -->
 
 </pdData>
