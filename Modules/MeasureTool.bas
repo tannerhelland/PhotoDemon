@@ -108,15 +108,15 @@ Public Sub NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftConstan
         m_HoverPointIndex = m_ActivePointIndex
         m_Points(m_ActivePointIndex).x = Int(imgX + 0.5!)
         m_Points(m_ActivePointIndex).y = Int(imgY + 0.5!)
+        
+        'Notify the UI of the new measurements, so it can update its measurement values accordingly
+        toolpanel_Measure.UpdateUIText
     
     'If the left mouse button is *not* down, simply update the current "hover point" index
     Else
         m_HoverPointIndex = IsMouseOverPoint(imgX, imgY)
     End If
     
-    'Notify the UI of the new measurements, so it can update its measurement values accordingly
-    toolpanel_Measure.UpdateUIText
-
 End Sub
 
 Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfMouseMovements As Long, ByVal clickEventAlsoFiring As Boolean)

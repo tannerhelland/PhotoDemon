@@ -484,8 +484,9 @@ Public Sub UpdateUIText()
     'Use a pdFont object for string measuring
     Dim cFont As pdFont, cFontBold As pdFont
     Set cFont = New pdFont: Set cFontBold = New pdFont
-    cFont.SetFontSize 10!: cFontBold.SetFontSize 10!
+    cFont.SetFontSize 10!
     cFont.SetFontBold False
+    cFontBold.SetFontSize 10!
     cFontBold.SetFontBold True
     
     'Calculate padding constants and initial offset (for the first label)
@@ -507,8 +508,8 @@ Public Sub UpdateUIText()
     For i = 0 To 3
         
         'Find the largest of the two visible title strings
-        maxWidth = cFont.GetWidthOfString(lblMeasure(i).Caption)
-        If lblMeasure(i + 4).Visible Then testWidth = cFont.GetWidthOfString(lblMeasure(i + 4).Caption)
+        maxWidth = cFont.GetWidthOfString(lblMeasure(i).CaptionLocalized)
+        If lblMeasure(i + 4).Visible Then testWidth = cFont.GetWidthOfString(lblMeasure(i + 4).CaptionLocalized)
         If (testWidth > maxWidth) Then maxWidth = testWidth
         maxWidth = maxWidth + 2 'safety margin for antialiasing and hinting
         
@@ -518,19 +519,19 @@ Public Sub UpdateUIText()
         
         'Increment offset and repeat for the value label(s), noting that we need to use the bolded
         ' font measurer (because those labels use a bold font).
-        xOffset = xOffset + lblMeasure(i).GetWidth + xPadding
+        xOffset = xOffset + maxWidth + xPadding
         
-        maxWidth = cFontBold.GetWidthOfString(lblValue(i).Caption)
-        If lblValue(i + 4).Visible Then testWidth = cFontBold.GetWidthOfString(lblValue(i + 4).Caption)
+        maxWidth = cFontBold.GetWidthOfString(lblValue(i).CaptionLocalized)
+        If lblValue(i + 4).Visible Then testWidth = cFontBold.GetWidthOfString(lblValue(i + 4).CaptionLocalized)
         If (testWidth > maxWidth) Then maxWidth = testWidth
+        maxWidth = maxWidth + 2 'safety margin for antialiasing and hinting
         
         lblValue(i).SetPositionAndSize xOffset, yOffset, maxWidth, lblValue(i).GetHeight
         If lblValue(i + 4).Visible Then lblValue(i + 4).SetPositionAndSize xOffset, yOffset2, maxWidth, lblValue(i + 4).GetHeight
         
-        xOffset = xOffset + lblValue(i).GetWidth + xPadding * 2
+        xOffset = xOffset + maxWidth + xPadding
         
     Next i
-    
     
 End Sub
 
