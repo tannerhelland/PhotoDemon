@@ -1294,11 +1294,14 @@ Public Sub DuplicateCurrentImage()
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
     sTitle = PDImages.GetActiveImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
-    If (LenB(sTitle) = 0) Then sTitle = g_Language.TranslateMessage("[untitled image]")
-    sTitle = sTitle & " - " & g_Language.TranslateMessage("Copy")
+    If (LenB(sTitle) = 0) Then
+        sTitle = g_Language.TranslateMessage("[untitled image]")
+    Else
+        sTitle = TextSupport.IncrementTrailingNumber(sTitle)
+    End If
     
     Loading.LoadFileAsNewImage tmpDuplicationFile, sTitle, False
-                    
+    
     'Be polite and remove the temporary file
     Files.FileDeleteIfExists tmpDuplicationFile
     
