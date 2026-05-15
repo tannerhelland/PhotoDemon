@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha Build 201.1</langversion>
+<langversion>2026.1 Alpha Build 213</langversion>
 <langstatus>Auf aktuellem Stand</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3134,7 +3134,7 @@ Deskription: %2
 
 <phrase>
 <original>text style preset</original>
-<translation></translation>
+<translation>Textstil-Preset</translation>
 </phrase>
 
 <phrase>
