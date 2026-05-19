@@ -155,7 +155,7 @@
 
 <phrase>
 <original>Cut merged</original>
-<translation>Taglia elementi uniti</translation>
+<translation>Taglia livelli visibili</translation>
 </phrase>
 
 <phrase>
@@ -165,7 +165,7 @@
 
 <phrase>
 <original>Copy merged</original>
-<translation>Copia elementi uniti</translation>
+<translation>Copia livelli visibili</translation>
 </phrase>
 
 <phrase>
@@ -2218,7 +2218,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>Questa azione convertirà i livelli di testo e vettoriali in livelli di immagine (raster), il che significa che non è più possibile modificare le impostazioni specifiche del livello come testo, font, colore o forma.</translation>
+<translation>Questa azione convertirà i livelli di testo e vettoriali in livelli di immagine (raster), e non sarà più possibile modificare le impostazioni specifiche del livello come testo, font, colore o forma.</translation>
 </phrase>
 
 <phrase>
@@ -2279,7 +2279,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 <translation>Sfortunatamente, l'immagine '%1' non è stata trovata.
 
- Se l'immagine era originariamente situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o ricollega il supporto e riprova.</translation>
+Se l'immagine era originariamente situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o ricollega il supporto e riprova.</translation>
 </phrase>
 
 <phrase>
@@ -2413,7 +2413,7 @@ Per favore verifica che queste immagini esistano e che utilizzino un formato imm
 (Press No to continue recording.)</original>
 <translation>Questa macro non contiene azioni registrabili.  Sei sicuro di voler interrompere la registrazione? 
 
- (Premere No per continuare la registrazione).</translation>
+(Premere No per continuare la registrazione).</translation>
 </phrase>
 
 <phrase>
@@ -3133,7 +3133,7 @@ Descrizione: %2
 
 <phrase>
 <original>text style preset</original>
-<translation></translation>
+<translation>preimpostazione stile del testo</translation>
 </phrase>
 
 <phrase>
@@ -7786,7 +7786,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>use merged image</original>
-<translation>utilizzare l'immagine fusa</translation>
+<translation>utilizzare l'immagine unita</translation>
 </phrase>
 
 <phrase>
@@ -10089,7 +10089,7 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 
 <phrase>
 <original>sort list</original>
-<translation></translation>
+<translation>ordina lista</translation>
 </phrase>
 
 <phrase>
