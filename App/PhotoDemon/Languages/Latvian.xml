@@ -6,7 +6,7 @@
 
 <langid>lv-LV</langid>
 <langname>Latvian (latviešu)</langname>
-<langversion>2028.8 Alfa (Build 25).50</langversion>
+<langversion>2028.8 Alfa (Build 25).52</langversion>
 <langstatus>Up-to-date</langstatus>
 
 <author>Maris Ozolins (aka Mariozo)</author>
@@ -3133,6 +3133,11 @@ Apraksts: %2
 </phrase>
 
 <phrase>
+<original>text style preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Mainīt atlasi</translation>
 </phrase>
@@ -3151,7 +3156,7 @@ Kad esat pabeidzis, noklikšķiniet uz pogas Iesniegt jaunu problēmu.  Paldies!
 <translation>Kļūdu ziņojuma instrukcijas</translation>
 </phrase>
 
-<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 135 phrases. 72 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -7953,16 +7958,6 @@ Ja vēlaties to saglabāt ar citu faila nosaukumu, izvēlieties "Atcelt" un pēc
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>jaunu spraudņu skenēšana</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>par šo spraudni</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>pievienot mapi</translation>
 </phrase>
@@ -7980,6 +7975,16 @@ Ja vēlaties to saglabāt ar citu faila nosaukumu, izvēlieties "Atcelt" un pēc
 <phrase>
 <original>remove folder</original>
 <translation>noņemt mapi</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>jaunu spraudņu skenēšana</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>par šo spraudni</translation>
 </phrase>
 
 <phrase>
@@ -8634,7 +8639,7 @@ Ja vēlaties to saglabāt ar citu faila nosaukumu, izvēlieties "Atcelt" un pēc
 <translation>Fritēšanas attēls</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9889,6 +9894,71 @@ Labotie faili ir saglabāti mērķa mapē.  Nelabotie faili paliek savās sākot
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>saglabāt ievades mapju struktūru</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Atlasiet galamērķa mapi</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>mazie burti</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>pievienot prefiksu katram faila nosaukumam</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>katram faila nosaukumam pievienot sufiksu</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>no katra faila nosaukuma dzēst šādu tekstu (ja tāds ir atrasts)</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>katram faila nosaukumam, ieskaitot paplašinājumu, piespiedu kārtā nosaka šādu gadījumu</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>UPPERCASE</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>aizstāt atstarpes failu nosaukumos ar pasvītrojumiem</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>izmantot lielo un mazo burtu un atbilžu saskaņošanu</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>pēc attēlu apstrādes saglabājiet tos ar šādu nosaukumu</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>papildu pārdēvēšanas izvēles</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>izejas attēlus uz šo mapi</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>importējot vektoru attēlus</translation>
 </phrase>
@@ -10019,73 +10089,13 @@ Labotie faili ir saglabāti mērķa mapē.  Nelabotie faili paliek savās sākot
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(pakešu konvertēšanas process šeit parādīsies izpildlaikā)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>saglabāt ievades mapju struktūru</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>Atlasiet galamērķa mapi</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>mazie burti</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>pievienot prefiksu katram faila nosaukumam</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>katram faila nosaukumam pievienot sufiksu</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>no katra faila nosaukuma dzēst šādu tekstu (ja tāds ir atrasts)</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>katram faila nosaukumam, ieskaitot paplašinājumu, piespiedu kārtā nosaka šādu gadījumu</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>UPPERCASE</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>aizstāt atstarpes failu nosaukumos ar pasvītrojumiem</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>izmantot lielo un mazo burtu un atbilžu saskaņošanu</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>pēc attēlu apstrādes saglabājiet tos ar šādu nosaukumu</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>papildu pārdēvēšanas izvēles</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>izejas attēlus uz šo mapi</translation>
 </phrase>
 
 <phrase>
@@ -10427,7 +10437,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>Atlikušā laika aplēse</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13128,7 +13138,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>Noklikšķiniet šeit, lai pārvērstu šo slāni pamattekstā.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -13255,7 +13265,7 @@ Vai vēlaties saglabāt savu pakešu sarakstu pirms izejas?</translation>
 <translation>Noklikšķiniet šeit, lai pārvērstu šo slāni par uzlabotu tekstu.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 68 phrases. 43 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14855,10 +14865,10 @@ Ja tomēr izvēlaties atspējot atjauninājumus, neaizmirstiet laiku pa laikam a
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6021 phrases. -->
+<!-- 3209 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12164 total words. -->
 
 </pdData>

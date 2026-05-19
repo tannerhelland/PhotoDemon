@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.16</langversion>
+<langversion>1.0.18</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -3141,6 +3141,11 @@ Descriere: %2
 </phrase>
 
 <phrase>
+<original>text style preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Modifică selecție</translation>
 </phrase>
@@ -3159,7 +3164,7 @@ Când ați terminat, faceți clic pe butonul Submit New Issue. Mulțumim!</trans
 <translation>Instrucțiuni raportare eroare</translation>
 </phrase>
 
-<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 135 phrases. 72 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -7962,16 +7967,6 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>Scanează pentru plugin-uri noi</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>Despre acest plugin</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>Adaugă folder</translation>
 </phrase>
@@ -7989,6 +7984,16 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 <phrase>
 <original>remove folder</original>
 <translation>Șterge folder</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>Scanează pentru plugin-uri noi</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>Despre acest plugin</translation>
 </phrase>
 
 <phrase>
@@ -8643,7 +8648,7 @@ Dacă doriți să-l salvați cu alt nume, selectați 'Anulare', apoi folosiți m
 <translation>Prăjire puternică imagine</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9898,6 +9903,71 @@ Fișierele reparate au fost salvate în folderul destinație. Fișierele nerepar
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>Păstrează structura folderului de intrare</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Selectați folder destinație</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>minuscule</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>Adaugă un prefix la fiecare nume de fișier</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>Adaugă un sufix la fiecare nume de fișier</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>Elimină următorul text (dacă e găsit) din fiecare nume de fișier</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>Forțează fiecare nume de fișier, inclusiv extensia, la următoarele caractere</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>MAJUSCULE</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>Înlocuiește spațiile din numele fișierelor cu underscore</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>Folosește potrivire caractere</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>După ce imaginile sunt procesate, salvează-le cu următorul nume</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>Opțiuni redenumire opționale</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>Ieșire imagini în acest director</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>Când se importă imagini vectoriale</translation>
 </phrase>
@@ -10028,73 +10098,13 @@ Fișierele reparate au fost salvate în folderul destinație. Fișierele nerepar
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(Procesul de conversie pe lot va apărea aici la rulare)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>Păstrează structura folderului de intrare</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>Selectați folder destinație</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>minuscule</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>Adaugă un prefix la fiecare nume de fișier</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>Adaugă un sufix la fiecare nume de fișier</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>Elimină următorul text (dacă e găsit) din fiecare nume de fișier</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>Forțează fiecare nume de fișier, inclusiv extensia, la următoarele caractere</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>MAJUSCULE</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>Înlocuiește spațiile din numele fișierelor cu underscore</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>Folosește potrivire caractere</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>După ce imaginile sunt procesate, salvează-le cu următorul nume</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>Opțiuni redenumire opționale</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>Ieșire imagini în acest director</translation>
 </phrase>
 
 <phrase>
@@ -10438,7 +10448,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Estimare timp rămas</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13139,7 +13149,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Clic aici pentru a converti acest strat la text de bază.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -13266,7 +13276,7 @@ Doriți să salvați lista de loturi înainte de a ieși?</translation>
 <translation>Clic aici pentru a converti acest strat în text avansat.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 68 phrases. 43 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14864,10 +14874,10 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6021 phrases. -->
+<!-- 3209 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12164 total words. -->
 
 </pdData>

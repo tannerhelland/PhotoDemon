@@ -91,17 +91,17 @@ Begin VB.Form dialog_AddPreset
          Left            =   240
          TabIndex        =   3
          Top             =   1800
-         Width           =   945
-         _ExtentX        =   1667
+         Width           =   915
+         _ExtentX        =   1614
          _ExtentY        =   1085
       End
       Begin PhotoDemon.pdButton cmdDelete 
          Height          =   615
-         Left            =   2370
+         Left            =   2400
          TabIndex        =   6
          Top             =   1800
-         Width           =   4125
-         _ExtentX        =   7276
+         Width           =   4005
+         _ExtentX        =   7064
          _ExtentY        =   1085
          Caption         =   "delete preset"
       End
@@ -122,8 +122,8 @@ Begin VB.Form dialog_AddPreset
          Left            =   1305
          TabIndex        =   4
          Top             =   1800
-         Width           =   945
-         _ExtentX        =   1667
+         Width           =   900
+         _ExtentX        =   1588
          _ExtentY        =   1085
       End
    End
@@ -164,39 +164,43 @@ Private m_IsNotFirstActivation As Boolean
 
 'Because this form needs to interact with both the command bar that raises this dialog, and its preset manager,
 ' we must maintain references to both.  These references are initially supplied via the showDialog function.
-Private m_Presets As pdToolPreset, m_CommandBar As pdCommandBar
+Private m_Presets As pdToolPreset
+
+'Name of the preset to save, if any.
+Private m_newPresetName As String
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = m_userAnswer
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef srcCommandBar As pdCommandBar, ByRef parentForm As Form)
+Public Sub ShowDialog(ByRef srcPresetManager As pdToolPreset, ByRef dstPresetNameToSave As String, ByRef parentForm As Form)
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     m_userAnswer = vbCancel
+    m_newPresetName = vbNullString
     
     'Make sure that a proper cursor is set
     Screen.MousePointer = 0
     
     'Maintain a persistent reference to the source command bar and its preset manager
     Set m_Presets = srcPresetManager
-    Set m_CommandBar = srcCommandBar
     
     'Before making any changes to the preset object, back up its current contents
     m_Presets.BackupPresetsInternally
-    m_Presets.ClearActivePresetName
     
     'Populate the "existing presets" list, if any exist
     UpdatePresetList
-    
     UpdateEditButtons
     
     'Theme the dialog
     ApplyThemeAndTranslations Me
     
     'Display the dialog
-    Me.Show vbModal, parentForm
+    Interface.ShowPDDialog vbModal, Me
+    
+    'Relay the new preset name, if any, to the caller
+    If (LenB(m_newPresetName) > 0) Then dstPresetNameToSave = m_newPresetName Else dstPresetNameToSave = vbNullString
     
 End Sub
 
@@ -282,7 +286,7 @@ Private Sub cmdBarMini_OKClick()
             
             'If the user is okay with us proceeding, update the preset they have just entered.
             ' (Note that this will also update our locally shared m_Presets object.)
-            If (m_userAnswer = vbOK) Then m_CommandBar.StorePreset Trim$(txtName.Text)
+            If (m_userAnswer = vbOK) Then m_newPresetName = Trim$(txtName.Text)
             
         Else
             
@@ -372,7 +376,6 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'Release our hold on the parent command bar
     Set m_Presets = Nothing
-    Set m_CommandBar = Nothing
     Interface.ReleaseFormTheming Me
     
 End Sub
@@ -392,4 +395,8 @@ Private Sub UpdateEditButtons()
     cmdDelete.Enabled = (lstPresets.ListIndex >= 0) And Strings.StringsNotEqual(lstPresets.List(lstPresets.ListIndex), g_Language.TranslateMessage("(no saved presets)"), True)
     cmdMove(0).Enabled = (lstPresets.ListIndex > 0)
     cmdMove(1).Enabled = (lstPresets.ListIndex < lstPresets.ListCount - 1) And (lstPresets.ListIndex >= 0)
+End Sub
+
+Private Sub txtName_KeyPress(ByVal Shift As ShiftConstants, ByVal vKey As Long, preventFurtherHandling As Boolean)
+    If (vKey = VK_RETURN) Then cmdBarMini.ClickOKForMe
 End Sub

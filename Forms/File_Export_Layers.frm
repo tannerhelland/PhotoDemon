@@ -144,7 +144,7 @@ Begin VB.Form FormExportLayers
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   582
-      Caption         =   "add a suffix to each filename:"
+      Caption         =   "add a suffix to each filename"
       Value           =   0   'False
    End
    Begin PhotoDemon.pdCheckBox chkPrefix 
@@ -155,7 +155,7 @@ Begin VB.Form FormExportLayers
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   582
-      Caption         =   "add a prefix to each filename:"
+      Caption         =   "add a prefix to each filename"
       Value           =   0   'False
    End
 End

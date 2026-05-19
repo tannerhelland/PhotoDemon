@@ -65,7 +65,7 @@ Private m_PresetFilePath As String
 
 'To improve performance, this class asks the caller to specify a preset name prior to batch retrieval of all preset values.
 ' This string is set to the preset's XML-safe name, as set by the BeginPresetRetrieval function.
-Private m_ActivePresetName As String, m_ActivePresetIndex As Long
+Private m_ActivePresetIndex As Long
 
 'The caller must specify a preset path prior to any other interactions.
 ' Note that this function ALSO LOADS THE PRESET FILE.  (It seemed redundant to force separate handling for that step.)
@@ -148,16 +148,6 @@ Friend Sub WritePresetFile()
     
     m_XMLEngine.WriteXMLToFile m_PresetFilePath
     
-End Sub
-
-'Get the name of the last-created preset, if any
-Friend Function GetActivePresetName() As String
-    GetActivePresetName = m_ActivePresetName
-End Function
-
-'Note that no new presets have been created during this session
-Friend Sub ClearActivePresetName()
-    m_ActivePresetName = vbNullString
 End Sub
 
 'Given a pdStringStack object, fill it with a list of all available preset names.

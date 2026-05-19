@@ -46,7 +46,7 @@ Begin VB.Form FormCrossScreen
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   2040
+      Top             =   1800
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1244
@@ -60,7 +60,7 @@ Begin VB.Form FormCrossScreen
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   2940
+      Top             =   2640
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1244
@@ -75,7 +75,7 @@ Begin VB.Form FormCrossScreen
       Height          =   705
       Left            =   6000
       TabIndex        =   4
-      Top             =   3840
+      Top             =   3480
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1244
@@ -89,7 +89,7 @@ Begin VB.Form FormCrossScreen
       Height          =   705
       Left            =   6000
       TabIndex        =   5
-      Top             =   1140
+      Top             =   960
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1244
@@ -103,7 +103,7 @@ Begin VB.Form FormCrossScreen
       Height          =   705
       Left            =   6000
       TabIndex        =   6
-      Top             =   240
+      Top             =   120
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1244
@@ -117,7 +117,7 @@ Begin VB.Form FormCrossScreen
       Height          =   705
       Left            =   6000
       TabIndex        =   7
-      Top             =   4740
+      Top             =   4320
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1244

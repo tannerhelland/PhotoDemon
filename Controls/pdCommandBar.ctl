@@ -537,13 +537,17 @@ Private Sub RandomizeSettings()
             Case "pdCheckBox"
                 eControl.Value = (Int(Rnd * 2) <> 0)
             
+            'Toolbox-style buttons should only be toggled if they use the sticky-toggle feature
+            Case "pdButtonToolbox"
+                If eControl.StickyToggle Then eControl.Value = (Int(Rnd * 2) <> 0)
+                
             'Option buttons have a 1 in (num of option buttons) chance of being set to TRUE; see code above
             Case "pdRadioButton"
-                If numOfOptionButtons = selectedOptionButton Then eControl.Value = True
+                If (numOfOptionButtons = selectedOptionButton) Then eControl.Value = True
                 numOfOptionButtons = numOfOptionButtons + 1
                 
             'Scroll bars use the same rule as other numeric controls
-            Case "HScrollBar", "VScrollBar"
+            Case "pdScrollBar"
                 eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
             
             'Button strips work like list and drop-down boxes
@@ -589,47 +593,47 @@ Private Function SavePreset() As Boolean
 
     Message "Saving preset..."
     
+    'Disable previews (because we're going to rebuild the preset list, so its .ListIndex will change)
+    m_allowPreviews = False
+    
     'Prompt the user for a name
-    Dim newNameReturn As VbMsgBoxResult
-    newNameReturn = Dialogs.PromptNewPreset(m_Presets, Me, UserControl.Parent)
+    Dim newNameReturn As VbMsgBoxResult, newPresetToSave As String
+    newNameReturn = Dialogs.PromptNewPreset(m_Presets, newPresetToSave, UserControl.Parent)
     
     If (newNameReturn = vbOK) Then
     
         'The user may have made one or more changes to the preset object, including adding or deleting presets.
         
-        'Start by disabling previews
-        m_allowPreviews = False
+        'If we were given a new preset name to save, save it now
+        If (LenB(newPresetToSave) > 0) Then StorePreset newPresetToSave
         
-        'Reset the preset names combo box to match any changes the user has made
-        LoadAllPresets
+    End If
+    
+    'The user can remove presets but *not* add a new one, so always reset the preset list
+    ' after the user interacts with it (regardless of OK or Cancel state).
+    LoadAllPresets
+    
+    If (newNameReturn = vbOK) And (LenB(newPresetToSave) <> 0) Then
         
-        'If the user just added a preset, set the combo box index to match the preset they added
-        Dim newlyAddedPresetName As String
-        newlyAddedPresetName = m_Presets.GetActivePresetName()
-        
-        If (LenB(newlyAddedPresetName) <> 0) Then
-            Dim i As Long
-            For i = 0 To cboPreset.ListCount - 1
-                If Strings.StringsEqual(newlyAddedPresetName, Trim$(cboPreset.List(i)), True) Then
-                    cboPreset.ListIndex = i
-                    Exit For
-                End If
-            Next i
-        End If
-        
-        m_Presets.ClearActivePresetName
-        
-        'Re-enable previews
-        m_allowPreviews = True
+        Dim i As Long
+        For i = 0 To cboPreset.ListCount - 1
+            If Strings.StringsEqual(newPresetToSave, Trim$(cboPreset.List(i)), True) Then
+                cboPreset.ListIndex = i
+                Exit For
+            End If
+        Next i
         
         Message "Preset saved."
         SavePreset = True
         
     Else
+        cboPreset.ListIndex = 0
         Message "Preset save canceled."
         SavePreset = False
-        Exit Function
     End If
+    
+    'Re-enable previews before exiting
+    m_allowPreviews = True
     
 End Function
 
@@ -823,6 +827,10 @@ Private Sub ResetSettings()
                 Case "pdCheckBox"
                     eControl.Value = True
                 
+                'Custom "toolbox"-style buttons are always unchecked (but only reset them if they are "sticky")
+                Case "pdButtonToolbox"
+                    If eControl.StickyToggle Then eControl.Value = False
+                
                 'The first option button on the page is selected
                 Case "pdRadioButton"
                     If (Not optButtonHasBeenSet) Then
@@ -838,7 +846,7 @@ Private Sub ResetSettings()
                     eControl.ListIndex = 0
                 
                 'Scroll bars obey the same rules as other numeric controls
-                Case "HScrollBar", "VScrollBar"
+                Case "pdScrollBar"
                     If (eControl.Min <= 0) Then eControl.Value = 0 Else eControl.Value = eControl.Min
                     
                 'List boxes and combo boxes are set to their first entry
@@ -1132,7 +1140,7 @@ End Sub
 
 'This sub will fill the class's pdXML class (xmlEngine) with the values of all controls on this form, and it will store
 ' those values in the section titled "presetName".
-Public Sub StorePreset(Optional ByVal srcPresetName As String = "last-used settings")
+Private Sub StorePreset(Optional ByVal srcPresetName As String = "last-used settings")
     
     'Make sure PD's built-in "last-used settings" text is properly translated
     If (Not g_Language Is Nothing) And Strings.StringsEqual(srcPresetName, "last-used settings", True) Then srcPresetName = g_Language.TranslateMessage("last-used settings")
@@ -1372,6 +1380,10 @@ Private Function LoadPresetFromString(ByRef srcString As String, Optional ByVal 
                     Case "pdRadioButton"
                         If CBool(controlValue) Then eControl.Value = CBool(controlValue)
                         
+                    'Toolbox-style buttons should only be saved if they use the sticky-toggle feature
+                    Case "pdButtonToolbox"
+                        If eControl.StickyToggle Then eControl.Value = CBool(controlValue)
+                        
                     'Button strips are similar to list boxes, so they use a .ListIndex property
                     Case "pdButtonStrip", "pdButtonStripVertical"
                     
@@ -1398,7 +1410,7 @@ Private Function LoadPresetFromString(ByRef srcString As String, Optional ByVal 
                     
                     'Traditional scroll bar values are cast as Longs, despite them only having Int ranges
                     ' (hopefully the original caller planned for this!)
-                    Case "HScrollBar", "VScrollBar"
+                    Case "pdScrollBar"
                         eControl.Value = CLng(controlValue)
                     
                     'List boxes and dropdowns all use a Long-type .ListIndex property
@@ -1415,7 +1427,7 @@ Private Function LoadPresetFromString(ByRef srcString As String, Optional ByVal 
                     ' unlike internal listboxes.)
                     Case "pdDropDownFont"
                         Dim fontListIndex As Long
-                        fontListIndex = eControl.ListIndexByString(srcString, vbTextCompare)
+                        fontListIndex = eControl.ListIndexByString(controlValue, vbTextCompare)
                         If (fontListIndex >= 0) Then eControl.ListIndex = fontListIndex Else eControl.ListIndex = eControl.ListIndexByString(Fonts.GetUIFontName())
                     
                     'Text boxes just take the stored string as-is

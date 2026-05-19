@@ -96,7 +96,7 @@ Begin VB.Form FormWater
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1296
-      Caption         =   "random seed:"
+      Caption         =   "random seed"
    End
 End
 Attribute VB_Name = "FormWater"

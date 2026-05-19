@@ -160,8 +160,7 @@ End Property
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
-' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
-'                  but I can revisit in the future if that ever becomes relevant.
+' IMPORTANT NOTE: only the ENGLISH caption is returned by this function.  For a localized caption, use CaptionLocalized.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
 Attribute Caption.VB_MemberFlags = "200"
@@ -183,6 +182,10 @@ Public Property Let Caption(ByRef newCaption As String)
         
     End If
     
+End Property
+
+Public Property Get CaptionLocalized() As String
+    CaptionLocalized = ucSupport.GetCaptionTextTranslated()
 End Property
 
 Public Property Get CustomDragDropEnabled() As Boolean

@@ -37,7 +37,7 @@ Begin VB.Form options_Performance
       Width           =   7980
       _ExtentX        =   14076
       _ExtentY        =   873
-      Caption         =   "compress undo/redo data at the following level:"
+      Caption         =   "compress undo/redo data at the following level"
       FontSizeCaption =   10
       Max             =   9
       SliderTrackStyle=   1
@@ -54,7 +54,7 @@ Begin VB.Form options_Performance
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   1217
-      Caption         =   "when decorating interface elements:"
+      Caption         =   "when decorating interface elements"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboPerformance 
@@ -66,7 +66,7 @@ Begin VB.Form options_Performance
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   1217
-      Caption         =   "when generating image and layer thumbnail images:"
+      Caption         =   "when generating image and layer thumbnail images"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboPerformance 
@@ -78,7 +78,7 @@ Begin VB.Form options_Performance
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   1217
-      Caption         =   "when rendering the image canvas:"
+      Caption         =   "when rendering the image canvas"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdLabel lblTitle 

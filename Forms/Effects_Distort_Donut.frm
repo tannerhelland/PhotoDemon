@@ -63,13 +63,14 @@ Begin VB.Form FormDonut
       _ExtentX        =   0
       _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboEdges 
-         Height          =   375
-         Left            =   240
+         Height          =   735
+         Left            =   120
          TabIndex        =   2
-         Top             =   3000
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   661
+         Top             =   2520
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1296
+         Caption         =   "if pixels lie outside the image"
       End
       Begin PhotoDemon.pdSlider sltXCenter 
          Height          =   405
@@ -113,18 +114,6 @@ Begin VB.Form FormDonut
          Value           =   2
          NotchPosition   =   2
          NotchValueCustom=   2
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         Top             =   2520
-         Width           =   5835
-         _ExtentX        =   10292
-         _ExtentY        =   503
-         Caption         =   "if pixels lie outside the image..."
-         FontSize        =   12
-         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285

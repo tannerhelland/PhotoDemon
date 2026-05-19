@@ -780,6 +780,7 @@ Friend Function SetAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             SetGenericTextProperty ptp_OutlineAboveFill, .GetBool("obj-outline-above-fill", True, True)
             SetGenericTextProperty ptp_CharScaleX, .GetDouble("obj-character-scale-x", 1#, True)
             SetGenericTextProperty ptp_CharScaleY, .GetDouble("obj-character-scale-y", 1#, True)
+            'Style (ptp_Style) is not currently persisted across sessions, by design
         End With
         
         'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.

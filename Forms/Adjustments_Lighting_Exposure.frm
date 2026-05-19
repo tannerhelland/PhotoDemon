@@ -101,7 +101,7 @@ Begin VB.Form FormExposure
       Width           =   2220
       _ExtentX        =   0
       _ExtentY        =   0
-      Caption         =   "new exposure curve:"
+      Caption         =   "new exposure curve"
       FontSize        =   12
       ForeColor       =   4210752
       Layout          =   1

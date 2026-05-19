@@ -75,7 +75,7 @@ Begin VB.Form FormMiscDistorts
       Width           =   5415
       _ExtentX        =   9551
       _ExtentY        =   1508
-      Caption         =   "if pixels lie outside the corrected area..."
+      Caption         =   "if pixels lie outside the corrected area"
    End
 End
 Attribute VB_Name = "FormMiscDistorts"

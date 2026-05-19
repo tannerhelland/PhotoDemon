@@ -77,7 +77,7 @@ Begin VB.Form FormRotateDistort
       _ExtentX        =   5106
       _ExtentY        =   873
       Max             =   1
-      SigDigits       =   2
+      SigDigits       =   3
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
@@ -91,7 +91,7 @@ Begin VB.Form FormRotateDistort
       _ExtentX        =   5106
       _ExtentY        =   873
       Max             =   1
-      SigDigits       =   2
+      SigDigits       =   3
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
@@ -104,7 +104,7 @@ Begin VB.Form FormRotateDistort
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1296
-      Caption         =   "if pixels lie outside the image..."
+      Caption         =   "if pixels lie outside the image"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285

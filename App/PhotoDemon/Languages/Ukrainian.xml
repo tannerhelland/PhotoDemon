@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.47</langversion>
+<langversion>1.0.49</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -3131,6 +3131,11 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>text style preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Modify selection</original>
 <translation>Модифікувати виділення</translation>
 </phrase>
@@ -3149,7 +3154,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 <translation>Інструкції щодо повідомлення про помилку</translation>
 </phrase>
 
-<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 135 phrases. 72 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -7951,16 +7956,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Edit_UndoHistory.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>scan for new plugins</original>
-<translation>сканувати нові плагіни</translation>
-</phrase>
-
-<phrase>
-<original>about this plugin</original>
-<translation>про цей плагін</translation>
-</phrase>
-
-<phrase>
 <original>add folder</original>
 <translation>додати теку</translation>
 </phrase>
@@ -7978,6 +7973,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>remove folder</original>
 <translation>видалити теку</translation>
+</phrase>
+
+<phrase>
+<original>scan for new plugins</original>
+<translation>сканувати нові плагіни</translation>
+</phrase>
+
+<phrase>
+<original>about this plugin</original>
+<translation>про цей плагін</translation>
 </phrase>
 
 <phrase>
@@ -8632,7 +8637,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Зображення фритюру</translation>
 </phrase>
 
-<!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Distort_Donut.frm contains 16 phrases. 12 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
 <original>swap order</original>
@@ -9887,6 +9892,71 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>preserve input folder structure</original>
+<translation>зберегти структуру вхідних тек</translation>
+</phrase>
+
+<phrase>
+<original>select destination folder</original>
+<translation>Виберіть теку призначення</translation>
+</phrase>
+
+<phrase>
+<original>lowercase</original>
+<translation>нижній регістр</translation>
+</phrase>
+
+<phrase>
+<original>add a prefix to each filename</original>
+<translation>додати префікс до імені кожного файлу</translation>
+</phrase>
+
+<phrase>
+<original>add a suffix to each filename</original>
+<translation>додати суфікс до кожної назви файлу</translation>
+</phrase>
+
+<phrase>
+<original>remove the following text (if found) from each filename</original>
+<translation>видалити наступний текст (якщо знайдено) з кожної назви файлу</translation>
+</phrase>
+
+<phrase>
+<original>force each filename, including extension, to the following case</original>
+<translation>привести кожне ім'я файлу, включно з розширенням, до наступного регістру</translation>
+</phrase>
+
+<phrase>
+<original>UPPERCASE</original>
+<translation>ЗАГОЛОВНІ ЛІТЕРИ</translation>
+</phrase>
+
+<phrase>
+<original>replace spaces in filenames with underscores</original>
+<translation>замінити пробіли в іменах файлів на підкреслення</translation>
+</phrase>
+
+<phrase>
+<original>use case-sensitive matching</original>
+<translation>узгодження з урахуванням сценаріїв використання</translation>
+</phrase>
+
+<phrase>
+<original>after images are processed, save them with the following name</original>
+<translation>після обробки зображень збережіть їх з наступною назвою</translation>
+</phrase>
+
+<phrase>
+<original>additional rename options</original>
+<translation>додаткові опції перейменування</translation>
+</phrase>
+
+<phrase>
+<original>output images to this folder</original>
+<translation>виводити зображення до цієї теки</translation>
+</phrase>
+
+<phrase>
 <original>when importing vector images</original>
 <translation>при імпорті векторних зображень</translation>
 </phrase>
@@ -10017,73 +10087,13 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 </phrase>
 
 <phrase>
+<original>sort list</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(batch conversion process will appear here at run-time)</original>
 <translation>(процес пакетного перетворення з'явиться тут під час виконання)</translation>
-</phrase>
-
-<phrase>
-<original>preserve input folder structure</original>
-<translation>зберегти структуру вхідних тек</translation>
-</phrase>
-
-<phrase>
-<original>select destination folder</original>
-<translation>Виберіть теку призначення</translation>
-</phrase>
-
-<phrase>
-<original>lowercase</original>
-<translation>нижній регістр</translation>
-</phrase>
-
-<phrase>
-<original>add a prefix to each filename</original>
-<translation>додати префікс до імені кожного файлу</translation>
-</phrase>
-
-<phrase>
-<original>add a suffix to each filename</original>
-<translation>додати суфікс до кожної назви файлу</translation>
-</phrase>
-
-<phrase>
-<original>remove the following text (if found) from each filename</original>
-<translation>видалити наступний текст (якщо знайдено) з кожної назви файлу</translation>
-</phrase>
-
-<phrase>
-<original>force each filename, including extension, to the following case</original>
-<translation>привести кожне ім'я файлу, включно з розширенням, до наступного регістру</translation>
-</phrase>
-
-<phrase>
-<original>UPPERCASE</original>
-<translation>ЗАГОЛОВНІ ЛІТЕРИ</translation>
-</phrase>
-
-<phrase>
-<original>replace spaces in filenames with underscores</original>
-<translation>замінити пробіли в іменах файлів на підкреслення</translation>
-</phrase>
-
-<phrase>
-<original>use case-sensitive matching</original>
-<translation>узгодження з урахуванням сценаріїв використання</translation>
-</phrase>
-
-<phrase>
-<original>after images are processed, save them with the following name</original>
-<translation>після обробки зображень збережіть їх з наступною назвою</translation>
-</phrase>
-
-<phrase>
-<original>additional rename options</original>
-<translation>додаткові опції перейменування</translation>
-</phrase>
-
-<phrase>
-<original>output images to this folder</original>
-<translation>виводити зображення до цієї теки</translation>
 </phrase>
 
 <phrase>
@@ -10425,7 +10435,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Оцінка часу, що залишився</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 185 phrases. 75 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 186 phrases. 75 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <phrase>
 <original>alpha cut-off</original>
@@ -13126,7 +13136,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Клікніть тут, щоб перетворити цей шар в основний текст.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 23 phrases. 13 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
 <original>remap</original>
@@ -13253,7 +13263,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>Клікніть тут, щоб перетворити цей шар на розширений текст.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 65 phrases. 40 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 68 phrases. 43 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>undo all changes</original>
@@ -14853,10 +14863,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6012 phrases. -->
-<!-- 3202 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6021 phrases. -->
+<!-- 3209 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12164 total words. -->
 
 </pdData>

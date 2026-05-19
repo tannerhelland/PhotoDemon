@@ -59,7 +59,7 @@ Begin VB.Form options_ColorManagement
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   1296
-      Caption         =   "display rendering intent:"
+      Caption         =   "display rendering intent"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdButton cmdColorProfilePath 
@@ -80,7 +80,7 @@ Begin VB.Form options_ColorManagement
       Width           =   7440
       _ExtentX        =   13123
       _ExtentY        =   1217
-      Caption         =   "available displays:"
+      Caption         =   "available displays"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdTextBox txtColorProfilePath 
@@ -124,7 +124,7 @@ Begin VB.Form options_ColorManagement
       Width           =   7440
       _ExtentX        =   13123
       _ExtentY        =   503
-      Caption         =   "color profile for this display:"
+      Caption         =   "color profile for this display"
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 

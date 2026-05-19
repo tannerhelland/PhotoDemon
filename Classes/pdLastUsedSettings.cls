@@ -296,8 +296,12 @@ Private Function ReadXMLSettings(Optional ByVal customSettingsOnly As Boolean = 
                     Case "pdSlider", "pdSpinner"
                         eControl.Value = CDblCustom(controlValue)
                     
-                    Case "pdCheckBox", "pdRadioButton", "pdTitle", "pdButtonToolbox"
+                    Case "pdCheckBox", "pdRadioButton", "pdTitle"
                         eControl.Value = CBool(controlValue)
+                    
+                    'Toolbox-style buttons should only be saved if they use the sticky-toggle feature
+                    Case "pdButtonToolbox"
+                        If eControl.StickyToggle Then eControl.Value = CBool(controlValue)
                         
                     'Lists need to be checked to make sure we have enough entries to propery assign this value
                     Case "pdButtonStrip", "pdButtonStripVertical", "pdListBox", "pdListBoxView", "pdListBoxOD", "pdListBoxViewOD", "pdDropDown"

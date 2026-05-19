@@ -83,6 +83,203 @@ Begin VB.Form FormBatchWizard
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6780
+      Index           =   3
+      Left            =   3300
+      Top             =   660
+      Width           =   9855
+      _ExtentX        =   17383
+      _ExtentY        =   11959
+      Begin PhotoDemon.pdCheckBox chkOutputPreserveFolders 
+         Height          =   345
+         Left            =   480
+         TabIndex        =   43
+         Top             =   750
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   609
+         Caption         =   "preserve input folder structure"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdDropDown cmbOutputOptions 
+         Height          =   375
+         Left            =   480
+         TabIndex        =   8
+         Top             =   1680
+         Width           =   9255
+         _ExtentX        =   16325
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButton cmdSelectOutputPath 
+         Height          =   735
+         Left            =   6600
+         TabIndex        =   26
+         Top             =   330
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1296
+         Caption         =   "select destination folder..."
+         FontSize        =   9
+      End
+      Begin PhotoDemon.pdTextBox txtRenameRemove 
+         Height          =   315
+         Left            =   840
+         TabIndex        =   27
+         Top             =   3960
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   556
+      End
+      Begin PhotoDemon.pdTextBox txtAppendBack 
+         Height          =   315
+         Left            =   5640
+         TabIndex        =   28
+         Top             =   3000
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   556
+      End
+      Begin PhotoDemon.pdTextBox txtAppendFront 
+         Height          =   315
+         Left            =   840
+         TabIndex        =   29
+         Top             =   3000
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   556
+         Text            =   "NEW_"
+      End
+      Begin PhotoDemon.pdTextBox txtOutputPath 
+         Height          =   315
+         Left            =   480
+         TabIndex        =   30
+         Top             =   360
+         Width           =   6015
+         _ExtentX        =   10610
+         _ExtentY        =   556
+         Text            =   "C:\"
+      End
+      Begin PhotoDemon.pdRadioButton optCase 
+         Height          =   330
+         Index           =   0
+         Left            =   840
+         TabIndex        =   15
+         Top             =   4920
+         Width           =   2250
+         _ExtentX        =   3969
+         _ExtentY        =   582
+         Caption         =   "lowercase"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.pdCheckBox chkRenamePrefix 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   11
+         Top             =   2640
+         Width           =   4365
+         _ExtentX        =   7699
+         _ExtentY        =   582
+         Caption         =   "add a prefix to each filename"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameSuffix 
+         Height          =   330
+         Left            =   5280
+         TabIndex        =   12
+         Top             =   2640
+         Width           =   4530
+         _ExtentX        =   7990
+         _ExtentY        =   582
+         Caption         =   "add a suffix to each filename"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameRemove 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   13
+         Top             =   3600
+         Width           =   9225
+         _ExtentX        =   16272
+         _ExtentY        =   582
+         Caption         =   "remove the following text (if found) from each filename"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameCase 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   14
+         Top             =   4560
+         Width           =   9165
+         _ExtentX        =   16166
+         _ExtentY        =   582
+         Caption         =   "force each filename, including extension, to the following case"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdRadioButton optCase 
+         Height          =   330
+         Index           =   1
+         Left            =   3240
+         TabIndex        =   16
+         Top             =   4920
+         Width           =   2625
+         _ExtentX        =   4630
+         _ExtentY        =   582
+         Caption         =   "UPPERCASE"
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameSpaces 
+         Height          =   330
+         Left            =   480
+         TabIndex        =   17
+         Top             =   5520
+         Width           =   9165
+         _ExtentX        =   16166
+         _ExtentY        =   582
+         Caption         =   "replace spaces in filenames with underscores"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
+         Height          =   330
+         Left            =   5280
+         TabIndex        =   18
+         Top             =   3960
+         Width           =   4365
+         _ExtentX        =   7699
+         _ExtentY        =   582
+         Caption         =   "use case-sensitive matching"
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdLabel lblDstFilename 
+         Height          =   285
+         Left            =   120
+         Top             =   1320
+         Width           =   9555
+         _ExtentX        =   16854
+         _ExtentY        =   503
+         Caption         =   "after images are processed, save them with the following name"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblOptionalText 
+         Height          =   285
+         Left            =   120
+         Top             =   2280
+         Width           =   9600
+         _ExtentX        =   16933
+         _ExtentY        =   503
+         Caption         =   "additional rename options"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblDstFolder 
+         Height          =   285
+         Left            =   120
+         Top             =   0
+         Width           =   7815
+         _ExtentX        =   13785
+         _ExtentY        =   503
+         Caption         =   "output images to this folder"
+         ForeColor       =   4210752
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6780
       Index           =   2
       Left            =   3300
       Top             =   660
@@ -389,7 +586,7 @@ Begin VB.Form FormBatchWizard
          FontSize        =   9
       End
       Begin PhotoDemon.pdCheckBox chkAddSubfoldersToo 
-         Height          =   375
+         Height          =   330
          Left            =   225
          TabIndex        =   3
          Top             =   5670
@@ -534,6 +731,16 @@ Begin VB.Form FormBatchWizard
          Caption         =   "include subfolders"
          Value           =   0   'False
       End
+      Begin PhotoDemon.pdButton cmdSortList 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   47
+         Top             =   6045
+         Width           =   3135
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "sort list"
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6780
@@ -575,203 +782,6 @@ Begin VB.Form FormBatchWizard
          Caption         =   ""
          ForeColor       =   -2147483640
          Layout          =   1
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6780
-      Index           =   3
-      Left            =   3300
-      Top             =   660
-      Width           =   9855
-      _ExtentX        =   17383
-      _ExtentY        =   11959
-      Begin PhotoDemon.pdCheckBox chkOutputPreserveFolders 
-         Height          =   345
-         Left            =   480
-         TabIndex        =   43
-         Top             =   750
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   609
-         Caption         =   "preserve input folder structure"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdDropDown cmbOutputOptions 
-         Height          =   375
-         Left            =   480
-         TabIndex        =   8
-         Top             =   1680
-         Width           =   9255
-         _ExtentX        =   16325
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdButton cmdSelectOutputPath 
-         Height          =   735
-         Left            =   6600
-         TabIndex        =   26
-         Top             =   330
-         Width           =   3135
-         _ExtentX        =   5530
-         _ExtentY        =   1296
-         Caption         =   "select destination folder..."
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdTextBox txtRenameRemove 
-         Height          =   315
-         Left            =   840
-         TabIndex        =   27
-         Top             =   3960
-         Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   556
-      End
-      Begin PhotoDemon.pdTextBox txtAppendBack 
-         Height          =   315
-         Left            =   5640
-         TabIndex        =   28
-         Top             =   3000
-         Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   556
-      End
-      Begin PhotoDemon.pdTextBox txtAppendFront 
-         Height          =   315
-         Left            =   840
-         TabIndex        =   29
-         Top             =   3000
-         Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   556
-         Text            =   "NEW_"
-      End
-      Begin PhotoDemon.pdTextBox txtOutputPath 
-         Height          =   315
-         Left            =   480
-         TabIndex        =   30
-         Top             =   360
-         Width           =   6015
-         _ExtentX        =   10610
-         _ExtentY        =   556
-         Text            =   "C:\"
-      End
-      Begin PhotoDemon.pdRadioButton optCase 
-         Height          =   330
-         Index           =   0
-         Left            =   840
-         TabIndex        =   15
-         Top             =   4920
-         Width           =   2250
-         _ExtentX        =   3969
-         _ExtentY        =   582
-         Caption         =   "lowercase"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdCheckBox chkRenamePrefix 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   11
-         Top             =   2640
-         Width           =   4365
-         _ExtentX        =   7699
-         _ExtentY        =   582
-         Caption         =   "add a prefix to each filename:"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameSuffix 
-         Height          =   330
-         Left            =   5280
-         TabIndex        =   12
-         Top             =   2640
-         Width           =   4530
-         _ExtentX        =   7990
-         _ExtentY        =   582
-         Caption         =   "add a suffix to each filename:"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameRemove 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   13
-         Top             =   3600
-         Width           =   9225
-         _ExtentX        =   16272
-         _ExtentY        =   582
-         Caption         =   "remove the following text (if found) from each filename:"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameCase 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   14
-         Top             =   4560
-         Width           =   9165
-         _ExtentX        =   16166
-         _ExtentY        =   582
-         Caption         =   "force each filename, including extension, to the following case:"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdRadioButton optCase 
-         Height          =   330
-         Index           =   1
-         Left            =   3240
-         TabIndex        =   16
-         Top             =   4920
-         Width           =   2625
-         _ExtentX        =   4630
-         _ExtentY        =   582
-         Caption         =   "UPPERCASE"
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameSpaces 
-         Height          =   330
-         Left            =   480
-         TabIndex        =   17
-         Top             =   5520
-         Width           =   9165
-         _ExtentX        =   16166
-         _ExtentY        =   582
-         Caption         =   "replace spaces in filenames with underscores"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
-         Height          =   330
-         Left            =   5280
-         TabIndex        =   18
-         Top             =   3960
-         Width           =   4365
-         _ExtentX        =   7699
-         _ExtentY        =   582
-         Caption         =   "use case-sensitive matching"
-         Value           =   0   'False
-      End
-      Begin PhotoDemon.pdLabel lblDstFilename 
-         Height          =   285
-         Left            =   120
-         Top             =   1320
-         Width           =   9555
-         _ExtentX        =   16854
-         _ExtentY        =   503
-         Caption         =   "after images are processed, save them with the following name:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblOptionalText 
-         Height          =   285
-         Left            =   120
-         Top             =   2280
-         Width           =   9600
-         _ExtentX        =   16933
-         _ExtentY        =   503
-         Caption         =   "additional rename options"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblDstFolder 
-         Height          =   285
-         Left            =   120
-         Top             =   0
-         Width           =   7815
-         _ExtentX        =   13785
-         _ExtentY        =   503
-         Caption         =   "output images to this folder:"
-         ForeColor       =   4210752
       End
    End
 End
@@ -955,10 +965,10 @@ Private Sub cmdAddFiles_Click()
         
         lstFiles.SetAutomaticRedraws False
         
-        Dim tmpFilename As String
-        Do While listOfFiles.PopString(tmpFilename)
-            lstFiles.AddItem tmpFilename
-        Loop
+        Dim i As Long, tmpFilename As String
+        For i = 0 To listOfFiles.GetNumOfStrings() - 1
+            lstFiles.AddItem listOfFiles.GetString(i)
+        Next i
         
         lstFiles.SetAutomaticRedraws True, True
         
@@ -988,10 +998,13 @@ Private Sub cmdAddFolders_Click()
                 
             lstFiles.SetAutomaticRedraws False
             
-            Dim tmpFilename As String
-            Do While listOfFiles.PopString(tmpFilename)
-                lstFiles.AddItem tmpFilename
-            Loop
+            'Ensure the added files appear in the same order they appeared in Explorer
+            listOfFiles.SortLogically False
+            
+            Dim i As Long
+            For i = 0 To listOfFiles.GetNumOfStrings() - 1
+                lstFiles.AddItem listOfFiles.GetString(i)
+            Next i
             
             lstFiles.SetAutomaticRedraws True, True
             
@@ -1624,6 +1637,37 @@ Private Sub cmdSelectOutputPath_Click()
     
 End Sub
 
+Private Sub cmdSortList_Click()
+    
+    If (lstFiles.ListCount <= 1) Then Exit Sub
+    
+    'Prep our internal stack
+    Dim tmpList As pdStringStack
+    Set tmpList = New pdStringStack
+    
+    Dim i As Long
+    For i = 0 To lstFiles.ListCount - 1
+        tmpList.AddString lstFiles.List(i, False)
+    Next i
+    
+    'Sort identically to Explorer
+    tmpList.SortLogically False
+    
+    'Rebuild the list
+    lstFiles.SetAutomaticRedraws False, False
+    lstFiles.Clear
+    
+    For i = 0 To tmpList.GetNumOfStrings() - 1
+        lstFiles.AddItem tmpList.GetString(i)
+    Next i
+    
+    Set tmpList = Nothing
+    
+    m_ImageListSaved = False
+    lstFiles.SetAutomaticRedraws True, True
+    
+End Sub
+
 Private Sub Form_Load()
         
     Set m_FSO = New pdFSO
@@ -1932,6 +1976,14 @@ Private Sub PrepareForBatchConversion()
         
     End If
     
+    'To correctly supply leading 0s (when the user has requested "output files with ascending numeric filenames"),
+    ' we need to know the length - in characters - of the total number of files in this batch list.
+    Dim numOfFilesAsString As String
+    numOfFilesAsString = Trim$(Str$(totalNumOfFiles))
+    
+    Dim formatStringForNumbers As String
+    formatStringForNumbers = String$(Len(numOfFilesAsString), "0")
+    
     'This is where the fun begins.  Loop through every file in the list, and process them one-by-one using the options requested
     ' by the user.
     For curBatchFile = 0 To totalNumOfFiles - 1
@@ -1965,7 +2017,7 @@ Private Sub PrepareForBatchConversion()
                 
                 'With the macro complete, prepare the file for saving.  (This function will determine both
                 ' a final filename and a proper file extension.)
-                dstFilename = GetFinalFilename(srcFilename, outputPath, dstListFiles, curBatchFile)
+                dstFilename = GetFinalFilename(srcFilename, outputPath, dstListFiles, curBatchFile, formatStringForNumbers)
                 
                 'Request a save from the PhotoDemon_SaveImage method, and pass it the parameter string created by the user
                 ' on the matching wizard panel.  Note that we need to silently swap-in animation parameters instead of
@@ -2064,24 +2116,27 @@ Private Sub ApplyEditOperations()
 End Sub
 
 'Do not pass invalid files or paths to this function.  It does not validate inputs.
-Private Function GetFinalFilename(ByRef originalFilename As String, ByVal outputPath As String, ByRef dstListFiles As pdStringStack, ByVal curBatchFile As Long) As String
+Private Function GetFinalFilename(ByRef originalFilename As String, ByVal outputPath As String, ByRef dstListFiles As pdStringStack, ByVal curBatchFile As Long, ByRef formatStringForNumbers As String) As String
     
-    'Before we even think about output path, start by stripping the incoming filename
-    ' down to just its filename.
+    'Before we even think about output path, we need to build a base filename.
+    ' The user currently has two settings for this:
+    ' 1) Original filename
+    ' 2) Ascending numbers
     Dim tmpFilename As String
-    tmpFilename = Files.FileGetName(originalFilename, True)
     
-    'Start working on building a filename that matches the user's output settings.
-    
-    'First, append any prefix/suffix text
     If (cmbOutputOptions.ListIndex = 0) Then
-        If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
-        If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
+        tmpFilename = Files.FileGetName(originalFilename, True)
     Else
-        tmpFilename = curBatchFile + 1
-        If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
-        If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
+        
+        '(The caller is responsible for giving us the format string they want to use for ascending numbers.
+        ' PD uses this to enforce leading zeroes in numeric output, to ensure consistent sorting in other tools.)
+        tmpFilename = Format$(curBatchFile + 1, formatStringForNumbers)
+        
     End If
+    
+    'Next, append any prefix/suffix text
+    If chkRenamePrefix.Value Then tmpFilename = txtAppendFront & tmpFilename
+    If chkRenameSuffix.Value Then tmpFilename = tmpFilename & txtAppendBack
     
     'If requested, remove any specified text from the filename
     If chkRenameRemove.Value And (LenB(txtRenameRemove) <> 0) Then
@@ -2089,11 +2144,11 @@ Private Function GetFinalFilename(ByRef originalFilename As String, ByVal output
         'Use case-sensitive or case-insensitive matching as requested
         If chkRenameCaseSensitive.Value Then
             If (InStr(1, tmpFilename, txtRenameRemove, vbBinaryCompare) <> 0) Then
-                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbBinaryCompare)
+                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, Compare:=vbBinaryCompare)
             End If
         Else
             If (InStr(1, tmpFilename, txtRenameRemove, vbTextCompare) <> 0) Then
-                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, , , vbTextCompare)
+                tmpFilename = Replace(tmpFilename, txtRenameRemove, vbNullString, Compare:=vbTextCompare)
             End If
         End If
         

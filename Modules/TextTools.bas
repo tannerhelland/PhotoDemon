@@ -60,6 +60,7 @@ Public Enum PD_TextProperty
     ptp_OutlineAboveFill = 38
     ptp_CharScaleX = 39
     ptp_CharScaleY = 40
+    ptp_Style = 41
 End Enum
 
 #If False Then
@@ -70,6 +71,7 @@ End Enum
     Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
     Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
     Const ptp_CharMirror = 35, ptp_StretchToFit = 36, ptp_AlignLastLine = 37, ptp_OutlineAboveFill = 38, ptp_CharScaleX = 39, ptp_CharScaleY = 40
+    Const ptp_Style = 41
 #End If
 
 'PD's internal glyph renderer supports a number of esoteric capabilities

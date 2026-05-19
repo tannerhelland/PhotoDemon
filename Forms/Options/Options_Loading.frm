@@ -47,7 +47,7 @@ Begin VB.Form options_Loading
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   1720
-      Caption         =   "when images arrive from an external source (like Windows Explorer):"
+      Caption         =   "when images arrive from an external source (like Windows Explorer)"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdCheckBox chkToneMapping 

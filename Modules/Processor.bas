@@ -948,6 +948,9 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TextProperty) As 
             
         Case ptp_CharScaleY
             GetNameOfTextAction = g_Language.TranslateMessage("vertical scaling")
+        
+        Case ptp_Style
+            GetNameOfTextAction = g_Language.TranslateMessage("text style preset")
             
         Case Else
             GetNameOfTextAction = "WARNING!  Action name not found!"

@@ -32,7 +32,7 @@ Begin VB.Form FormFiguredGlass
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1296
-      Caption         =   "if pixels lie outside the image..."
+      Caption         =   "if pixels lie outside the image"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Height          =   750
@@ -104,7 +104,7 @@ Begin VB.Form FormFiguredGlass
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1296
-      Caption         =   "random seed:"
+      Caption         =   "random seed"
    End
 End
 Attribute VB_Name = "FormFiguredGlass"

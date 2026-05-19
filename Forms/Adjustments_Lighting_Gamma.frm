@@ -120,7 +120,7 @@ Begin VB.Form FormGamma
       _ExtentX        =   0
       _ExtentY        =   0
       Alignment       =   1
-      Caption         =   "new gamma curve:"
+      Caption         =   "new gamma curve"
       FontSize        =   12
       ForeColor       =   4210752
       Layout          =   1

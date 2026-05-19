@@ -32,7 +32,7 @@ Begin VB.Form FormFog
       Width           =   5535
       _ExtentX        =   9763
       _ExtentY        =   1296
-      Caption         =   "random seed:"
+      Caption         =   "random seed"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Height          =   750

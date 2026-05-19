@@ -415,11 +415,15 @@ Public Function PromptInputBox(ByRef dlgTitle As String, ByRef dlgPrompt As Stri
 End Function
 
 'Present an "add new preset" dialog box to the user.
-Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef srcCommandBar As pdCommandBar, ByRef parentForm As Form) As VbMsgBoxResult
-
+' If the dstPresetNameToSave value comes back NON-NULL, the caller *must* save a preset by that name.
+' (This means the user clicked "OK" after entering that particular preset name in the editor.)
+Public Function PromptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef dstPresetNameToSave As String, ByRef parentForm As Form) As VbMsgBoxResult
+    
+    dstPresetNameToSave = vbNullString
+    
     Load dialog_AddPreset
     Interface.FixPopupWindow dialog_AddPreset.hWnd, True
-    dialog_AddPreset.ShowDialog srcPresetManager, srcCommandBar, parentForm
+    dialog_AddPreset.ShowDialog srcPresetManager, dstPresetNameToSave, parentForm
     
     PromptNewPreset = dialog_AddPreset.DialogResult
     Interface.FixPopupWindow dialog_AddPreset.hWnd, False

@@ -65,7 +65,7 @@ Begin VB.Form options_Interface
       Width           =   7815
       _ExtentX        =   13785
       _ExtentY        =   1720
-      Caption         =   "title bar text:"
+      Caption         =   "title bar text"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdLabel lblTitle 
@@ -88,7 +88,7 @@ Begin VB.Form options_Interface
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1429
-      Caption         =   "grid size:"
+      Caption         =   "grid size"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboAlphaCheck 
@@ -99,7 +99,7 @@ Begin VB.Form options_Interface
       Width           =   3015
       _ExtentX        =   5318
       _ExtentY        =   1402
-      Caption         =   "grid colors:"
+      Caption         =   "grid colors"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdColorSelector csAlphaOne 
