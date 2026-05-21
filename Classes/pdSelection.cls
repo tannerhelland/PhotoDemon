@@ -644,6 +644,25 @@ End Function
 ' Note that this DOES NOT render the new selection on-screen, and it doesn't render a matching selection mask.
 ' The caller is responsible for those tasks.
 Friend Sub SelectAll()
+    
+    Dim tmpRectF As RectF
+    With tmpRectF
+        .Left = 0!
+        .Top = 0!
+        .Width = m_parentPDImage.Width
+        .Height = m_parentPDImage.Height
+    End With
+    
+    Me.SelectFromRectF tmpRectF
+    
+End Sub
+
+'Simple - use this to select a specific rectangular region from the image.  Selection settings will be reset
+' to a plain, interior, non-rounded-corner rectangle at the specified size and position.
+'
+'Note that this DOES NOT render the new selection on-screen, and it doesn't render a matching selection mask.
+' (The caller is responsible for those tasks.)
+Friend Sub SelectFromRectF(ByRef srcRectF As RectF)
 
     'Set basic information about this selection
     Me.SetSelectionShape ss_Rectangle
@@ -654,17 +673,17 @@ Friend Sub SelectAll()
     Me.SetSelectionProperty sp_RoundedCornerRadius, 0#
     
     With m_CornersUnlocked
-        .Left = 0!
-        .Top = 0!
-        .Right = m_parentPDImage.Width
-        .Bottom = m_parentPDImage.Height
+        .Left = srcRectF.Left
+        .Top = srcRectF.Top
+        .Right = srcRectF.Left + srcRectF.Width
+        .Bottom = srcRectF.Top + srcRectF.Height
     End With
     
     With m_CornersLocked
-        .Left = 0!
-        .Top = 0!
-        .Width = m_parentPDImage.Width
-        .Height = m_parentPDImage.Height
+        .Left = srcRectF.Left
+        .Top = srcRectF.Top
+        .Width = srcRectF.Width
+        .Height = srcRectF.Height
     End With
     
     m_IsTransformable = True

@@ -140,6 +140,25 @@ Public Sub SelectWholeImage()
     
 End Sub
 
+'"Select this specific rectangle"
+Public Sub SelectRectF(ByRef srcRectF As RectF)
+
+    'Unselect any existing selection
+    PDImages.GetActiveImage.MainSelection.LockRelease
+    PDImages.GetActiveImage.SetSelectionActive False
+    
+    'Create a new selection at the size of the source rectangle
+    PDImages.GetActiveImage.MainSelection.SelectFromRectF srcRectF
+    
+    'Lock in this selection
+    PDImages.GetActiveImage.MainSelection.LockIn
+    PDImages.GetActiveImage.SetSelectionActive True
+    
+    'Synchronize all user-facing controls to match
+    SyncTextToCurrentSelection PDImages.GetActiveImageID()
+    
+End Sub
+
 'Erase the currently selected area (LAYER ONLY!).  Note that this will not modify the current selection in any way;
 ' only the layer's pixel contents will be affected.
 Public Sub EraseSelectedArea(ByVal targetLayerIndex As Long)

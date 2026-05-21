@@ -903,7 +903,46 @@ End Sub
 
 'Get/set active selection state
 Friend Function IsSelectionActive() As Boolean
+
     IsSelectionActive = m_SelectionIsActive
+    
+    'Update May 2026: I find myself sometimes mixing up the rectangular selection tool and the crop tool.
+    ' If a selection is not active but a crop *is*, convert the crop to a selection and proceed normally.
+    ' (I don't love putting logic in this tool that references another tool, but this is far and away
+    '  the easiest way to make this behavior work across *anything* in the app that references selections.)
+    If (Not IsSelectionActive) Then
+        
+        'Check for both...
+        ' 1) The crop tool being active, and...
+        ' 2) A crop region having been created.
+        If (g_CurrentTool = ND_CROP) Then
+        If Tools_Crop.IsValidCropActive() Then
+            
+            'The user has drawn a crop region on the image, and is now attempting to do something selection-related.
+            ' Convert the crop to a selection, then proceed.
+            Dim tmpRectF As RectF
+            tmpRectF = Tools_Crop.GetCropRectF()
+            Tools_Crop.RemoveCurrentCrop
+            
+            toolbar_Toolbox.SelectNewTool SELECT_RECT
+            Selections.SelectRectF tmpRectF
+            
+            Dim tmpSelectionSettings As String
+            tmpSelectionSettings = PDImages.GetActiveImage.MainSelection.GetSelectionAsXML()
+            
+            'This doesn't create Undo data.  Do we need a new processor string to initiate the command? idk
+            Process "Create selection", False, tmpSelectionSettings, UNDO_Selection
+            'processor.Process ??
+            'Selections.CreateNewSelection tmpSelectionSettings
+            
+            'Activate the current image
+            CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "auto-swapped crop for selection", True, UNDO_Selection
+            
+        End If
+        End If
+        
+    End If
+    
 End Function
 
 Friend Sub SetSelectionActive(ByVal newState As Boolean)
