@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2026.1.194</langversion>
+<langversion>2026.1.214</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -3134,7 +3134,7 @@ Description: %2
 
 <phrase>
 <original>text style preset</original>
-<translation></translation>
+<translation>Пресет стиля текста</translation>
 </phrase>
 
 <phrase>
@@ -13135,7 +13135,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Click here to convert this layer to basic text.</original>
-<translation>Нажмите здесь, чтобы преобразовать этот слой в базовый текстовый слой.</translation>
+<translation>Нажмите здесь, чтобы преобразовать этот слой в обычный текст.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->

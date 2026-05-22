@@ -155,7 +155,7 @@
 
 <phrase>
 <original>Cut merged</original>
-<translation>Taglia elementi uniti</translation>
+<translation>Taglia livelli visibili</translation>
 </phrase>
 
 <phrase>
@@ -165,7 +165,7 @@
 
 <phrase>
 <original>Copy merged</original>
-<translation>Copia elementi uniti</translation>
+<translation>Copia livelli visibili</translation>
 </phrase>
 
 <phrase>
@@ -1866,17 +1866,17 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 
 <phrase>
 <original>Re-show: %1</original>
-<translation></translation>
+<translation>Riapri: %1</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to re-show</original>
-<translation></translation>
+<translation>Nessuno da riaprire</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to repeat</original>
-<translation></translation>
+<translation>Nessuno da ripetere</translation>
 </phrase>
 
 <phrase>
@@ -2218,7 +2218,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>Questa azione convertirà i livelli di testo e vettoriali in livelli di immagine (raster), il che significa che non è più possibile modificare le impostazioni specifiche del livello come testo, font, colore o forma.</translation>
+<translation>Questa azione convertirà i livelli di testo e vettoriali in livelli di immagine (raster), e non sarà più possibile modificare le impostazioni specifiche del livello come testo, font, colore o forma.</translation>
 </phrase>
 
 <phrase>
@@ -2279,7 +2279,7 @@ Questa immagine contiene %2 valori unici di colore + trasparenza (RGBA).</transl
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 <translation>Sfortunatamente, l'immagine '%1' non è stata trovata.
 
- Se l'immagine era originariamente situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o ricollega il supporto e riprova.</translation>
+Se l'immagine era originariamente situata in un supporto rimovibile (DVD, chiavetta USB, etc), per favore reinserisci o ricollega il supporto e riprova.</translation>
 </phrase>
 
 <phrase>
@@ -2413,7 +2413,7 @@ Per favore verifica che queste immagini esistano e che utilizzino un formato imm
 (Press No to continue recording.)</original>
 <translation>Questa macro non contiene azioni registrabili.  Sei sicuro di voler interrompere la registrazione? 
 
- (Premere No per continuare la registrazione).</translation>
+(Premere No per continuare la registrazione).</translation>
 </phrase>
 
 <phrase>
@@ -3123,17 +3123,17 @@ Descrizione: %2
 
 <phrase>
 <original>horizontal scaling</original>
-<translation></translation>
+<translation>scala orizzontale</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation></translation>
+<translation>scala verticale</translation>
 </phrase>
 
 <phrase>
 <original>text style preset</original>
-<translation></translation>
+<translation>preimpostazione stile del testo</translation>
 </phrase>
 
 <phrase>
@@ -3658,7 +3658,7 @@ Per favore inserisci un valore numerico.</translation>
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Le impostazione precedentemente salvate possono essere selezionate qui.  È possibile salvare le impostazioni correnti come un nuovo settaggio facendo clic sul pulsante Salva preimpostazioni sulla destra.</translation>
+<translation>Le impostazioni precedentemente salvate possono essere selezionate qui.  È possibile salvare le impostazioni correnti come un nuovo settaggio facendo clic sul pulsante Salva preimpostazioni sulla destra.</translation>
 </phrase>
 
 <phrase>
@@ -4230,12 +4230,12 @@ Dovrai scaricare manualmente questo file usando un browser internet.</translatio
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>Inserisci password</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>Questo file è protetto da password. Per favore inserisci una password</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -5347,7 +5347,7 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 
 <phrase>
 <original>Recently used</original>
-<translation></translation>
+<translation>Usati di recente</translation>
 </phrase>
 
 <phrase>
@@ -6784,7 +6784,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 
 <phrase>
 <original>highlights</original>
-<translation>evidenziatori</translation>
+<translation>luci</translation>
 </phrase>
 
 <phrase>
@@ -6818,7 +6818,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 
 <phrase>
 <original>Discard</original>
-<translation>Scartare</translation>
+<translation>Scarta</translation>
 </phrase>
 
 <phrase>
@@ -7786,7 +7786,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>use merged image</original>
-<translation>utilizzare l'immagine fusa</translation>
+<translation>utilizzare l'immagine unita</translation>
 </phrase>
 
 <phrase>
@@ -10039,7 +10039,7 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 
 <phrase>
 <original>load list</original>
-<translation>lista di carico</translation>
+<translation>carica lista</translation>
 </phrase>
 
 <phrase>
@@ -10089,7 +10089,7 @@ I file riparati sono stati salvati nella cartella di destinazione.  I file non r
 
 <phrase>
 <original>sort list</original>
-<translation></translation>
+<translation>ordina lista</translation>
 </phrase>
 
 <phrase>
@@ -10348,17 +10348,17 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>larghezza fissa, mantieni proporzioni</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>altezza fissa, mantieni proporzioni</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>dimensioni massime, adatta, mantieni proporzioni</translation>
 </phrase>
 
 <phrase>
@@ -13161,7 +13161,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>scale (x, y)</original>
-<translation></translation>
+<translation>scala (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -14238,7 +14238,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>quando si usa "Salva" su una nuova immagine, suggerisci questo formato</translation>
 </phrase>
 
 <phrase>
@@ -14263,12 +14263,12 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>automatico (corrisponde alle proprietà dell'immagine)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>Questa impostazione determina il formato file suggerito inizialmente per immagini che non sono mai state salvate. L'impostazione "automatico" ha come predefinito PDI (formato nativo di PhotoDemon) per immagini con livelli, JPEG per immagini con un solo livello senza trasparenza, e PNG per immagini con un solo livello con trasparenza.</translation>
 </phrase>
 
 <phrase>
@@ -14711,12 +14711,12 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrase>
 <original>maximum number of recent fonts to remember</original>
-<translation></translation>
+<translation>massimo numero di caratteri recenti da memorizzare</translation>
 </phrase>
 
 <phrase>
 <original>recent fonts</original>
-<translation></translation>
+<translation>caratteri recenti</translation>
 </phrase>
 
 <phrase>
