@@ -369,7 +369,7 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     pxHeight = Units.ConvertOtherUnitToPixels(curUnit, dstHeightF, iDPI, srcHeight)
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If PDImages.GetActiveImage.IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive(False) Then
         PDImages.GetActiveImage.SetSelectionActive False
         PDImages.GetActiveImage.MainSelection.LockRelease
     End If

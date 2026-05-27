@@ -538,7 +538,7 @@ Public Sub Selection_Clear(ByVal displayDialog As Boolean)
     Else
         
         'If a selection is active, use it as the basis for the clear
-        If PDImages.GetActiveImage.IsSelectionActive() Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) Then
             Selections.EraseSelectedArea PDImages.GetActiveImage.GetActiveLayerIndex
         
         'If a selection is *not* active, simply erase the current layer

@@ -314,7 +314,7 @@ Private Sub cmdBar_OKClick()
             'If a selection is active, retrieve a copy (in 8-bit format) and cache it locally,
             ' then notify pspi of the mask's presence
             Dim pspiMaskOK As Boolean
-            If PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
+            If PDImages.GetActiveImage.IsSelectionActive() And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
                 
                 'DISCLAIMER: pspi allows you to pass a selection mask copy on to the target image.
                 ' In my experience, however, this doesn't work great.  Many plugins don't support

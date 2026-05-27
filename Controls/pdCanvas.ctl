@@ -1135,7 +1135,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     If (Not Me.IsCanvasInteractionAllowed()) Then Exit Sub
     
     'Note whether a selection is active when mouse interactions began
-    m_SelectionActiveBeforeMouseEvents = (PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn)
+    m_SelectionActiveBeforeMouseEvents = (PDImages.GetActiveImage.IsSelectionActive(False) And PDImages.GetActiveImage.MainSelection.IsLockedIn)
     
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
@@ -2369,7 +2369,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' in the selected area.
             Dim moveViaSelectionActive As Boolean
             If (curPOI = poi_Undefined) Then
-                If PDImages.GetActiveImage.IsSelectionActive Then
+                If PDImages.GetActiveImage.IsSelectionActive(False) Then
                     moveViaSelectionActive = PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY)
                     If moveViaSelectionActive Then curPOI = poi_Interior
                 End If

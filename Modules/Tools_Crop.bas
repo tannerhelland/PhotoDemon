@@ -128,6 +128,8 @@ Public Sub Crop_ApplyFromString(ByRef paramString As String)
     
     End If
     
+    UpdateCropUI_MiscItems
+    
 End Sub
 
 'Crop the image against coordinates supplied by the on-canvas crop tool.
@@ -333,6 +335,8 @@ Private Sub Crop_ApplyCropRect(ByRef cropRectF As RectF, Optional ByVal targetLa
         Viewport.Stage2_CompositeAllLayers PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     End If
     
+    UpdateCropUI_MiscItems
+    
     'Reset the progress bar to zero, then exit
     ProgressBars.SetProgBarVal 0
     ProgressBars.ReleaseProgressBar
@@ -354,7 +358,8 @@ Public Sub CommitCurrentCrop()
     'TODO: undo type needs to be flagged as vector_safe here pending a UI toggle for erasing cropped areas
     
     If Tools_Crop.IsValidCropActive() Then
-        Process "Crop tool", False, GetCropParamString(), UNDO_Image, ND_CROP
+        Actions.LaunchAction_ByName "tool_crop_apply", pdas_Menu, False, PDImages.GetActiveImage.GetActiveLayerIndex
+        Process "Crop tool", False, Tools_Crop.GetCropParamString(), UNDO_Image, ND_CROP
     End If
     
 End Sub
@@ -366,7 +371,7 @@ Private Function GetCropParamString() As String
     Set cParams = New pdSerialize
     
     'Start with generic crop settings
-    ' (TODO)
+    ' (TODO pending different types of crops in the future!)
     
     'Finally, add the corner coordinates of the crop region
     With cParams
@@ -1058,6 +1063,9 @@ Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As 
         End If
         
     End If
+    
+    'Update any UI bits to match the new crop
+    UpdateCropUI_MiscItems
     
 End Sub
 
@@ -1802,6 +1810,9 @@ Private Sub RelayCropChangesToUI()
     toolpanel_Crop.cmdCommit(0).Enabled = Tools_Crop.IsValidCropActive()
     toolpanel_Crop.cmdCommit(1).Enabled = Tools_Crop.IsValidCropActive()
     
+    'Update any relevant menus
+    UpdateCropUI_MiscItems
+    
     'Unlock updates
     Tools.SetToolBusyState False
     
@@ -2030,6 +2041,9 @@ Public Sub RelayCropChangesFromUI(ByVal changedProperty As PD_Dimension, Optiona
     toolpanel_Crop.cmdCommit(0).Enabled = Tools_Crop.IsValidCropActive()
     toolpanel_Crop.cmdCommit(1).Enabled = Tools_Crop.IsValidCropActive()
     
+    'Update any relevant menus
+    UpdateCropUI_MiscItems
+    
     '...then request a viewport redraw to reflect any changes
     Viewport.Stage4_FlipBufferAndDrawUI PDImages.GetActiveImage(), FormMain.MainCanvas(0)
     
@@ -2055,6 +2069,12 @@ Private Sub GetAspectRatioAsFraction(ByRef dstNumerator As Long, ByRef dstDenomi
         dstDenominator = 1
     End If
         
+End Sub
+
+'When a valid crop rectangle is created or removed, some menu items (e.g. Selection > Import > Selection from crop rectangle)
+' need to be dis/enabled to match.
+Private Sub UpdateCropUI_MiscItems()
+    Interface.SetUIGroupState PDUI_ActiveCrop, Tools_Crop.IsValidCropActive()
 End Sub
 
 'Pass crop-tool-specific errors here

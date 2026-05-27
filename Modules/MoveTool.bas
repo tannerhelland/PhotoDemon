@@ -160,7 +160,7 @@ Public Sub NotifyMouseDown(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftCons
     'See if a selection is active.  If it is, we need to see if the user has clicked within the selected region.
     ' (If they have, we will allow them to move just the *selected* pixels.)
     Dim useSelectedPixels As Boolean: useSelectedPixels = False
-    If PDImages.GetActiveImage.IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive(False) Then
         useSelectedPixels = PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY)
     End If
     
@@ -242,7 +242,7 @@ Public Function NotifyMouseMove(ByVal lmbDown As Boolean, ByVal Shift As ShiftCo
         'If a selection is active, the selection region will take precedence over any layer(s)
         ' beneath the current selection.  Determine this in advance.
         Dim mouseOverSelection As Boolean: mouseOverSelection = False
-        If PDImages.GetActiveImage.IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) Then
             mouseOverSelection = PDImages.GetActiveImage.MainSelection.IsPointSelected(imgX, imgY)
         End If
         

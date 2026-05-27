@@ -407,7 +407,7 @@ Public Function AddLayerViaSelection(Optional ByVal preMultipliedAlphaState As B
         
     'Failsafe check
     If (Not PDImages.IsImageActive) Then Exit Function
-    If (Not PDImages.GetActiveImage.IsSelectionActive) Then Exit Function
+    If (Not PDImages.GetActiveImage.IsSelectionActive()) Then Exit Function
     
     'Start by retrieving the selected pixels into a temporary DIB
     Dim tmpDIB As pdDIB
@@ -2290,7 +2290,7 @@ Public Sub CommitScratchLayer(ByRef processNameToUse As String, ByRef srcRectF A
         
         'Before creating the new layer, check for an active selection.  If one exists, we need to pre-process
         ' the paint layer against it.
-        If PDImages.GetActiveImage.IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive() Then
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
             Dim cBlender As pdPixelBlender

@@ -505,7 +505,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     
     'If the image contains an active selection, automatically deactivate it.
     ' (In the future, perhaps we could resize it, depending on the selection type.)
-    If PDImages.GetActiveImage.IsSelectionActive And (thingToResize = pdat_Image) Then
+    If PDImages.GetActiveImage.IsSelectionActive(False) And (thingToResize = pdat_Image) Then
         PDImages.GetActiveImage.SetSelectionActive False
         PDImages.GetActiveImage.MainSelection.LockRelease
     End If

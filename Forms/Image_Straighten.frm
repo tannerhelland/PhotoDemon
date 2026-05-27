@@ -118,7 +118,7 @@ Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isP
     End With
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If (thingToRotate = pdat_Image) And PDImages.GetActiveImage.IsSelectionActive And (Not isPreview) Then
+    If (thingToRotate = pdat_Image) And PDImages.GetActiveImage.IsSelectionActive(False) And (Not isPreview) Then
         PDImages.GetActiveImage.SetSelectionActive False
         PDImages.GetActiveImage.MainSelection.LockRelease
     End If

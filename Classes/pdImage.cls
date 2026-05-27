@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2026 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 10/March/25
-'Last update: expose "suspend to disk" behavior to callers
+'Last updated: 22/May/26
+'Last update: allow auto-creation of rectangular selections from valid crop rectangles
+'             (fixes the problem of users - including me! - confusing the two tools)
 '
 'The pdImage class is used to store information on each image loaded by the user.
 ' One instance of this class exists for each loaded image.
@@ -902,7 +903,7 @@ Friend Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 End Sub
 
 'Get/set active selection state
-Friend Function IsSelectionActive() As Boolean
+Friend Function IsSelectionActive(Optional ByVal allowCropAsSelection As Boolean = True) As Boolean
 
     IsSelectionActive = m_SelectionIsActive
     
@@ -912,33 +913,17 @@ Friend Function IsSelectionActive() As Boolean
     '  the easiest way to make this behavior work across *anything* in the app that references selections.)
     If (Not IsSelectionActive) Then
         
-        'Check for both...
-        ' 1) The crop tool being active, and...
-        ' 2) A crop region having been created.
-        If (g_CurrentTool = ND_CROP) Then
-        If Tools_Crop.IsValidCropActive() Then
+        'If the caller allows it (via allowCropAsSelection, function parameter), see if we can auto-create
+        ' a selection rectangle from an active crop region.
+        If allowCropAsSelection Then
             
-            'The user has drawn a crop region on the image, and is now attempting to do something selection-related.
-            ' Convert the crop to a selection, then proceed.
-            Dim tmpRectF As RectF
-            tmpRectF = Tools_Crop.GetCropRectF()
-            Tools_Crop.RemoveCurrentCrop
+            'This function call will return TRUE if a crop rectangle exists and we were able to auto-create
+            ' a selection from it.
+            IsSelectionActive = CreateSelectionFromCrop()
             
-            toolbar_Toolbox.SelectNewTool SELECT_RECT
-            Selections.SelectRectF tmpRectF
+            'Update our internal selection tracker to match (to ensure identical behavior to other selection queries)
+            If IsSelectionActive Then IsSelectionActive = m_SelectionIsActive
             
-            Dim tmpSelectionSettings As String
-            tmpSelectionSettings = PDImages.GetActiveImage.MainSelection.GetSelectionAsXML()
-            
-            'This doesn't create Undo data.  Do we need a new processor string to initiate the command? idk
-            Process "Create selection", False, tmpSelectionSettings, UNDO_Selection
-            'processor.Process ??
-            'Selections.CreateNewSelection tmpSelectionSettings
-            
-            'Activate the current image
-            CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "auto-swapped crop for selection", True, UNDO_Selection
-            
-        End If
         End If
         
     End If

@@ -103,6 +103,45 @@ Public Sub CreateNewSelection(ByRef paramString As String)
     
 End Sub
 
+'Returns TRUE if a selection was created from a valid crop region
+Public Function CreateSelectionFromCrop() As Boolean
+    
+    CreateSelectionFromCrop = False
+    
+    'Ignore unless the crop tool is selected *and* a crop rect is active
+    If (g_CurrentTool = ND_CROP) Then
+        If Tools_Crop.IsValidCropActive() Then
+            
+            'The user has drawn a crop region on the image, and is now attempting to do something selection-related.
+            ' Convert the crop to a selection, then proceed as if the selection was always there.
+            
+            'Retrieve the current crop rectangle, then remove the crop
+            Dim tmpRectF As RectF
+            tmpRectF = Tools_Crop.GetCropRectF()
+            Tools_Crop.RemoveCurrentCrop
+            
+            'Switch to the selection tool, initiate a rectangular selection using the crop rectangle,
+            ' then retrieve the *full* selection settings as XML.
+            toolbar_Toolbox.SelectNewTool SELECT_RECT, True, False
+            Selections.SelectRectF tmpRectF
+            Dim tmpSelectionSettings As String
+            tmpSelectionSettings = PDImages.GetActiveImage.MainSelection.GetSelectionAsXML()
+            
+            'Use PD's central processor to initiate a new selection (using the selection parameter XML we just generated);
+            ' this step is crucial because it also creates Undo data for the selection (so the user can Undo the
+            ' selection creation step).
+            Process "Create selection", False, tmpSelectionSettings, UNDO_Selection
+            
+            'Activate the current image, which will also force a full redraw of the new selection
+            CanvasManager.ActivatePDImage PDImages.GetActiveImageID(), "auto-swapped crop for selection", True, UNDO_Selection
+            
+            CreateSelectionFromCrop = True
+            
+        End If  'Valid crop active
+    End If  'Current tool is crop tool
+        
+End Function
+
 'Remove the current selection
 Public Sub RemoveCurrentSelection(Optional ByVal updateUIToo As Boolean = True)
     
@@ -226,7 +265,7 @@ End Sub
 Public Sub NotifyNewSelectionStarting()
     
     'This function is only relevant if a selection already exists
-    If PDImages.GetActiveImage.IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive(False) Then
         
         'In REPLACE mode, just erase the previous selection
         If (toolpanel_Selections.btsCombine.ListIndex = pdsm_Replace) Then
@@ -260,7 +299,7 @@ Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Bool
     SelectionsAllowed = False
     
     If PDImages.IsImageActive() Then
-        If PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) And (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
             If (Not PDImages.GetActiveImage.MainSelection.GetAutoRefreshSuspend()) Then
                 If transformableMatters Then
                     SelectionsAllowed = PDImages.GetActiveImage.MainSelection.IsTransformable

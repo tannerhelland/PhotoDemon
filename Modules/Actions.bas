@@ -380,7 +380,7 @@ Private Function Launch_ByName_MenuEdit(ByRef srcMenuName As String, Optional By
         ' If, however, no selection is active, we will delete the entire layer.  That requires a backup
         ' of the full layer stack.
         Case "edit_cutlayer"
-            If PDImages.GetActiveImage.IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
                 Process "Cut", False, , UNDO_Layer
             Else
                 Process "Cut", False, , UNDO_Image
@@ -783,7 +783,14 @@ Private Function Launch_ByName_MenuSelect(ByRef srcMenuName As String, Optional 
         
         Case "select_load"
             Process "Load selection", True
+        
+        Case "select_import"
             
+            'Instead of directly launching a process call, use the specialized function that also validates
+            ' the crop rectangle *before* converting.  (The function does nothing if a valid crop does not already exist.)
+            Case "select_importfromcrop"
+                Selections.CreateSelectionFromCrop
+                
         Case "select_save"
             Process "Save selection", True
             
@@ -1613,6 +1620,10 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
         Case "tool_crop"
             toolbar_Toolbox.SelectNewTool ND_CROP, (actionSource = pdas_Search), True
         
+        'Used only by the crop tool, to commit the active crop.  (We don't actually *do* anything here; this is just
+        ' to flag the action as a non-adjustment, non-effect operation.)
+        Case "tool_crop_apply"
+            
         Case "tool_select_rect"
             If (actionSource = pdas_Hotkey) Then
                 If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT

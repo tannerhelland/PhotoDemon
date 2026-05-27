@@ -92,7 +92,7 @@ End Function
 Public Function ExportSelectionMaskAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If Not PDImages.GetActiveImage.IsSelectionActive Then
+    If Not PDImages.GetActiveImage.IsSelectionActive() Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectionMaskAsImage = False
         Exit Function

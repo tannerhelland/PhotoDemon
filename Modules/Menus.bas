@@ -369,10 +369,13 @@ Public Sub InitializeMenus()
     AddMenuItem "Stroke selection outline...", "select_stroke", 4, 13, , "paint_softbrush"
     AddMenuItem "-", "-", 4, 14
     AddMenuItem "Load selection...", "select_load", 4, 15, , "file_open"
-    AddMenuItem "Save current selection...", "select_save", 4, 16, , "file_save"
-    AddMenuItem "Export", "select_export", 4, 17
-        AddMenuItem "Selected area as image...", "select_exportarea", 4, 17, 0
-        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 17, 1
+    AddMenuItem "Import", "select_import", 4, 16
+        AddMenuItem "Selection from crop rectangle", "select_importfromcrop", 4, 16, 0, "image_crop"
+    AddMenuItem "-", "-", 4, 17
+    AddMenuItem "Save current selection...", "select_save", 4, 18, , "file_save"
+    AddMenuItem "Export", "select_export", 4, 19
+        AddMenuItem "Selected area as image...", "select_exportarea", 4, 19, 0
+        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 19, 1
         
     'Adjustments Menu
     AddMenuItem "Adjustments", "adj_top", 5

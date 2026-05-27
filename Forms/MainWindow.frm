@@ -853,12 +853,24 @@ Begin VB.Form FormMain
          Index           =   15
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Save current selection..."
+         Caption         =   "Import"
          Index           =   16
+         Begin VB.Menu MnuSelectImport 
+            Caption         =   "Selection from crop rectangle"
+            Index           =   0
+         End
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "-"
+         Index           =   17
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Save current selection..."
+         Index           =   18
       End
       Begin VB.Menu MnuSelect 
          Caption         =   "Export"
-         Index           =   17
+         Index           =   19
          Begin VB.Menu MnuSelectExport 
             Caption         =   "Selected area as image..."
             Index           =   0
@@ -2645,7 +2657,7 @@ Private Sub m_FocusDetector_AppGotFocusReliable()
         
         'Restore any relevant UI animations
         If Selections.SelectionsAllowed(False) Then
-            If PDImages.GetActiveImage.IsSelectionActive() Then
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then
                 PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed SelectionUI.GetUISetting_Animate()
             End If
         End If
@@ -2661,7 +2673,7 @@ Private Sub m_FocusDetector_AppLostFocusReliable()
         
         'Turn off selection animations in the main window
         If Selections.SelectionsAllowed(False) Then
-            If PDImages.GetActiveImage.IsSelectionActive() Then
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then
                 PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed False
             End If
         End If
@@ -3901,8 +3913,12 @@ Private Sub MnuSelect_Click(Index As Integer)
         Case 15
             Actions.LaunchAction_ByName "select_load"
         Case 16
-            Actions.LaunchAction_ByName "select_save"
+            'Top-level "Import selection from..." menu
         Case 17
+            '(separator)
+        Case 18
+            Actions.LaunchAction_ByName "select_save"
+        Case 19
             'Top-level "Export selection as..." menu
     End Select
 End Sub
@@ -3913,6 +3929,13 @@ Private Sub MnuSelectExport_Click(Index As Integer)
             Actions.LaunchAction_ByName "select_exportarea"
         Case 1
             Actions.LaunchAction_ByName "select_exportmask"
+    End Select
+End Sub
+
+Private Sub MnuSelectImport_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "select_importfromcrop"
     End Select
 End Sub
 

@@ -459,7 +459,7 @@ End Function
 '    Const funcName As String = "SetMask_CurrentSelectionMask"
 '
 '    'Make sure we're being called correctly
-'    If PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
+'    If PDImages.GetActiveImage.IsSelectionActive() And PDImages.GetActiveImage.MainSelection.IsLockedIn Then
 '
 '        'Retrieve a copy of the mask
 '        Dim tmpDIB As pdDIB

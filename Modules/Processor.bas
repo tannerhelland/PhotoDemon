@@ -1033,7 +1033,7 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
 
     If PDImages.IsImageActive() Then
     
-        If PDImages.GetActiveImage.IsSelectionActive And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
         
             'Ask the Undo engine to return the last selection param string it has on file
             Dim lastSelParamString As String
@@ -1085,7 +1085,7 @@ Private Function RemoveSelectionAsNecessary(ByVal processID As String, Optional 
     If (Not raiseDialog) And PDImages.IsImageActive() Then
     
         'Only worry about this step if a selection is currently active
-        If PDImages.GetActiveImage.IsSelectionActive And (createUndo <> UNDO_Selection) Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) And (createUndo <> UNDO_Selection) Then
     
             Dim removeSelectionInAdvance As Boolean
             removeSelectionInAdvance = False

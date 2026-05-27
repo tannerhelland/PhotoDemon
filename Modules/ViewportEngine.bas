@@ -154,7 +154,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
             ' they only support the "move" interaction, which is applied by click-dragging anywhere in the lasso region.)
             ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_WAND) Or (g_CurrentTool = SELECT_LASSO) Then
-                If srcImage.IsSelectionActive Then srcImage.MainSelection.RenderTransformNodes srcImage, dstCanvas, g_CurrentTool
+                If srcImage.IsSelectionActive(False) Then srcImage.MainSelection.RenderTransformNodes srcImage, dstCanvas, g_CurrentTool
                     
             'Text tools currently draw layer boundaries at all times; I'm working on letting the user control this (TODO!)
             ElseIf (g_CurrentTool = TEXT_BASIC) Or (g_CurrentTool = TEXT_ADVANCED) Then
@@ -253,7 +253,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
             'Check to see if a selection is active.  If it is, we want to render it now, directly atop the front buffer.  This allows any
             ' subsequent overlays (e.g. brush outlines) to appear "on top" of the selection, without us needing to redraw the selection outline
             ' on every overlay render.
-            If srcImage.IsSelectionActive Then srcImage.MainSelection.RenderSelectionToViewport m_FrontBuffer, srcImage, dstCanvas
+            If srcImage.IsSelectionActive(False) Then srcImage.MainSelection.RenderSelectionToViewport m_FrontBuffer, srcImage, dstCanvas
             
             'Before exiting, calculate the time spent in this stage
             m_TimeStage3 = VBHacks.GetTimerDifferenceNow(startTime)

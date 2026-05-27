@@ -242,7 +242,7 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
     If (Not PDImages.IsImageActive()) Then Exit Sub
     
     'First, make sure there is an active selection
-    If (Not PDImages.GetActiveImage.IsSelectionActive) Then
+    If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
         Message "No active selection found.  Crop abandoned."
     Else
         

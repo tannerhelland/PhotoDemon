@@ -885,7 +885,7 @@ Friend Function DoesStackContainRepeatableCommand(Optional ByRef nameOfProcessor
                         'If this action is repeatable, but it requires a selection, make sure a selection exists.
                         If (.srcProcCall.pcUndoType = UNDO_Selection) Then
                             If PDImages.IsImageActive() Then
-                                If PDImages.GetActiveImage.IsSelectionActive() Then
+                                If PDImages.GetActiveImage.IsSelectionActive(False) Then
                                     actionFound = True
                                     nameOfProcessorAction = .srcProcCall.pcID
                                 End If
