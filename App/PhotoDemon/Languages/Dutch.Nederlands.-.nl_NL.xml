@@ -6,7 +6,7 @@
 
 <langid>nl-NL</langid>
 <langname>Dutch (Nederlands)</langname>
-<langversion>2025.12.12</langversion>
+<langversion>2025.12.13</langversion>
 <langstatus>99% complete</langstatus>
 
 <author>Rudi Klein</author>
@@ -2403,7 +2403,7 @@ Controleer of deze afbeelding(en) bestaa(t)(n) en dat ze een ondersteund afbeeld
 <translation>Duplicatie afbeelding klaar.</translation>
 </phrase>
 
-<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Loading.bas contains 38 phrases. 14 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -3359,12 +3359,12 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 
 <!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
-<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
-
 <phrase>
 <original>Create selection</original>
 <translation>Maak selectie</translation>
 </phrase>
+
+<!-- Selections.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Release the mouse button to complete the lasso selection</original>
@@ -3386,7 +3386,7 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 <translation>Klik op het eerste punt van de veelhoek om de selectie te voltooien</translation>
 </phrase>
 
-<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5329,6 +5329,11 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
+<original>Selection from crop rectangle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Save current selection</original>
 <translation>Opslaan huidige selectie</translation>
 </phrase>
@@ -5896,7 +5901,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 417 phrases. 228 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 419 phrases. 229 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14867,10 +14872,10 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2813</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6021 phrases. -->
-<!-- 3209 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12164 total words. -->
+<!-- As of this build, PhotoDemon contains 6022 phrases. -->
+<!-- 3209 are duplicates, so only 2813 unique phrases have been written to file. -->
+<!-- These 2813 phrases contain approximately 12168 total words. -->
 
 </pdData>
