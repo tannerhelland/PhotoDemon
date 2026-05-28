@@ -371,12 +371,15 @@ Public Sub InitializeMenus()
     AddMenuItem "-", "-", 4, 15
     AddMenuItem "Load selection...", "select_load", 4, 16, , "file_open"
     AddMenuItem "Import", "select_import", 4, 17
-        AddMenuItem "Selection from crop rectangle", "select_importfromcrop", 4, 17, 0, "image_crop"
+        AddMenuItem "Selection mask from crop tool", "select_importfromcrop", 4, 17, 0, "image_crop"
+        AddMenuItem "Selection mask from active layer", "select_importfromlayer", 4, 17, 1
     AddMenuItem "-", "-", 4, 18
-    AddMenuItem "Save current selection...", "select_save", 4, 19, , "file_save"
+    AddMenuItem "Save selection...", "select_save", 4, 19, , "file_save"
     AddMenuItem "Export", "select_export", 4, 20
-        AddMenuItem "Selected area as image...", "select_exportarea", 4, 20, 0
-        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 20, 1
+        AddMenuItem "Selected pixels to file...", "select_exportpixels", 4, 20, 0
+        AddMenuItem "-", "-", 4, 20, 1
+        AddMenuItem "Selection mask to file...", "select_exportmaskfile", 4, 20, 2
+        AddMenuItem "Selection mask to layer...", "select_exportmasklayer", 4, 20, 3
         
     'Adjustments Menu
     AddMenuItem "Adjustments", "adj_top", 5

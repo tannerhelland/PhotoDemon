@@ -794,15 +794,21 @@ Private Function Launch_ByName_MenuSelect(ByRef srcMenuName As String, Optional 
             Case "select_importfromcrop"
                 Selections.CreateSelectionFromCrop
                 
+            Case "select_importfromlayer"
+                'TODO
+                
         Case "select_save"
             Process "Save selection", True
             
         Case "select_export"
-            Case "select_exportarea"
-                Process "Export selected area as image", True
+            Case "select_exportpixels"
+                Process "Selected pixels to file", True
                 
-            Case "select_exportmask"
-                Process "Export selection mask as image", True
+            Case "select_exportmaskfile"
+                Process "Selection mask to file", True
+                
+            Case "select_exportmasklayer"
+                Process "Selection mask to layer", False, vbNullString, UNDO_Everything
                 
         Case Else
             cmdFound = False
@@ -1919,10 +1925,14 @@ Public Sub BuildActionDatabase()
     AddAction "select_heal", "Heal selected area", True, True, True
     AddAction "select_stroke", "Stroke selection outline", True, True, True
     AddAction "select_load", "Load selection"
+    'AddAction "select_import"
+    AddAction "select_importfromcrop", "Selection mask from crop tool", False, False, False
+    AddAction "select_importfromlayer", "Selection mask from active layer", False, False, False
     AddAction "select_save", "Save selection"
     'AddAction "select_export"
-    AddAction "select_exportarea", "Export selected area as image", False, False, True
-    AddAction "select_exportmask", "Export selection mask as image", False, False, True
+    AddAction "select_exportpixels", "Export selected area as image", False, False, True
+    AddAction "select_exportmaskfile", "Export selection mask as image", False, False, True
+    AddAction "select_exportmasklayer", "Selection mask to layer", False, False, False
     
     AddAction "adj_repeat", "Repeat", False, True, False
     AddAction "adj_reshow", "Re-show", False, False, True

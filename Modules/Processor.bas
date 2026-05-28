@@ -2726,16 +2726,25 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
         SelectionFiles.SaveSelectionToFile
         Process_SelectMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Selection mask from active layer", True) Then
+        'TODO!
+        Process_SelectMenu = True
+        
     'Export selected area as image (defaults to PNG, but user can select the actual format)
-    ElseIf Strings.StringsEqual(processID, "Export selected area as image", True) Then
+    ElseIf Strings.StringsEqual(processID, "Selected pixels to file", True) Then
         SelectionFiles.ExportSelectedAreaAsImage
         Process_SelectMenu = True
     
     'Export selection mask as image (defaults to PNG, but user can select the actual format)
-    ElseIf Strings.StringsEqual(processID, "Export selection mask as image", True) Then
+    ElseIf Strings.StringsEqual(processID, "Selection mask to file", True) Then
         SelectionFiles.ExportSelectionMaskAsImage
         Process_SelectMenu = True
     
+    'Add the current selection mask to the image as a raster layer
+    ElseIf Strings.StringsEqual(processID, "Selection mask to layer", True) Then
+        'TODO!
+        Process_SelectMenu = True
+        
     ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
     ElseIf Strings.StringsEqual(processID, "Move selection", True) Then
         Selections.CreateNewSelection processParameters

@@ -860,8 +860,12 @@ Begin VB.Form FormMain
          Caption         =   "Import"
          Index           =   17
          Begin VB.Menu MnuSelectImport 
-            Caption         =   "Selection from crop rectangle"
+            Caption         =   "Selection mask from crop tool"
             Index           =   0
+         End
+         Begin VB.Menu MnuSelectImport 
+            Caption         =   "Selection mask from active layer"
+            Index           =   1
          End
       End
       Begin VB.Menu MnuSelect 
@@ -869,19 +873,27 @@ Begin VB.Form FormMain
          Index           =   18
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Save current selection..."
+         Caption         =   "Save selection..."
          Index           =   19
       End
       Begin VB.Menu MnuSelect 
          Caption         =   "Export"
          Index           =   20
          Begin VB.Menu MnuSelectExport 
-            Caption         =   "Selected area as image..."
+            Caption         =   "Selected pixels to file..."
             Index           =   0
          End
          Begin VB.Menu MnuSelectExport 
-            Caption         =   "Selection mask as image..."
+            Caption         =   "-"
             Index           =   1
+         End
+         Begin VB.Menu MnuSelectExport 
+            Caption         =   "Selection mask to file..."
+            Index           =   2
+         End
+         Begin VB.Menu MnuSelectExport 
+            Caption         =   "Selection mask to layer"
+            Index           =   3
          End
       End
    End
@@ -3932,9 +3944,13 @@ End Sub
 Private Sub MnuSelectExport_Click(Index As Integer)
     Select Case Index
         Case 0
-            Actions.LaunchAction_ByName "select_exportarea"
+            Actions.LaunchAction_ByName "select_exportpixels"
         Case 1
-            Actions.LaunchAction_ByName "select_exportmask"
+            'separator
+        Case 2
+            Actions.LaunchAction_ByName "select_exportmaskfile"
+        Case 3
+            Actions.LaunchAction_ByName "select_exportmasklayer"
     End Select
 End Sub
 
@@ -3942,6 +3958,8 @@ Private Sub MnuSelectImport_Click(Index As Integer)
     Select Case Index
         Case 0
             Actions.LaunchAction_ByName "select_importfromcrop"
+        Case 1
+            Actions.LaunchAction_ByName "select_importfromlayer"
     End Select
 End Sub
 
