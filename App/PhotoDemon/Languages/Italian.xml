@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.23</langversion>
+<langversion>2025.4.24</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -664,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>Esporta area selezionata come immagine</translation>
+<original>Selected pixels to file</original>
+<translation>Area selezionata come immagine</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>Esporta maschera di selezione come immagine</translation>
+<original>Selection mask to file</original>
+<translation>Maschera di selezione come immagine</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1343,7 @@
 <translation>Cancella lista di immagini recenti</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5326,23 +5331,13 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
-<original>Selection from crop rectangle</original>
+<original>Selection mask from crop tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>Salva selezione corrente</translation>
-</phrase>
-
-<phrase>
-<original>Selected area as image</original>
-<translation>Area selezionata come immagine</translation>
-</phrase>
-
-<phrase>
-<original>Selection mask as image</original>
-<translation>Maschera di selezione come immagine</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5898,7 +5893,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <translation>Lingua modificata con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14869,10 +14864,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2813</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6026 phrases. -->
-<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
-<!-- These 2813 phrases contain approximately 12168 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>

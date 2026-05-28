@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>2025.12.15</langversion>
+<langversion>2025.12.16</langversion>
 <langstatus>99% complete</langstatus>
 
 <author>Frank Donckers, Rudi Klein</author>
@@ -664,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>Exporteer geselecteerd gebied als afbeelding</translation>
+<original>Selected pixels to file</original>
+<translation>Selecteer gebied als afbeelding</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>Exporteer selectie masker als afbeelding</translation>
+<original>Selection mask to file</original>
+<translation>Selectiemasker als afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1343,7 @@
 <translation>Wis recente lijst met afbeeldingen</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5327,23 +5332,13 @@ De uiteindelijke waarde moet tussen %3 en %4 liggen.</translation>
 </phrase>
 
 <phrase>
-<original>Selection from crop rectangle</original>
+<original>Selection mask from crop tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>Opslaan huidige selectie</translation>
-</phrase>
-
-<phrase>
-<original>Selected area as image</original>
-<translation>Selecteer gebied als afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Selection mask as image</original>
-<translation>Selectiemasker als afbeelding</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5899,7 +5894,7 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 <translation>Taal succesvol gewijzigd.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14870,10 +14865,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2813</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6026 phrases. -->
-<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
-<!-- These 2813 phrases contain approximately 12168 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>

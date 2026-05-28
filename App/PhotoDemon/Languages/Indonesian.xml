@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Bahasa Indonesia (ID)</langname>
-<langversion>2024.4.17</langversion>
+<langversion>2024.4.18</langversion>
 <langstatus>Done</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -664,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>Ekspor Area Terpilih sebagai Gambar</translation>
+<original>Selected pixels to file</original>
+<translation>Area terpilih sebagai gambar</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>Ekspor Masker Seleksi sebagai Gambar</translation>
+<original>Selection mask to file</original>
+<translation>Masker seleksi sebagai gambar</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1343,7 @@
 <translation>Bersihkan Daftar Gambar Terbaru</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5325,23 +5330,13 @@ Nilai akhir harus antara %3 dan %4.</translation>
 </phrase>
 
 <phrase>
-<original>Selection from crop rectangle</original>
+<original>Selection mask from crop tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>Simpan seleksi saat ini</translation>
-</phrase>
-
-<phrase>
-<original>Selected area as image</original>
-<translation>Area terpilih sebagai gambar</translation>
-</phrase>
-
-<phrase>
-<original>Selection mask as image</original>
-<translation>Masker seleksi sebagai gambar</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5897,7 +5892,7 @@ Pembaruan sedang diproses otomatis di latar belakang.  Anda akan menerima pember
 <translation>Bahasa berhasil diubah.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14868,10 +14863,10 @@ Jika Anda masih memilih untuk menonaktifkan pembaruan, jangan lupa untuk mengunj
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2813</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6026 phrases. -->
-<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
-<!-- These 2813 phrases contain approximately 12168 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>正體中文</langname>
-<langversion>2026.1.159</langversion>
+<langversion>2026.1.160</langversion>
 <langstatus>Translation completed on 2026/03/24</langstatus>
 
 <author>昇</author>
@@ -664,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>匯出選定區域成圖像</translation>
+<original>Selected pixels to file</original>
+<translation>將選取範圍作為圖像</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>將選取範圍的遮罩匯出為圖像</translation>
+<original>Selection mask to file</original>
+<translation>將選取遮罩作為圖像</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1343,7 @@
 <translation>清除最近的圖像列表</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5336,23 +5341,13 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Selection from crop rectangle</original>
+<original>Selection mask from crop tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>保存目前選取範圍</translation>
-</phrase>
-
-<phrase>
-<original>Selected area as image</original>
-<translation>將選取範圍作為圖像</translation>
-</phrase>
-
-<phrase>
-<original>Selection mask as image</original>
-<translation>將選取遮罩作為圖像</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5907,7 +5902,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>切換語言成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14938,10 +14933,10 @@ PhotoDemon 可以透過分析其他元數據（例如量化表）來推斷品質
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2813</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6026 phrases. -->
-<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
-<!-- These 2813 phrases contain approximately 12168 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>

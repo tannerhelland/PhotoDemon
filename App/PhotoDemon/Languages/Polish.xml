@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>9.0.85</langversion>
+<langversion>9.0.86</langversion>
 <langstatus>100% complete</langstatus>
 
 <author>Ryszard</author>
@@ -664,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>Eksportuj zaznaczony obszar jako obraz</translation>
+<original>Selected pixels to file</original>
+<translation>Zaznaczony obszar jako obraz</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>Eksportuj wybraną maskę jako obraz</translation>
+<original>Selection mask to file</original>
+<translation>Zaznaczoną maskę jako obraz</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1343,7 @@
 <translation>Wyczyść listę ostatnich obrazów</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5322,23 +5327,13 @@ Ostateczna wartość musi zawierać się w przedziale od %3 do %4.</translation>
 </phrase>
 
 <phrase>
-<original>Selection from crop rectangle</original>
+<original>Selection mask from crop tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>Zapisz bieżące zaznaczenie</translation>
-</phrase>
-
-<phrase>
-<original>Selected area as image</original>
-<translation>Zaznaczony obszar jako obraz</translation>
-</phrase>
-
-<phrase>
-<original>Selection mask as image</original>
-<translation>Zaznaczoną maskę jako obraz</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5891,7 +5886,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Język został pomyślnie zmieniony.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14861,10 +14856,10 @@ Jeśli nadal decydujesz się na wyłączenie aktualizacji, nie zapomnij odwiedzi
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2813</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6026 phrases. -->
-<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
-<!-- These 2813 phrases contain approximately 12168 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>

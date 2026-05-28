@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>2026.1.158</langversion>
+<langversion>2026.1.159</langversion>
 <langstatus>complete</langstatus>
 
 <author>István Bánszki</author>
@@ -664,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>Kijelölt terület mentése képként</translation>
+<original>Selected pixels to file</original>
+<translation>Kijelölt terület képként</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>Kijelölésmaszk mentése képként</translation>
+<original>Selection mask to file</original>
+<translation>Kijelölési maszk képként</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1338,7 +1343,7 @@
 <translation>Nemrég megnyitott lista törlése</translation>
 </phrase>
 
-<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -5328,23 +5333,13 @@ A végső értéknek %3 és %4 között kell lennie.</translation>
 </phrase>
 
 <phrase>
-<original>Selection from crop rectangle</original>
+<original>Selection mask from crop tool</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>Aktuális kijelölés mentése</translation>
-</phrase>
-
-<phrase>
-<original>Selected area as image</original>
-<translation>Kijelölt terület képként</translation>
-</phrase>
-
-<phrase>
-<original>Selection mask as image</original>
-<translation>Kijelölési maszk képként</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5900,7 +5895,7 @@ A frissítés automatikusan feldolgozás alatt áll a háttérben. Újabb értes
 <translation>Nyelv sikeresen megváltoztatva.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14867,10 +14862,10 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2813</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6026 phrases. -->
-<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
-<!-- These 2813 phrases contain approximately 12168 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>

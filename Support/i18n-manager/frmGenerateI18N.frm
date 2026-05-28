@@ -957,6 +957,12 @@ Private Function GetLightlyModifiedText(ByRef srcTextNew As String, ByRef dstTex
     ElseIf Strings.StringsEqual(srcTextNew, "fixed size, fit exclusive", True) Then
         dstTextOld = "fit exclusively"
         GetLightlyModifiedText = True
+    ElseIf Strings.StringsEqual(srcTextNew, "Selected pixels to file", True) Then
+        dstTextOld = "Selected area as image"
+        GetLightlyModifiedText = True
+    ElseIf Strings.StringsEqual(srcTextNew, "Selection mask to file", True) Then
+        dstTextOld = "Selection mask as image"
+        GetLightlyModifiedText = True
     End If
     
 End Function
