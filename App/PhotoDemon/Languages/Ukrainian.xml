@@ -6,7 +6,7 @@
 
 <langid>uk-UA</langid>
 <langname>Українська (Ukrainian)</langname>
-<langversion>1.0.50</langversion>
+<langversion>1.0.52</langversion>
 <langstatus>complete</langstatus>
 
 <author>eugene bulbaka</author>
@@ -626,6 +626,11 @@
 <phrase>
 <original>Sharpen selection</original>
 <translation>Різкість виділення</translation>
+</phrase>
+
+<phrase>
+<original>Remove holes from selection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1338,7 @@
 <translation>Очистити список останніх зображень</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3318,18 +3323,8 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>Selection inversion complete.</original>
-<translation>Інверсію виділення завершено.</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Розтушовування виділення</translation>
-</phrase>
-
-<phrase>
-<original>Feathering complete.</original>
-<translation>Розтушовування завершено.</translation>
 </phrase>
 
 <phrase>
@@ -3343,11 +3338,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
-<original>Selection resize complete.</original>
-<translation>Зміну розміру виділення завершено.</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Зменшити виділення</translation>
 </phrase>
@@ -3357,7 +3347,12 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>Пошук межі виділення</translation>
 </phrase>
 
-<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>Applying changes</original>
+<translation></translation>
+</phrase>
+
+<!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Create selection</original>
@@ -5325,6 +5320,11 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
+<original>Remove holes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Selection from crop rectangle</original>
 <translation></translation>
 </phrase>
@@ -5897,7 +5897,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Мова змінилася успішно.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 419 phrases. 229 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14870,8 +14870,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2813</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6022 phrases. -->
-<!-- 3209 are duplicates, so only 2813 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 6026 phrases. -->
+<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
 <!-- These 2813 phrases contain approximately 12168 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.05.13</langversion>
+<langversion>2026.05.15</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -626,6 +626,11 @@
 <phrase>
 <original>Sharpen selection</original>
 <translation>Affinage de la sélection</translation>
+</phrase>
+
+<phrase>
+<original>Remove holes from selection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1338,7 @@
 <translation>Effacer la liste des images récentes</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3322,18 +3327,8 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>Selection inversion complete.</original>
-<translation>Inversion de la sélection terminée.</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Adoucissement de la sélection</translation>
-</phrase>
-
-<phrase>
-<original>Feathering complete.</original>
-<translation>Adoucissement terminé.</translation>
 </phrase>
 
 <phrase>
@@ -3347,11 +3342,6 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 </phrase>
 
 <phrase>
-<original>Selection resize complete.</original>
-<translation>Redimensionnement de la sélection terminé.</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Rétrécissement de la sélection</translation>
 </phrase>
@@ -3361,7 +3351,12 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <translation>Recherche des contours de la sélection</translation>
 </phrase>
 
-<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>Applying changes</original>
+<translation></translation>
+</phrase>
+
+<!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Create selection</original>
@@ -5329,6 +5324,11 @@ La valeur finale doit être entre %3 et %4.</translation>
 </phrase>
 
 <phrase>
+<original>Remove holes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Selection from crop rectangle</original>
 <translation></translation>
 </phrase>
@@ -5901,7 +5901,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 419 phrases. 229 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14885,8 +14885,8 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrasecount>2813</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6022 phrases. -->
-<!-- 3209 are duplicates, so only 2813 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 6026 phrases. -->
+<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
 <!-- These 2813 phrases contain approximately 12168 total words. -->
 
 </pdData>

@@ -197,12 +197,20 @@ End Sub
 '
 'Complex polygons (including concave shapes, shapes with holes, or entirely separate polygons) are all handled
 ' correctly and returned as a single unified pd2DPath object.
-Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
+Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0, Optional ByVal allowHoles As Boolean = True) As Boolean
     
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
-    dstPath.SetFillRule P2_FR_OddEven
+    
+    Dim fillRule As PD_2D_FillRule
+    If allowHoles Then
+        fillRule = P2_FR_OddEven
+    Else
+        fillRule = P2_FR_Winding
+    End If
+    dstPath.SetFillRule fillRule
+    
     m_StackPosition = 0
-            
+    
     'Current (x, y) positions.  (These start at startX and startY.)  After a shape is completed, these will advance to the next
     ' non-zero position in the source array, and repeat a scan from there.
     Dim x As Long, y As Long
@@ -357,7 +365,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             
             'The stack now describes a completed polygon.  Add it to a temporary path object.
             tmpPath.ResetPath
-            tmpPath.SetFillRule P2_FR_OddEven
+            tmpPath.SetFillRule fillRule
             tmpPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
             
             gdipCreateTime = gdipCreateTime + VBHacks.GetTimerDifferenceNow(startTime)

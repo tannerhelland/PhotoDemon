@@ -984,6 +984,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 Menus.SetMenuEnabled "select_border", newState
                 Menus.SetMenuEnabled "select_feather", newState
                 Menus.SetMenuEnabled "select_sharpen", newState
+                Menus.SetMenuEnabled "select_removeholes", newState
                 
                 'Modify selected pixels in various ways
                 Menus.SetMenuEnabled "select_erasearea", newState

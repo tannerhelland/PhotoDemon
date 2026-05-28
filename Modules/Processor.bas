@@ -2691,6 +2691,10 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
     ElseIf Strings.StringsEqual(processID, "Sharpen selection", True) Then
         If raiseDialog Then SelectionFilters.Selection_Sharpen True Else SelectionFilters.Selection_Sharpen False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Remove holes from selection", True) Then
+        SelectionFilters.Selection_RemoveHoles
+        Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Border selection", True) Then
         If raiseDialog Then SelectionFilters.Selection_ConvertToBorder True Else SelectionFilters.Selection_ConvertToBorder False, cParams.GetDouble("filtervalue")

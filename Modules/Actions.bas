@@ -769,6 +769,9 @@ Private Function Launch_ByName_MenuSelect(ByRef srcMenuName As String, Optional 
         Case "select_sharpen"
             Process "Sharpen selection", True
             
+        Case "select_removeholes"
+            Process "Remove holes from selection", createUndo:=UNDO_Selection
+        
         Case "select_erasearea"
             Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
             
@@ -1910,6 +1913,7 @@ Public Sub BuildActionDatabase()
     AddAction "select_border", "Border selection", True, False, True
     AddAction "select_feather", "Feather selection", True, False, True
     AddAction "select_sharpen", "Sharpen selection", True, False, True
+    AddAction "select_removeholes", "Remove holes from selection", True, False, False
     AddAction "select_erasearea", "Erase selected area", True, False, True
     AddAction "select_fill", "Fill selected area", True, True, True
     AddAction "select_heal", "Heal selected area", True, True, True
@@ -2176,6 +2180,9 @@ Public Sub BuildActionDatabase()
     Next i
     
     NotifyMaxNumActionsToRemember
+    
+    'Reset the "last action category" to ensure it is not mistakenly added to the Adjustments > Repeat last menu
+    m_LastActionCategory = rr_None
     
 End Sub
 

@@ -974,7 +974,7 @@ Friend Function GetPropertyLockedState(ByVal selProperty As PD_SelectionLockable
 End Function
 
 'Return the current selection boundary as a generic path object.
-Friend Function GetSelectionBoundaryPath() As pd2DPath
+Friend Function GetSelectionBoundaryPath(Optional ByVal removeHolesFirst As Boolean = False, Optional ByVal thresholdLevel As Long = 1) As pd2DPath
     
     'Convert the current selection mask (only the relevant portion) to a 1-byte-per-pixel array
     ' with fixed 0/255 values (intermediate ones break the edge detector)
@@ -983,7 +983,7 @@ Friend Function GetSelectionBoundaryPath() As pd2DPath
     
     Dim maskBytes() As Byte
     DIBs.GetSingleChannel_2D Me.GetCompositeMaskDIB, maskBytes, 0, VarPtr(maskBounds)
-    Filters_ByteArray.ThresholdByteArray maskBytes, Int(maskBounds.Width), Int(maskBounds.Height), 1, False
+    Filters_ByteArray.ThresholdByteArray maskBytes, Int(maskBounds.Width), Int(maskBounds.Height), thresholdLevel, False
     
     'Convert *that* array to an edge-safe one.
     Dim safeBytes() As Byte
@@ -991,7 +991,7 @@ Friend Function GetSelectionBoundaryPath() As pd2DPath
     m_ViewportEdges.MakeArrayEdgeSafe maskBytes, safeBytes, Int(maskBounds.Width) - 1, Int(maskBounds.Height) - 1
     
     'Retrieve an outline path, with full support for multiple selections, complex shapes, etc
-    m_ViewportEdges.FindAllEdges GetSelectionBoundaryPath, safeBytes, 1, 1, Int(maskBounds.Width) + 1, Int(maskBounds.Height) + 1, Int(maskBounds.Left) - 1, Int(maskBounds.Top) - 1
+    m_ViewportEdges.FindAllEdges GetSelectionBoundaryPath, safeBytes, 1, 1, Int(maskBounds.Width) + 1, Int(maskBounds.Height) + 1, Int(maskBounds.Left) - 1, Int(maskBounds.Top) - 1, Not removeHolesFirst
     
 End Function
 

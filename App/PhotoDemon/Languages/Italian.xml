@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.21</langversion>
+<langversion>2025.4.23</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -626,6 +626,11 @@
 <phrase>
 <original>Sharpen selection</original>
 <translation>Affina la selezione</translation>
+</phrase>
+
+<phrase>
+<original>Remove holes from selection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1338,7 @@
 <translation>Cancella lista di immagini recenti</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 272 phrases. 7 were duplicates of existing phrases, so only 265 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3319,18 +3324,8 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>Selection inversion complete.</original>
-<translation>Inversione della selezione completa.</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Sfumatura della selezione</translation>
-</phrase>
-
-<phrase>
-<original>Feathering complete.</original>
-<translation>Sfumatura completa.</translation>
 </phrase>
 
 <phrase>
@@ -3344,11 +3339,6 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 </phrase>
 
 <phrase>
-<original>Selection resize complete.</original>
-<translation>Ridimensionanamento della selezione completato.</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Restringimento della selezione</translation>
 </phrase>
@@ -3358,7 +3348,12 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Ricerca del bordo della selezione</translation>
 </phrase>
 
-<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>Applying changes</original>
+<translation></translation>
+</phrase>
+
+<!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Create selection</original>
@@ -5326,6 +5321,11 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
+<original>Remove holes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Selection from crop rectangle</original>
 <translation></translation>
 </phrase>
@@ -5898,7 +5898,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <translation>Lingua modificata con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 419 phrases. 229 were duplicates of existing phrases, so only 190 new phrases were written to file. -->
+<!-- MainWindow.frm contains 420 phrases. 229 were duplicates of existing phrases, so only 191 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14871,8 +14871,8 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrasecount>2813</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6022 phrases. -->
-<!-- 3209 are duplicates, so only 2813 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 6026 phrases. -->
+<!-- 3213 are duplicates, so only 2813 unique phrases have been written to file. -->
 <!-- These 2813 phrases contain approximately 12168 total words. -->
 
 </pdData>

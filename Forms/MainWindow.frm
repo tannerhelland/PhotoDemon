@@ -825,36 +825,40 @@ Begin VB.Form FormMain
          Index           =   8
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "-"
+         Caption         =   "Remove holes"
          Index           =   9
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Erase selected area"
+         Caption         =   "-"
          Index           =   10
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Fill selected area..."
+         Caption         =   "Erase selected area"
          Index           =   11
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Heal selected area..."
+         Caption         =   "Fill selected area..."
          Index           =   12
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Stroke selection outline..."
+         Caption         =   "Heal selected area..."
          Index           =   13
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "-"
+         Caption         =   "Stroke selection outline..."
          Index           =   14
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Load selection..."
+         Caption         =   "-"
          Index           =   15
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Import"
+         Caption         =   "Load selection..."
          Index           =   16
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Import"
+         Index           =   17
          Begin VB.Menu MnuSelectImport 
             Caption         =   "Selection from crop rectangle"
             Index           =   0
@@ -862,15 +866,15 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuSelect 
          Caption         =   "-"
-         Index           =   17
-      End
-      Begin VB.Menu MnuSelect 
-         Caption         =   "Save current selection..."
          Index           =   18
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Export"
+         Caption         =   "Save current selection..."
          Index           =   19
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Export"
+         Index           =   20
          Begin VB.Menu MnuSelectExport 
             Caption         =   "Selected area as image..."
             Index           =   0
@@ -3899,26 +3903,28 @@ Private Sub MnuSelect_Click(Index As Integer)
         Case 8
             Actions.LaunchAction_ByName "select_sharpen"
         Case 9
-            '(separator)
+            Actions.LaunchAction_ByName "select_removeholes"
         Case 10
-            Actions.LaunchAction_ByName "select_erasearea"
+            '(separator)
         Case 11
-            Actions.LaunchAction_ByName "select_fill"
+            Actions.LaunchAction_ByName "select_erasearea"
         Case 12
-            Actions.LaunchAction_ByName "select_heal"
+            Actions.LaunchAction_ByName "select_fill"
         Case 13
-            Actions.LaunchAction_ByName "select_stroke"
+            Actions.LaunchAction_ByName "select_heal"
         Case 14
-            '(separator)
+            Actions.LaunchAction_ByName "select_stroke"
         Case 15
-            Actions.LaunchAction_ByName "select_load"
-        Case 16
-            'Top-level "Import selection from..." menu
-        Case 17
             '(separator)
+        Case 16
+            Actions.LaunchAction_ByName "select_load"
+        Case 17
+            'Top-level "Import selection from..." menu
         Case 18
-            Actions.LaunchAction_ByName "select_save"
+            '(separator)
         Case 19
+            Actions.LaunchAction_ByName "select_save"
+        Case 20
             'Top-level "Export selection as..." menu
     End Select
 End Sub
@@ -4176,6 +4182,7 @@ Private Sub MnuTest_Click()
     Dim startTime As Currency, lastTime As Currency
     VBHacks.GetHighResTime startTime
     lastTime = startTime
+    SelectionFilters.Selection_RemoveHoles
     
 '    'Test code goes here
 '    PDDebug.LogAction "Convert to HDR..."

@@ -362,20 +362,21 @@ Public Sub InitializeMenus()
     AddMenuItem "Border...", "select_border", 4, 6
     AddMenuItem "Feather...", "select_feather", 4, 7
     AddMenuItem "Sharpen...", "select_sharpen", 4, 8
-    AddMenuItem "-", "-", 4, 9
-    AddMenuItem "Erase selected area", "select_erasearea", 4, 10, , "paint_erase"
-    AddMenuItem "Fill selected area...", "select_fill", 4, 11, , "paint_fill"
-    AddMenuItem "Heal selected area...", "select_heal", 4, 12, , "edit_contentawarefill"
-    AddMenuItem "Stroke selection outline...", "select_stroke", 4, 13, , "paint_softbrush"
-    AddMenuItem "-", "-", 4, 14
-    AddMenuItem "Load selection...", "select_load", 4, 15, , "file_open"
-    AddMenuItem "Import", "select_import", 4, 16
-        AddMenuItem "Selection from crop rectangle", "select_importfromcrop", 4, 16, 0, "image_crop"
-    AddMenuItem "-", "-", 4, 17
-    AddMenuItem "Save current selection...", "select_save", 4, 18, , "file_save"
-    AddMenuItem "Export", "select_export", 4, 19
-        AddMenuItem "Selected area as image...", "select_exportarea", 4, 19, 0
-        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 19, 1
+    AddMenuItem "Remove holes", "select_removeholes", 4, 9
+    AddMenuItem "-", "-", 4, 10
+    AddMenuItem "Erase selected area", "select_erasearea", 4, 11, , "paint_erase"
+    AddMenuItem "Fill selected area...", "select_fill", 4, 12, , "paint_fill"
+    AddMenuItem "Heal selected area...", "select_heal", 4, 13, , "edit_contentawarefill"
+    AddMenuItem "Stroke selection outline...", "select_stroke", 4, 14, , "paint_softbrush"
+    AddMenuItem "-", "-", 4, 15
+    AddMenuItem "Load selection...", "select_load", 4, 16, , "file_open"
+    AddMenuItem "Import", "select_import", 4, 17
+        AddMenuItem "Selection from crop rectangle", "select_importfromcrop", 4, 17, 0, "image_crop"
+    AddMenuItem "-", "-", 4, 18
+    AddMenuItem "Save current selection...", "select_save", 4, 19, , "file_save"
+    AddMenuItem "Export", "select_export", 4, 20
+        AddMenuItem "Selected area as image...", "select_exportarea", 4, 20, 0
+        AddMenuItem "Selection mask as image...", "select_exportmask", 4, 20, 1
         
     'Adjustments Menu
     AddMenuItem "Adjustments", "adj_top", 5
