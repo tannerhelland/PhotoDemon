@@ -20,12 +20,12 @@ Option Explicit
 'Export the currently selected area as an image.  This is provided as a convenience to the user, so that they do not have to crop
 ' or copy-paste the selected area in order to save it.  The selected area is also checked for bit-depth; 24bpp is recommended as
 ' JPEG, while 32bpp is recommended as PNG (but the user can select any supported PD save format from the common dialog).
-Public Function ExportSelectedAreaAsImage() As Boolean
+Public Function ExportSelectedAreaAsImageFile() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
     If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
         Message "This action requires an active selection.  Please create a selection before continuing."
-        ExportSelectedAreaAsImage = False
+        ExportSelectedAreaAsImageFile = False
         Exit Function
     End If
     
@@ -76,10 +76,10 @@ Public Function ExportSelectedAreaAsImage() As Boolean
         tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(idxSaveFormat - 1)
         
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
-        ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
+        ExportSelectedAreaAsImageFile = PhotoDemon_SaveImage(tmpImage, sFile, True)
         
     Else
-        ExportSelectedAreaAsImage = False
+        ExportSelectedAreaAsImageFile = False
     End If
         
     'Release our temporary image
@@ -157,6 +157,54 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Release our temporary image
     Set tmpImage = Nothing
 
+End Function
+
+'Export the currently selection mask as a grayscale layer in the current image.  This allows the user to interact
+' with the selection using any of PD's raster tools.  (Later, they can convert the layer back into a selection
+' using the ImportLayerAsSelectionMask tool.)
+Public Function ExportSelectionMaskAsLayer() As Boolean
+    
+    'If a selection is not active, it should be impossible to select this menu item.
+    ' Just in case, check for that state and exit if necessary.
+    If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
+        Message "This action requires an active selection.  Please create a selection before continuing."
+        ExportSelectionMaskAsLayer = False
+        Exit Function
+    End If
+    
+    'Prepare a temporary pdImage object to house the current selection mask.
+    'Dim tmpImage As pdImage
+    'Set tmpImage = New pdImage
+    
+    'Create a temporary DIB, then copy the current selection mask into it.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB
+    
+    'Selections use a "white = selected, transparent = unselected" strategy.
+    ' Composite against a black background (but leave the DIB in 32-bpp format).
+    tmpDIB.CompositeBackgroundColor 0, 0, 0
+    
+    'We now need to add this DIB to the active image as a new layer.
+    Dim newLayerID As Long
+    newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Selection mask to layer"), tmpDIB
+    
+    'Make the blank layer the new active layer
+    PDImages.GetActiveImage.SetActiveLayerByID newLayerID
+    
+    'Notify the parent of the change
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.NotifyLayerChange
+    
+    'Render the new image to screen (not technically necessary, but doesn't hurt)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            
+    'Synchronize the interface to the new image
+    SyncInterfaceToCurrentImage
+    
 End Function
 
 'Load a previously saved selection.  Note that this function also handles creation and display of the relevant common dialog.
