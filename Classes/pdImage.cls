@@ -457,7 +457,7 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal 
             m_CompositeCacheClean = False
             m_IsThumbClean = False
         
-        'Selection change notifications can also occur, but they don't require anything from us; the selectino object
+        'Selection change notifications can also occur, but they don't require anything from us; the selection object
         ' handles it specially
         Case UNDO_Selection
         

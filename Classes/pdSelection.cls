@@ -2257,6 +2257,7 @@ Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = Fal
         Set m_CompositeMask = Nothing
         Set m_CompositeOutline = Nothing
         Set m_SelMask = New pdDIB
+        m_MaskHasBeenCreated = False
     End If
     
 End Sub
@@ -4134,6 +4135,41 @@ Friend Function ReadSelectionFromFile(ByRef srcFilename As String, Optional igno
     Else
         ReadSelectionFromFile = ReadSelectionFromFile_Legacy(srcFilename, ignoreLockStatus)
     End If
+    
+End Function
+
+'Create a selection from an arbitrary 32-bpp DIB.  The DIB will be used to generate a matching selection mask.
+' The source DIB MUST BE THE SAME SIZE AS THE ACTIVE IMAGE.
+Friend Function ReadSelectionFromDIB(ByRef srcDIB As pdDIB) As Boolean
+    
+    ReadSelectionFromDIB = False
+    PDDebug.LogAction "Reading selection data from DIB..."
+    
+    'Failsafe checks only
+    If (srcDIB Is Nothing) Then Exit Function
+    If (srcDIB.GetDIBWidth <> m_parentPDImage.Width) Or (srcDIB.GetDIBHeight <> m_parentPDImage.Height) Then Exit Function
+    
+    'Reset some of our internal trackers prior to reading the selection data
+    Me.EraseCustomTrackers
+    m_IsMaskReady = False
+    
+    'Set base properties for a generic raster selection
+    Me.SetSelectionShape ss_Raster
+    Me.SetSelectionProperty sp_Area, sa_Interior
+    Me.SetSelectionProperty sp_Smoothing, es_None
+    Me.SetSelectionProperty sp_Combine, pdsm_Replace
+    
+    'Copy the DIB locally
+    m_SelMask.CreateFromExistingDIB srcDIB
+    Me.NotifyRasterDataChanged
+    
+    'Mark the mask as created+ready
+    m_IsMaskReady = True
+    m_MaskHasBeenCreated = True
+    
+    ReadSelectionFromDIB = True
+    
+    'Boundary finding and other operations must now be handled by the caller.
     
 End Function
 

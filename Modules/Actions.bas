@@ -3,8 +3,8 @@ Attribute VB_Name = "Actions"
 'Action Handler
 'Copyright 2001-2026 by Tanner Helland
 'Created: 07/October/21
-'Last updated: 09/April/26
-'Last update: new functions to enable Repeat [last] and Re-show [last] submenus for Adjustments and Effects
+'Last updated: 30/May/26
+'Last update: new actions for converting between raster layers and selection masks (Select > Import/Export)
 '
 'Want to execute a program operation?  Call this module.
 '
@@ -795,7 +795,7 @@ Private Function Launch_ByName_MenuSelect(ByRef srcMenuName As String, Optional 
                 Selections.CreateSelectionFromCrop
                 
             Case "select_importfromlayer"
-                'TODO
+                Process "Selection mask from active layer", False, vbNullString, UNDO_Selection
                 
         Case "select_save"
             Process "Save selection", True

@@ -2727,7 +2727,7 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
         Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Selection mask from active layer", True) Then
-        'TODO!
+        SelectionFiles.ImportSelectionMaskFromLayer
         Process_SelectMenu = True
         
     'Export selected area as image (defaults to PNG, but user can select the actual format)

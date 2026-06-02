@@ -207,6 +207,58 @@ Public Function ExportSelectionMaskAsLayer() As Boolean
     
 End Function
 
+'Import a new selection mask from a grayscale layer in the current image.  This allows the user to create a selection
+' using whatever mechanism they want, then use the results as if it were a selection mask.
+Public Function ImportSelectionMaskFromLayer() As Boolean
+    
+    'For now, this function uses the contents of the *active* layer.
+    
+    'Make a temporary copy of the active layer (including pixel contents)
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.CopyExistingLayer PDImages.GetActiveImage.GetActiveLayer
+    
+    'Ensure the layer's contents are the same size as the parent image
+    tmpLayer.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
+    
+    'Retrieve a grayscale map of the pixel data
+    Dim grayBytes() As Byte
+    DIBs.GetDIBGrayscaleMap tmpLayer.GetLayerDIB, grayBytes, False
+    
+    'We now have everything we need from the temporary layer.  We're now going to create a blank white
+    ' copy of the layer, then apply the grayscale to it as a transparency layer.  (This is how "normal"
+    ' selection data behaves in PD.)
+    tmpLayer.GetLayerDIB.ResetDIB 255
+    DIBs.ApplyTransparencyTable tmpLayer.GetLayerDIB, grayBytes
+    
+    'The temporary DIB now has everything it needs to be treated as selection data.
+    ' Hand it off to the current image's selection manager; it'll handle the rest!
+    PDImages.GetActiveImage.MainSelection.ReadSelectionFromDIB tmpLayer.GetLayerDIB
+    
+    'Ensure the user didn't give us a fully black or transparent mask (which is effectively a "null" selection).
+    If PDImages.GetActiveImage.MainSelection.FindNewBoundsManually() Then
+    
+        'At least one valid selection pixel exists.  Activate it as the "current" selection.
+        
+        'Lock in this selection
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
+        
+        'Draw the new selection to the screen
+        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+    'No selection pixels exist.  Unload the selection mask, and treat this operation as a "remove selection" one.
+    Else
+        PDDebug.LogAction "No bounds found; removing selection."
+        Selections.RemoveCurrentSelection
+    End If
+    
+    'Whatever happened, synchronize the interface to the new image.  This ensures that menus are correctly
+    ' dis/enabled according to the new selection state.
+    SyncInterfaceToCurrentImage
+    
+End Function
+
 'Load a previously saved selection.  Note that this function also handles creation and display of the relevant common dialog.
 Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal loadSettings As String = vbNullString)
 
