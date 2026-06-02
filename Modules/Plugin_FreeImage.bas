@@ -3,8 +3,9 @@ Attribute VB_Name = "Plugin_FreeImage"
 'FreeImage Interface (Advanced)
 'Copyright 2012-2026 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 07/October/21
-'Last update: move output message callback here, and rewrite it to use internal PD objects for better perf
+'Last updated: 02/June/26
+'Last update: remove dithering and instead use bare thresholding when exporting to 1-bit formats
+'             (see https://github.com/tannerhelland/PhotoDemon/issues/778)
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
@@ -2386,7 +2387,7 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     
     '1-bpp is easy; handle it now
     If (outputColorDepth = 1) Then
-        tmpFIHandle = FreeImage_Dither(fi_DIB, FID_FS)
+        tmpFIHandle = FreeImage_Threshold(fi_DIB, 127)
         If (tmpFIHandle <> fi_DIB) Then
             FreeImage_Unload fi_DIB
             fi_DIB = tmpFIHandle

@@ -514,7 +514,7 @@ Public Declare Function FreeImage_ColorQuantizeExInt Lib "FreeImage.dll" Alias "
   Optional ByVal reserveSize As Long = 0, _
   Optional ByVal reservePalettePtr As Long = 0) As Long
 
-Private Declare Function FreeImage_Threshold Lib "FreeImage" Alias "_FreeImage_Threshold@8" ( _
+Public Declare Function FreeImage_Threshold Lib "FreeImage" Alias "_FreeImage_Threshold@8" ( _
            ByVal fiBitmap As Long, _
            ByVal threshold As Byte) As Long
 
