@@ -994,13 +994,18 @@ Private Sub NewToolSelected()
     'Because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
     ' (Note that we can use a relatively late pipeline stage, as only tool-specific overlays need to be redrawn.)
     If PDImages.IsImageActive() Then Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
-                
+    
     'Perform additional per-image initializations, as needed
     Tools.InitializeToolsDependentOnImage
     
     'Finally, free any resources tied to the old tool
     Select Case g_PreviousTool
-    
+        
+        'The crop tool enables some selection-centric menus (like Image > Crop to selection), which requires an
+        ' out-of-band update to the menu UI to restore everything to its "correct" state.
+        Case ND_CROP
+            Interface.SyncInterfaceToCurrentImage
+            
         Case PAINT_SOFTBRUSH
             Tools_Paint.ReduceMemoryIfPossible
             
@@ -1195,7 +1200,7 @@ Public Sub ResetToolButtonStates(Optional ByVal flashCurrentButton As Boolean = 
     'Otherwise, squash any composite selections down to a single mask.  (This frees up significant resources.)
     Else
         If Selections.SelectionsAllowed(False) Then
-            If PDImages.GetActiveImage.IsSelectionActive Then PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
         End If
     End If
     

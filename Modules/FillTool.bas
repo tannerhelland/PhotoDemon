@@ -377,7 +377,7 @@ Public Sub CommitFillResults(ByVal useCustomDIB As Boolean, Optional ByRef fillD
     If useCustomDIB Then
     
         'If a selection is active, we need to mask the fill by the current selection mask
-        If PDImages.GetActiveImage.IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) Then
             
             'Next, we need to grab a copy of the current selection mask, mirroring the area where our layer lives
             Dim tmpSelDIB As pdDIB

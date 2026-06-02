@@ -1033,7 +1033,7 @@ Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UndoType)
 
     If PDImages.IsImageActive() Then
     
-        If PDImages.GetActiveImage.IsSelectionActive And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) And (createUndo <> UNDO_Selection) And (createUndo <> UNDO_Everything) Then
         
             'Ask the Undo engine to return the last selection param string it has on file
             Dim lastSelParamString As String
@@ -1085,7 +1085,7 @@ Private Function RemoveSelectionAsNecessary(ByVal processID As String, Optional 
     If (Not raiseDialog) And PDImages.IsImageActive() Then
     
         'Only worry about this step if a selection is currently active
-        If PDImages.GetActiveImage.IsSelectionActive And (createUndo <> UNDO_Selection) Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) And (createUndo <> UNDO_Selection) Then
     
             Dim removeSelectionInAdvance As Boolean
             removeSelectionInAdvance = False
@@ -2691,6 +2691,10 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
     ElseIf Strings.StringsEqual(processID, "Sharpen selection", True) Then
         If raiseDialog Then SelectionFilters.Selection_Sharpen True Else SelectionFilters.Selection_Sharpen False, cParams.GetDouble("filtervalue")
         Process_SelectMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Remove holes from selection", True) Then
+        SelectionFilters.Selection_RemoveHoles
+        Process_SelectMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Border selection", True) Then
         If raiseDialog Then SelectionFilters.Selection_ConvertToBorder True Else SelectionFilters.Selection_ConvertToBorder False, cParams.GetDouble("filtervalue")
@@ -2722,16 +2726,25 @@ Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDia
         SelectionFiles.SaveSelectionToFile
         Process_SelectMenu = True
         
+    ElseIf Strings.StringsEqual(processID, "Selection mask from active layer", True) Then
+        SelectionFiles.ImportSelectionMaskFromLayer
+        Process_SelectMenu = True
+        
     'Export selected area as image (defaults to PNG, but user can select the actual format)
-    ElseIf Strings.StringsEqual(processID, "Export selected area as image", True) Then
-        SelectionFiles.ExportSelectedAreaAsImage
+    ElseIf Strings.StringsEqual(processID, "Selected pixels to file", True) Then
+        SelectionFiles.ExportSelectedAreaAsImageFile
         Process_SelectMenu = True
     
     'Export selection mask as image (defaults to PNG, but user can select the actual format)
-    ElseIf Strings.StringsEqual(processID, "Export selection mask as image", True) Then
+    ElseIf Strings.StringsEqual(processID, "Selection mask to file", True) Then
         SelectionFiles.ExportSelectionMaskAsImage
         Process_SelectMenu = True
     
+    'Add the current selection mask to the image as a raster layer
+    ElseIf Strings.StringsEqual(processID, "Selection mask to layer", True) Then
+        SelectionFiles.ExportSelectionMaskAsLayer
+        Process_SelectMenu = True
+        
     ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
     ElseIf Strings.StringsEqual(processID, "Move selection", True) Then
         Selections.CreateNewSelection processParameters

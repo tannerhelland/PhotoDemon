@@ -861,7 +861,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
-    If PDImages.GetActiveImage.IsSelectionActive Then PDImages.GetActiveImage.MainSelection.RequestNewMask
+    If PDImages.GetActiveImage.IsSelectionActive(False) Then PDImages.GetActiveImage.MainSelection.RequestNewMask
     
     'Render the image to the screen, if requested
     If (Not suspendRedraw) Then Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)

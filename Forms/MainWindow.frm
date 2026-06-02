@@ -825,47 +825,75 @@ Begin VB.Form FormMain
          Index           =   8
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "-"
+         Caption         =   "Remove holes"
          Index           =   9
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Erase selected area"
+         Caption         =   "-"
          Index           =   10
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Fill selected area..."
+         Caption         =   "Erase selected area"
          Index           =   11
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Heal selected area..."
+         Caption         =   "Fill selected area..."
          Index           =   12
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Stroke selection outline..."
+         Caption         =   "Heal selected area..."
          Index           =   13
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "-"
+         Caption         =   "Stroke selection outline..."
          Index           =   14
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Load selection..."
+         Caption         =   "-"
          Index           =   15
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Save current selection..."
+         Caption         =   "Load selection..."
          Index           =   16
       End
       Begin VB.Menu MnuSelect 
-         Caption         =   "Export"
+         Caption         =   "Import"
          Index           =   17
+         Begin VB.Menu MnuSelectImport 
+            Caption         =   "Selection mask from crop tool"
+            Index           =   0
+         End
+         Begin VB.Menu MnuSelectImport 
+            Caption         =   "Selection mask from active layer"
+            Index           =   1
+         End
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "-"
+         Index           =   18
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Save selection..."
+         Index           =   19
+      End
+      Begin VB.Menu MnuSelect 
+         Caption         =   "Export"
+         Index           =   20
          Begin VB.Menu MnuSelectExport 
-            Caption         =   "Selected area as image..."
+            Caption         =   "Selected pixels to file..."
             Index           =   0
          End
          Begin VB.Menu MnuSelectExport 
-            Caption         =   "Selection mask as image..."
+            Caption         =   "-"
             Index           =   1
+         End
+         Begin VB.Menu MnuSelectExport 
+            Caption         =   "Selection mask to file..."
+            Index           =   2
+         End
+         Begin VB.Menu MnuSelectExport 
+            Caption         =   "Selection mask to layer"
+            Index           =   3
          End
       End
    End
@@ -2645,7 +2673,7 @@ Private Sub m_FocusDetector_AppGotFocusReliable()
         
         'Restore any relevant UI animations
         If Selections.SelectionsAllowed(False) Then
-            If PDImages.GetActiveImage.IsSelectionActive() Then
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then
                 PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed SelectionUI.GetUISetting_Animate()
             End If
         End If
@@ -2661,7 +2689,7 @@ Private Sub m_FocusDetector_AppLostFocusReliable()
         
         'Turn off selection animations in the main window
         If Selections.SelectionsAllowed(False) Then
-            If PDImages.GetActiveImage.IsSelectionActive() Then
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then
                 PDImages.GetActiveImage.MainSelection.NotifyAnimationsAllowed False
             End If
         End If
@@ -3887,22 +3915,28 @@ Private Sub MnuSelect_Click(Index As Integer)
         Case 8
             Actions.LaunchAction_ByName "select_sharpen"
         Case 9
-            '(separator)
+            Actions.LaunchAction_ByName "select_removeholes"
         Case 10
-            Actions.LaunchAction_ByName "select_erasearea"
-        Case 11
-            Actions.LaunchAction_ByName "select_fill"
-        Case 12
-            Actions.LaunchAction_ByName "select_heal"
-        Case 13
-            Actions.LaunchAction_ByName "select_stroke"
-        Case 14
             '(separator)
+        Case 11
+            Actions.LaunchAction_ByName "select_erasearea"
+        Case 12
+            Actions.LaunchAction_ByName "select_fill"
+        Case 13
+            Actions.LaunchAction_ByName "select_heal"
+        Case 14
+            Actions.LaunchAction_ByName "select_stroke"
         Case 15
-            Actions.LaunchAction_ByName "select_load"
+            '(separator)
         Case 16
-            Actions.LaunchAction_ByName "select_save"
+            Actions.LaunchAction_ByName "select_load"
         Case 17
+            'Top-level "Import selection from..." menu
+        Case 18
+            '(separator)
+        Case 19
+            Actions.LaunchAction_ByName "select_save"
+        Case 20
             'Top-level "Export selection as..." menu
     End Select
 End Sub
@@ -3910,9 +3944,22 @@ End Sub
 Private Sub MnuSelectExport_Click(Index As Integer)
     Select Case Index
         Case 0
-            Actions.LaunchAction_ByName "select_exportarea"
+            Actions.LaunchAction_ByName "select_exportpixels"
         Case 1
-            Actions.LaunchAction_ByName "select_exportmask"
+            'separator
+        Case 2
+            Actions.LaunchAction_ByName "select_exportmaskfile"
+        Case 3
+            Actions.LaunchAction_ByName "select_exportmasklayer"
+    End Select
+End Sub
+
+Private Sub MnuSelectImport_Click(Index As Integer)
+    Select Case Index
+        Case 0
+            Actions.LaunchAction_ByName "select_importfromcrop"
+        Case 1
+            Actions.LaunchAction_ByName "select_importfromlayer"
     End Select
 End Sub
 
@@ -4153,6 +4200,7 @@ Private Sub MnuTest_Click()
     Dim startTime As Currency, lastTime As Currency
     VBHacks.GetHighResTime startTime
     lastTime = startTime
+    SelectionFilters.Selection_RemoveHoles
     
 '    'Test code goes here
 '    PDDebug.LogAction "Convert to HDR..."

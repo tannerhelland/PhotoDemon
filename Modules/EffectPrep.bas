@@ -284,7 +284,7 @@ Public Sub PrepImageData(ByRef tmpSA As SafeArray2D, Optional isPreview As Boole
     
     'Check for an active selection
     Dim selToolActive As Boolean
-    selToolActive = PDImages.GetActiveImage.IsSelectionActive And PDImages.GetActiveImage.MainSelection.IsLockedIn And (Not ignoreSelection)
+    selToolActive = PDImages.GetActiveImage.IsSelectionActive() And PDImages.GetActiveImage.MainSelection.IsLockedIn And (Not ignoreSelection)
     
     'When selections are active, we may need to process pixels outside the active layer's boundaries.
     ' This requires special handling to render a correct image; basically, we must null-pad the current layer's
@@ -561,7 +561,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
     Dim selToolActive As Boolean
-    selToolActive = PDImages.GetActiveImage.IsSelectionActive
+    selToolActive = PDImages.GetActiveImage.IsSelectionActive()
     If selToolActive Then selToolActive = PDImages.GetActiveImage.MainSelection.IsLockedIn And (Not ignoreSelection)
     
     If selToolActive Then

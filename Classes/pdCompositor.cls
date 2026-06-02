@@ -453,7 +453,7 @@ Friend Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     
     'Before merging the top layer, check for an active selection.  If one exists, we need to preprocess the paint layer against it.
     If (Not parentImage Is Nothing) Then
-        If parentImage.IsSelectionActive Then
+        If parentImage.IsSelectionActive(False) Then
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
             m_Blender.ApplyMaskToTopDIB paintLayer.GetLayerDIB, parentImage.MainSelection.GetCompositeMaskDIB, ptrToPaintbrushRectF
@@ -749,7 +749,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
             If (Not srcImage.GetLayerByIndex(i).IsLayerRaster) Then
                 
                 'Selections require us to pre-mask our selection result
-                If srcImage.IsSelectionActive Then
+                If srcImage.IsSelectionActive(False) Then
                     GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, srcImage.MainSelection.GetCompositeMaskDIB_ViewportCopy(), ptrToAlternateScratch
                 Else
                     GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, paintLayerInterpMode, isRectZoomless, False, ignoreInternalCaches, levelOfDetail, Nothing, ptrToAlternateScratch
@@ -1613,7 +1613,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         'Finally, if a selection mask is active, we need to pre-process the paint stroke against the selection mask,
         ' and remove any stroke details that fall outside the selection boundary.
         Dim srcMask As pdDIB
-        If srcImage.IsSelectionActive Then
+        If srcImage.IsSelectionActive(False) Then
             nonStandardBlendingActive = True
             Set srcMask = srcImage.MainSelection.GetCompositeMaskDIB_ViewportCopy()
         End If

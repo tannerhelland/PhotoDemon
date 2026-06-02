@@ -421,7 +421,7 @@ Public Sub SetSelectionState(ByVal newSelectionState As Boolean)
             'Different tools can use this area in different ways
             If Tools.IsSelectionToolActive() Then
                 
-                If PDImages.GetActiveImage.IsSelectionActive() Then
+                If PDImages.GetActiveImage.IsSelectionActive(False) Then
                     
                     'Some rectangle selections are allowed to display "in-progress" measurements.
                     newSelectionState = PDImages.GetActiveImage.MainSelection.IsLockedIn()

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.20</langversion>
+<langversion>2025.4.24</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -629,6 +629,11 @@
 </phrase>
 
 <phrase>
+<original>Remove holes from selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Erase selected area</original>
 <translation>Cancella l'area selezionata</translation>
 </phrase>
@@ -659,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>Esporta area selezionata come immagine</translation>
+<original>Selected pixels to file</original>
+<translation>Area selezionata come immagine</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>Esporta maschera di selezione come immagine</translation>
+<original>Selection mask to file</original>
+<translation>Maschera di selezione come immagine</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1343,7 @@
 <translation>Cancella lista di immagini recenti</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2405,7 +2415,7 @@ Per favore verifica che queste immagini esistano e che utilizzino un formato imm
 <translation>Duplicazione dell'immagine completata.</translation>
 </phrase>
 
-<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Loading.bas contains 38 phrases. 14 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -3319,18 +3329,8 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>Selection inversion complete.</original>
-<translation>Inversione della selezione completa.</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Sfumatura della selezione</translation>
-</phrase>
-
-<phrase>
-<original>Feathering complete.</original>
-<translation>Sfumatura completa.</translation>
 </phrase>
 
 <phrase>
@@ -3344,11 +3344,6 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 </phrase>
 
 <phrase>
-<original>Selection resize complete.</original>
-<translation>Ridimensionanamento della selezione completato.</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Restringimento della selezione</translation>
 </phrase>
@@ -3358,14 +3353,19 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Ricerca del bordo della selezione</translation>
 </phrase>
 
-<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>Applying changes</original>
+<translation></translation>
+</phrase>
 
-<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Create selection</original>
 <translation>Crea la selezione</translation>
 </phrase>
+
+<!-- Selections.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Release the mouse button to complete the lasso selection</original>
@@ -3387,7 +3387,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Clicca sul primo punto per completare la selezione del poligono</translation>
 </phrase>
 
-<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5326,18 +5326,18 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>Salva selezione corrente</translation>
+<original>Remove holes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Selected area as image</original>
-<translation>Area selezionata come immagine</translation>
+<original>Selection mask from crop tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Selection mask as image</original>
-<translation>Maschera di selezione come immagine</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5893,7 +5893,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <translation>Lingua modificata con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 417 phrases. 228 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14866,8 +14866,8 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6021 phrases. -->
-<!-- 3209 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12164 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>

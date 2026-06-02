@@ -327,7 +327,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
     ' 1) raster-type, or...
     ' 2) inactive...
     '...disallow POIs entirely.  (These types of selections do not support on-canvas interactions.)
-    If (srcImage.MainSelection.GetSelectionShape = ss_Raster) Or (Not srcImage.IsSelectionActive) Then Exit Function
+    If (srcImage.MainSelection.GetSelectionShape = ss_Raster) Or (Not srcImage.IsSelectionActive(False)) Then Exit Function
     
     'Similarly, POIs are only enabled if the current selection tool matches the current selection shape.
     ' (If a new selection shape has been selected, the user is definitely not modifying the existing selection.)
@@ -537,7 +537,7 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
 
         'If a selection is active, nudge it using the arrow keys
-        If (PDImages.GetActiveImage.IsSelectionActive And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster)) Then
+        If (PDImages.GetActiveImage.IsSelectionActive(False) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster)) Then
             
             Dim canvasUpdateRequired As Boolean
             canvasUpdateRequired = False
@@ -634,13 +634,13 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     If (vkCode = VK_SHIFT) Then m_ShiftForConstrain = False
     
     'Delete key: if a selection is active, erase the selected area
-    If (vkCode = VK_DELETE) And PDImages.GetActiveImage.IsSelectionActive Then
+    If (vkCode = VK_DELETE) And PDImages.GetActiveImage.IsSelectionActive(False) Then
         markEventHandled = True
         Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
     End If
     
     'Escape key: if a selection is active, clear it
-    If (vkCode = VK_ESCAPE) And PDImages.GetActiveImage.IsSelectionActive Then
+    If (vkCode = VK_ESCAPE) And PDImages.GetActiveImage.IsSelectionActive(False) Then
         markEventHandled = True
         Process "Remove selection", , , UNDO_Selection
     End If
@@ -649,7 +649,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     If ((vkCode = VK_RETURN) Or (vkCode = VK_SPACE)) And (g_CurrentTool = SELECT_POLYGON) Then
         
         'A selection must be in-progress
-        If PDImages.GetActiveImage.IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) Then
         
             'The selection must *not* be closed yet, but there must be enough points to successfully close it
             If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
@@ -672,7 +672,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     
     'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
     ' correct any potential mistakes.
-    If (vkCode = VK_BACK) And ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And PDImages.GetActiveImage.IsSelectionActive Then
+    If (vkCode = VK_BACK) And ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And PDImages.GetActiveImage.IsSelectionActive(False) Then
         
         If (Not PDImages.GetActiveImage.MainSelection.IsLockedIn) Then
             
@@ -720,7 +720,7 @@ Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As S
     
     'Check to see if a selection is already active.  If it is, see if the user is clicking on a POI
     ' (and initiating a transform) or clicking somewhere else (initiating a new selection).
-    If PDImages.GetActiveImage.IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive(False) Then
         
         'Check the mouse coordinates of this click.
         Dim sCheck As PD_PointOfInterest
@@ -848,7 +848,7 @@ Public Sub NotifySelectionMouseDblClick(ByRef srcCanvas As pdCanvas, ByVal imgX 
     If (g_CurrentTool = SELECT_POLYGON) Then
     
         'A selection must be in-progress
-        If PDImages.GetActiveImage.IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) Then
         
             'The selection must *not* be closed yet
             If (Not PDImages.GetActiveImage.MainSelection.GetPolygonClosedState) And (PDImages.GetActiveImage.MainSelection.GetNumOfPolygonPoints > 2) Then
@@ -904,7 +904,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
             Case SELECT_RECT, SELECT_CIRC, SELECT_POLYGON
                 
                 'First, check to see if a selection is both active and transformable.
-                If PDImages.GetActiveImage.IsSelectionActive And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
+                If PDImages.GetActiveImage.IsSelectionActive(False) And (PDImages.GetActiveImage.MainSelection.GetSelectionShape <> ss_Raster) Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
                     PDImages.GetActiveImage.MainSelection.RequestSquare m_ShiftForConstrain
@@ -922,7 +922,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
             Case SELECT_LASSO
             
                 'First, check to see if a selection is active
-                If PDImages.GetActiveImage.IsSelectionActive Then
+                If PDImages.GetActiveImage.IsSelectionActive(False) Then
                     
                     'Pass new points to the active selection
                     PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
@@ -942,7 +942,7 @@ Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState 
             
             'Wand selections are easier than other selection types, because they don't support any special transforms
             Case SELECT_WAND
-                If PDImages.GetActiveImage.IsSelectionActive Then
+                If PDImages.GetActiveImage.IsSelectionActive(False) Then
                     PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY
                     Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), srcCanvas
                 End If
@@ -1028,7 +1028,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         Case SELECT_RECT, SELECT_CIRC, SELECT_LASSO
         
             'If a selection was being drawn, lock it into place
-            If PDImages.GetActiveImage.IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then
                 
                 'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                 ' point falls outside the selection, clear the selection from the image.
@@ -1130,7 +1130,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         Case SELECT_POLYGON
             
             'If a selection was being drawn, lock it into place
-            If PDImages.GetActiveImage.IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then
                 
                 'Check to see if the selection is already locked in.  If it is, we need to check for an "erase selection" click.
                 eraseThisSelection = PDImages.GetActiveImage.MainSelection.GetPolygonClosedState And clickEventAlsoFiring
@@ -1221,7 +1221,7 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
         Case SELECT_WAND
             
             'Failsafe check for active selections
-            If PDImages.GetActiveImage.IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive(False) Then
                 
                 'Supply the final coordinates to the selection engine (as the user may be dragging around the active point)
                 PDImages.GetActiveImage.MainSelection.SetAdditionalCoordinates imgX, imgY

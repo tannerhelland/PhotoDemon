@@ -601,7 +601,7 @@ Private Sub UserControl_Show()
                 
                 'An active layer is being used for this preview instance.  If a selection is active,
                 ' we need to know its size so that we can calculate zoom accordingly.
-                If PDImages.GetActiveImage.IsSelectionActive Then
+                If PDImages.GetActiveImage.IsSelectionActive() Then
                     Dim selBounds As RectF
                     selBounds = PDImages.GetActiveImage.MainSelection.GetCompositeBoundaryRect
                     m_SrcImageWidth = selBounds.Width

@@ -72,12 +72,13 @@ Public Enum PD_UI_Group
     PDUI_LayerTools = 14
     PDUI_ICCProfile = 15
     PDUI_FileOnDisk = 16
+    PDUI_ActiveCrop = 17
 End Enum
 
 #If False Then
     Private Const PDUI_Save = 0, PDUI_SaveAs = 1, PDUI_Close = 2, PDUI_Undo = 3, PDUI_Redo = 4, PDUI_Copy = 5, PDUI_Paste = 6, PDUI_View = 7
     Private Const PDUI_ImageMenu = 8, PDUI_Metadata = 9, PDUI_GPSMetadata = 10, PDUI_Macros = 11, PDUI_Selections = 12
-    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_ICCProfile = 15, PDUI_FileOnDisk = 16
+    Private Const PDUI_SelectionTransforms = 13, PDUI_LayerTools = 14, PDUI_ICCProfile = 15, PDUI_FileOnDisk = 16, PDUI_ActiveCrop = 17
 #End If
 
 'PhotoDemon is designed against pixels at an expected screen resolution of 96 DPI.
@@ -311,11 +312,10 @@ Public Sub SyncInterfaceToCurrentImage()
             End If
             m_LastUISync_HadMultipleLayers = PD_BOOL_FALSE
         End If
-            
         
         'TODO: move selection settings into the tool handler; they're too low-level for this function
         'If a selection is active on this image, update the text boxes to match
-        If PDImages.GetActiveImage.IsSelectionActive And (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) And (Not PDImages.GetActiveImage.MainSelection Is Nothing) Then
             SetUIGroupState PDUI_Selections, True
             SetUIGroupState PDUI_SelectionTransforms, PDImages.GetActiveImage.MainSelection.IsTransformable()
             SyncTextToCurrentSelection PDImages.GetActiveImageID()
@@ -323,6 +323,9 @@ Public Sub SyncInterfaceToCurrentImage()
             SetUIGroupState PDUI_Selections, False
             SetUIGroupState PDUI_SelectionTransforms, False
         End If
+        
+        'Crop tool can enable some additional crop-related menus
+        SetUIGroupState PDUI_ActiveCrop, Tools_Crop.IsValidCropActive()
         
         'Finally, synchronize various tool settings.  I've optimized this so that only the settings relative to the current tool
         ' are updated; others will be modified if/when the active tool is changed.
@@ -947,7 +950,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             'If selections are not active, clear all selection value spin controls.
             ' (These used to be called text up/downs, per Windows convention, hence the tud- prefix.)
             If Tools.IsSelectionToolActive Then
-
+                
                 If (Not newState) Then
                     For i = 0 To toolpanel_Selections.tudSel.Count - 1
                         If (toolpanel_Selections.tudSel(i).Min > 0) Then
@@ -957,7 +960,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                         End If
                     Next i
                 End If
-
+                
                 'Set selection text boxes to enable only when a selection is active.  Other selection
                 'vcontrols can remain active even without a selection present; this allows the user to
                 ' set certain parameters in advance, so when they actually draw a selection, it already
@@ -965,7 +968,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 For i = 0 To toolpanel_Selections.tudSel.Count - 1
                     toolpanel_Selections.tudSel(i).Enabled = newState
                 Next i
-
+                
             End If
             
             'En/disable all selection menu items that rely on an existing selection to operate
@@ -981,6 +984,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 Menus.SetMenuEnabled "select_border", newState
                 Menus.SetMenuEnabled "select_feather", newState
                 Menus.SetMenuEnabled "select_sharpen", newState
+                Menus.SetMenuEnabled "select_removeholes", newState
                 
                 'Modify selected pixels in various ways
                 Menus.SetMenuEnabled "select_erasearea", newState
@@ -995,7 +999,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                 Menus.SetMenuEnabled "select_export", newState
                 
             End If
-                                    
+            
             'Selection enabling/disabling also affects the two Crop to Selection commands (one in the Image menu, one in the Layer menu)
             Menus.SetMenuEnabled "image_crop", newState
             Menus.SetMenuEnabled "layer_cropselection", newState
@@ -1129,6 +1133,19 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         Case PDUI_FileOnDisk
             Menus.SetMenuEnabled "image_showinexplorer", newState
+            
+        Case PDUI_ActiveCrop
+            Menus.SetMenuEnabled "select_importfromcrop", newState
+            
+            'If a selection tool is *not* active, we will also set "Crop to > " menus to match
+            ' the current crop tool state
+            If (g_CurrentTool = ND_CROP) Then
+                
+                'Selection enabling/disabling also affects the two Crop to Selection commands (one in the Image menu, one in the Layer menu)
+                Menus.SetMenuEnabled "image_crop", newState
+                Menus.SetMenuEnabled "layer_cropselection", newState
+                
+            End If
             
     End Select
     

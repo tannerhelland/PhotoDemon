@@ -88,7 +88,7 @@ Public Sub Selection_Invert()
     'Apply any final UI changes
     SetProgBarVal 0
     ReleaseProgressBar
-    Message "Selection inversion complete."
+    Message "Finished."
     
     'Note that if no selections are found, we want to basically perform a "select none" operation.
     ' (This can occur if the user performs a Select > All followed by Select > Invert.)
@@ -153,7 +153,7 @@ Public Sub Selection_Blur(ByVal displayDialog As Boolean, Optional ByVal feather
         'Apply any final UI changes
         SetProgBarVal 0
         ReleaseProgressBar
-        Message "Feathering complete."
+        Message "Finished."
         
         'Note that if no selections are found, we want to basically perform a "select none" operation.
         ' (This can occur if the user performs a Select > All followed by Select > Invert.)
@@ -273,7 +273,7 @@ Public Sub Selection_Sharpen(ByVal displayDialog As Boolean, Optional ByVal shar
         'Apply any final UI changes
         SetProgBarVal 0
         ReleaseProgressBar
-        Message "Feathering complete."
+        Message "Finished."
         
         'Note that if no selections are found, we want to basically perform a "select none" operation.
         ' (This can occur if the user performs a Select > All followed by Select > Invert.)
@@ -341,7 +341,7 @@ Public Sub Selection_Grow(ByVal displayDialog As Boolean, Optional ByVal growSiz
         'Apply any final UI changes
         SetProgBarVal 0
         ReleaseProgressBar
-        Message "Selection resize complete."
+        Message "Finished."
         
         'Note that if no selections are found, we want to basically perform a "select none" operation.
         ' (This can occur if the user performs a Select > All followed by Select > Invert.)
@@ -411,7 +411,7 @@ Public Sub Selection_Shrink(ByVal displayDialog As Boolean, Optional ByVal shrin
         'Apply any final UI changes
         SetProgBarVal 0
         ReleaseProgressBar
-        Message "Selection resize complete."
+        Message "Finished."
         
         'Note that if no selections are found, we want to basically perform a "select none" operation.
         ' (This can occur if the user performs a Select > All followed by Select > Invert.)
@@ -505,7 +505,7 @@ Public Sub Selection_ConvertToBorder(ByVal displayDialog As Boolean, Optional By
         'Apply any final UI changes
         SetProgBarVal 0
         ReleaseProgressBar
-        Message "Selection resize complete."
+        Message "Finished."
         
         'Note that if no selections are found, we want to basically perform a "select none" operation.
         ' (This can occur if the user performs a Select > All followed by Select > Invert.)
@@ -538,7 +538,7 @@ Public Sub Selection_Clear(ByVal displayDialog As Boolean)
     Else
         
         'If a selection is active, use it as the basis for the clear
-        If PDImages.GetActiveImage.IsSelectionActive() Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) Then
             Selections.EraseSelectedArea PDImages.GetActiveImage.GetActiveLayerIndex
         
         'If a selection is *not* active, simply erase the current layer
@@ -839,4 +839,80 @@ Public Sub Selection_Stroke(ByVal displayDialog As Boolean, Optional ByRef fxPar
     Else
         FormStroke.ApplyStrokeEffect fxParams, False
     End If
+End Sub
+
+'Remove any interior holes from the selection
+Public Sub Selection_RemoveHoles()
+    
+    'Failsafes only
+    If (Not Selections.SelectionsAllowed(False)) Then Exit Sub
+    
+    'Unlock any existing selection, and condense any composite selections down to a single raster layer.
+    PDImages.GetActiveImage.MainSelection.LockRelease
+    PDImages.GetActiveImage.SetSelectionActive False
+    PDImages.GetActiveImage.MainSelection.SquashCompositeToRaster
+    
+    Message "Applying changes..."
+    
+    'Retrieve a copy of the active selection as a vector object.
+    ' (Note that we explicitly use a slightly higher cut-off for determining an "active" selection pixel;
+    '  this is to prevent unwanted selection enlargement due to over-inclusion of antialiased pixels.)
+    Dim outlinePath As pd2DPath
+    Set outlinePath = PDImages.GetActiveImage.MainSelection.GetSelectionBoundaryPath(True, 96)
+    
+    'Forcibly change the fill rule for the path to winding; this removes holes
+    outlinePath.SetFillRule P2_FR_Winding
+    
+    'Reset the selection DIB to emptiness
+    PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB.ResetDIB 0
+    
+    'Wrap a pd2D surface around the target DIB
+    Dim tmpSurface As pd2DSurface
+    Set tmpSurface = New pd2DSurface
+    tmpSurface.WrapSurfaceAroundPDDIB PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB
+    tmpSurface.SetSurfaceCompositing P2_CM_Overwrite
+    tmpSurface.SetSurfacePixelOffset P2_PO_Half
+    
+    'NOTE: it is a conscious choice to use antialiasing here.  Technical reasons prevent me from
+    ' using existing selection boundary pixels as-is (because we need a vector transform to remove holes,
+    ' but selections in PD are always raster surfaces), but given that the primary use-case for this tool
+    ' is improving behavior of the magic wand in photos, antialiasing is the only choice that makes sense.
+    ' (I'm also not building an entire UI just for this toggle - sorry!)
+    tmpSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+    
+    'Fill the selected region with opaque white
+    Dim tmpBrush As pd2DBrush
+    Set tmpBrush = New pd2DBrush
+    Drawing2D.QuickCreateSolidBrush tmpBrush, RGB(255, 255, 255), 100!
+    PD2D.FillPath tmpSurface, tmpBrush, outlinePath
+    
+    'Ask the selection to find new boundaries.  This will also set all relevant parameters for the
+    ' modified selection (such as being non-transformable now).
+    PDImages.GetActiveImage.MainSelection.SetSelectionShape ss_Raster
+    PDImages.GetActiveImage.MainSelection.NotifyRasterDataChanged
+    
+    'Apply any final UI changes
+    SetProgBarVal 0
+    ReleaseProgressBar
+    Message "Finished."
+    
+    'As an emergency failsafe only (against GDI+ issues), ensure a valid selection object still exists.
+    If PDImages.GetActiveImage.MainSelection.FindNewBoundsManually() Then
+    
+        'At least one valid selection pixel still exists.  Activate it as the "new" selection.
+        
+        'Lock in this selection
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
+        
+        'Draw the new selection to the screen
+        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+    'No selection pixels exist.  Unload any active selection data.
+    ' (This will only occur if GDI+ failed due to vector complexity or some other unlikely scenario.)
+    Else
+        PDDebug.LogAction "No bounds found; removing selection."
+        Selections.RemoveCurrentSelection
+    End If
+
 End Sub

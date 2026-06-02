@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2026 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 10/March/25
-'Last update: expose "suspend to disk" behavior to callers
+'Last updated: 22/May/26
+'Last update: allow auto-creation of rectangular selections from valid crop rectangles
+'             (fixes the problem of users - including me! - confusing the two tools)
 '
 'The pdImage class is used to store information on each image loaded by the user.
 ' One instance of this class exists for each loaded image.
@@ -456,7 +457,7 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UndoType, Optional ByVal 
             m_CompositeCacheClean = False
             m_IsThumbClean = False
         
-        'Selection change notifications can also occur, but they don't require anything from us; the selectino object
+        'Selection change notifications can also occur, but they don't require anything from us; the selection object
         ' handles it specially
         Case UNDO_Selection
         
@@ -902,8 +903,31 @@ Friend Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 End Sub
 
 'Get/set active selection state
-Friend Function IsSelectionActive() As Boolean
+Friend Function IsSelectionActive(Optional ByVal allowCropAsSelection As Boolean = True) As Boolean
+
     IsSelectionActive = m_SelectionIsActive
+    
+    'Update May 2026: I find myself sometimes mixing up the rectangular selection tool and the crop tool.
+    ' If a selection is not active but a crop *is*, convert the crop to a selection and proceed normally.
+    ' (I don't love putting logic in this tool that references another tool, but this is far and away
+    '  the easiest way to make this behavior work across *anything* in the app that references selections.)
+    If (Not IsSelectionActive) Then
+        
+        'If the caller allows it (via allowCropAsSelection, function parameter), see if we can auto-create
+        ' a selection rectangle from an active crop region.
+        If allowCropAsSelection Then
+            
+            'This function call will return TRUE if a crop rectangle exists and we were able to auto-create
+            ' a selection from it.
+            IsSelectionActive = CreateSelectionFromCrop()
+            
+            'Update our internal selection tracker to match (to ensure identical behavior to other selection queries)
+            If IsSelectionActive Then IsSelectionActive = m_SelectionIsActive
+            
+        End If
+        
+    End If
+    
 End Function
 
 Friend Sub SetSelectionActive(ByVal newState As Boolean)

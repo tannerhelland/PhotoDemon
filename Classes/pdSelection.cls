@@ -644,6 +644,25 @@ End Function
 ' Note that this DOES NOT render the new selection on-screen, and it doesn't render a matching selection mask.
 ' The caller is responsible for those tasks.
 Friend Sub SelectAll()
+    
+    Dim tmpRectF As RectF
+    With tmpRectF
+        .Left = 0!
+        .Top = 0!
+        .Width = m_parentPDImage.Width
+        .Height = m_parentPDImage.Height
+    End With
+    
+    Me.SelectFromRectF tmpRectF
+    
+End Sub
+
+'Simple - use this to select a specific rectangular region from the image.  Selection settings will be reset
+' to a plain, interior, non-rounded-corner rectangle at the specified size and position.
+'
+'Note that this DOES NOT render the new selection on-screen, and it doesn't render a matching selection mask.
+' (The caller is responsible for those tasks.)
+Friend Sub SelectFromRectF(ByRef srcRectF As RectF)
 
     'Set basic information about this selection
     Me.SetSelectionShape ss_Rectangle
@@ -654,17 +673,17 @@ Friend Sub SelectAll()
     Me.SetSelectionProperty sp_RoundedCornerRadius, 0#
     
     With m_CornersUnlocked
-        .Left = 0!
-        .Top = 0!
-        .Right = m_parentPDImage.Width
-        .Bottom = m_parentPDImage.Height
+        .Left = srcRectF.Left
+        .Top = srcRectF.Top
+        .Right = srcRectF.Left + srcRectF.Width
+        .Bottom = srcRectF.Top + srcRectF.Height
     End With
     
     With m_CornersLocked
-        .Left = 0!
-        .Top = 0!
-        .Width = m_parentPDImage.Width
-        .Height = m_parentPDImage.Height
+        .Left = srcRectF.Left
+        .Top = srcRectF.Top
+        .Width = srcRectF.Width
+        .Height = srcRectF.Height
     End With
     
     m_IsTransformable = True
@@ -955,7 +974,7 @@ Friend Function GetPropertyLockedState(ByVal selProperty As PD_SelectionLockable
 End Function
 
 'Return the current selection boundary as a generic path object.
-Friend Function GetSelectionBoundaryPath() As pd2DPath
+Friend Function GetSelectionBoundaryPath(Optional ByVal removeHolesFirst As Boolean = False, Optional ByVal thresholdLevel As Long = 1) As pd2DPath
     
     'Convert the current selection mask (only the relevant portion) to a 1-byte-per-pixel array
     ' with fixed 0/255 values (intermediate ones break the edge detector)
@@ -964,7 +983,7 @@ Friend Function GetSelectionBoundaryPath() As pd2DPath
     
     Dim maskBytes() As Byte
     DIBs.GetSingleChannel_2D Me.GetCompositeMaskDIB, maskBytes, 0, VarPtr(maskBounds)
-    Filters_ByteArray.ThresholdByteArray maskBytes, Int(maskBounds.Width), Int(maskBounds.Height), 1, False
+    Filters_ByteArray.ThresholdByteArray maskBytes, Int(maskBounds.Width), Int(maskBounds.Height), thresholdLevel, False
     
     'Convert *that* array to an edge-safe one.
     Dim safeBytes() As Byte
@@ -972,7 +991,7 @@ Friend Function GetSelectionBoundaryPath() As pd2DPath
     m_ViewportEdges.MakeArrayEdgeSafe maskBytes, safeBytes, Int(maskBounds.Width) - 1, Int(maskBounds.Height) - 1
     
     'Retrieve an outline path, with full support for multiple selections, complex shapes, etc
-    m_ViewportEdges.FindAllEdges GetSelectionBoundaryPath, safeBytes, 1, 1, Int(maskBounds.Width) + 1, Int(maskBounds.Height) + 1, Int(maskBounds.Left) - 1, Int(maskBounds.Top) - 1
+    m_ViewportEdges.FindAllEdges GetSelectionBoundaryPath, safeBytes, 1, 1, Int(maskBounds.Width) + 1, Int(maskBounds.Height) + 1, Int(maskBounds.Left) - 1, Int(maskBounds.Top) - 1, Not removeHolesFirst
     
 End Function
 
@@ -2238,6 +2257,7 @@ Friend Sub EraseCustomTrackers(Optional ByVal keepCompositeData As Boolean = Fal
         Set m_CompositeMask = Nothing
         Set m_CompositeOutline = Nothing
         Set m_SelMask = New pdDIB
+        m_MaskHasBeenCreated = False
     End If
     
 End Sub
@@ -4115,6 +4135,41 @@ Friend Function ReadSelectionFromFile(ByRef srcFilename As String, Optional igno
     Else
         ReadSelectionFromFile = ReadSelectionFromFile_Legacy(srcFilename, ignoreLockStatus)
     End If
+    
+End Function
+
+'Create a selection from an arbitrary 32-bpp DIB.  The DIB will be used to generate a matching selection mask.
+' The source DIB MUST BE THE SAME SIZE AS THE ACTIVE IMAGE.
+Friend Function ReadSelectionFromDIB(ByRef srcDIB As pdDIB) As Boolean
+    
+    ReadSelectionFromDIB = False
+    PDDebug.LogAction "Reading selection data from DIB..."
+    
+    'Failsafe checks only
+    If (srcDIB Is Nothing) Then Exit Function
+    If (srcDIB.GetDIBWidth <> m_parentPDImage.Width) Or (srcDIB.GetDIBHeight <> m_parentPDImage.Height) Then Exit Function
+    
+    'Reset some of our internal trackers prior to reading the selection data
+    Me.EraseCustomTrackers
+    m_IsMaskReady = False
+    
+    'Set base properties for a generic raster selection
+    Me.SetSelectionShape ss_Raster
+    Me.SetSelectionProperty sp_Area, sa_Interior
+    Me.SetSelectionProperty sp_Smoothing, es_None
+    Me.SetSelectionProperty sp_Combine, pdsm_Replace
+    
+    'Copy the DIB locally
+    m_SelMask.CreateFromExistingDIB srcDIB
+    Me.NotifyRasterDataChanged
+    
+    'Mark the mask as created+ready
+    m_IsMaskReady = True
+    m_MaskHasBeenCreated = True
+    
+    ReadSelectionFromDIB = True
+    
+    'Boundary finding and other operations must now be handled by the caller.
     
 End Function
 

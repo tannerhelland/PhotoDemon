@@ -3,8 +3,8 @@ Attribute VB_Name = "Actions"
 'Action Handler
 'Copyright 2001-2026 by Tanner Helland
 'Created: 07/October/21
-'Last updated: 09/April/26
-'Last update: new functions to enable Repeat [last] and Re-show [last] submenus for Adjustments and Effects
+'Last updated: 30/May/26
+'Last update: new actions for converting between raster layers and selection masks (Select > Import/Export)
 '
 'Want to execute a program operation?  Call this module.
 '
@@ -380,7 +380,7 @@ Private Function Launch_ByName_MenuEdit(ByRef srcMenuName As String, Optional By
         ' If, however, no selection is active, we will delete the entire layer.  That requires a backup
         ' of the full layer stack.
         Case "edit_cutlayer"
-            If PDImages.GetActiveImage.IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
                 Process "Cut", False, , UNDO_Layer
             Else
                 Process "Cut", False, , UNDO_Image
@@ -769,6 +769,9 @@ Private Function Launch_ByName_MenuSelect(ByRef srcMenuName As String, Optional 
         Case "select_sharpen"
             Process "Sharpen selection", True
             
+        Case "select_removeholes"
+            Process "Remove holes from selection", createUndo:=UNDO_Selection
+        
         Case "select_erasearea"
             Process "Erase selected area", False, BuildParamList("targetlayer", PDImages.GetActiveImage.GetActiveLayerIndex), UNDO_Layer
             
@@ -783,16 +786,29 @@ Private Function Launch_ByName_MenuSelect(ByRef srcMenuName As String, Optional 
         
         Case "select_load"
             Process "Load selection", True
+        
+        Case "select_import"
             
+            'Instead of directly launching a process call, use the specialized function that also validates
+            ' the crop rectangle *before* converting.  (The function does nothing if a valid crop does not already exist.)
+            Case "select_importfromcrop"
+                Selections.CreateSelectionFromCrop
+                
+            Case "select_importfromlayer"
+                Process "Selection mask from active layer", False, vbNullString, UNDO_Selection
+                
         Case "select_save"
             Process "Save selection", True
             
         Case "select_export"
-            Case "select_exportarea"
-                Process "Export selected area as image", True
+            Case "select_exportpixels"
+                Process "Selected pixels to file", True
                 
-            Case "select_exportmask"
-                Process "Export selection mask as image", True
+            Case "select_exportmaskfile"
+                Process "Selection mask to file", True
+                
+            Case "select_exportmasklayer"
+                Process "Selection mask to layer", False, vbNullString, UNDO_Everything
                 
         Case Else
             cmdFound = False
@@ -1613,6 +1629,10 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
         Case "tool_crop"
             toolbar_Toolbox.SelectNewTool ND_CROP, (actionSource = pdas_Search), True
         
+        'Used only by the crop tool, to commit the active crop.  (We don't actually *do* anything here; this is just
+        ' to flag the action as a non-adjustment, non-effect operation.)
+        Case "tool_crop_apply"
+            
         Case "tool_select_rect"
             If (actionSource = pdas_Hotkey) Then
                 If (g_CurrentTool = SELECT_RECT) Then toolbar_Toolbox.SelectNewTool SELECT_CIRC Else toolbar_Toolbox.SelectNewTool SELECT_RECT
@@ -1899,15 +1919,20 @@ Public Sub BuildActionDatabase()
     AddAction "select_border", "Border selection", True, False, True
     AddAction "select_feather", "Feather selection", True, False, True
     AddAction "select_sharpen", "Sharpen selection", True, False, True
+    AddAction "select_removeholes", "Remove holes from selection", True, False, False
     AddAction "select_erasearea", "Erase selected area", True, False, True
     AddAction "select_fill", "Fill selected area", True, True, True
     AddAction "select_heal", "Heal selected area", True, True, True
     AddAction "select_stroke", "Stroke selection outline", True, True, True
     AddAction "select_load", "Load selection"
+    'AddAction "select_import"
+    AddAction "select_importfromcrop", "Selection mask from crop tool", False, False, False
+    AddAction "select_importfromlayer", "Selection mask from active layer", False, False, False
     AddAction "select_save", "Save selection"
     'AddAction "select_export"
-    AddAction "select_exportarea", "Export selected area as image", False, False, True
-    AddAction "select_exportmask", "Export selection mask as image", False, False, True
+    AddAction "select_exportpixels", "Export selected area as image", False, False, True
+    AddAction "select_exportmaskfile", "Export selection mask as image", False, False, True
+    AddAction "select_exportmasklayer", "Selection mask to layer", False, False, False
     
     AddAction "adj_repeat", "Repeat", False, True, False
     AddAction "adj_reshow", "Re-show", False, False, True
@@ -2165,6 +2190,9 @@ Public Sub BuildActionDatabase()
     Next i
     
     NotifyMaxNumActionsToRemember
+    
+    'Reset the "last action category" to ensure it is not mistakenly added to the Adjustments > Repeat last menu
+    m_LastActionCategory = rr_None
     
 End Sub
 

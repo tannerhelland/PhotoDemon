@@ -263,7 +263,7 @@ Public Sub SmartResizeImage(ByVal xmlParams As String)
     If (thingToResize = pdat_Image) And (PDImages.GetActiveImage.GetNumOfLayers > 1) Then
         
         'If a selection is active, remove it now
-        If PDImages.GetActiveImage.IsSelectionActive Then
+        If PDImages.GetActiveImage.IsSelectionActive(False) Then
             PDImages.GetActiveImage.SetSelectionActive False
             PDImages.GetActiveImage.MainSelection.LockRelease
         End If

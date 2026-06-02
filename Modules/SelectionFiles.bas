@@ -20,12 +20,12 @@ Option Explicit
 'Export the currently selected area as an image.  This is provided as a convenience to the user, so that they do not have to crop
 ' or copy-paste the selected area in order to save it.  The selected area is also checked for bit-depth; 24bpp is recommended as
 ' JPEG, while 32bpp is recommended as PNG (but the user can select any supported PD save format from the common dialog).
-Public Function ExportSelectedAreaAsImage() As Boolean
+Public Function ExportSelectedAreaAsImageFile() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
     If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
         Message "This action requires an active selection.  Please create a selection before continuing."
-        ExportSelectedAreaAsImage = False
+        ExportSelectedAreaAsImageFile = False
         Exit Function
     End If
     
@@ -76,10 +76,10 @@ Public Function ExportSelectedAreaAsImage() As Boolean
         tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(idxSaveFormat - 1)
         
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
-        ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
+        ExportSelectedAreaAsImageFile = PhotoDemon_SaveImage(tmpImage, sFile, True)
         
     Else
-        ExportSelectedAreaAsImage = False
+        ExportSelectedAreaAsImageFile = False
     End If
         
     'Release our temporary image
@@ -92,7 +92,7 @@ End Function
 Public Function ExportSelectionMaskAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If Not PDImages.GetActiveImage.IsSelectionActive Then
+    If Not PDImages.GetActiveImage.IsSelectionActive() Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectionMaskAsImage = False
         Exit Function
@@ -157,6 +157,106 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Release our temporary image
     Set tmpImage = Nothing
 
+End Function
+
+'Export the currently selection mask as a grayscale layer in the current image.  This allows the user to interact
+' with the selection using any of PD's raster tools.  (Later, they can convert the layer back into a selection
+' using the ImportLayerAsSelectionMask tool.)
+Public Function ExportSelectionMaskAsLayer() As Boolean
+    
+    'If a selection is not active, it should be impossible to select this menu item.
+    ' Just in case, check for that state and exit if necessary.
+    If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
+        Message "This action requires an active selection.  Please create a selection before continuing."
+        ExportSelectionMaskAsLayer = False
+        Exit Function
+    End If
+    
+    'Prepare a temporary pdImage object to house the current selection mask.
+    'Dim tmpImage As pdImage
+    'Set tmpImage = New pdImage
+    
+    'Create a temporary DIB, then copy the current selection mask into it.
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    tmpDIB.CreateFromExistingDIB PDImages.GetActiveImage.MainSelection.GetCompositeMaskDIB
+    
+    'Selections use a "white = selected, transparent = unselected" strategy.
+    ' Composite against a black background (but leave the DIB in 32-bpp format).
+    tmpDIB.CompositeBackgroundColor 0, 0, 0
+    
+    'We now need to add this DIB to the active image as a new layer.
+    Dim newLayerID As Long
+    newLayerID = PDImages.GetActiveImage.CreateBlankLayer()
+    PDImages.GetActiveImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, g_Language.TranslateMessage("Selection mask to layer"), tmpDIB
+    
+    'Make the blank layer the new active layer
+    PDImages.GetActiveImage.SetActiveLayerByID newLayerID
+    
+    'Notify the parent of the change
+    PDImages.GetActiveImage.NotifyImageChanged UNDO_Image_VectorSafe
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.NotifyLayerChange
+    
+    'Render the new image to screen (not technically necessary, but doesn't hurt)
+    Viewport.Stage1_InitializeBuffer PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+            
+    'Synchronize the interface to the new image
+    SyncInterfaceToCurrentImage
+    
+End Function
+
+'Import a new selection mask from a grayscale layer in the current image.  This allows the user to create a selection
+' using whatever mechanism they want, then use the results as if it were a selection mask.
+Public Function ImportSelectionMaskFromLayer() As Boolean
+    
+    'For now, this function uses the contents of the *active* layer.
+    
+    'Make a temporary copy of the active layer (including pixel contents)
+    Dim tmpLayer As pdLayer
+    Set tmpLayer = New pdLayer
+    tmpLayer.CopyExistingLayer PDImages.GetActiveImage.GetActiveLayer
+    
+    'Ensure the layer's contents are the same size as the parent image
+    tmpLayer.ConvertToNullPaddedLayer PDImages.GetActiveImage.Width, PDImages.GetActiveImage.Height, True
+    
+    'Retrieve a grayscale map of the pixel data
+    Dim grayBytes() As Byte
+    DIBs.GetDIBGrayscaleMap tmpLayer.GetLayerDIB, grayBytes, False
+    
+    'We now have everything we need from the temporary layer.  We're now going to create a blank white
+    ' copy of the layer, then apply the grayscale to it as a transparency layer.  (This is how "normal"
+    ' selection data behaves in PD.)
+    tmpLayer.GetLayerDIB.ResetDIB 255
+    DIBs.ApplyTransparencyTable tmpLayer.GetLayerDIB, grayBytes
+    
+    'The temporary DIB now has everything it needs to be treated as selection data.
+    ' Hand it off to the current image's selection manager; it'll handle the rest!
+    PDImages.GetActiveImage.MainSelection.ReadSelectionFromDIB tmpLayer.GetLayerDIB
+    
+    'Ensure the user didn't give us a fully black or transparent mask (which is effectively a "null" selection).
+    If PDImages.GetActiveImage.MainSelection.FindNewBoundsManually() Then
+    
+        'At least one valid selection pixel exists.  Activate it as the "current" selection.
+        
+        'Lock in this selection
+        PDImages.GetActiveImage.MainSelection.LockIn
+        PDImages.GetActiveImage.SetSelectionActive True
+        
+        'Draw the new selection to the screen
+        Viewport.Stage3_CompositeCanvas PDImages.GetActiveImage(), FormMain.MainCanvas(0)
+    
+    'No selection pixels exist.  Unload the selection mask, and treat this operation as a "remove selection" one.
+    Else
+        PDDebug.LogAction "No bounds found; removing selection."
+        Selections.RemoveCurrentSelection
+    End If
+    
+    'Whatever happened, synchronize the interface to the new image.  This ensures that menus are correctly
+    ' dis/enabled according to the new selection state.
+    SyncInterfaceToCurrentImage
+    
 End Function
 
 'Load a previously saved selection.  Note that this function also handles creation and display of the relevant common dialog.

@@ -1652,7 +1652,7 @@ Private Sub Form_Load()
     
     'If a selection is already active, synchronize all UI elements to match
     If suspendActive Then
-        If PDImages.GetActiveImage.IsSelectionActive Then SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
+        If PDImages.GetActiveImage.IsSelectionActive() Then SelectionUI.SyncTextToCurrentSelection PDImages.GetActiveImageID()
     End If
     
     Viewport.EnableRendering

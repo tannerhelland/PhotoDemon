@@ -272,7 +272,7 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean, Optional ByVal cFormat As PD
             If PDImages.GetActiveImage.GetLayerByIndex(i).GetLayerVisibility Then
                 
                 'If a selection is active, erase the selected area.  Otherwise, wipe the whole layer.
-                If PDImages.GetActiveImage.IsSelectionActive Then
+                If PDImages.GetActiveImage.IsSelectionActive() Then
                     PDImages.GetActiveImage.EraseProcessedSelection i
                 Else
                     Layers.EraseLayerByIndex i
@@ -284,7 +284,7 @@ Friend Sub ClipboardCut(ByVal cutMerged As Boolean, Optional ByVal cFormat As PD
         Else
         
             'If a selection is active, erase the selected area.  Otherwise, delete the given layer.
-            If PDImages.GetActiveImage.IsSelectionActive Then
+            If PDImages.GetActiveImage.IsSelectionActive() Then
                 PDImages.GetActiveImage.EraseProcessedSelection i
             Else
                 Layers.DeleteLayer i
@@ -338,7 +338,7 @@ Friend Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
             
             'If the copy is of a whole layer (not a selection or merged image), we'll also save out a full
             ' layer header and any relevant vector data so that we can re-create the whole layer as-is.
-            If (Not copyMerged) And (Not PDImages.GetActiveImage.IsSelectionActive) Then m_Clipboard.SetClipboardData_DelayedRendering CF_PD_LAYER
+            If (Not copyMerged) And (Not PDImages.GetActiveImage.IsSelectionActive()) Then m_Clipboard.SetClipboardData_DelayedRendering CF_PD_LAYER
             
             'Bitmap formats are for other apps
             m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
@@ -553,7 +553,7 @@ Friend Function ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean, Optional ByRe
             ' to the selection's top-left corner - this makes copy+paste operations produce
             ' identically position segments of the image, which is likely more useful than just
             ' dumping the newly pasted layer elsewhere.
-            If (Not positionedAlready) And PDImages.GetActiveImage.IsSelectionActive Then
+            If (Not positionedAlready) And PDImages.GetActiveImage.IsSelectionActive() Then
                 
                 If PDImages.GetActiveImage.MainSelection.IsLockedIn() Then
                 
@@ -1766,7 +1766,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     Dim writeUnAffinedToo As Boolean: writeUnAffinedToo = False
     
     'First, check for an active selection
-    If PDImages.GetActiveImage.IsSelectionActive Then
+    If PDImages.GetActiveImage.IsSelectionActive() Then
         
         PDDebug.LogAction "Clipboard stash update: generating processed selection area..."
         
@@ -1825,7 +1825,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
         m_StashedVector = vbNullString
         
         'If the cut/copy action is an entire source layer, also cache the layer header (and vector data if relevant).
-        If (Not PDImages.GetActiveImage.IsSelectionActive) And (Not copyMerged) Then
+        If (Not PDImages.GetActiveImage.IsSelectionActive()) And (Not copyMerged) Then
             
             If (LenB(m_StashFileLayer) = 0) Then m_StashFileLayer = OS.UniqueTempFilename(customExtension:="txt")
             Files.FileSaveAsText PDImages.GetActiveImage.GetActiveLayer.GetLayerHeaderAsXML(), m_StashFileLayer

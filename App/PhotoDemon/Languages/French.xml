@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.05.12</langversion>
+<langversion>2026.05.16</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -629,6 +629,11 @@
 </phrase>
 
 <phrase>
+<original>Remove holes from selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Erase selected area</original>
 <translation>Effacer la zone sélectionnée</translation>
 </phrase>
@@ -659,13 +664,18 @@
 </phrase>
 
 <phrase>
-<original>Export selected area as image</original>
-<translation>Export de la zone sélectionnée en tant qu'image</translation>
+<original>Selected pixels to file</original>
+<translation>La zone sélectionnée en tant qu'image</translation>
 </phrase>
 
 <phrase>
-<original>Export selection mask as image</original>
-<translation>Export du masque de sélection en tant qu'image</translation>
+<original>Selection mask to file</original>
+<translation>Le masque de sélection en tant qu'image</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask to layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1343,7 @@
 <translation>Effacer la liste des images récentes</translation>
 </phrase>
 
-<!-- Actions.bas contains 271 phrases. 7 were duplicates of existing phrases, so only 264 new phrases were written to file. -->
+<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -2405,7 +2415,7 @@ Veuillez vérifier que cette ou ces image(s) existe(nt) et que leur format est s
 <translation>Duplication d'image terminée.</translation>
 </phrase>
 
-<!-- Loading.bas contains 40 phrases. 16 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Loading.bas contains 38 phrases. 14 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <phrase>
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
@@ -3156,7 +3166,7 @@ Une fois terminé, cliquez sur le bouton "Submit New Issue". Merci !</translatio
 <translation>Instructions pour les rapports de bogues</translation>
 </phrase>
 
-<!-- Processor.bas contains 133 phrases. 71 were duplicates of existing phrases, so only 62 new phrases were written to file. -->
+<!-- Processor.bas contains 135 phrases. 72 were duplicates of existing phrases, so only 63 new phrases were written to file. -->
 
 <phrase>
 <original>automatic</original>
@@ -3322,18 +3332,8 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <phrase>
-<original>Selection inversion complete.</original>
-<translation>Inversion de la sélection terminée.</translation>
-</phrase>
-
-<phrase>
 <original>Feathering selection</original>
 <translation>Adoucissement de la sélection</translation>
-</phrase>
-
-<phrase>
-<original>Feathering complete.</original>
-<translation>Adoucissement terminé.</translation>
 </phrase>
 
 <phrase>
@@ -3347,11 +3347,6 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 </phrase>
 
 <phrase>
-<original>Selection resize complete.</original>
-<translation>Redimensionnement de la sélection terminé.</translation>
-</phrase>
-
-<phrase>
 <original>Shrinking selection</original>
 <translation>Rétrécissement de la sélection</translation>
 </phrase>
@@ -3361,14 +3356,19 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <translation>Recherche des contours de la sélection</translation>
 </phrase>
 
-<!-- SelectionFilters.bas contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<phrase>
+<original>Applying changes</original>
+<translation></translation>
+</phrase>
 
-<!-- Selections.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Create selection</original>
 <translation>Créer une sélection</translation>
 </phrase>
+
+<!-- Selections.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <phrase>
 <original>Release the mouse button to complete the lasso selection</original>
@@ -3390,7 +3390,7 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 <translation>Cliquez sur le premier point pour terminer la sélection polygonale</translation>
 </phrase>
 
-<!-- SelectionUI.bas contains 26 phrases. 21 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- SelectionUI.bas contains 26 phrases. 22 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- Strings.bas contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
@@ -5329,18 +5329,18 @@ La valeur finale doit être entre %3 et %4.</translation>
 </phrase>
 
 <phrase>
-<original>Save current selection</original>
-<translation>Enregistrer la sélection actuelle</translation>
+<original>Remove holes</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Selected area as image</original>
-<translation>La zone sélectionnée en tant qu'image</translation>
+<original>Selection mask from crop tool</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Selection mask as image</original>
-<translation>Le masque de sélection en tant qu'image</translation>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5896,7 +5896,7 @@ La mise à jour est traitée automatiquement en arrière-plan. Vous recevrez une
 <translation>Langue changée avec succès.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 417 phrases. 228 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14880,8 +14880,8 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6021 phrases. -->
-<!-- 3209 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12164 total words. -->
+<!-- As of this build, PhotoDemon contains 6029 phrases. -->
+<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12165 total words. -->
 
 </pdData>
