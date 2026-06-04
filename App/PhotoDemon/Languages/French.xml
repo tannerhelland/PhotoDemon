@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.05.16</langversion>
+<langversion>2026.06.03</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -250,7 +250,7 @@
 
 <phrase>
 <original>Crop</original>
-<translation>Rogner, recadrer</translation>
+<translation>Recadrer, rogner</translation>
 </phrase>
 
 <phrase>
@@ -630,7 +630,7 @@
 
 <phrase>
 <original>Remove holes from selection</original>
-<translation></translation>
+<translation>Retirer les trous dela sélection </translation>
 </phrase>
 
 <phrase>
@@ -660,7 +660,7 @@
 
 <phrase>
 <original>Save selection</original>
-<translation>Enregistrement de la sélection</translation>
+<translation>Enregistrer la sélection</translation>
 </phrase>
 
 <phrase>
@@ -675,7 +675,7 @@
 
 <phrase>
 <original>Selection mask to layer</original>
-<translation></translation>
+<translation>Le masque de sélection comme calque</translation>
 </phrase>
 
 <phrase>
@@ -3358,7 +3358,7 @@ Une animation nécessite au moins 2 calques d'image ou plus.</translation>
 
 <phrase>
 <original>Applying changes</original>
-<translation></translation>
+<translation>Appliquer les changements</translation>
 </phrase>
 
 <!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -5330,17 +5330,17 @@ La valeur finale doit être entre %3 et %4.</translation>
 
 <phrase>
 <original>Remove holes</original>
-<translation></translation>
+<translation>Retirer les trous</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask from crop tool</original>
-<translation></translation>
+<translation>Un masque de sélection à partir du recadrage</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask from active layer</original>
-<translation></translation>
+<translation>Un masque de sélection à partir du calque actif</translation>
 </phrase>
 
 <phrase>
@@ -8502,7 +8502,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>distance</original>
-<translation>Distance</translation>
+<translation>Distance </translation>
 </phrase>
 
 <phrase>
