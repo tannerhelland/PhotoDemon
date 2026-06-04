@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.06.03</langversion>
+<langversion>2026.06.4</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -630,7 +630,7 @@
 
 <phrase>
 <original>Remove holes from selection</original>
-<translation>Retirer les trous dela sélection </translation>
+<translation>Retirer les trous dela sélection</translation>
 </phrase>
 
 <phrase>
