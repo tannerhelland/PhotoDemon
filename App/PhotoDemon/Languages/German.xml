@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha Build 213.4</langversion>
+<langversion>2026.1 Alpha Build 228</langversion>
 <langstatus>Auf aktuellem Stand</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -630,7 +630,7 @@
 
 <phrase>
 <original>Remove holes from selection</original>
-<translation></translation>
+<translation>Löcher aus Auswahl entfernen</translation>
 </phrase>
 
 <phrase>
@@ -665,17 +665,17 @@
 
 <phrase>
 <original>Selected pixels to file</original>
-<translation>Selektierten Bereich als Bild</translation>
+<translation>Selektierte Pixel in Datei</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask to file</original>
-<translation>Auswahlmaske als Bild</translation>
+<translation>Auswahlmaske in Datei</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask to layer</original>
-<translation></translation>
+<translation>Auswahlmaske auf Layer</translation>
 </phrase>
 
 <phrase>
@@ -3356,7 +3356,7 @@ In der Zwischenzeit versuchen Sie bitte, das Bild in einem alternativen Format z
 
 <phrase>
 <original>Applying changes</original>
-<translation></translation>
+<translation>Anwenden der Änderungen</translation>
 </phrase>
 
 <!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -5328,17 +5328,17 @@ Der finale Wert muss zwischen %3 und %4 liegen.</translation>
 
 <phrase>
 <original>Remove holes</original>
-<translation></translation>
+<translation>Löcher entfernen</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask from crop tool</original>
-<translation></translation>
+<translation>Auswahlmaske aus Zuschneide-Tool</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask from active layer</original>
-<translation></translation>
+<translation>Auswahlmaske aus aktivem Layer</translation>
 </phrase>
 
 <phrase>
