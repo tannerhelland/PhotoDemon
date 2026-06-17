@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（2026.1 build 229）</langname>
-<langversion>2026.6.3</langversion>
+<langversion>2026.6.4</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on June 3rd, 2026</author>
@@ -656,6 +656,11 @@
 <phrase>
 <original>Load selection</original>
 <translation>加载选区</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask from active layer</original>
+<translation>来自当前图层的选区蒙版</translation>
 </phrase>
 
 <phrase>
@@ -1343,7 +1348,7 @@
 <translation>清除最近的图像列表</translation>
 </phrase>
 
-<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
+<!-- Actions.bas contains 274 phrases. 7 were duplicates of existing phrases, so only 267 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3275,16 +3280,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>此操作需要一个活动的选择。继续之前，请创建一个选择。</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>图像输出选择</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon selection</original>
 <translation>PhotoDemon选区</translation>
 </phrase>
@@ -3324,7 +3319,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>未知错误，选区没有保存，请重试。</translation>
 </phrase>
 
-<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- SelectionFiles.bas contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Feathering selection</original>
@@ -5333,11 +5328,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Selection mask from active layer</original>
-<translation>来自当前图层的选区蒙版</translation>
-</phrase>
-
-<phrase>
 <original>Adjustments</original>
 <translation>调整</translation>
 </phrase>
@@ -5889,7 +5879,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>语言切换成功。</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 234 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14860,11 +14850,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2810</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6029 phrases. -->
-<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12165 total words. -->
+<!-- As of this build, PhotoDemon contains 6028 phrases. -->
+<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
+<!-- These 2810 phrases contain approximately 12149 total words. -->
 
 <special-translations>
 

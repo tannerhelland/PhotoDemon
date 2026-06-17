@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Čeština (Czech)</langname>
-<langversion>1.0.50</langversion>
+<langversion>1.0.51</langversion>
 <langstatus>complete</langstatus>
 
 <author>prófa</author>
@@ -656,6 +656,11 @@
 <phrase>
 <original>Load selection</original>
 <translation>Nahraj výběr</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1345,7 +1350,7 @@
 <translation>Vymazat seznam posledních obrázků</translation>
 </phrase>
 
-<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
+<!-- Actions.bas contains 274 phrases. 7 were duplicates of existing phrases, so only 267 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3374,17 +3379,6 @@ Mezitím zkuste uložit obrázek do jiného formátu.  Můžete o tom také dát
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Tato akce vyžaduje aktivní výběr.  Než budete pokračovat, vytvořte prosím výběr.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>Exportovat výběr jako obrázek
-</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon selection</original>
 <translation>Výběr PhotoDemon
 </translation>
@@ -3429,7 +3423,7 @@ Mezitím zkuste uložit obrázek do jiného formátu.  Můžete o tom také dát
 <translation>Došlo k neznámé chybě.  Výběr nebyl uložen.  Zkuste to prosím znovu.</translation>
 </phrase>
 
-<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- SelectionFiles.bas contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Feathering selection</original>
@@ -5542,11 +5536,6 @@ Konečná hodnota musí být mezi %3 a %4.</translation>
 </phrase>
 
 <phrase>
-<original>Selection mask from active layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Adjustments</original>
 <translation>Úpravy</translation>
 </phrase>
@@ -6140,7 +6129,7 @@ Aktualizace probíhá automaticky na pozadí.  Po dokončení obdržíte nové o
 </translation>
 </phrase>
 
-<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 234 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -15496,10 +15485,10 @@ Pokud se přesto rozhodnete aktualizace zakázat, nezapomeňte čas od času nav
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2810</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6029 phrases. -->
-<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12165 total words. -->
+<!-- As of this build, PhotoDemon contains 6028 phrases. -->
+<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
+<!-- These 2810 phrases contain approximately 12149 total words. -->
 
 </pdData>

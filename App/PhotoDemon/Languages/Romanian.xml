@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.22</langversion>
+<langversion>1.0.23</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -656,6 +656,11 @@
 <phrase>
 <original>Load selection</original>
 <translation>Încarcă selecție</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1343,7 +1348,7 @@
 <translation>Curăță lista imaginilor recente</translation>
 </phrase>
 
-<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
+<!-- Actions.bas contains 274 phrases. 7 were duplicates of existing phrases, so only 267 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3286,16 +3291,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Acestă acțiune necesită o selecție activă. Vă rog faceți o selecție înainte de a continua.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>Exportă selecția ca imagine</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon selection</original>
 <translation>Selecție PhotoDemon</translation>
 </phrase>
@@ -3335,7 +3330,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>A apărut o eroare necunoscută. Selecția nu a fost salvată. Încercați iar.</translation>
 </phrase>
 
-<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- SelectionFiles.bas contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Feathering selection</original>
@@ -5346,11 +5341,6 @@ Valoarea finală trebuie să fie între %3 și %4.</translation>
 </phrase>
 
 <phrase>
-<original>Selection mask from active layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Adjustments</original>
 <translation>Ajustări</translation>
 </phrase>
@@ -5903,7 +5893,7 @@ Actualizarea este automat procesată în fundal. Veți primi o notificare când 
 <translation>Limbă schimbată cu succes.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 234 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14874,10 +14864,10 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2810</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6029 phrases. -->
-<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12165 total words. -->
+<!-- As of this build, PhotoDemon contains 6028 phrases. -->
+<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
+<!-- These 2810 phrases contain approximately 12149 total words. -->
 
 </pdData>

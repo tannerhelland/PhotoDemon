@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>2025.4.24</langversion>
+<langversion>2025.4.25</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock, ManfroMarce</author>
@@ -656,6 +656,11 @@
 <phrase>
 <original>Load selection</original>
 <translation>Carica una selezione</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask from active layer</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1343,7 +1348,7 @@
 <translation>Cancella lista di immagini recenti</translation>
 </phrase>
 
-<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
+<!-- Actions.bas contains 274 phrases. 7 were duplicates of existing phrases, so only 267 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -3277,16 +3282,6 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Questa azione richiede una selezione attiva.  Si prega di creare una selezione prima di continuare.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>Esporta selezione come immagine</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon selection</original>
 <translation>Selezione di PhotoDemon</translation>
 </phrase>
@@ -3326,7 +3321,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Si è verificato un errore sconosciuto.  La selezione non è stata salvata. Riprova.</translation>
 </phrase>
 
-<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- SelectionFiles.bas contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Feathering selection</original>
@@ -5336,11 +5331,6 @@ Il valore finale deve essere compreso tra %3 e %4.</translation>
 </phrase>
 
 <phrase>
-<original>Selection mask from active layer</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Adjustments</original>
 <translation>Regolazioni</translation>
 </phrase>
@@ -5893,7 +5883,7 @@ L'aggiornamento viene elaborato automaticamente in background.  Riceverai una nu
 <translation>Lingua modificata con successo.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 234 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -14864,10 +14854,10 @@ Se si sceglie comunque di disabilitare gli aggiornamenti, non dimenticate di vis
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2810</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6029 phrases. -->
-<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12165 total words. -->
+<!-- As of this build, PhotoDemon contains 6028 phrases. -->
+<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
+<!-- These 2810 phrases contain approximately 12149 total words. -->
 
 </pdData>

@@ -3,9 +3,9 @@ Attribute VB_Name = "SelectionFiles"
 'Selection Tools: File I/O
 'Copyright 2013-2026 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 25/February/26
-'Last update: when exporting selected area as image, use the new Tools > Options > Saving preference for
-'             default file format suggestion
+'Last updated: 17/June/26
+'Last update: route exports through the new "MenuExportImage" wrapper, which handles additional user behaviors
+'             (like hand-typing a file extension that doesn't match the selected format dropdown)
 '
 'This module should only contain functions for writing/reading selection data to file.  Note that these
 ' functions will be used primarily for PD's Undo/Redo engine, so performance considerations are paramount.
@@ -17,19 +17,21 @@ Attribute VB_Name = "SelectionFiles"
 
 Option Explicit
 
-'Export the currently selected area as an image.  This is provided as a convenience to the user, so that they do not have to crop
-' or copy-paste the selected area in order to save it.  The selected area is also checked for bit-depth; 24bpp is recommended as
-' JPEG, while 32bpp is recommended as PNG (but the user can select any supported PD save format from the common dialog).
+'Export the currently selected area as an image.  This is provided as a convenience to the user, so that they do not
+' have to crop or copy-paste the selected area in order to save it.  The selected area is also checked for bit-depth;
+' 24bpp is recommended as JPEG, while 32bpp is recommended as PNG (but the user can select any supported PD save format
+' from the common dialog).
 Public Function ExportSelectedAreaAsImageFile() As Boolean
     
-    'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
+    'If a selection is not active, it should be impossible to select this menu item.
+    ' (Just in case, check for that state and exit if necessary.)
     If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
-        Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectedAreaAsImageFile = False
         Exit Function
     End If
     
-    'Prepare a temporary pdImage object to house the current selection mask
+    'Because we're going to export a full image file (not just a pixel buffer), prepare a temporary
+    ' pdImage object; it will house the current selection mask and any other image-specific properties.
     Dim tmpImage As pdImage
     Set tmpImage = New pdImage
     
@@ -38,51 +40,26 @@ Public Function ExportSelectedAreaAsImageFile() As Boolean
     Set tmpDIB = New pdDIB
     PDImages.GetActiveImage.RetrieveProcessedSelection tmpDIB, True, True
     
-    'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
+    'In the temporary pdImage object, initialize a new layer using the contents of the temporary
+    ' selection mask pixel buffer.
     Dim newLayerID As Long
     newLayerID = tmpImage.CreateBlankLayer
-    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, , tmpDIB
+    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, vbNullString, tmpDIB
+    
+    'Ensure the parent image inherits the selection mask's pixel dimensions
     tmpImage.UpdateSize
     
-    'Give the selection a basic filename
-    tmpImage.ImgStorage.AddEntry "OriginalFileName", "PhotoDemon selection"
+    'Give the selection a basic filename (this isn's especially relevant, since the user can/will override it)
+    tmpImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("PhotoDemon selection")
     
-    'Get the last "save image" path from the preferences file
-    Dim tempPathString As String
-    tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
+    'Use the exporter's original logic to determine how to export the image.
+    ' (Typically, this will default to the last-used format from an export tool.)
+    tmpImage.SetCurrentFileFormat PDIF_UNKNOWN
     
-    'The user can customize default output format in Tools > Options > Saving
-    Dim saveFormat As PD_IMAGE_FORMAT
-    saveFormat = Saving.GetUsersDefaultSaveFormat(tmpImage)
+    'Let the central exporter handle the actual export flow from this point on
+    ExportSelectedAreaAsImageFile = FileMenu.MenuExportImage(tmpImage)
     
-    'Convert this to an index into PD's supported list of output formats (we need to pass this +1
-    ' to the export common dialog).
-    Dim idxSaveFormat As Long
-    idxSaveFormat = ImageFormats.GetIndexOfOutputPDIF(saveFormat) + 1
-    
-    'Now it's time to prepare a standard Save Image common dialog
-    Dim saveDialog As pdOpenSaveDialog
-    Set saveDialog = New pdOpenSaveDialog
-    
-    'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
-    Dim sFile As String
-    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString), ImageFormats.GetOutputFormatExtension(idxSaveFormat))
-    
-    'Present a common dialog to the user
-    If saveDialog.GetSaveFileName(sFile, vbNullString, True, ImageFormats.GetCommonDialogOutputFormats, idxSaveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
-        
-        'Store the selected file format to the image object (remember to *remove* 1 to make it 0-based;
-        ' the common-dialog returns a 1-based number)
-        tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(idxSaveFormat - 1)
-        
-        'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
-        ExportSelectedAreaAsImageFile = PhotoDemon_SaveImage(tmpImage, sFile, True)
-        
-    Else
-        ExportSelectedAreaAsImageFile = False
-    End If
-        
-    'Release our temporary image
+    'Release our temporary pixel buffer and parent image container
     Set tmpDIB = Nothing
     Set tmpImage = Nothing
     
@@ -91,9 +68,9 @@ End Function
 'Export the current selection mask as an image.  PNG is recommended by default, but the user can choose from any of PD's available formats.
 Public Function ExportSelectionMaskAsImage() As Boolean
     
-    'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
+    'If a selection is not active, it should be impossible to select this menu item.
+    ' (Just in case, check for that state and exit if necessary.)
     If Not PDImages.GetActiveImage.IsSelectionActive() Then
-        Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectionMaskAsImage = False
         Exit Function
     End If
@@ -114,49 +91,23 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'In a temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.CreateBlankLayer
-    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, , tmpDIB
+    tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_Image, vbNullString, tmpDIB
     tmpImage.UpdateSize
     
     'Give the selection a basic filename
     tmpImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("PhotoDemon selection")
-        
-    'Get the last "save image" path from the preferences file
-    Dim tempPathString As String
-    tempPathString = UserPrefs.GetPref_String("Paths", "Save Image", vbNullString)
     
-    'The user can customize default output format in Tools > Options > Saving
-    Dim saveFormat As PD_IMAGE_FORMAT
-    saveFormat = Saving.GetUsersDefaultSaveFormat(tmpImage)
+    'Use the exporter's original logic to determine how to export the image.
+    ' (Typically, this will default to the last-used format from an export tool.)
+    tmpImage.SetCurrentFileFormat PDIF_UNKNOWN
     
-    'Convert this to an index into PD's supported list of output formats (we need to pass this +1
-    ' to the export common dialog).
-    Dim idxSaveFormat As Long
-    idxSaveFormat = ImageFormats.GetIndexOfOutputPDIF(saveFormat) + 1
+    'Let the central exporter handle the actual export flow from this point on
+    ExportSelectionMaskAsImage = FileMenu.MenuExportImage(tmpImage)
     
-    'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
-    Dim sFile As String
-    sFile = tempPathString & IncrementFilename(tempPathString, tmpImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString), ImageFormats.GetOutputFormatExtension(idxSaveFormat))
-    
-    'Now it's time to prepare a standard Save Image common dialog
-    Dim saveDialog As pdOpenSaveDialog
-    Set saveDialog = New pdOpenSaveDialog
-    
-    'Present a common dialog to the user
-    If saveDialog.GetSaveFileName(sFile, , True, ImageFormats.GetCommonDialogOutputFormats, idxSaveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
-                
-        'Store the selected file format to the image object
-        tmpImage.SetCurrentFileFormat ImageFormats.GetOutputPDIF(idxSaveFormat - 1)
-                                
-        'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
-        ExportSelectionMaskAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
-        
-    Else
-        ExportSelectionMaskAsImage = False
-    End If
-    
-    'Release our temporary image
+    'Release our temporary pixel buffer and parent image container
+    Set tmpDIB = Nothing
     Set tmpImage = Nothing
-
+    
 End Function
 
 'Export the currently selection mask as a grayscale layer in the current image.  This allows the user to interact
@@ -165,16 +116,11 @@ End Function
 Public Function ExportSelectionMaskAsLayer() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.
-    ' Just in case, check for that state and exit if necessary.
+    ' (Just in case, check for that state and exit if necessary.)
     If (Not PDImages.GetActiveImage.IsSelectionActive()) Then
-        Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectionMaskAsLayer = False
         Exit Function
     End If
-    
-    'Prepare a temporary pdImage object to house the current selection mask.
-    'Dim tmpImage As pdImage
-    'Set tmpImage = New pdImage
     
     'Create a temporary DIB, then copy the current selection mask into it.
     Dim tmpDIB As pdDIB

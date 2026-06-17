@@ -127,7 +127,8 @@ Public Function GetCommonDialogInputFormats() As String
     GetCommonDialogInputFormats = m_CommonDialogInputs
 End Function
 
-'Return the index of given output FIF.  Returns -1 if PD cannot export a given format.
+'Return the index of given output PDIF (PhotoDemon Image Format constant).
+' Returns -1 if PD cannot export a given format.
 Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     GetIndexOfOutputPDIF = -1
@@ -142,7 +143,7 @@ Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
 End Function
 
-'Return the FIF (image format constant) at a given index
+'Return the PDIF (PhotoDemon Image Format constant) at a given index
 Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
     If (dIndex >= 0) And (dIndex <= m_numOfOutputFormats) Then
         GetOutputPDIF = outputPDIFs(dIndex)

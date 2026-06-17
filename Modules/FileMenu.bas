@@ -157,7 +157,7 @@ Public Function MenuExportImage(ByRef srcImage As pdImage) As Boolean
         'The user hasn't exported this file this session.  Try to use the image's current format, if any.
         If (srcImage.GetCurrentFileFormat <> PDIF_UNKNOWN) And (ImageFormats.GetIndexOfOutputPDIF(srcImage.GetCurrentFileFormat) >= 0) Then
             idxCmnDlgFilter = ImageFormats.GetIndexOfOutputPDIF(srcImage.GetCurrentFileFormat) + 1
-        
+            
         'The image is not in a format that PD can export (or it's a new image that has never been saved).
         Else
             
@@ -171,13 +171,13 @@ Public Function MenuExportImage(ByRef srcImage As pdImage) As Boolean
     'idxCmnDlgFilter now represents that suggested file format for the common dialog box.
     ' Determine a matching default extension.
     Dim cmnDlgFileExtension As String, initSuggestedFormat As PD_IMAGE_FORMAT
-    initSuggestedFormat = ImageFormats.GetOutputPDIF(idxCmnDlgFilter)
+    initSuggestedFormat = ImageFormats.GetOutputPDIF(idxCmnDlgFilter - 1)
     cmnDlgFileExtension = ImageFormats.GetExtensionFromPDIF(initSuggestedFormat)
     
     'Prompt the user for an export filename and format.
     Dim saveDialog As pdOpenSaveDialog
     Set saveDialog = New pdOpenSaveDialog
-    If saveDialog.GetSaveFileName(dstFile, , True, ImageFormats.GetCommonDialogOutputFormats, idxCmnDlgFilter, cdInitialFolder, cdTitle, ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
+    If saveDialog.GetSaveFileName(dstFile, vbNullString, True, ImageFormats.GetCommonDialogOutputFormats, idxCmnDlgFilter, cdInitialFolder, cdTitle, ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
     
         'The user clicked OK.
         
@@ -194,7 +194,7 @@ Public Function MenuExportImage(ByRef srcImage As pdImage) As Boolean
             
             'As a courtesy, see if they manually typed in a different *file extension* than the one we suggested.
             ' (If they did, let's try and honor any known format associated with their typed extension.)
-            If (Files.FileGetExtension(dstFile) <> cmnDlgFileExtension) Then
+            If Strings.StringsNotEqual(Files.FileGetExtension(dstFile), cmnDlgFileExtension, True) Then
                 
                 'Yikes!  The user did NOT change the file type dropdown, but they DID manually type out a new
                 ' file extension.
