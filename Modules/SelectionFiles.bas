@@ -56,6 +56,12 @@ Public Function ExportSelectedAreaAsImageFile() As Boolean
     ' (Typically, this will default to the last-used format from an export tool.)
     tmpImage.SetCurrentFileFormat PDIF_UNKNOWN
     
+    'Notify the parent image of all changes made so far, and explicitly set its state to ACTIVE.
+    ' (If left as "inactive", the image object won't respond to requests to update its thumbnail,
+    '  and we need an updated thumbnail for the Open > Recent files menu.)
+    tmpImage.NotifyImageChanged UNDO_Everything
+    tmpImage.ChangeActiveState True
+    
     'Let the central exporter handle the actual export flow from this point on
     ExportSelectedAreaAsImageFile = FileMenu.MenuExportImage(tmpImage)
     
@@ -100,6 +106,12 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'Use the exporter's original logic to determine how to export the image.
     ' (Typically, this will default to the last-used format from an export tool.)
     tmpImage.SetCurrentFileFormat PDIF_UNKNOWN
+    
+    'Notify the parent image of all changes made so far, and explicitly set its state to ACTIVE.
+    ' (If left as "inactive", the image object won't respond to requests to update its thumbnail,
+    '  and we need an updated thumbnail for the Open > Recent files menu.)
+    tmpImage.NotifyImageChanged UNDO_Everything
+    tmpImage.ChangeActiveState True
     
     'Let the central exporter handle the actual export flow from this point on
     ExportSelectionMaskAsImage = FileMenu.MenuExportImage(tmpImage)
@@ -307,4 +319,3 @@ Public Sub SaveSelectionToFile()
     End If
         
 End Sub
-
