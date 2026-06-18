@@ -6,7 +6,7 @@
 
 <langid>ro-RO</langid>
 <langname>Română</langname>
-<langversion>1.0.23</langversion>
+<langversion>1.0.24</langversion>
 <langstatus>Completă</langstatus>
 
 <author>Liviu Ivanov</author>
@@ -14172,6 +14172,16 @@ Ești sigur că vreți să continuați?</translation>
 </phrase>
 
 <phrase>
+<original>display warning when image files aren't loaded successfully</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>broken files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>load into this instance</original>
 <translation>Încarcă în această instanță</translation>
 </phrase>
@@ -14191,7 +14201,7 @@ Ești sigur că vreți să continuați?</translation>
 <translation>Dacă PC-ul repornește în timp ce PhotoDemon rulează, PhotoDemon vă poate restabili automat sesiunea anterioară.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14864,10 +14874,10 @@ Dacă totuși alegeți să dezactivați actualizările, nu uitați să vizitați
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6028 phrases. -->
-<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12149 total words. -->
+<!-- As of this build, PhotoDemon contains 6030 phrases. -->
+<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12159 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-NL</langid>
 <langname>Dutch (Nederlands)</langname>
-<langversion>2025.12.17</langversion>
+<langversion>2025.12.18</langversion>
 <langstatus>99% complete</langstatus>
 
 <author>Rudi Klein</author>
@@ -14163,6 +14163,16 @@ Weet je zeker dat je door wilt gaan?</translation>
 </phrase>
 
 <phrase>
+<original>display warning when image files aren't loaded successfully</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>broken files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>load into this instance</original>
 <translation>in deze instantie laden</translation>
 </phrase>
@@ -14182,7 +14192,7 @@ Weet je zeker dat je door wilt gaan?</translation>
 <translation>Als uw pc opnieuw wordt opgestart terwijl PhotoDemon actief is, kan PhotoDemon uw vorige sessie automatisch herstellen.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14857,10 +14867,10 @@ Als u er toch voor kiest om updates uit te schakelen, vergeet dan niet om af en 
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6028 phrases. -->
-<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12149 total words. -->
+<!-- As of this build, PhotoDemon contains 6030 phrases. -->
+<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12159 total words. -->
 
 </pdData>

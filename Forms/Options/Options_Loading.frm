@@ -33,7 +33,7 @@ Begin VB.Form options_Loading
       Height          =   330
       Left            =   180
       TabIndex        =   3
-      Top             =   3600
+      Top             =   4320
       Width           =   8055
       _ExtentX        =   14208
       _ExtentY        =   582
@@ -54,7 +54,7 @@ Begin VB.Form options_Loading
       Height          =   330
       Left            =   180
       TabIndex        =   1
-      Top             =   1920
+      Top             =   2640
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   582
@@ -64,7 +64,7 @@ Begin VB.Form options_Loading
       Height          =   285
       Index           =   2
       Left            =   0
-      Top             =   1560
+      Top             =   2280
       Width           =   8115
       _ExtentX        =   14314
       _ExtentY        =   503
@@ -86,9 +86,9 @@ Begin VB.Form options_Loading
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   5
+      Index           =   4
       Left            =   0
-      Top             =   2400
+      Top             =   3120
       Width           =   8115
       _ExtentX        =   14314
       _ExtentY        =   503
@@ -100,7 +100,7 @@ Begin VB.Form options_Loading
       Height          =   330
       Left            =   180
       TabIndex        =   2
-      Top             =   2760
+      Top             =   3480
       Width           =   7920
       _ExtentX        =   13970
       _ExtentY        =   582
@@ -110,11 +110,33 @@ Begin VB.Form options_Loading
       Height          =   285
       Index           =   0
       Left            =   0
-      Top             =   3240
+      Top             =   3960
       Width           =   8115
       _ExtentX        =   14314
       _ExtentY        =   503
       Caption         =   "startup"
+      FontSize        =   12
+      ForeColor       =   5263440
+   End
+   Begin PhotoDemon.pdCheckBox chkBrokenFiles 
+      Height          =   330
+      Left            =   180
+      TabIndex        =   4
+      Top             =   1800
+      Width           =   7920
+      _ExtentX        =   13970
+      _ExtentY        =   582
+      Caption         =   "display warning when image files aren't loaded successfully"
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   3
+      Left            =   0
+      Top             =   1440
+      Width           =   8115
+      _ExtentX        =   14314
+      _ExtentY        =   503
+      Caption         =   "broken files"
       FontSize        =   12
       ForeColor       =   5263440
    End
@@ -128,8 +150,8 @@ Attribute VB_Exposed = False
 'Tools > Options > Loading panel
 'Copyright 2002-2026 by Tanner Helland
 'Created: 8/November/02
-'Last updated: 02/April/25
-'Last update: split this panel into a standalone form
+'Last updated: 17/June/26
+'Last update: new preference for warning message when importing broken images
 '
 'This form contains a single subpanel worth of program options.  At run-time, it is dynamically
 ' made a child of FormOptions.  It will only be loaded if/when the user interacts with this category.
@@ -157,25 +179,23 @@ Private Sub Form_Load()
 End Sub
 
 Public Sub LoadUserPreferences()
-    
     If UserPrefs.GetPref_Boolean("Loading", "Single Instance", False) Then btsMultiInstance.ListIndex = 0 Else btsMultiInstance.ListIndex = 1
+    chkBrokenFiles.Value = UserPrefs.GetPref_Boolean("Loading", "broken-file-warning", True)
     chkToneMapping.Value = UserPrefs.GetPref_Boolean("Loading", "Tone Mapping Prompt", True)
     chkSystemReboots.Value = UserPrefs.GetPref_Boolean("Loading", "RestoreAfterReboot", False)
     chkSplash.Value = UserPrefs.GetPref_Boolean("Loading", "splash-screen", True)
-    
 End Sub
 
 Public Sub SaveUserPreferences()
 
     UserPrefs.SetPref_Boolean "Loading", "Single Instance", (btsMultiInstance.ListIndex = 0)
-    
+    UserPrefs.SetPref_Boolean "Loading", "broken-file-warning", chkBrokenFiles.Value
     UserPrefs.SetPref_Boolean "Loading", "Tone Mapping Prompt", chkToneMapping.Value
+    UserPrefs.SetPref_Boolean "Loading", "splash-screen", chkSplash.Value
     
     'Restore after reboot behavior requires an immediate API to de/activate
     UserPrefs.SetPref_Boolean "Loading", "RestoreAfterReboot", chkSystemReboots.Value
     OS.SetRestartRestoreBehavior chkSystemReboots.Value
-    
-    UserPrefs.SetPref_Boolean "Loading", "splash-screen", chkSplash.Value
     
 End Sub
 

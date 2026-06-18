@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>2026.1.160</langversion>
+<langversion>2026.1.161</langversion>
 <langstatus>complete</langstatus>
 
 <author>István Bánszki</author>
@@ -14158,6 +14158,16 @@ Biztosan folytatni szeretné?</translation>
 </phrase>
 
 <phrase>
+<original>display warning when image files aren't loaded successfully</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>broken files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>load into this instance</original>
 <translation>betöltés ebbe a példányba</translation>
 </phrase>
@@ -14177,7 +14187,7 @@ Biztosan folytatni szeretné?</translation>
 <translation>Ha a számítógép újraindul, miközben a PhotoDemon fut, a program automatikusan helyre tudja állítani az előző munkamenetet.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14852,10 +14862,10 @@ Ha mégis úgy dönt, hogy letiltja a frissítéseket, ne felejtse el időnként
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6028 phrases. -->
-<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12149 total words. -->
+<!-- As of this build, PhotoDemon contains 6030 phrases. -->
+<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12159 total words. -->
 
 </pdData>

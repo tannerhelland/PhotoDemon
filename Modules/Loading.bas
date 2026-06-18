@@ -1183,6 +1183,9 @@ Private Sub ShowFailedLoadMsgBox(ByRef srcFilesBroken As pdStringStack)
     If (srcFilesBroken Is Nothing) Then Exit Sub
     If (srcFilesBroken.GetNumOfStrings <= 0) Then Exit Sub
     
+    'The user can suspend this behavior from the Tools > Options > Loading panel.
+    If (Not UserPrefs.GetPref_Boolean("Loading", "broken-file-warning", True)) Then Exit Sub
+    
     'Assemble the list of broken files into a list of filenames and/or plugin error messages,
     ' to help the user understand what may have gone wrong.
     Dim listOfFiles As pdString

@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>正體中文</langname>
-<langversion>2026.1.161</langversion>
+<langversion>2026.1.162</langversion>
 <langstatus>Translation completed on 2026/03/24</langstatus>
 
 <author>昇</author>
@@ -14189,6 +14189,16 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>display warning when image files aren't loaded successfully</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>broken files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>load into this instance</original>
 <translation>載入到這個實例中</translation>
 </phrase>
@@ -14208,7 +14218,7 @@ Are you sure you want to continue?</original>
 <translation>如果你的電腦在 PhotoDemon 執行時重新啟動，PhotoDemon 可以自動還原你先前的作業階段。</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14923,10 +14933,10 @@ PhotoDemon 可以透過分析其他元數據（例如量化表）來推斷品質
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2810</phrasecount>
+<phrasecount>2812</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6028 phrases. -->
-<!-- 3218 are duplicates, so only 2810 unique phrases have been written to file. -->
-<!-- These 2810 phrases contain approximately 12149 total words. -->
+<!-- As of this build, PhotoDemon contains 6030 phrases. -->
+<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
+<!-- These 2812 phrases contain approximately 12159 total words. -->
 
 </pdData>
