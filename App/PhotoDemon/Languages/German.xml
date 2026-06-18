@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha Build 228.2</langversion>
+<langversion>2026.1 Alpha Build 232</langversion>
 <langstatus>Auf aktuellem Stand</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14160,12 +14160,12 @@ Sind Sie sicher, dass Sie fortsetzen wollen?</translation>
 
 <phrase>
 <original>display warning when image files aren't loaded successfully</original>
-<translation></translation>
+<translation>Warnung anzeigen, wenn Bilddateien nicht erfolgreich geladen werden</translation>
 </phrase>
 
 <phrase>
 <original>broken files</original>
-<translation></translation>
+<translation>Beschädigte Dateien</translation>
 </phrase>
 
 <phrase>

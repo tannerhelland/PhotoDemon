@@ -958,6 +958,8 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         If (targetDIB.GetDIBWidth = 0) Or (targetDIB.GetDIBHeight = 0) Then loadSuccessful = False
     End If
     
+    'TODO: fix bad file extensions here?
+    
     If (Not loadSuccessful) Then
         
         'Only display an error dialog if the import wasn't canceled by the user
