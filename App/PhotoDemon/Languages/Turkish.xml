@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Türkçe (Turkish)</langname>
-<langversion>1.0.91</langversion>
+<langversion>1.0.92</langversion>
 <langstatus>20% complete</langstatus>
 
 <author>Anıl Yılmaz</author>
@@ -1404,6 +1404,153 @@
 <!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>Normal</original>
+<translation>Normal</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>Karartma</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>Çoğalt</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>Renk Yangısı</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>Doğrusal Yanma</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>Aydınlatma</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>Ekran</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>Renk Kaçınma</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>Doğrusal Kaçınma</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>Kaplama</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>Yumuşak Işık</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>Sert Işık</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>Canlı Işık</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>Doğrusal Işık</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>Pin Işığı</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>Katı Karışım</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>Fark</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>Çıkarma</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>Çıkar</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>Böl</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>Renk Özü</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>Doygunluk</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>Renk</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>Işıltı</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>Tane Çıkarma</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>Tane Birleştirme</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>Sil</translation>
+</phrase>
+
+<phrase>
+<original>Behind</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Replace</original>
+<translation>Yerine Koy</translation>
+</phrase>
+
+<!-- Colors.bas contains 58 phrases. 29 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+
+<phrase>
 <original>How would you like to load this image?</original>
 <translation>Bu dosyayı nasıl yüklemek istersiniz?</translation>
 </phrase>
@@ -1946,151 +2093,6 @@ Görselde %2 eşşiz renk + opaklık değeri var (RGBA)</translation>
 </phrase>
 
 <phrase>
-<original>Normal</original>
-<translation>Normal</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>Karartma</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>Çoğalt</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>Renk Yangısı</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>Doğrusal Yanma</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>Aydınlatma</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>Ekran</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>Renk Kaçınma</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>Doğrusal Kaçınma</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>Kaplama</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>Yumuşak Işık</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>Sert Işık</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>Canlı Işık</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>Doğrusal Işık</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>Pin Işığı</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>Katı Karışım</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>Fark</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>Çıkarma</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>Çıkar</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>Böl</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>Renk Özü</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>Doygunluk</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>Renk</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>Işıltı</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>Tane Çıkarma</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>Tane Birleştirme</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>Sil</translation>
-</phrase>
-
-<phrase>
-<original>Behind</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Replace</original>
-<translation>Yerine Koy</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>Devral</translation>
 </phrase>
@@ -2165,7 +2167,7 @@ Görselde %2 eşşiz renk + opaklık değeri var (RGBA)</translation>
 <translation>ön izleme yapılamaz</translation>
 </phrase>
 
-<!-- Interface.bas contains 101 phrases. 41 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 101 phrases. 70 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -12459,7 +12461,22 @@ Would you like to save your batch list before exiting?</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<phrase>
+<original>Next blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previous blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blend mode: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 209 phrases. 139 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -14820,10 +14837,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2815</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6030 phrases. -->
-<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6148 phrases. -->
+<!-- 3333 are duplicates, so only 2815 unique phrases have been written to file. -->
+<!-- These 2815 phrases contain approximately 12167 total words. -->
 
 </pdData>

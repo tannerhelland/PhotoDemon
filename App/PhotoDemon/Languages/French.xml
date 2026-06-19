@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.06.6</langversion>
+<langversion>2026.06.7</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -1404,6 +1404,153 @@
 <!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>Normal</original>
+<translation>Normal</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>Foncer</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>Produit (multiplié)</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>Densité couleur +</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>Densité linéaire +</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>Éclaircir</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>Écran</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>Densité couleur -</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>Densité linéaire -</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>Incrustation</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>Lumière tamisée</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>Lumière crue</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>Lumière vive</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>Lumière régulière</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>Lumière ponctuelle</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>Mélange maximal</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>Différence</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>Exclusion</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>Soustraction</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>Division</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>Teinte</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>Saturation</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>Couleur</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>Luminosité</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>Extraction du grain</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>Fusion du grain</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>Effacer</translation>
+</phrase>
+
+<phrase>
+<original>Behind</original>
+<translation>Derrière</translation>
+</phrase>
+
+<phrase>
+<original>Replace</original>
+<translation>Remplacer</translation>
+</phrase>
+
+<!-- Colors.bas contains 58 phrases. 29 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+
+<phrase>
 <original>How would you like to load this image?</original>
 <translation>Comment voulez vous utiliser cette image ?</translation>
 </phrase>
@@ -1945,151 +2092,6 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 </phrase>
 
 <phrase>
-<original>Normal</original>
-<translation>Normal</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>Foncer</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>Produit (multiplié)</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>Densité couleur +</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>Densité linéaire +</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>Éclaircir</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>Écran</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>Densité couleur -</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>Densité linéaire -</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>Incrustation</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>Lumière tamisée</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>Lumière crue</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>Lumière vive</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>Lumière régulière</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>Lumière ponctuelle</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>Mélange maximal</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>Différence</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>Exclusion</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>Soustraction</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>Division</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>Teinte</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>Saturation</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>Couleur</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>Luminosité</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>Extraction du grain</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>Fusion du grain</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>Effacer</translation>
-</phrase>
-
-<phrase>
-<original>Behind</original>
-<translation>Derrière</translation>
-</phrase>
-
-<phrase>
-<original>Replace</original>
-<translation>Remplacer</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>Hérité</translation>
 </phrase>
@@ -2164,7 +2166,7 @@ Cette image contient %2 couleurs spécifiques + des valeurs d'opacité (RVBA).</
 <translation>Aperçu non disponible</translation>
 </phrase>
 
-<!-- Interface.bas contains 101 phrases. 41 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 101 phrases. 70 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -12502,7 +12504,22 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 <translation>Commuter le curseur de brosse</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<phrase>
+<original>Next blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previous blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blend mode: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 209 phrases. 139 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -14878,10 +14895,10 @@ Si vous choisissez de désactiver les mises à jour, n'oubliez pas de visiter ph
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2815</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6030 phrases. -->
-<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6148 phrases. -->
+<!-- 3333 are duplicates, so only 2815 unique phrases have been written to file. -->
+<!-- These 2815 phrases contain approximately 12167 total words. -->
 
 </pdData>

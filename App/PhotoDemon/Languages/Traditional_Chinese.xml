@@ -6,7 +6,7 @@
 
 <langid>zh-TW</langid>
 <langname>正體中文</langname>
-<langversion>2026.1.162</langversion>
+<langversion>2026.1.163</langversion>
 <langstatus>Translation completed on 2026/03/24</langstatus>
 
 <author>昇</author>
@@ -1404,6 +1404,153 @@
 <!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>Normal</original>
+<translation>標準</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>變暗</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>相乘</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>顏色加深</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>線性加深</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>減輕</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>畫面</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>顏色減淡</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>線性減淡</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>覆蓋</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>柔光</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>強光</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>亮光</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>線性光</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>針光</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>硬混合</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>差異</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>排除</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>減去</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>相除</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>色調</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>飽和度</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>色彩</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>亮度</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>紋理提取</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>紋理合並</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>擦除</translation>
+</phrase>
+
+<phrase>
+<original>Behind</original>
+<translation>背後</translation>
+</phrase>
+
+<phrase>
+<original>Replace</original>
+<translation>替換</translation>
+</phrase>
+
+<!-- Colors.bas contains 58 phrases. 29 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+
+<phrase>
 <original>How would you like to load this image?</original>
 <translation>您想怎麼載入這個圖像？</translation>
 </phrase>
@@ -1947,151 +2094,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Normal</original>
-<translation>標準</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>變暗</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>相乘</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>顏色加深</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>線性加深</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>減輕</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>畫面</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>顏色減淡</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>線性減淡</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>覆蓋</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>柔光</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>強光</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>亮光</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>線性光</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>針光</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>硬混合</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>差異</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>排除</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>減去</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>相除</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>色調</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>飽和度</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>色彩</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>亮度</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>紋理提取</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>紋理合並</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>擦除</translation>
-</phrase>
-
-<phrase>
-<original>Behind</original>
-<translation>背後</translation>
-</phrase>
-
-<phrase>
-<original>Replace</original>
-<translation>替換</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>繼承</translation>
 </phrase>
@@ -2166,7 +2168,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>預覽不可用</translation>
 </phrase>
 
-<!-- Interface.bas contains 101 phrases. 41 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 101 phrases. 70 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -12518,7 +12520,22 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 <translation>切換畫筆遊標</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<phrase>
+<original>Next blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previous blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blend mode: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 209 phrases. 139 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -14933,10 +14950,10 @@ PhotoDemon 可以透過分析其他元數據（例如量化表）來推斷品質
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2815</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6030 phrases. -->
-<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6148 phrases. -->
+<!-- 3333 are duplicates, so only 2815 unique phrases have been written to file. -->
+<!-- These 2815 phrases contain approximately 12167 total words. -->
 
 </pdData>

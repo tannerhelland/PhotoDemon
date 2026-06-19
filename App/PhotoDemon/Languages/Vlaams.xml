@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>2025.12.18</langversion>
+<langversion>2025.12.19</langversion>
 <langstatus>99% complete</langstatus>
 
 <author>Frank Donckers, Rudi Klein</author>
@@ -1404,6 +1404,153 @@
 <!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <phrase>
+<original>Normal</original>
+<translation>Normaal</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>Donkerder Maken</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>Vermenigvuldigen</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>Color Burn</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>Linear Burn</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>Lichter Maken</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>Scherm</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>Color Dodge</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>Linear Dodge</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>Overlay</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>Zacht licht</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>Hard licht</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>Levendig licht</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>Lineair licht</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>Pin Light</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>Hard mengen</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>Verschil</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>Uitsluiting</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>Aftrekken</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>Delen</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>Tint</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>Verzadiging</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>Kleur</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>Lichtkracht</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>Grain Extract</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>Grain Merge</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>Wissen</translation>
+</phrase>
+
+<phrase>
+<original>Behind</original>
+<translation>Achter</translation>
+</phrase>
+
+<phrase>
+<original>Replace</original>
+<translation>Vervangen</translation>
+</phrase>
+
+<!-- Colors.bas contains 58 phrases. 29 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+
+<phrase>
 <original>How would you like to load this image?</original>
 <translation>Hoe wilt u dit beeld laden?</translation>
 </phrase>
@@ -1945,151 +2092,6 @@ Deze afbeelding bevat %2 unieke kleur-ondoorzichtigheidswaarden (RGBA).</transla
 </phrase>
 
 <phrase>
-<original>Normal</original>
-<translation>Normaal</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>Donkerder Maken</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>Vermenigvuldigen</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>Color Burn</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>Linear Burn</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>Lichter Maken</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>Scherm</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>Color Dodge</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>Linear Dodge</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>Overlay</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>Zacht licht</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>Hard licht</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>Levendig licht</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>Lineair licht</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>Pin Light</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>Hard mengen</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>Verschil</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>Uitsluiting</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>Aftrekken</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>Delen</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>Tint</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>Verzadiging</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>Kleur</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>Lichtkracht</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>Grain Extract</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>Grain Merge</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>Wissen</translation>
-</phrase>
-
-<phrase>
-<original>Behind</original>
-<translation>Achter</translation>
-</phrase>
-
-<phrase>
-<original>Replace</original>
-<translation>Vervangen</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>Erven</translation>
 </phrase>
@@ -2164,7 +2166,7 @@ Deze afbeelding bevat %2 unieke kleur-ondoorzichtigheidswaarden (RGBA).</transla
 <translation>Voorbeeld niet beschikbaar</translation>
 </phrase>
 
-<!-- Interface.bas contains 101 phrases. 41 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 101 phrases. 70 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -12494,7 +12496,22 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>Penseelcursor wisselen</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<phrase>
+<original>Next blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previous blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blend mode: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 209 phrases. 139 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -14865,10 +14882,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2815</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6030 phrases. -->
-<!-- 3218 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12159 total words. -->
+<!-- As of this build, PhotoDemon contains 6148 phrases. -->
+<!-- 3333 are duplicates, so only 2815 unique phrases have been written to file. -->
+<!-- These 2815 phrases contain approximately 12167 total words. -->
 
 </pdData>
