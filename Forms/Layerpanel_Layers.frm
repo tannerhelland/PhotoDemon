@@ -287,6 +287,21 @@ Public Sub SwitchBlendMode_Next(Optional ByVal reverseDirection As Boolean = Fal
     
 End Sub
 
+Public Sub SwitchBlendMode_Specific(ByVal newBlendModeID As PD_BlendMode)
+    
+    'Ensure changes are reflected in Undo/Redo.
+    ' TODO: this doesn't work correctly because it requires a _LostFocus event to capture the "final" change.
+    ' Fixing this would require complex rearchitecting... I need to think this over before implementing it.
+    'If PDImages.IsImageActive() Then Processor.FlagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, PDImages.GetActiveImage.GetActiveLayerID
+    
+    'Reflect the change
+    Me.cboBlendMode.ListIndex = newBlendModeID
+    
+    'Flag the change for non-destructive Undo/Redo
+    'If Tools.CanvasToolsAllowed And PDImages.IsImageActive() Then Processor.FlagFinalNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex
+    
+End Sub
+
 'Whenever a layer is activated, we must re-determine which buttons the user has access to.  Move up/down are disabled for
 ' entries at either end, and the last layer of an image cannot be deleted.
 Private Sub CheckButtonEnablement()

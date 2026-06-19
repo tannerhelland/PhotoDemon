@@ -1118,3 +1118,73 @@ Public Function GetBlendModeStringFromID(ByVal srcMode As PD_BlendMode) As Strin
     End Select
     
 End Function
+
+'Given a PD blend mode string representation, return a corresponding enum.  PD blend mode
+' strings are ALWAYS 4-chars long.
+Public Function GetBlendModeFriendlyNameFromID(ByVal srcMode As PD_BlendMode) As String
+    
+    Select Case srcMode
+        Case BM_Normal
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Normal")
+        Case BM_Darken
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Darken")
+        Case BM_Multiply
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Multiply")
+        Case BM_ColorBurn
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Color burn")
+        Case BM_LinearBurn
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Linear burn")
+        Case BM_Lighten
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Lighten")
+        Case BM_Screen
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Screen")
+        Case BM_ColorDodge
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Color dodge")
+        Case BM_LinearDodge
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Linear dodge")
+        Case BM_Overlay
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Overlay")
+        Case BM_SoftLight
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Soft light")
+        Case BM_HardLight
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Hard light")
+        Case BM_VividLight
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Vivid light")
+        Case BM_LinearLight
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Linear light")
+        Case BM_PinLight
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Pin light")
+        Case BM_HardMix
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Hard mix")
+        Case BM_Difference
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Difference")
+        Case BM_Exclusion
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Exclusion")
+        Case BM_Subtract
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Subtract")
+        Case BM_Divide
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Divide")
+        Case BM_Hue
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Hue")
+        Case BM_Saturation
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Saturation")
+        Case BM_Color
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Color")
+        Case BM_Luminosity
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Luminosity")
+        Case BM_GrainExtract
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Grain extract")
+        Case BM_GrainMerge
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Grain merge")
+        Case BM_Erase
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Erase")
+        Case BM_Behind
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Behind")
+        Case BM_Overwrite
+            GetBlendModeFriendlyNameFromID = g_Language.TranslateMessage("Replace")
+        Case Else
+            GetBlendModeFriendlyNameFromID = vbNullString
+            PDDebug.LogAction "WARNING! Colors.GetBlendModeFriendlyNameFromID received a bad value: " & srcMode
+    End Select
+    
+End Function

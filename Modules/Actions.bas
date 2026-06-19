@@ -1695,6 +1695,90 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
         Case "blend_mode_previous"
             toolbar_Layers.LayerUI_SwitchBlendMode_Next True
             
+        Case "blend_mode_norm"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Normal
+            
+        Case "blend_mode_dark"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Darken
+            
+        Case "blend_mode_mult"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Multiply
+            
+        Case "blend_mode_cbrn"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_ColorBurn
+            
+        Case "blend_mode_lbrn"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_LinearBurn
+            
+        Case "blend_mode_lght"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Lighten
+            
+        Case "blend_mode_scrn"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Screen
+            
+        Case "blend_mode_cddg"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_ColorDodge
+            
+        Case "blend_mode_lddg"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_LinearDodge
+            
+        Case "blend_mode_ovrl"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Overlay
+            
+        Case "blend_mode_sftl"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_SoftLight
+            
+        Case "blend_mode_hrdl"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_HardLight
+            
+        Case "blend_mode_vvdl"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_VividLight
+            
+        Case "blend_mode_lnrl"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_LinearLight
+            
+        Case "blend_mode_pinl"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_PinLight
+            
+        Case "blend_mode_hrdm"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_HardMix
+            
+        Case "blend_mode_diff"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Difference
+            
+        Case "blend_mode_excl"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Exclusion
+            
+        Case "blend_mode_subt"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Subtract
+            
+        Case "blend_mode_divd"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Divide
+            
+        Case "blend_mode_hue"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Hue
+            
+        Case "blend_mode_satr"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Saturation
+            
+        Case "blend_mode_clr"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Color
+            
+        Case "blend_mode_lumn"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Luminosity
+            
+        Case "blend_mode_gext"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_GrainExtract
+            
+        Case "blend_mode_gmrg"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_GrainMerge
+            
+        Case "blend_mode_eras"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Erase
+            
+        Case "blend_mode_bhnd"
+            toolbar_Layers.LayerUI_SwitchBlendMode BM_Behind
+            
         Case Else
             cmdFound = False
             

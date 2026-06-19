@@ -767,3 +767,7 @@ End Sub
 Public Sub LayerUI_SwitchBlendMode_Next(Optional ByVal reverseDirection As Boolean = False)
     layerpanel_Layers.SwitchBlendMode_Next reverseDirection
 End Sub
+
+Public Sub LayerUI_SwitchBlendMode(ByVal newBlendMode As PD_BlendMode)
+    layerpanel_Layers.SwitchBlendMode_Specific newBlendMode
+End Sub
