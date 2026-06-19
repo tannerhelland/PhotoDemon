@@ -1688,6 +1688,13 @@ Private Function Launch_ByName_NonMenu(ByRef srcMenuName As String, Optional ByV
         Case "tool_search"
             toolbar_Layers.SetFocusToSearchBox
             
+        'Change blend modes
+        Case "blend_mode_next"
+            toolbar_Layers.LayerUI_SwitchBlendMode_Next False
+        
+        Case "blend_mode_previous"
+            toolbar_Layers.LayerUI_SwitchBlendMode_Next True
+            
         Case Else
             cmdFound = False
             
@@ -2171,6 +2178,9 @@ Public Sub BuildActionDatabase()
     AddAction "tool_active_hardnessup"
     AddAction "tool_active_sizedown"
     AddAction "tool_active_sizeup"
+    
+    AddAction "blend_mode_next"
+    AddAction "blend_mode_previous"
     
     PDDebug.LogAction CStr(m_numActions) & " actions registered this session."
     

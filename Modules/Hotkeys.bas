@@ -377,6 +377,10 @@ Private Sub InitializeDefaultHotkeys()
     AddHotkey vbKeyPageDown, , "window_next", True
     AddHotkey vbKeyPageUp, , "window_previous", True
     
+    'Hotkeys to mimic Photoshop behavior
+    AddHotkey vbKeyAdd, vbShiftMask, "blend_mode_next", True
+    AddHotkey vbKeySubtract, vbShiftMask, "blend_mode_previous", True
+    
 End Sub
 
 'Replace PD's current hotkey list with its default hotkey list.  This overwrites *all* user hotkey modifications.

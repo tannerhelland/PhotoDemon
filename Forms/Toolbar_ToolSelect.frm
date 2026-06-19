@@ -1554,6 +1554,9 @@ Public Sub UpdateAgainstCurrentTheme()
     AddToolboxAction g_Language.TranslateMessage("Increase brush hardness"), "tool_active_hardnessup"
     AddToolboxAction g_Language.TranslateMessage("Toggle brush cursor"), "tool_active_togglecursor"
     
+    AddToolboxAction g_Language.TranslateMessage("Next blend mode"), "blend_mode_next"
+    AddToolboxAction g_Language.TranslateMessage("Previous blend mode"), "blend_mode_previous"
+    
 End Sub
 
 Private Sub AddToolboxAction(ByRef translatedName As String, ByRef toolAction As String)
