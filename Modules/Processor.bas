@@ -647,8 +647,16 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!),
     ' redraw form and taskbar icons, as well as the image tab-bar.
     If (createUndo <> UNDO_Nothing) And (Macros.GetMacroStatus <> MacroBATCH) And PDImages.IsImageActive() Then
+        
+        'Notify the parent image of the change
+        PDImages.GetActiveImage.NotifyImageChanged UNDO_Layer_VectorSafe, PDImages.GetActiveImage.GetActiveLayerIndex
+        
+        'Notify the interface of the change
         Interface.NotifyImageChanged
+        
+        'Manually update icons to reflect the change
         IconsAndCursors.ChangeAppIcons PDImages.GetActiveImage.GetImageIcon(False), PDImages.GetActiveImage.GetImageIcon(True)
+        
     End If
     
     'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:
@@ -668,7 +676,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     'Synchronize *only* Undo/Redo related elements
     Interface.SyncUndoRedoInterfaceElements
     
-    'Also synchronize the current layer thumbnail
+    'Also synchronize the current image and layer thumbnails
     If (targetLayerID >= 0) Then toolbar_Layers.NotifyLayerChange targetLayerID
     
     'Mark the processor as ready
