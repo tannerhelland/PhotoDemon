@@ -378,8 +378,33 @@ Private Sub InitializeDefaultHotkeys()
     AddHotkey vbKeyPageUp, , "window_previous", True
     
     'Hotkeys to mimic Photoshop behavior
+    
+    'Blend mode hotkeys
     AddHotkey vbKeyAdd, vbShiftMask, "blend_mode_next", True
     AddHotkey vbKeySubtract, vbShiftMask, "blend_mode_previous", True
+    
+    AddHotkey vbKeyN, vbShiftMask Or vbAltMask, "blend_mode_norm", True
+    AddHotkey vbKeyK, vbShiftMask Or vbAltMask, "blend_mode_dark", True
+    AddHotkey vbKeyM, vbShiftMask Or vbAltMask, "blend_mode_mult", True
+    AddHotkey vbKeyB, vbShiftMask Or vbAltMask, "blend_mode_cbrn", True
+    AddHotkey vbKeyA, vbShiftMask Or vbAltMask, "blend_mode_lbrn", True
+    AddHotkey vbKeyG, vbShiftMask Or vbAltMask, "blend_mode_lght", True
+    AddHotkey vbKeyS, vbShiftMask Or vbAltMask, "blend_mode_scrn", True
+    AddHotkey vbKeyD, vbShiftMask Or vbAltMask, "blend_mode_cddg", True
+    AddHotkey vbKeyW, vbShiftMask Or vbAltMask, "blend_mode_lddg", True
+    AddHotkey vbKeyO, vbShiftMask Or vbAltMask, "blend_mode_ovrl", True
+    AddHotkey vbKeyF, vbShiftMask Or vbAltMask, "blend_mode_sftl", True
+    AddHotkey vbKeyH, vbShiftMask Or vbAltMask, "blend_mode_hrdl", True
+    AddHotkey vbKeyV, vbShiftMask Or vbAltMask, "blend_mode_vvdl", True
+    AddHotkey vbKeyJ, vbShiftMask Or vbAltMask, "blend_mode_lnrl", True
+    AddHotkey vbKeyZ, vbShiftMask Or vbAltMask, "blend_mode_pinl", True
+    AddHotkey vbKeyL, vbShiftMask Or vbAltMask, "blend_mode_hrdm", True
+    AddHotkey vbKeyE, vbShiftMask Or vbAltMask, "blend_mode_diff", True
+    AddHotkey vbKeyX, vbShiftMask Or vbAltMask, "blend_mode_excl", True
+    AddHotkey vbKeyU, vbShiftMask Or vbAltMask, "blend_mode_hue", True
+    AddHotkey vbKeyT, vbShiftMask Or vbAltMask, "blend_mode_satr", True
+    AddHotkey vbKeyC, vbShiftMask Or vbAltMask, "blend_mode_clr", True
+    AddHotkey vbKeyY, vbShiftMask Or vbAltMask, "blend_mode_lumn", True
     
 End Sub
 
