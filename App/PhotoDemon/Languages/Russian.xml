@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2026.1.233</langversion>
+<langversion>2026.1.234</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -656,6 +656,11 @@
 <phrase>
 <original>Load selection</original>
 <translation>Загрузить выделение</translation>
+</phrase>
+
+<phrase>
+<original>Selection mask from active layer</original>
+<translation>Маска выделения из активного слоя</translation>
 </phrase>
 
 <phrase>
@@ -1343,7 +1348,7 @@
 <translation>Очистить список недавних изображений</translation>
 </phrase>
 
-<!-- Actions.bas contains 273 phrases. 7 were duplicates of existing phrases, so only 266 new phrases were written to file. -->
+<!-- Actions.bas contains 274 phrases. 7 were duplicates of existing phrases, so only 267 new phrases were written to file. -->
 
 <phrase>
 <original>[untitled image]</original>
@@ -1397,6 +1402,153 @@
 </phrase>
 
 <!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<phrase>
+<original>Normal</original>
+<translation>Обычный</translation>
+</phrase>
+
+<phrase>
+<original>Darken</original>
+<translation>Затемнение</translation>
+</phrase>
+
+<phrase>
+<original>Multiply</original>
+<translation>Умножение</translation>
+</phrase>
+
+<phrase>
+<original>Color burn</original>
+<translation>Затемнение основы</translation>
+</phrase>
+
+<phrase>
+<original>Linear burn</original>
+<translation>Линейный затемнитель</translation>
+</phrase>
+
+<phrase>
+<original>Lighten</original>
+<translation>Замена светлым</translation>
+</phrase>
+
+<phrase>
+<original>Screen</original>
+<translation>Экран</translation>
+</phrase>
+
+<phrase>
+<original>Color dodge</original>
+<translation>Осветление основы</translation>
+</phrase>
+
+<phrase>
+<original>Linear dodge</original>
+<translation>Линейный осветлитель</translation>
+</phrase>
+
+<phrase>
+<original>Overlay</original>
+<translation>Перекрытие</translation>
+</phrase>
+
+<phrase>
+<original>Soft light</original>
+<translation>Мягкий свет</translation>
+</phrase>
+
+<phrase>
+<original>Hard light</original>
+<translation>Жёсткий свет</translation>
+</phrase>
+
+<phrase>
+<original>Vivid light</original>
+<translation>Яркий свет</translation>
+</phrase>
+
+<phrase>
+<original>Linear light</original>
+<translation>Линейный свет</translation>
+</phrase>
+
+<phrase>
+<original>Pin light</original>
+<translation>Точечный свет</translation>
+</phrase>
+
+<phrase>
+<original>Hard mix</original>
+<translation>Жёсткое смешение</translation>
+</phrase>
+
+<phrase>
+<original>Difference</original>
+<translation>Разность</translation>
+</phrase>
+
+<phrase>
+<original>Exclusion</original>
+<translation>Исключение</translation>
+</phrase>
+
+<phrase>
+<original>Subtract</original>
+<translation>Вычитание</translation>
+</phrase>
+
+<phrase>
+<original>Divide</original>
+<translation>Деление</translation>
+</phrase>
+
+<phrase>
+<original>Hue</original>
+<translation>Цветовой тон</translation>
+</phrase>
+
+<phrase>
+<original>Saturation</original>
+<translation>Насыщенность</translation>
+</phrase>
+
+<phrase>
+<original>Color</original>
+<translation>Цвет</translation>
+</phrase>
+
+<phrase>
+<original>Luminosity</original>
+<translation>Яркость</translation>
+</phrase>
+
+<phrase>
+<original>Grain extract</original>
+<translation>Извлечение зерна</translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation>Объединение зерна</translation>
+</phrase>
+
+<phrase>
+<original>Erase</original>
+<translation>Стереть</translation>
+</phrase>
+
+<phrase>
+<original>Behind</original>
+<translation>Задний план</translation>
+</phrase>
+
+<phrase>
+<original>Replace</original>
+<translation>Заменить</translation>
+</phrase>
+
+<!-- Colors.bas contains 58 phrases. 29 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
 
 <phrase>
 <original>How would you like to load this image?</original>
@@ -1940,151 +2092,6 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 </phrase>
 
 <phrase>
-<original>Normal</original>
-<translation>Обычный</translation>
-</phrase>
-
-<phrase>
-<original>Darken</original>
-<translation>Затемнение</translation>
-</phrase>
-
-<phrase>
-<original>Multiply</original>
-<translation>Умножение</translation>
-</phrase>
-
-<phrase>
-<original>Color burn</original>
-<translation>Затемнение основы</translation>
-</phrase>
-
-<phrase>
-<original>Linear burn</original>
-<translation>Линейный затемнитель</translation>
-</phrase>
-
-<phrase>
-<original>Lighten</original>
-<translation>Замена светлым</translation>
-</phrase>
-
-<phrase>
-<original>Screen</original>
-<translation>Экран</translation>
-</phrase>
-
-<phrase>
-<original>Color dodge</original>
-<translation>Осветление основы</translation>
-</phrase>
-
-<phrase>
-<original>Linear dodge</original>
-<translation>Линейный осветлитель</translation>
-</phrase>
-
-<phrase>
-<original>Overlay</original>
-<translation>Перекрытие</translation>
-</phrase>
-
-<phrase>
-<original>Soft light</original>
-<translation>Мягкий свет</translation>
-</phrase>
-
-<phrase>
-<original>Hard light</original>
-<translation>Жёсткий свет</translation>
-</phrase>
-
-<phrase>
-<original>Vivid light</original>
-<translation>Яркий свет</translation>
-</phrase>
-
-<phrase>
-<original>Linear light</original>
-<translation>Линейный свет</translation>
-</phrase>
-
-<phrase>
-<original>Pin light</original>
-<translation>Точечный свет</translation>
-</phrase>
-
-<phrase>
-<original>Hard mix</original>
-<translation>Жёсткое смешение</translation>
-</phrase>
-
-<phrase>
-<original>Difference</original>
-<translation>Разность</translation>
-</phrase>
-
-<phrase>
-<original>Exclusion</original>
-<translation>Исключение</translation>
-</phrase>
-
-<phrase>
-<original>Subtract</original>
-<translation>Вычитание</translation>
-</phrase>
-
-<phrase>
-<original>Divide</original>
-<translation>Деление</translation>
-</phrase>
-
-<phrase>
-<original>Hue</original>
-<translation>Цветовой тон</translation>
-</phrase>
-
-<phrase>
-<original>Saturation</original>
-<translation>Насыщенность</translation>
-</phrase>
-
-<phrase>
-<original>Color</original>
-<translation>Цвет</translation>
-</phrase>
-
-<phrase>
-<original>Luminosity</original>
-<translation>Яркость</translation>
-</phrase>
-
-<phrase>
-<original>Grain extract</original>
-<translation>Извлечение зерна</translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation>Объединение зерна</translation>
-</phrase>
-
-<phrase>
-<original>Erase</original>
-<translation>Стереть</translation>
-</phrase>
-
-<phrase>
-<original>Behind</original>
-<translation>Задний план</translation>
-</phrase>
-
-<phrase>
-<original>Replace</original>
-<translation>Заменить</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>Наследовать</translation>
 </phrase>
@@ -2159,7 +2166,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 <translation>Предварительный просмотр недоступен</translation>
 </phrase>
 
-<!-- Interface.bas contains 101 phrases. 41 were duplicates of existing phrases, so only 60 new phrases were written to file. -->
+<!-- Interface.bas contains 101 phrases. 70 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <phrase>
 <original>Blank layer</original>
@@ -3278,16 +3285,6 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <!-- ScreenCapture.bas contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <phrase>
-<original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Для выполнения этой операции требуется активное выделение. Прежде чем продолжить, выдели нужное.</translation>
-</phrase>
-
-<phrase>
-<original>Export selection as image</original>
-<translation>Экспортировать выделение как изображение</translation>
-</phrase>
-
-<phrase>
 <original>PhotoDemon selection</original>
 <translation>Выделенная область PhotoDemon</translation>
 </phrase>
@@ -3327,7 +3324,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>Произошла ошибка.  Выделение не сохранено.  Пожалуйста, попробуй снова.</translation>
 </phrase>
 
-<!-- SelectionFiles.bas contains 25 phrases. 15 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- SelectionFiles.bas contains 23 phrases. 15 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <phrase>
 <original>Feathering selection</original>
@@ -5337,11 +5334,6 @@ The final value must be between %3 and %4.</original>
 </phrase>
 
 <phrase>
-<original>Selection mask from active layer</original>
-<translation>Маска выделения из активного слоя</translation>
-</phrase>
-
-<phrase>
 <original>Adjustments</original>
 <translation>Коррекция</translation>
 </phrase>
@@ -5894,7 +5886,7 @@ The update is automatically processing in the background.  You will receive a ne
 <translation>Язык успешно изменён.</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 422 phrases. 233 were duplicates of existing phrases, so only 189 new phrases were written to file. -->
+<!-- MainWindow.frm contains 422 phrases. 234 were duplicates of existing phrases, so only 188 new phrases were written to file. -->
 
 <phrase>
 <original>Monochrome Conversion</original>
@@ -9015,7 +9007,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation>Применение фильтра "Звёздные лучи" </translation>
+<translation>Применение фильтра "Звёздные лучи"</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_CrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10060,7 +10052,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>show image previews</original>
-<translation>Показывать миниатюры изображений </translation>
+<translation>Показывать миниатюры изображений</translation>
 </phrase>
 
 <phrase>
@@ -12504,7 +12496,22 @@ Would you like to save your batch list before exiting?</original>
 <translation>Переключить курсор кисти</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
+<phrase>
+<original>Next blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previous blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blend mode: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 209 phrases. 139 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -14200,7 +14207,7 @@ Are you sure you want to continue?</original>
 <translation>Если компьютер перезагрузится во время работы PhotoDemon, PhotoDemon автоматически восстановит предыдущий сеанс.</translation>
 </phrase>
 
-<!-- Options_Loading.frm contains 12 phrases.  All 12 were unique, so 12 new phrases were written to file. -->
+<!-- Options_Loading.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
 
 <phrase>
 <original>when closing images, warn about unsaved changes</original>
@@ -14875,10 +14882,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2812</phrasecount>
+<phrasecount>2815</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6029 phrases. -->
-<!-- 3217 are duplicates, so only 2812 unique phrases have been written to file. -->
-<!-- These 2812 phrases contain approximately 12165 total words. -->
+<!-- As of this build, PhotoDemon contains 6148 phrases. -->
+<!-- 3333 are duplicates, so only 2815 unique phrases have been written to file. -->
+<!-- These 2815 phrases contain approximately 12167 total words. -->
 
 </pdData>
