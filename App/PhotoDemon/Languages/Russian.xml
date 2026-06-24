@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Русский</langname>
-<langversion>2026.1.235</langversion>
+<langversion>2026.1.246</langversion>
 <langstatus>Автообновление</langstatus>
 
 <author>воська</author>
@@ -1550,17 +1550,17 @@
 
 <phrase>
 <original>Next blend mode</original>
-<translation></translation>
+<translation>Следующий режим наложения</translation>
 </phrase>
 
 <phrase>
 <original>Previous blend mode</original>
-<translation></translation>
+<translation>Предыдущий режим наложения</translation>
 </phrase>
 
 <phrase>
 <original>Blend mode: %1</original>
-<translation></translation>
+<translation>Режим наложения: %1</translation>
 </phrase>
 
 <!-- Colors.bas contains 118 phrases. 86 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
@@ -5570,7 +5570,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Recent macros</original>
-<translation>Последние макросы</translation>
+<translation>Недавние макросы</translation>
 </phrase>
 
 <phrase>
@@ -5680,7 +5680,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Layers</original>
-<translation>Слоям</translation>
+<translation>Слои</translation>
 </phrase>
 
 <phrase>
@@ -13371,22 +13371,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Blend modes</original>
-<translation></translation>
+<translation>Режимы наложения</translation>
 </phrase>
 
 <phrase>
 <original>Recent files</original>
-<translation></translation>
+<translation>Недавние файлы</translation>
 </phrase>
 
 <phrase>
 <original>Recent file %1</original>
-<translation></translation>
+<translation>Недавний файл %1</translation>
 </phrase>
 
 <phrase>
 <original>Recent macro %1</original>
-<translation></translation>
+<translation>Недавний макрос %1</translation>
 </phrase>
 
 <phrase>
