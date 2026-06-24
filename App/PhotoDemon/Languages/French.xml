@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>Français</langname>
-<langversion>2026.06.8</langversion>
+<langversion>2026.06.24</langversion>
 <langstatus>Complète</langstatus>
 
 <author>Jean-Jacques Piedfort, Need74 (need74@free.fr), Frank Donckers</author>
@@ -155,7 +155,7 @@
 
 <phrase>
 <original>Cut merged</original>
-<translation>Couper avec fusion des calques visibles</translation>
+<translation>Couper (calques visibles fusionnés)</translation>
 </phrase>
 
 <phrase>
@@ -165,7 +165,7 @@
 
 <phrase>
 <original>Copy merged</original>
-<translation>Copier avec fusion des calques visibles</translation>
+<translation>Copier (calques visibles fusionnés)</translation>
 </phrase>
 
 <phrase>
@@ -630,7 +630,7 @@
 
 <phrase>
 <original>Remove holes from selection</original>
-<translation>Retirer les trous dela sélection</translation>
+<translation>Retrait des trous de la sélection</translation>
 </phrase>
 
 <phrase>
@@ -1550,17 +1550,17 @@
 
 <phrase>
 <original>Next blend mode</original>
-<translation></translation>
+<translation>Mode de fusion suivant</translation>
 </phrase>
 
 <phrase>
 <original>Previous blend mode</original>
-<translation></translation>
+<translation>Mode de fusion précédent</translation>
 </phrase>
 
 <phrase>
 <original>Blend mode: %1</original>
-<translation></translation>
+<translation>Mode de fusion: %1</translation>
 </phrase>
 
 <!-- Colors.bas contains 118 phrases. 86 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
@@ -13379,22 +13379,22 @@ Pensez à ensuite "Enregistrer sous" pour donner un nouveau nom à cette image s
 
 <phrase>
 <original>Blend modes</original>
-<translation></translation>
+<translation>Modes de fusion</translation>
 </phrase>
 
 <phrase>
 <original>Recent files</original>
-<translation></translation>
+<translation>Fichiers récents</translation>
 </phrase>
 
 <phrase>
 <original>Recent file %1</original>
-<translation></translation>
+<translation>Fichier récent %1</translation>
 </phrase>
 
 <phrase>
 <original>Recent macro %1</original>
-<translation></translation>
+<translation>Macro récente %1</translation>
 </phrase>
 
 <phrase>
@@ -14182,7 +14182,7 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>high-dynamic range (HDR) images</original>
-<translation>Gamme images haute dynamique (HDR)</translation>
+<translation>Gamme d'images haute dynamique (HDR)</translation>
 </phrase>
 
 <phrase>
@@ -14207,12 +14207,12 @@ Voulez-vous vraiment continuer ?</translation>
 
 <phrase>
 <original>display warning when image files aren't loaded successfully</original>
-<translation></translation>
+<translation>Montrer une alerte quand les fichiers d'image ne sont pas chargés avec succès</translation>
 </phrase>
 
 <phrase>
 <original>broken files</original>
-<translation></translation>
+<translation>Fichiers corrompus</translation>
 </phrase>
 
 <phrase>
