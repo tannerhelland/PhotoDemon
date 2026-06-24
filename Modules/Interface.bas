@@ -786,10 +786,10 @@ Public Sub SyncRepeatReshowInterfaceElements(Optional ByVal forceFullRefresh As 
         End If
         
         'Activate and correctly enable/caption the "Recently used" menu and sub-menu
-        If (m_TimestampAdjustments <> Actions.GetTimeStampOfLastAction(rr_Effect)) Or forceFullRefresh Then
+        If (m_TimestampEffects <> Actions.GetTimeStampOfLastAction(rr_Effect)) Or forceFullRefresh Then
             
             'Update the local timestamp copy (to prevent redraws until a change occurs to the menu)
-            m_TimestampAdjustments = Actions.GetTimeStampOfLastAction(rr_Effect)
+            m_TimestampEffects = Actions.GetTimeStampOfLastAction(rr_Effect)
             
             'Make a local copy of the list of "recent actions" in this category
             numOfRecentActions = 0
