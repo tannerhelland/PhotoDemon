@@ -963,6 +963,11 @@ Private Sub Form_Load()
         
     Next i
     
+    'Next, we need to manually add hotkey targets from non-menu (or non-standard) sources.
+    ' This includes some weird menu-related items like "recent files", which are handled specially
+    ' due to their run-time variability.
+    AddBlendModeActions cHotkeys
+    
     'Next, we need to manually add toolbox commands
     AddToolboxActions cHotkeys
     
@@ -1026,7 +1031,48 @@ Private Sub Form_Load()
     
 End Sub
 
-'Manually add toolbox shortcuts to the bottom of the list
+'Manually add blend-mode-related shortcuts to the bottom of the list
+Private Sub AddBlendModeActions(ByRef cHotkeys As pdVariantHash)
+    
+    If (m_numItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_numItems * 2 - 1) As PD_HotkeyUI
+    
+    'Add a top-level "blend mode" category
+    Dim idxToolboxActions As Long
+    idxToolboxActions = m_numItems
+    
+    With m_Items(m_numItems)
+        
+        .hk_ActionID = "blend-modes"
+        .hk_HasChildren = True
+        .hk_TextEn = "Blend modes"
+        .hk_TextLocalized = g_Language.TranslateMessage("Blend modes")
+        .hk_ParentID = vbNullString
+        
+        'Save this action and index in a fast lookup table
+        m_ActionHash.AddItem .hk_ActionID, m_numItems
+        
+        'Add this to the treeview, then advance
+        tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, (.hk_SubmenuLevel = 0)
+        
+        'Advance to the next mappable menu index
+        m_numItems = m_numItems + 1
+        
+    End With
+    
+    'Now manually add all child actions
+    Dim toolNames As pdStringStack, toolActions As pdStringStack
+    Colors.GetListOfBlendModeNamesAndActions toolNames, toolActions
+    
+    Const TOOL_PARENT_ID As String = "blend-modes"
+    
+    Dim i As Long
+    For i = 0 To toolNames.GetNumOfStrings - 1
+        AddOneCustomAction TOOL_PARENT_ID, toolNames.GetString(i), toolActions.GetString(i), cHotkeys
+    Next i
+    
+End Sub
+
+'Manually add toolbox-related shortcuts to the bottom of the list
 Private Sub AddToolboxActions(ByRef cHotkeys As pdVariantHash)
     
     If (m_numItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_numItems * 2 - 1) As PD_HotkeyUI
@@ -1058,14 +1104,16 @@ Private Sub AddToolboxActions(ByRef cHotkeys As pdVariantHash)
     Dim toolNames As pdStringStack, toolActions As pdStringStack
     toolbar_Toolbox.GetListOfToolNamesAndActions toolNames, toolActions
     
+    Const TOOL_PARENT_ID As String = "toolbox-tools"
+    
     Dim i As Long
     For i = 0 To toolNames.GetNumOfStrings - 1
-        AddOneToolboxAction toolNames.GetString(i), toolActions.GetString(i), cHotkeys
+        AddOneCustomAction TOOL_PARENT_ID, toolNames.GetString(i), toolActions.GetString(i), cHotkeys
     Next i
     
 End Sub
 
-Private Sub AddOneToolboxAction(ByRef toolName As String, ByRef toolAction As String, ByRef cHotkeys As pdVariantHash)
+Private Sub AddOneCustomAction(ByRef parentID As String, ByRef toolName As String, ByRef toolAction As String, ByRef cHotkeys As pdVariantHash)
 
     If (m_numItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_numItems * 2 - 1) As PD_HotkeyUI
     
@@ -1078,8 +1126,9 @@ Private Sub AddOneToolboxAction(ByRef toolName As String, ByRef toolAction As St
         'Mirror localized name across both english *and* localized text (in this case, we don't need the English text for anything)
         .hk_TextEn = toolName
         .hk_TextLocalized = toolName
-        .hk_ParentID = "toolbox-tools"
+        .hk_ParentID = parentID
         .hk_SubmenuLevel = 1
+        .hk_NumParents = 1
         
         'Save this action and index in a fast lookup table
         m_ActionHash.AddItem .hk_ActionID, m_numItems
