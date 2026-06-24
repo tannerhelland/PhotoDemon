@@ -2137,16 +2137,16 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             Else
                 
                 'If actual MRU paths exist, note that we apply them *without* translations, obviously.
-                Dim i As Long, hotkeyNumber As Long
+                Dim i As Long, hotkeyNumber As Long, hkText As String
                 For i = 0 To numOfMRUFiles - 1
                     
                     tmpString = g_RecentFiles.GetMenuCaption(i)
                     
-                    'Entries under "10" get a free accelerator of the form "Ctrl+i"
+                    'Entries 1-10 support hotkeys added via the `Tools > Keyboard shortcuts` menu
                     If (i < 10) Then
-                        hotkeyNumber = i + 1
-                        If (i = 9) Then hotkeyNumber = 0
-                        tmpString = tmpString & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & g_Language.TranslateMessage("Shift") & "+" & hotkeyNumber
+                        If Hotkeys.GetHotkeyText_FromAction(COMMAND_FILE_OPEN_RECENT & CStr(i), hkText) Then
+                            If (LenB(hkText) > 0) Then tmpString = tmpString & vbTab & hkText
+                        End If
                     End If
                     
                     tmpMii.dwTypeData = StrPtr(tmpString)
@@ -2211,11 +2211,21 @@ Public Sub UpdateSpecialMenu_RecentMacros()
             Else
                 
                 'If actual MRU paths exist, note that we apply them *without* translations, obviously.
-                Dim i As Long
+                Dim i As Long, hkText As String
                 For i = 0 To numOfMRUFiles - 1
+                    
                     tmpString = g_RecentMacros.GetSpecificMRUCaption(i)
+                    
+                    'Entries 1-10 support hotkeys added via the `Tools > Keyboard shortcuts` menu
+                    If (i < 10) Then
+                        If Hotkeys.GetHotkeyText_FromAction(COMMAND_TOOLS_MACRO_RECENT & CStr(i), hkText) Then
+                            If (LenB(hkText) > 0) Then tmpString = tmpString & vbTab & hkText
+                        End If
+                    End If
+                    
                     tmpMii.dwTypeData = StrPtr(tmpString)
                     SetMenuItemInfoW hMenu, i, 1&, tmpMii
+                    
                 Next i
                 
             End If

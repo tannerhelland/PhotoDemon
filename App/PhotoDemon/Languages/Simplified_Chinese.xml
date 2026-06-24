@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文（2026.1 build 229）</langname>
-<langversion>2026.6.6</langversion>
+<langversion>2026.6.7</langversion>
 <langstatus>完成</langstatus>
 
 <author>Charltsing（QQ 564955427） revised on June 3rd, 2026</author>
@@ -1548,7 +1548,22 @@
 <translation>替换</translation>
 </phrase>
 
-<!-- Colors.bas contains 58 phrases. 29 were duplicates of existing phrases, so only 29 new phrases were written to file. -->
+<phrase>
+<original>Next blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Previous blend mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Blend mode: %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Colors.bas contains 118 phrases. 86 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <phrase>
 <original>How would you like to load this image?</original>
@@ -2515,7 +2530,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>清除最近宏列表</translation>
 </phrase>
 
-<!-- Menus.bas contains 14 phrases. 12 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Menus.bas contains 12 phrases. 10 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <phrase>
 <original>All supported palettes</original>
@@ -12491,22 +12506,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>切换画笔光标</translation>
 </phrase>
 
-<phrase>
-<original>Next blend mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Previous blend mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Blend mode: %1</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolbar_ToolSelect.frm contains 209 phrases. 139 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 149 phrases. 82 were duplicates of existing phrases, so only 67 new phrases were written to file. -->
 
 <phrase>
 <original>pattern mode</original>
@@ -13365,6 +13365,26 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
+<original>Blend modes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Recent files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Recent file %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Recent macro %1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Toolbox tools</original>
 <translation>工具箱</translation>
 </phrase>
@@ -13399,7 +13419,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>这将覆盖任何热键设定。您确定要继续吗？</translation>
 </phrase>
 
-<!-- Tools_Hotkeys.frm contains 62 phrases. 36 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- Tools_Hotkeys.frm contains 72 phrases. 42 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <phrase>
 <original>click here for detailed instructions (in English)</original>
@@ -14877,11 +14897,11 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text generation complete. -->
 
-<phrasecount>2815</phrasecount>
+<phrasecount>2819</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 6148 phrases. -->
-<!-- 3333 are duplicates, so only 2815 unique phrases have been written to file. -->
-<!-- These 2815 phrases contain approximately 12167 total words. -->
+<!-- As of this build, PhotoDemon contains 6156 phrases. -->
+<!-- 3337 are duplicates, so only 2819 unique phrases have been written to file. -->
+<!-- These 2819 phrases contain approximately 12175 total words. -->
 
 <special-translations>
 

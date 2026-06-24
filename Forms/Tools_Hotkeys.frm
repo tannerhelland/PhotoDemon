@@ -968,7 +968,8 @@ Private Sub Form_Load()
     ' due to their run-time variability.
     AddBlendModeActions cHotkeys
     
-    'Next, we need to manually add toolbox commands
+    AddRecentFileActions cHotkeys
+    
     AddToolboxActions cHotkeys
     
     'Now we can pull all of PD's default hotkeys and correlate those with the current menu and tool collection.
@@ -1068,6 +1069,71 @@ Private Sub AddBlendModeActions(ByRef cHotkeys As pdVariantHash)
     Dim i As Long
     For i = 0 To toolNames.GetNumOfStrings - 1
         AddOneCustomAction TOOL_PARENT_ID, toolNames.GetString(i), toolActions.GetString(i), cHotkeys
+    Next i
+    
+End Sub
+
+'Manually add "recent file" and "recent macro" shortcuts to the bottom of the list
+Private Sub AddRecentFileActions(ByRef cHotkeys As pdVariantHash)
+    
+    If (m_numItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_numItems * 2 - 1) As PD_HotkeyUI
+    
+    'Add a top-level "blend mode" category
+    Dim idxToolboxActions As Long
+    idxToolboxActions = m_numItems
+    
+    With m_Items(m_numItems)
+        
+        .hk_ActionID = "recent-files"
+        .hk_HasChildren = True
+        .hk_TextEn = "Recent files"
+        .hk_TextLocalized = g_Language.TranslateMessage("Recent files")
+        .hk_ParentID = vbNullString
+        
+        'Save this action and index in a fast lookup table
+        m_ActionHash.AddItem .hk_ActionID, m_numItems
+        
+        'Add this to the treeview, then advance
+        tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, (.hk_SubmenuLevel = 0)
+        
+        'Advance to the next mappable menu index
+        m_numItems = m_numItems + 1
+        
+    End With
+    
+    'Now manually add all child actions.
+    Const RECENT_FILES_PARENT_ID As String = "recent-files"
+    
+    Dim i As Long
+    For i = 0 To 9
+        AddOneCustomAction RECENT_FILES_PARENT_ID, g_Language.TranslateMessage("Recent file %1", CStr(i + 1)), COMMAND_FILE_OPEN_RECENT & Trim$(Str$(i)), cHotkeys
+    Next i
+    
+    'Repeat all the above steps, but this time for recent macros
+    idxToolboxActions = m_numItems
+    
+    With m_Items(m_numItems)
+        
+        .hk_ActionID = "recent-macros"
+        .hk_HasChildren = True
+        .hk_TextEn = "Recent macros"
+        .hk_TextLocalized = g_Language.TranslateMessage("Recent macros")
+        .hk_ParentID = vbNullString
+        
+        'Save this action and index in a fast lookup table
+        m_ActionHash.AddItem .hk_ActionID, m_numItems
+        
+        'Add this to the treeview, then advance
+        tvMenus.AddItem .hk_ActionID, .hk_TextLocalized, .hk_ParentID, (.hk_SubmenuLevel = 0)
+        
+        'Advance to the next mappable menu index
+        m_numItems = m_numItems + 1
+        
+    End With
+    
+    Const RECENT_MACROS_PARENT_ID As String = "recent-macros"
+    For i = 0 To 9
+        AddOneCustomAction RECENT_MACROS_PARENT_ID, g_Language.TranslateMessage("Recent macro %1", CStr(i + 1)), COMMAND_TOOLS_MACRO_RECENT & Trim$(Str$(i)), cHotkeys
     Next i
     
 End Sub
