@@ -40,7 +40,6 @@ Option Explicit
 ' tag some unique command IDs so that they can be reused elsewhere.
 Public Const COMMAND_FILE_OPEN_RECENT As String = "file_open_recent_"
 Public Const COMMAND_TOOLS_MACRO_RECENT As String = "tools_macro_recent_"
-Public Const COMMAND_ADJUSTMENT_RECENT As String = "adjustment_recent"
 
 'PhotoDemon actions can be triggered by different places: menu clicks, hotkeys, or searches.  Some actions
 ' behave slightly differently depending on source.  (For example, "Paste to cursor" only works if the
@@ -128,8 +127,6 @@ Public Function LaunchAction_ByName(ByRef srcMenuName As String, Optional ByVal 
     
     'Cache various attributes related to this action.
     ' (This enables UI features like the Adjustment > Repeat, Re-show, and Recently used menus.)
-    Dim idxAction As Long
-    
     m_LastActionCategory = GetRepeatReshowCategory(srcMenuName)
     If (m_LastActionCategory <> rr_None) Then
         

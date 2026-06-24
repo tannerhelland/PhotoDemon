@@ -2137,7 +2137,7 @@ Public Sub UpdateSpecialMenu_RecentFiles()
             Else
                 
                 'If actual MRU paths exist, note that we apply them *without* translations, obviously.
-                Dim i As Long, hotkeyNumber As Long, hkText As String
+                Dim i As Long, hkText As String
                 For i = 0 To numOfMRUFiles - 1
                     
                     tmpString = g_RecentFiles.GetMenuCaption(i)

@@ -274,7 +274,7 @@ Public Sub SaveUserPreferences()
     UserPrefs.SetPref_String "Interface", "UIFont", ddFont.List(ddFont.ListIndex, False)
     
     'Because a text field is available for the max recent fonts count, validate it before saving
-    Dim maxRecentFonts As Long, fontsMustBeUpdated As Boolean
+    Dim maxRecentFonts As Long
     If tudRecentFonts.IsValid Then maxRecentFonts = tudRecentFonts.Value Else maxRecentFonts = 10
     UserPrefs.SetPref_Long "Interface", "recent-font-max", maxRecentFonts
     

@@ -740,7 +740,6 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) A
         Next x
         
         'If the files are in XYZE format, we need to do a second pass for XYZ to RGB conversion.
-        Dim fR As Single, fG As Single, fB As Single
         Dim fX As Single, fY As Single, fZ As Single
         
         If m_Header.rh_isXYZE Then
@@ -765,11 +764,11 @@ Private Function ParsePixels(ByRef dstDIB As pdDIB, ByRef dstImage As pdImage) A
         Const GAMMA_CORRECTION_FACTOR As Double = 1# / 2.2
         Dim lutGamma(0 To 255) As Byte
         For x = 0 To 255
-            fR = CSng(x)
-            fR = (fR / 255!) ^ GAMMA_CORRECTION_FACTOR * 255!
-            If (fR > 255!) Then fR = 255!
-            If (fR < 0!) Then fR = 0!
-            lutGamma(x) = Int(fR + 0.5!)
+            fX = CSng(x)
+            fX = (fX / 255!) ^ GAMMA_CORRECTION_FACTOR * 255!
+            If (fX > 255!) Then fX = 255!
+            If (fX < 0!) Then fX = 0!
+            lutGamma(x) = Int(fX + 0.5!)
         Next x
         
         'Iterate pixels and color-convert as-we-go

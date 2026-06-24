@@ -965,7 +965,7 @@ Private Sub cmdAddFiles_Click()
         
         lstFiles.SetAutomaticRedraws False
         
-        Dim i As Long, tmpFilename As String
+        Dim i As Long
         For i = 0 To listOfFiles.GetNumOfStrings() - 1
             lstFiles.AddItem listOfFiles.GetString(i)
         Next i
