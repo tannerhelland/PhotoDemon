@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha Build 232.1</langversion>
+<langversion>2026.1 Alpha Build 240</langversion>
 <langstatus>Auf aktuellem Stand</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -12496,17 +12496,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Next blend mode</original>
-<translation></translation>
+<translation>Nächster Blend-Mode</translation>
 </phrase>
 
 <phrase>
 <original>Previous blend mode</original>
-<translation></translation>
+<translation>Vorheriger Blend-Mode</translation>
 </phrase>
 
 <phrase>
 <original>Blend mode: %1</original>
-<translation></translation>
+<translation>Blend-Mode: %1</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 209 phrases. 139 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
