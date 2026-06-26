@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (German)</langname>
-<langversion>2026.1 Alpha Build 240.1</langversion>
+<langversion>2026.1 Alpha Build 246</langversion>
 <langstatus>Auf aktuellem Stand</langstatus>
 
 <author>rk (ehem. Frank Donckers, Helmut Kuerbiss)</author>
@@ -13369,22 +13369,22 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Blend modes</original>
-<translation></translation>
+<translation>Blend-Modes</translation>
 </phrase>
 
 <phrase>
 <original>Recent files</original>
-<translation></translation>
+<translation>Zuletzt verwendete Dateien</translation>
 </phrase>
 
 <phrase>
 <original>Recent file %1</original>
-<translation></translation>
+<translation>Zuletzt verwendete Datei %1</translation>
 </phrase>
 
 <phrase>
 <original>Recent macro %1</original>
-<translation></translation>
+<translation>Jüngstes Makro %1</translation>
 </phrase>
 
 <phrase>
