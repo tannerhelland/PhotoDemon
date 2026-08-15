@@ -5,8 +5,8 @@
 		<pdDataType>Translation</pdDataType>
 
 		<langid>zh-TW</langid>
-		<langname>正體中文</langname>
-		<langversion>2026.1.244</langversion>
+		<langname>正體中文--修</langname>
+		<langversion>2026.1 Alpha (build 248)</langversion>
 		<langstatus>Translation completed on 2026/08/15</langstatus>
 
 		<author>昇</author>
@@ -350,12 +350,12 @@
 
 <phrase>
 <original>New layer from file</original>
-<translation>從圖檔新增為圖層</translation>
+<translation>從檔案建立新圖層</translation>
 </phrase>
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation>可見層的新增圖層</translation>
+<translation>從可見圖層建立新圖層</translation>
 </phrase>
 
 <phrase>
@@ -405,32 +405,32 @@
 
 <phrase>
 <original>Go to top layer</original>
-<translation>轉到頂層</translation>
+<translation>去至頂端圖層</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer above</original>
-<translation>轉到上一圖層</translation>
+<translation>去至以上圖層</translation>
 </phrase>
 
 <phrase>
 <original>Go to layer below</original>
-<translation>轉到下一圖層</translation>
+<translation>去至以下圖層</translation>
 </phrase>
 
 <phrase>
 <original>Go to bottom layer</original>
-<translation>轉到底層</translation>
+<translation>去至底端圖層</translation>
 </phrase>
 
 <phrase>
 <original>Raise layer to top</original>
-<translation>圖層移到頂層</translation>
+<translation>將圖層提高至頂端</translation>
 </phrase>
 
 <phrase>
 <original>Raise layer</original>
-<translation>上移一層</translation>
+<translation>提高圖層</translation>
 </phrase>
 
 <phrase>
@@ -550,7 +550,7 @@
 
 <phrase>
 <original>Luminance to alpha</original>
-<translation>設置亮度到alpha</translation>
+<translation>亮度轉到 Alpha</translation>
 </phrase>
 
 <phrase>
@@ -715,7 +715,7 @@
 
 <phrase>
 <original>Levels</original>
-<translation>色階</translation>
+<translation>級別</translation>
 </phrase>
 
 <phrase>
@@ -1035,7 +1035,7 @@
 
 <phrase>
 <original>Gradient flow</original>
-<translation>梯度流</translation>
+<translation>漸層流</translation>
 </phrase>
 
 <phrase>
@@ -1150,7 +1150,7 @@
 
 <phrase>
 <original>Median</original>
-<translation>中值</translation>
+<translation>中位</translation>
 </phrase>
 
 <phrase>
@@ -1352,7 +1352,7 @@
 
 <phrase>
 <original>[untitled image]</original>
-<translation>[無圖]</translation>
+<translation>[未命名圖像]</translation>
 </phrase>
 
 		<!-- Animation.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -1611,7 +1611,8 @@
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>標籤資料庫負責處理 PhotoDemon 支援的 20,000 多個詮釋資料標籤的技術細節。\n建立資料庫需要 10 到 15 秒，而且只需在第一次使用詮釋資料編輯器時建立一次。</translation>
+<translation>標籤資料庫負責處理 PhotoDemon 支援的 20,000 多個詮釋資料標籤的技術細節。
+建立資料庫需要 10 到 15 秒，而且只需在第一次使用詮釋資料編輯器時建立一次。</translation>
 </phrase>
 
 <phrase>
@@ -1900,7 +1901,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Fitting image canvas around layer</original>
-<translation>將圖像畫布調整到圖層周圍</translation>
+<translation>依圖層調整圖像畫布大小</translation>
 </phrase>
 
 <phrase>
@@ -1927,7 +1928,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Saving</original>
-<translation>正在存檔</translation>
+<translation>存檔時</translation>
 </phrase>
 
 <phrase>
@@ -2186,7 +2187,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Blank layer</original>
-<translation>空白層</translation>
+<translation>空白圖層</translation>
 </phrase>
 
 <phrase>
@@ -2241,7 +2242,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Adding image</original>
-<translation>新增圖像</translation>
+<translation>新增了圖像</translation>
 </phrase>
 
 <phrase>
@@ -2251,7 +2252,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation>此操作會將文字和向量圖層轉成（點陣圖）圖像圖層，這表示您無法再修改圖層的設置，例如文字、字體、顏色或形狀。</translation>
+<translation>此操作會將文字和向量圖層轉成（點陣圖）圖像圖層，這表示您無法再修改圖層的設定，例如文字、字體、顏色或形狀。</translation>
 </phrase>
 
 <phrase>
@@ -2271,7 +2272,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation>這個文字層將化為一個（點陣圖）圖像層，這表示不再可以修改它的文字或字體設置。</translation>
+<translation>這個文字層將化為一個（點陣圖）圖像層，這表示不再可以修改它的文字或字體設定。</translation>
 </phrase>
 
 <phrase>
@@ -2291,7 +2292,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Frame %1</original>
-<translation>%1 幀</translation>
+<translation>%1 影格</translation>
 </phrase>
 
 		<!-- Layers.bas contains 58 phrases. 36 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
@@ -2342,7 +2343,7 @@ Please close this file in any other running programs, then try again.</original>
 
 <phrase>
 <original>This file has the extension "%1", but it is actually in "%2" format.</original>
-<translation>該圖檔的副檔名為 %1 ，但實際上是 %2 格式。</translation>
+<translation>此圖檔的副檔名為 %1 ，但實際上是 %2 格式。</translation>
 </phrase>
 
 <phrase>
@@ -2385,7 +2386,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 %1
 
-在載入之前，請使用其他程式將此圖片儲存為通用格式（例如 JPEG 或 PNG）。 謝謝！</translation>
+在載入之前，請使用其他程式將此圖像儲存為通用格式（例如 JPEG 或 PNG）。 謝謝！</translation>
 </phrase>
 
 <phrase>
@@ -2405,7 +2406,7 @@ Please use another program to save this image in a generic format (such as JPEG 
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation>%1 張中的 %2 張圖片已成功加載</translation>
+<translation>%1 張中的 %2 張圖像已成功加載</translation>
 </phrase>
 
 <phrase>
@@ -2421,7 +2422,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>不幸的是，PhotoDemon 無法載入以下圖像：
 
 %1
-請驗證這些影像是否存在，並且它們使用支援的影像格式（例如 JPEG 或 PNG）。 謝謝！</translation>
+請驗證這些圖像是否存在，並且它們使用支援的影像格式（例如 JPEG 或 PNG）。 謝謝！</translation>
 </phrase>
 
 <phrase>
@@ -2643,7 +2644,8 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>AVIF is a modern image format developed by the Alliance for Open Media.  PhotoDemon does not natively support AVIF images, but it can download a free, open-source plugin that permanently enables AVIF support.</original>
-<translation>AVIF 是由開放媒體聯盟（Alliance for Open Media）開發的現代圖像格式。\nPhotoDemon 原生不支援 AVIF 圖像，但可以下載免費的開放原始碼外掛程式，永久啟用 AVIF 支援。</translation>
+<translation>AVIF 是由開放媒體聯盟（Alliance for Open Media）開發的現代圖像格式。
+PhotoDemon 原生不支援 AVIF 圖像，但可以下載免費的開放原始碼外掛程式，永久啟用 AVIF 支援。</translation>
 </phrase>
 
 <phrase>
@@ -2653,7 +2655,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Would you like PhotoDemon to download these libraries to your PhotoDemon plugin folder?</original>
-<translation>是否希望PhotoDemon將這些庫下載到PhotoDemon外掛程式資料夾中？</translation>
+<translation>要讓 PhotoDemon 將這些函式庫下載到 PhotoDemon 的外掛程式資料夾嗎？</translation>
 </phrase>
 
 <phrase>
@@ -2663,7 +2665,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>PhotoDemon will not download the AVIF libraries at this time.</original>
-<translation>PhotoDemon目前不會下載AVIF庫。</translation>
+<translation>PhotoDemon 目前不會下載 AVIF 函式庫。</translation>
 </phrase>
 
 <phrase>
@@ -2673,7 +2675,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>These free libraries are always available at the Alliance for Open Media libavif release page</original>
-<translation>這些免費庫在開放媒體聯盟libavif發佈頁面上隨時可用</translation>
+<translation>這些免費函式庫一直都可以在開放媒體聯盟的 libavif 發布頁面取得</translation>
 </phrase>
 
 <phrase>
@@ -2803,9 +2805,9 @@ libjxl 的可移植副本將需要約 %1 mb 的磁碟空間。 下載後，Photo
 <original>A necessary third-party library (%1) is missing or disabled.
 
 To enable this feature, please download a fresh copy of PhotoDemon or restore the missing library.</original>
-<translation>必要的第三方函式庫 (%1) 遺失或已停用。
+<translation>必要的第三方函式庫（%1）遺失或已停用。
 
-若要啟用此功能，請下載最新的 PhotoDemon 副本或還原遺失的庫。</translation>
+若要啟用此功能，請重新下載 PhotoDemon，或還原遺失的函式庫。</translation>
 </phrase>
 
 <phrase>
@@ -2815,32 +2817,32 @@ To enable this feature, please download a fresh copy of PhotoDemon or restore th
 
 <phrase>
 <original>BSD license</original>
-<translation>BSD許可證</translation>
+<translation>BSD 授權條款</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation>MIT許可證</translation>
+<translation>MIT 授權條款</translation>
 </phrase>
 
 <phrase>
 <original>artistic license</original>
-<translation>藝術照</translation>
+<translation>藝術授權</translation>
 </phrase>
 
 <phrase>
 <original>public domain</original>
-<translation>公共區域</translation>
+<translation>公眾領域</translation>
 </phrase>
 
 <phrase>
 <original>FreeImage public license</original>
-<translation>FreeImage公共許可證</translation>
+<translation>FreeImage 公開授權條款</translation>
 </phrase>
 
 <phrase>
 <original>LGPL license</original>
-<translation>LGPL許可證</translation>
+<translation>LGPL 授權條款</translation>
 </phrase>
 
 		<!-- Plugin_Management.bas contains 39 phrases. 31 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -3158,7 +3160,7 @@ Description: %2
 
 <phrase>
 <original>outline on top</original>
-<translation>頂部輪廓</translation>
+<translation>輪廓置於上方</translation>
 </phrase>
 
 <phrase>
@@ -3173,7 +3175,7 @@ Description: %2
 
 <phrase>
 <original>text style preset</original>
-<translation>文字樣式預設</translation>
+<translation>文字樣式預設集</translation>
 </phrase>
 
 <phrase>
@@ -3276,19 +3278,19 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>This is a still image (only one frame of animation).</original>
-<translation>這是一個靜止圖像（僅一幀動畫）。</translation>
+<translation>這是一張靜態圖像（動畫僅一影格）。</translation>
 </phrase>
 
 <phrase>
 <original>You may proceed, but the image will be saved as a static image, not an animated one.</original>
-<translation>您可以繼續，但圖像將儲存為靜態圖像，而不是動畫圖像。</translation>
+<translation>您可以繼續，但圖像將儲存為靜態圖像，而不是動態圖像。</translation>
 </phrase>
 
 		<!-- Saving.bas contains 35 phrases. 29 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <phrase>
 <original>Capturing screen</original>
-<translation>捕獲螢幕</translation>
+<translation>正在畫面截圖</translation>
 </phrase>
 
 <phrase>
@@ -3298,7 +3300,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Screen capture complete.</original>
-<translation>螢幕擷取完成</translation>
+<translation>畫面截圖完成</translation>
 </phrase>
 
 <phrase>
@@ -3450,19 +3452,19 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Move layer</original>
-<translation>移動層</translation>
+<translation>移動圖層</translation>
 </phrase>
 
 		<!-- Tools.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <phrase>
 <original>Ctrl+Click to set clone source</original>
-<translation>Ctrl+Click 設置克隆源</translation>
+<translation>Ctrl+點擊 以設置複製來源</translation>
 </phrase>
 
 <phrase>
 <original>Clone stamp</original>
-<translation>克隆標記</translation>
+<translation>仿製圖章</translation>
 </phrase>
 
 		<!-- Clonestamp.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -3483,7 +3485,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Gradient tool</original>
-<translation>漸變工具</translation>
+<translation>漸層工具</translation>
 </phrase>
 
 		<!-- GradientTool.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -3492,12 +3494,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Ctrl+click to move the active layer here</original>
-<translation>按住Ctrl鍵並單擊可將活動層移到此處</translation>
+<translation>Ctrl + 點擊以將作用中圖層移至此處</translation>
 </phrase>
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Shift鍵：保護層的寬高比</translation>
+<translation>Shift鍵：保護圖層的寬高比</translation>
 </phrase>
 
 <phrase>
@@ -3667,24 +3669,24 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>You have placed PhotoDemon in a restricted system folder.  Because PhotoDemon does not have administrator access, it cannot download files for you.  Please move PhotoDemon to an unrestricted folder and try again.</original>
-<translation>您已將PhotoDemon放置在受限系統資料夾中。因為PhotoDemon沒有管理員權限，所以無法為您下載圖檔。請將PhotoDemon移動到不受限製的資料夾，然後重試。</translation>
+<translation>您已將PhotoDemon放置在受限系統資料夾中。因為PhotoDemon沒有管理員權限，所以無法為您下載圖檔。請將PhotoDemon移動到不受限制的資料夾，然後重試。</translation>
 </phrase>
 
 		<!-- UpdateEngine.bas contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Toggle between 1x and repeating previews</original>
-<translation>在1x和重複預覽之間切換</translation>
+<translation>切換 1 倍與重複預覽</translation>
 </phrase>
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>以前儲存的預設可以選擇在這裡。你可以儲存目前設置為一個新的預設通過單擊「儲存預設右邊的按鈕。</translation>
+<translation>您可以在此選取先前儲存的預設集。點選右側的「儲存預設集」按鈕，即可將目前的設定儲存為新的預設集。</translation>
 </phrase>
 
 <phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>隨機選擇該工具的新的設置。這有助於探索如何不同的設置會影響圖像。</translation>
+<translation>隨機選擇該工具的新的設定。這有助於探索如何不同的設定會影響圖像。</translation>
 </phrase>
 
 <phrase>
@@ -3694,12 +3696,12 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Reset all settings to their default values.</original>
-<translation>重置所有設置為預設值。</translation>
+<translation>重置所有設定為預設值。</translation>
 </phrase>
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation>儲存目前設置新的預置。</translation>
+<translation>儲存目前設定為新的預設集。</translation>
 </phrase>
 
 <phrase>
@@ -3783,7 +3785,7 @@ Please enter a numeric value.</original>
 <original>Unfortunately, %1 prevented PhotoDemon from directly downloading this file. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)
 
 You will need to manually download this file using your Internet browser.</original>
-<translation>不幸的是，%1 阻止PhotoDemon直接下載此圖檔。（由於伺服器配置錯誤，直接下載有時會被誤認為是圖片盜連），
+<translation>不幸的是，%1 阻止PhotoDemon直接下載此圖檔。（由於伺服器配置錯誤，直接下載有時會被誤認為是圖像盜連），
 
 您需要使用瀏覽器手動下載此圖檔。</translation>
 </phrase>
@@ -3809,7 +3811,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Unnamed gradient</original>
-<translation>未命名的漸變</translation>
+<translation>未命名漸層</translation>
 </phrase>
 
 		<!-- pd2DGradient.cls contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -3881,12 +3883,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Optimizing animation frame %1 of %2</original>
-<translation>優化動畫幀 %1 / %2</translation>
+<translation>正在最佳化動畫影格 %1／%2</translation>
 </phrase>
 
 <phrase>
 <original>Saving animation frame %1 of %2</original>
-<translation>儲存動畫幀  %1 / %2</translation>
+<translation>正在儲存動畫影格 %1／%2</translation>
 </phrase>
 
 <phrase>
@@ -4058,12 +4060,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (IPTC Core)</original>
-<translation>XMP（IPTC核心）</translation>
+<translation>XMP（IPTC 核心）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Extension)</original>
-<translation>XMP（IPTC擴展）</translation>
+<translation>XMP（IPTC 擴充功能）</translation>
 </phrase>
 
 <phrase>
@@ -4123,17 +4125,17 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>XMP (Plus License Data)</original>
-<translation>XMP（加上許可證數據）</translation>
+<translation>XMP（Plus 授權資料）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM for images)</original>
-<translation>XMP（棱鏡的圖像）</translation>
+<translation>XMP（PRISM 圖像詮釋資料）</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM)</original>
-<translation>XMP（棱鏡）</translation>
+<translation>XMP（PRISM）</translation>
 </phrase>
 
 <phrase>
@@ -4230,7 +4232,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows allows for a single load operation.  Please try again with a smaller set of images.</original>
-<translation>選擇的圖像數量超出Windows允許的最大數，請重新選擇。</translation>
+<translation>很抱歉，您選取的圖像數量超過 Windows 單次載入操作所允許的上限。請減少選取的圖像數量後再試一次。</translation>
 </phrase>
 
 <phrase>
@@ -4263,7 +4265,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Analyzing animation frame %1 of %2</original>
-<translation>分析動畫幀 %1 / %2</translation>
+<translation>正在分析動畫影格 %1／%2</translation>
 </phrase>
 
 		<!-- pdPNG.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4291,12 +4293,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Reconstructing image</original>
-<translation>重建圖像</translation>
+<translation>正在重建圖像</translation>
 </phrase>
 
 <phrase>
 <original>Image successfully restored.</original>
-<translation>成功恢復圖像。</translation>
+<translation>圖像已成功還原。</translation>
 </phrase>
 
 		<!-- pdUndo.cls contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -4436,7 +4438,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>original file settings</original>
-<translation>原始圖檔設置</translation>
+<translation>原始圖檔設定</translation>
 </phrase>
 
 <phrase>
@@ -4471,12 +4473,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>binary (by cut-off)</original>
-<translation>二進製（截斷）</translation>
+<translation>二進位（依截斷值）</translation>
 </phrase>
 
 <phrase>
 <original>binary (by color)</original>
-<translation>二進製（按顏色）</translation>
+<translation>二進位（依顏色）</translation>
 </phrase>
 
 <phrase>
@@ -4493,22 +4495,22 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation>點選進入全色選擇畫面。</translation>
+<translation>點擊以進入完整的色彩選擇畫面。</translation>
 </phrase>
 
 <phrase>
 <original>Active color</original>
-<translation>現使用色</translation>
+<translation>作用中色彩</translation>
 </phrase>
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation>點擊使主畫面的繪畫顏色成為現使用色。</translation>
+<translation>點擊使主畫面的繪圖色彩設為作用中色彩。</translation>
 </phrase>
 
 <phrase>
 <original>Main screen paint color</original>
-<translation>主畫面繪畫顏色</translation>
+<translation>主畫面繪圖色彩</translation>
 </phrase>
 
 		<!-- pdColorSelector.ctl contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -4594,22 +4596,22 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Saving preset</original>
-<translation>儲存預設</translation>
+<translation>儲存預設集</translation>
 </phrase>
 
 <phrase>
 <original>Preset saved.</original>
-<translation>預設儲存。</translation>
+<translation>預設集已儲存。</translation>
 </phrase>
 
 <phrase>
 <original>Preset save canceled.</original>
-<translation>預設儲存取消。</translation>
+<translation>預設集已取消儲存。</translation>
 </phrase>
 
 <phrase>
 <original>last-used settings</original>
-<translation>最後使用的設置</translation>
+<translation>最後使用的設定</translation>
 </phrase>
 
 <phrase>
@@ -4698,7 +4700,7 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>general metadata settings</original>
-<translation>通用的詮釋資料設置</translation>
+<translation>通用的詮釋資料設定</translation>
 </phrase>
 
 <phrase>
@@ -4728,14 +4730,14 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>JPEG-specific settings</original>
-<translation>JPEG特定設置</translation>
+<translation>JPEG特定設定</translation>
 </phrase>
 
 		<!-- pdMetadataExport.ctl contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <phrase>
 <original>Current frame: %1 of %2</original>
-<translation>目前幀： %1 / %2</translation>
+<translation>目前影格：%1 / %2</translation>
 </phrase>
 
 <phrase>
@@ -4860,12 +4862,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Top</original>
-<translation>顯示在頂部</translation>
+<translation>頂端</translation>
 </phrase>
 
 <phrase>
 <original>Bottom</original>
-<translation>顯示在底部</translation>
+<translation>底端</translation>
 </phrase>
 
 <phrase>
@@ -4936,7 +4938,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Fit image on screen</original>
-<translation>調整圖像適配畫面</translation>
+<translation>將圖像調整為符合畫面大小</translation>
 </phrase>
 
 <phrase>
@@ -5003,7 +5005,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Screenshot</original>
-<translation>螢幕截圖</translation>
+<translation>截圖</translation>
 </phrase>
 
 <phrase>
@@ -5193,7 +5195,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Hidden layers</original>
-<translation>隱藏層</translation>
+<translation>隱藏圖層</translation>
 </phrase>
 
 <phrase>
@@ -5203,17 +5205,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Move layer to top</original>
-<translation>將圖層移到頂部</translation>
+<translation>將圖層移至頂端</translation>
 </phrase>
 
 <phrase>
 <original>Move layer up</original>
-<translation>層上移</translation>
+<translation>將圖層上移</translation>
 </phrase>
 
 <phrase>
 <original>Move layer down</original>
-<translation>層下移</translation>
+<translation>將圖層下移</translation>
 </phrase>
 
 <phrase>
@@ -5583,7 +5585,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Animated screen capture</original>
-<translation>動畫螢幕錄製</translation>
+<translation>擷取畫面的動畫</translation>
 </phrase>
 
 <phrase>
@@ -5598,12 +5600,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Developers</original>
-<translation>開發人員</translation>
+<translation>開發者</translation>
 </phrase>
 
 <phrase>
 <original>View debug log for this session</original>
-<translation>查看本次作業階段的偵錯日誌</translation>
+<translation>檢視此工作階段的除錯記錄</translation>
 </phrase>
 
 <phrase>
@@ -5728,7 +5730,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Small buttons</original>
-<translation>小按鈕</translation>
+<translation>小型按鈕</translation>
 </phrase>
 
 <phrase>
@@ -5738,7 +5740,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Large buttons</original>
-<translation>大按鈕</translation>
+<translation>大型按鈕</translation>
 </phrase>
 
 <phrase>
@@ -5823,22 +5825,22 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>PhotoDemon license and terms of use</original>
-<translation>閱讀許可證和使用條款</translation>
+<translation>PhotoDemon 授權條款與使用條款</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon source code</original>
-<translation>下載PhotoDemon源代碼</translation>
+<translation>PhotoDemon 原始碼</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon website</original>
-<translation>訪問PhotoDemon網站</translation>
+<translation>瀏覽 PhotoDemon 網站</translation>
 </phrase>
 
 <phrase>
 <original>Third-party libraries</original>
-<translation>第三方庫</translation>
+<translation>第三方函式庫</translation>
 </phrase>
 
 <phrase>
@@ -5848,16 +5850,16 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation>發現 PhotoDemon 新版本。此更新在後台自動處理</translation>
+<translation>PhotoDemon 有新版本可用。更新正在背景中自動進行</translation>
 </phrase>
 
 <phrase>
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation>PhotoDemon 新版本可用！
+<translation>PhotoDemon 有新版本可用！
 
-此更新將在後台自動處理。它完成時，您將收到新的通知。</translation>
+更新正在背景中自動進行。完成後您會收到新的通知。</translation>
 </phrase>
 
 <phrase>
@@ -6238,7 +6240,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>click to open this folder in Windows Explorer</original>
-<translation>單擊在資源管理器中開啟此資料夾</translation>
+<translation>點擊以在 Windows 檔案總管中開啟此資料夾</translation>
 </phrase>
 
 		<!-- Adjustments_Color_Lookup.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6410,12 +6412,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>left-click to add new nodes or drag existing nodes</original>
-<translation>左鍵單擊以新增新節點或拖動現有節點</translation>
+<translation>按滑鼠左鍵以新增節點，或拖曳現有節點</translation>
 </phrase>
 
 <phrase>
 <original>right-click to remove nodes</original>
-<translation>右鍵單擊要刪除節點</translation>
+<translation>按滑鼠右鍵以移除節點</translation>
 </phrase>
 
 <phrase>
@@ -6536,7 +6538,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>set levels automatically</original>
-<translation>自動設定等級</translation>
+<translation>自動設置級別</translation>
 </phrase>
 
 <phrase>
@@ -6551,17 +6553,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>當這個按鈕是活動的時候，你可以通過右鍵單擊「預覽」視窗中的顏色來設置「影子輸入級」顏色。</translation>
+<translation>啟用此按鈕後，您可以在預覽視窗中按滑鼠右鍵點選色彩，以設置陰影輸入色彩級別。</translation>
 </phrase>
 
 <phrase>
 <original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>當這個按鈕是活動的時候，你可以在預覽視窗中設置一個顏色，通過右鍵來設置高亮的輸入級別。</translation>
+<translation>啟用此按鈕後，您可以在預覽視窗中按滑鼠右鍵點選色彩，以設置高光輸入色彩級別。</translation>
 </phrase>
 
 <phrase>
 <original>Mapping new image levels</original>
-<translation>映射新的圖像水平</translation>
+<translation>映射新的圖像級別</translation>
 </phrase>
 
 		<!-- Adjustments_Levels.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -6624,7 +6626,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>gradient type</original>
-<translation>梯度類型</translation>
+<translation>漸層類型</translation>
 </phrase>
 
 <phrase>
@@ -6826,7 +6828,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Autosave data detected</original>
-<translation>自動數據檢測</translation>
+<translation>偵測到自動儲存資料</translation>
 </phrase>
 
 <phrase>
@@ -6841,12 +6843,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Autosave data found.  Would you like to restore it?</original>
-<translation>發現自動儲存數據。你想恢復它嗎？</translation>
+<translation>找到自動儲存資料。要還原嗎？</translation>
 </phrase>
 
 <phrase>
 <original>A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?</original>
-<translation>先前PhotoDemon作業階段意外終止。你想自動恢復下自動儲存的圖像？</translation>
+<translation>先前 PhotoDemon 作業階段意外終止。您是否要自動復原以下自動儲存的圖像？</translation>
 </phrase>
 
 <phrase>
@@ -6863,7 +6865,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Color panel settings</original>
-<translation>顏色面板設置</translation>
+<translation>顏色面板設定</translation>
 </phrase>
 
 <phrase>
@@ -6902,27 +6904,27 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Saved presets</original>
-<translation>儲存預設</translation>
+<translation>已儲存的預設集</translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation>為此預設輸入一個名字</translation>
+<translation>為此預設集輸入名稱</translation>
 </phrase>
 
 <phrase>
 <original>delete preset</original>
-<translation>刪除預設</translation>
+<translation>刪除預設集</translation>
 </phrase>
 
 <phrase>
 <original>saved presets for this tool</original>
-<translation>已儲存此工具的預設</translation>
+<translation>已儲存此工具的預設集</translation>
 </phrase>
 
 <phrase>
 <original>(no saved presets)</original>
-<translation>（沒有儲存的預設）</translation>
+<translation>（沒有儲存的預設集）</translation>
 </phrase>
 
 <phrase>
@@ -6932,39 +6934,39 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>A preset with this name already exists.  Do you want to overwrite it?</original>
-<translation>此名稱的預設已經存在，你想覆蓋它嗎？</translation>
+<translation>此名稱的預設集已經存在，你想覆蓋它嗎？</translation>
 </phrase>
 
 <phrase>
 <original>Overwrite existing preset</original>
-<translation>覆蓋現有的預設</translation>
+<translation>覆蓋現有的預設集</translation>
 </phrase>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation>請為這個預設輸入一個名稱。</translation>
+<translation>請為此預設集輸入一個名稱。</translation>
 </phrase>
 
 <phrase>
 <original>Preset name required</original>
-<translation>要求預置名稱</translation>
+<translation>要求預設集名稱</translation>
 </phrase>
 
 <phrase>
 <original>add new preset</original>
-<translation>新增新預設</translation>
+<translation>新增新的預設集</translation>
 </phrase>
 
 <phrase>
 <original>edit existing presets</original>
-<translation>編輯現有預設</translation>
+<translation>編輯現有預設集</translation>
 </phrase>
 
 		<!-- Dialog_EditPreset.frm contains 25 phrases. 13 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>Fill settings</original>
-<translation>填充設置</translation>
+<translation>填充設定</translation>
 </phrase>
 
 <phrase>
@@ -7004,7 +7006,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>gradient</original>
-<translation>漸變</translation>
+<translation>漸層</translation>
 </phrase>
 
 <phrase>
@@ -7045,7 +7047,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Gradient editor</original>
-<translation>漸變編輯器</translation>
+<translation>漸層編輯器</translation>
 </phrase>
 
 <phrase>
@@ -7065,12 +7067,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>gradient name</original>
-<translation>漸變名稱</translation>
+<translation>漸層名稱</translation>
 </phrase>
 
 <phrase>
 <original>import gradient file</original>
-<translation>匯入漸變圖檔</translation>
+<translation>匯入漸層圖檔</translation>
 </phrase>
 
 <phrase>
@@ -7080,17 +7082,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>export gradient file</original>
-<translation>匯出漸變圖檔</translation>
+<translation>匯出漸層圖檔</translation>
 </phrase>
 
 <phrase>
 <original>save to gradient collection</original>
-<translation>儲存到漸變集合</translation>
+<translation>儲存至漸層集合</translation>
 </phrase>
 
 <phrase>
 <original>current node settings</original>
-<translation>目前節點設置</translation>
+<translation>目前節點設定</translation>
 </phrase>
 
 <phrase>
@@ -7150,7 +7152,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>edit this gradient >></original>
-<translation>編輯此漸變>></translation>
+<translation>編輯此漸層 >></translation>
 </phrase>
 
 <phrase>
@@ -7165,7 +7167,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>A gradient with the name "%1" already exists in your collection.  Would you like to overwrite it?</original>
-<translation>您的集合中已存在名為「 %1 」的漸變。 你想覆蓋它嗎？</translation>
+<translation>您的集合中已存在名為「 %1 」的漸層。 你想覆蓋它嗎？</translation>
 </phrase>
 
 <phrase>
@@ -7175,7 +7177,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>This gradient doesn't have a name.  Please give it a name before adding it to your collection.</original>
-<translation>這個漸變沒有名稱，請在將其新增到收藏集之前為其命名。</translation>
+<translation>這個漸層沒有名稱，請在將其新增到收藏集之前為其命名。</translation>
 </phrase>
 
 <phrase>
@@ -7185,52 +7187,52 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>All supported gradients</original>
-<translation>所有支持的漸變</translation>
+<translation>所有支援的漸層</translation>
 </phrase>
 
 <phrase>
 <original>GIMP Gradient</original>
-<translation>GIMP 漸變</translation>
+<translation>GIMP 漸層</translation>
 </phrase>
 
 <phrase>
 <original>SVG Gradient</original>
-<translation>SVG 漸變</translation>
+<translation>SVG 漸層</translation>
 </phrase>
 
 <phrase>
 <original>Import gradient</original>
-<translation>匯入漸變</translation>
+<translation>匯入漸層</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the gradient file "%1" doesn't appear to be a valid gradient file.</original>
-<translation>漸變圖檔「 %1 」 無效。</translation>
+<translation>很抱歉，漸層檔案「%1」似乎不是有效的漸層檔案。</translation>
 </phrase>
 
 <phrase>
 <original>Invalid gradient</original>
-<translation>無效的漸變圖檔</translation>
+<translation>無效漸層</translation>
 </phrase>
 
 <phrase>
 <original>New gradient</original>
-<translation>新的漸變</translation>
+<translation>新的漸層</translation>
 </phrase>
 
 <phrase>
 <original>Export gradient</original>
-<translation>匯出漸變</translation>
+<translation>匯出漸層</translation>
 </phrase>
 
 <phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
-<translation>左鍵單擊要新增新節點或編輯現有節點。右鍵單擊一個節點，將其刪除。</translation>
+<translation>按滑鼠左鍵以新增節點或編輯現有節點。按滑鼠右鍵以移除節點。</translation>
 </phrase>
 
 <phrase>
 <original>gradient collection</original>
-<translation>漸變集合</translation>
+<translation>漸層集合</translation>
 </phrase>
 
 <phrase>
@@ -7240,7 +7242,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>noise gradients</original>
-<translation>雜訊漸變</translation>
+<translation>雜訊漸層</translation>
 </phrase>
 
 <phrase>
@@ -7255,17 +7257,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Your gradient collection is stored in the "%1" folder</original>
-<translation>您的漸變集合存儲在「 %1 」資料夾中</translation>
+<translation>您的漸層集合儲存在「%1」資料夾中</translation>
 </phrase>
 
 <phrase>
 <original>When a gradient contains colors with wildly different luminance values, gamma correction may improve its appearance.</original>
-<translation>當漸變包含具有完全不同的亮度值的顏色時，伽馬校正可以改善其外觀。</translation>
+<translation>當漸層包含亮度差異極大的色彩時，套用伽瑪校正可能會改善其外觀。</translation>
 </phrase>
 
 <phrase>
 <original>Use this setting to automatically calculate equal positioning for all gradient nodes.</original>
-<translation>使用此設置可自動計算所有梯度節點的相等定位。</translation>
+<translation>使用此設定可自動計算所有漸層節點的等距位置。</translation>
 </phrase>
 
 <phrase>
@@ -7285,7 +7287,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>node settings</original>
-<translation>節點設置</translation>
+<translation>節點設定</translation>
 </phrase>
 
 <phrase>
@@ -7297,7 +7299,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>I understand the risks of running PhotoDemon in the IDE</original>
-<translation>我明白在IDE中運行photodemon有風險</translation>
+<translation>我了解在 IDE 中執行 PhotoDemon 的風險</translation>
 </phrase>
 
 <phrase>
@@ -7443,7 +7445,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Outline settings</original>
-<translation>輪廓設置</translation>
+<translation>輪廓設定</translation>
 </phrase>
 
 <phrase>
@@ -7458,7 +7460,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>miter limit</original>
-<translation>斜接限製</translation>
+<translation>斜接限制</translation>
 </phrase>
 
 <phrase>
@@ -7512,7 +7514,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>in the future, automatically apply these settings</original>
-<translation>以後會自動應用這些設置</translation>
+<translation>以後會自動應用這些設定</translation>
 </phrase>
 
 <phrase>
@@ -7589,7 +7591,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>icons</original>
-<translation>圖標</translation>
+<translation>圖示</translation>
 </phrase>
 
 <phrase>
@@ -7654,12 +7656,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Translation by %1</original>
-<translation>翻譯 %1</translation>
+<translation>翻譯：%1</translation>
 </phrase>
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation>您可以隨時從「工具」選單更改語言和主題設置。</translation>
+<translation>您可以隨時從「工具」選單更改語言和主題設定。</translation>
 </phrase>
 
 <phrase>
@@ -7730,7 +7732,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>%1 has unsaved changes.  What would you like to do?</original>
-<translation>%1 已改變，選擇你想執行的操作。</translation>
+<translation>%1 有尚未儲存的變更。您要如何處理？</translation>
 </phrase>
 
 <phrase>
@@ -8021,7 +8023,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>settings</original>
-<translation>設置</translation>
+<translation>設定</translation>
 </phrase>
 
 <phrase>
@@ -8036,40 +8038,40 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Photoshop (8bf) plugins are files with an "8bf" extension.  These plugins provide new image effects.  Thousands of 8bf plugins are available online.</original>
-<translation>Photoshop（8bf）外掛程式是擴展名為「8bf」的圖檔。這些外掛程式提供了新的圖像效果，網上有數千個8bf外掛程式。</translation>
+<translation>Photoshop（8bf）外掛程式是副檔名為「8bf」的圖檔。這些外掛程式提供了新的圖像效果，網上有數千個8bf外掛程式。</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon does not ship with 8bf plugins, but if you find plugins online, you can download them and add them to PhotoDemon.  (PhotoDemon supports most 32-bit 8bf plugins.  64-bit plugins are not supported.)</original>
-<translation>PhotoDemon不附帶8bf外掛程式，但如果你在網上找到外掛程式，你可以下載它們並將其新增到PhotoDemon中。
-（PhotoDemon支持大多數32位8bf外掛程式，不支持64位外掛程式）</translation>
+<translation>PhotoDemon 不會隨附 8bf 外掛程式，但如果您在線上找到相關外掛程式，可以下載後加入 PhotoDemon。（PhotoDemon 支援大多數 32 位元 8bf 外掛程式，不支援 64 位元外掛程式。）</translation>
 </phrase>
 
 <phrase>
 <original>After downloading one or more 8bf files, use the settings button (above) to tell PhotoDemon where to find them.  PhotoDemon will then add them to your Effects collection.</original>
-<translation>下載一個或多個8bf圖檔後，使用設置按鈕（上圖）告訴PhotoDemon在哪裡可以找到它們，PhotoDemon會將它們新增到你的特效集合中。</translation>
+<translation>下載一個或多個 8bf 檔案後，請使用以上設定按鈕告訴 PhotoDemon 檔案的位置。
+PhotoDemon 隨後會將這些檔案加入您的效果集合。</translation>
 </phrase>
 
 		<!-- Effects_8bf.frm contains 24 phrases. 9 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <phrase>
 <original>after processing, delete this layer</original>
-<translation>處理後，刪除該層</translation>
+<translation>處理後刪除此圖層</translation>
 </phrase>
 
 <phrase>
 <original>background layer</original>
-<translation>背景層</translation>
+<translation>背景圖層</translation>
 </phrase>
 
 <phrase>
 <original>first frame for effect</original>
-<translation>第一幀效果</translation>
+<translation>效果的第一影格</translation>
 </phrase>
 
 <phrase>
 <original>last frame for effect</original>
-<translation>最後一幀效果</translation>
+<translation>效果的最後影格</translation>
 </phrase>
 
 <phrase>
@@ -8150,12 +8152,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Animating image (stage %1 of %2)</original>
-<translation>動畫圖像（%1 / %2）</translation>
+<translation>動態圖像（%1 / %2）</translation>
 </phrase>
 
 <phrase>
 <original>Animating image</original>
-<translation>正在生成漫畫圖像</translation>
+<translation>正在製作動態圖像</translation>
 </phrase>
 
 <phrase>
@@ -8165,7 +8167,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>medium</original>
-<translation>中</translation>
+<translation>中型</translation>
 </phrase>
 
 <phrase>
@@ -8258,7 +8260,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>you can also set a center position by clicking the preview window</original>
-<translation>您還可以通過單擊預覽視窗設置中心位置</translation>
+<translation>您也可以點選預覽視窗來設置中心位置</translation>
 </phrase>
 
 <phrase>
@@ -8849,7 +8851,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>detection direction(s)</original>
-<translation>檢測方向</translation>
+<translation>偵測方向</translation>
 </phrase>
 
 <phrase>
@@ -8859,47 +8861,47 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Artistic contour edge detection</original>
-<translation>藝術輪廓邊緣檢測</translation>
+<translation>藝術輪廓 邊緣檢測</translation>
 </phrase>
 
 <phrase>
 <original>Hilite edge detection</original>
-<translation>HILITE邊緣檢測</translation>
+<translation>HILITE 邊緣檢測</translation>
 </phrase>
 
 <phrase>
 <original>Laplacian edge detection</original>
-<translation>拉普拉斯邊緣檢測</translation>
+<translation>拉普拉斯 邊緣檢測</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon edge detection</original>
-<translation>PhotoDemon邊緣檢測</translation>
+<translation>PhotoDemon 邊緣檢測</translation>
 </phrase>
 
 <phrase>
 <original>Prewitt edge detection</original>
-<translation>Prewitt邊緣檢測</translation>
+<translation>Prewitt 邊緣檢測</translation>
 </phrase>
 
 <phrase>
 <original>Roberts cross edge detection</original>
-<translation>羅伯茨交叉邊緣檢測</translation>
+<translation>羅伯茲交叉算子 邊緣檢測</translation>
 </phrase>
 
 <phrase>
 <original>Sobel edge detection</original>
-<translation>Sobel邊緣檢測</translation>
+<translation>Sobel 邊緣檢測</translation>
 </phrase>
 
 <phrase>
 <original>Artistic contour</original>
-<translation>外形美觀</translation>
+<translation>藝術輪廓</translation>
 </phrase>
 
 <phrase>
 <original>Roberts cross</original>
-<translation>羅伯茨交叉</translation>
+<translation>羅伯茲交叉算子</translation>
 </phrase>
 
 		<!-- Effects_Edge_EnhanceEdges.frm contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -8943,7 +8945,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Calculating gradient flow</original>
-<translation>計算梯度流</translation>
+<translation>正在計算漸層流</translation>
 </phrase>
 
 <phrase>
@@ -9153,7 +9155,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>distribution</original>
-<translation>份佈</translation>
+<translation>分布</translation>
 </phrase>
 
 <phrase>
@@ -9175,22 +9177,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>gradient flow</original>
-<translation>梯度流</translation>
+<translation>漸層流</translation>
 </phrase>
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation>計算能量梯度（合格 %1 /%2）</translation>
+<translation>正在計算能量梯度（第 %1／%2 次）</translation>
 </phrase>
 
 <phrase>
 <original>4-way cardinal</original>
-<translation>4路鮮紅色</translation>
+<translation>四向主方向</translation>
 </phrase>
 
 <phrase>
 <original>4-way ordinal</original>
-<translation>4路序數</translation>
+<translation>四向對角方向</translation>
 </phrase>
 
 <phrase>
@@ -9265,7 +9267,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying median filter</original>
-<translation>正採用 中值 濾鏡</translation>
+<translation>正採用 中位 濾鏡</translation>
 </phrase>
 
 		<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9545,7 +9547,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>median cut</original>
-<translation>中值切割法</translation>
+<translation>中位切割</translation>
 </phrase>
 
 <phrase>
@@ -9822,7 +9824,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>source folder</original>
-<translation>源資料夾：</translation>
+<translation>來源資料夾：</translation>
 </phrase>
 
 <phrase>
@@ -9885,7 +9887,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>源資料夾不包含任何圖檔，請換另一個資料夾試試。</translation>
+<translation>來源資料夾不包含任何圖檔，請換另一個資料夾試試。</translation>
 </phrase>
 
 <phrase>
@@ -9942,7 +9944,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>force each filename, including extension, to the following case</original>
-<translation>強製每個圖檔名，包括擴展名，以下情況</translation>
+<translation>強制將每個檔案名稱（包括副檔名）設為以下大小寫格式</translation>
 </phrase>
 
 <phrase>
@@ -9987,12 +9989,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>auto-detect animated images</original>
-<translation>自動檢測動畫圖像</translation>
+<translation>自動偵測動態圖像</translation>
 </phrase>
 
 <phrase>
 <original>set export settings for this format</original>
-<translation>設置此格式的匯出設置</translation>
+<translation>設置此格式的匯出設定</translation>
 </phrase>
 
 <phrase>
@@ -10007,7 +10009,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>set export settings for animated images</original>
-<translation>設置動畫圖像的匯出參數</translation>
+<translation>設置動態圖像的匯出參數</translation>
 </phrase>
 
 <phrase>
@@ -10196,17 +10198,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation>在繼續之前，您需要單擊「設置此格式的匯出設置」按鈕以指定要使用的匯出設置。</translation>
+<translation>在繼續之前，您需要單擊「設定此格式的匯出設定」按鈕以指定要使用的匯出設定。</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation>需要匯出設置</translation>
+<translation>需要匯出設定</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon不能訪問所請求的輸出資料夾。請選擇一個非系統的，無限製的資料夾進行批處理。</translation>
+<translation>PhotoDemon不能訪問所請求的輸出資料夾。請選擇一個非系統的，無限制的資料夾進行批處理。</translation>
 </phrase>
 
 <phrase>
@@ -10475,7 +10477,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>advanced settings</original>
-<translation>進階設置</translation>
+<translation>進階設定</translation>
 </phrase>
 
 <phrase>
@@ -10510,17 +10512,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This button only affects the preview above.  The repeat setting on the right is what will be used by the exported image file.</original>
-<translation>此按鈕僅影響上面的預覽。右側的重複設置將由匯出的圖像圖檔使用。</translation>
+<translation>此按鈕只會影響以上預覽。右側的重複設定才會套用至匯出的圖像檔案。</translation>
 </phrase>
 
 <phrase>
 <original>frame time (in ms)</original>
-<translation>幀時間（以毫秒為單位）</translation>
+<translation>影格時間（毫秒）</translation>
 </phrase>
 
 <phrase>
 <original>frame time for undefined layers (in ms)</original>
-<translation>未定義圖層的幀時間（以毫秒為單位）</translation>
+<translation>未定義圖層的影格時間（毫秒）</translation>
 </phrase>
 
 		<!-- File_Export_AnimatedGIF.frm contains 23 phrases. 11 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10881,7 +10883,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>restrict palette size</original>
-<translation>限製調色盤大小</translation>
+<translation>限制調色盤大小</translation>
 </phrase>
 
 <phrase>
@@ -11054,7 +11056,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>icon purpose</original>
-<translation>圖標用途</translation>
+<translation>圖示用途</translation>
 </phrase>
 
 <phrase>
@@ -11074,7 +11076,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation>將每個圖層視為一個獨特的圖示影格</translation>
+<translation>將每個圖層視為獨立的圖示影格</translation>
 </phrase>
 
 <phrase>
@@ -11099,17 +11101,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>web - favicon</original>
-<translation>web - favicon</translation>
+<translation>網站－網站圖示</translation>
 </phrase>
 
 <phrase>
 <original>custom icon</original>
-<translation>自定義圖標</translation>
+<translation>自定義圖示</translation>
 </phrase>
 
 <phrase>
 <original>use original file settings</original>
-<translation>使用原始圖檔設置</translation>
+<translation>使用原始圖檔設定</translation>
 </phrase>
 
 		<!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11249,7 +11251,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation>改變圖檔擴展名來匹配顏色模型</translation>
+<translation>變更副檔名以符合色彩模式</translation>
 </phrase>
 
 <phrase>
@@ -11259,7 +11261,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>binary</original>
-<translation>二進製</translation>
+<translation>二進位</translation>
 </phrase>
 
 <phrase>
@@ -11271,12 +11273,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>basic settings</original>
-<translation>基本設置</translation>
+<translation>基本設定</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation>詮釋資料設置</translation>
+<translation>詮釋資料設定</translation>
 </phrase>
 
 <phrase>
@@ -11326,14 +11328,14 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>PNG files support different compression strategies (called "filters").  Smart filter selection produces better compression.  Use the automatic setting to have PhotoDemon test multiple strategies, and automatically select the one that produces the best compression.</original>
-<translation>PNG圖檔支持不同的壓縮策略（稱為「濾鏡」）。 智能濾波器選擇產生更好的壓縮 使用自動設置讓PhotoDemon測試多種策略，並自動選擇產生最佳壓縮的策略。</translation>
+<translation>PNG圖檔支持不同的壓縮策略（稱為「濾鏡」）。 智能濾波器選擇產生更好的壓縮 使用自動設定讓PhotoDemon測試多種策略，並自動選擇產生最佳壓縮的策略。</translation>
 </phrase>
 
 		<!-- File_Save_PNG.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <phrase>
 <original>maximize compatibility</original>
-<translation>最大化兼容性</translation>
+<translation>最大限度相容性</translation>
 </phrase>
 
 		<!-- File_Save_PSD.frm contains 11 phrases. 10 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -11389,7 +11391,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>icon</original>
-<translation>圖標</translation>
+<translation>圖示</translation>
 </phrase>
 
 		<!-- File_Save_WebP.frm contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -11401,7 +11403,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>the fast, free, portable photo editor</original>
-<translation>快速、免費的，便攜式照片編輯器</translation>
+<translation>快速、免費、免安裝的圖像編輯器</translation>
 </phrase>
 
 <phrase>
@@ -11411,7 +11413,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Download program source code</original>
-<translation>下載程式來源程式碼</translation>
+<translation>下載程式原始碼</translation>
 </phrase>
 
 <phrase>
@@ -11623,7 +11625,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>visit the ExifTool homepage</original>
-<translation>訪問ExifTool主頁</translation>
+<translation>瀏覽 ExifTool 首頁</translation>
 </phrase>
 
 <phrase>
@@ -11723,7 +11725,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>tag restrictions</original>
-<translation>標簽的限製</translation>
+<translation>標簽的限制</translation>
 </phrase>
 
 <phrase>
@@ -11733,7 +11735,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
-<translation>這個標簽被限製。它不能被編輯，如果它們導致無效的圖檔，則將被忽略。</translation>
+<translation>這個標簽被限制。它不能被編輯，如果它們導致無效的圖檔，則將被忽略。</translation>
 </phrase>
 
 <phrase>
@@ -11768,7 +11770,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>binary data</original>
-<translation>二進製數據</translation>
+<translation>二進位資料</translation>
 </phrase>
 
 <phrase>
@@ -11933,27 +11935,27 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>make the new layer the active layer</original>
-<translation>使新層成為活動層</translation>
+<translation>將新圖層設為作用中圖層</translation>
 </phrase>
 
 <phrase>
 <original>default (above current layer)</original>
-<translation>預設（在目前層）</translation>
+<translation>預設（目前圖層以上）</translation>
 </phrase>
 
 <phrase>
 <original>below current layer</original>
-<translation>目前層下面</translation>
+<translation>目前圖層以下</translation>
 </phrase>
 
 <phrase>
 <original>top of layer stack</original>
-<translation>位於層頂部</translation>
+<translation>圖層堆疊頂端</translation>
 </phrase>
 
 <phrase>
 <original>bottom of layer stack</original>
-<translation>位於層底部</translation>
+<translation>圖層堆疊底端</translation>
 </phrase>
 
 		<!-- Layer_Add_RasterLayer.frm contains 18 phrases. 13 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12104,7 +12106,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>blend</original>
-<translation>融合</translation>
+<translation>混合</translation>
 </phrase>
 
 <phrase>
@@ -12114,7 +12116,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Shift + Click: add a blank layer</original>
-<translation>按住Shift鍵並單擊：新增空白層</translation>
+<translation>Shift + 點擊：新增空白圖層</translation>
 </phrase>
 
 <phrase>
@@ -12129,12 +12131,12 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Click: move this layer up the layer stack</original>
-<translation>單擊：將此層向上移動到層頂部</translation>
+<translation>單擊：將此圖層在圖層堆疊中上移</translation>
 </phrase>
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer above it</original>
-<translation>按住Shift鍵並單擊：將此層與其上方的層合併</translation>
+<translation>Shift + 點擊：將此圖層與以上圖層合併</translation>
 </phrase>
 
 <phrase>
@@ -12149,7 +12151,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Shift + Click: merge this layer with the layer beneath it</original>
-<translation>按住Shift鍵並單擊：將此圖層與下方的圖層合併</translation>
+<translation>Shift + 點擊：將此圖層與下方的圖層合併</translation>
 </phrase>
 
 <phrase>
@@ -12269,7 +12271,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation>開啟的圖像一個要編輯的圖像(快捷鍵：Ctrl+O)。</translation>
+<translation>另一種開啟圖像的方法，是從桌面或 Windows 檔案總管將圖像拖曳至 PhotoDemon 後放開。</translation>
 </phrase>
 
 <phrase>
@@ -12294,7 +12296,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
-<translation>警告：這會覆蓋目前的圖像圖檔。要儲存到不同的圖檔，使用「另存為」按鈕。</translation>
+<translation>警告：這將覆寫目前的圖像檔案。若要儲存至其他檔案，請使用「另存新檔」按鈕。</translation>
 </phrase>
 
 <phrase>
@@ -12320,17 +12322,17 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation>儲存為「命令」總是引發一個對話框，所以您可以指定目前圖像的新圖檔名、資料夾和/或圖像格式。</translation>
+<translation>「另存新檔」命令總會彈出對話框，讓您可以為目前的圖像指定新的檔案名稱、資料夾及／或圖像格式。/translation>
 </phrase>
 
 <phrase>
 <original>Save As (export to new format or filename)</original>
-<translation>儲存為（匯出到新的格式或圖檔名）</translation>
+<translation>另存新檔（匯出到新的格式或檔名）</translation>
 </phrase>
 
 <phrase>
 <original>Hand (click-and-drag image scrolling)</original>
-<translation>手（點擊並拖動圖像滾動）</translation>
+<translation>手（按住並拖曳以捲動圖像）</translation>
 </phrase>
 
 <phrase>
@@ -12415,7 +12417,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Gradient</original>
-<translation>漸變</translation>
+<translation>漸層</translation>
 </phrase>
 
 <phrase>
@@ -12495,7 +12497,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Clone stamp tool</original>
-<translation>克隆標記工具</translation>
+<translation>仿製圖章工具</translation>
 </phrase>
 
 <phrase>
@@ -12562,7 +12564,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>source settings</original>
-<translation>源設置</translation>
+<translation>源設定</translation>
 </phrase>
 
 <phrase>
@@ -12594,7 +12596,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>after clicking</original>
-<translation>單擊後</translation>
+<translation>點選之後</translation>
 </phrase>
 
 <phrase>
@@ -12621,7 +12623,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>presets</original>
-<translation>預設</translation>
+<translation>預設集</translation>
 </phrase>
 
 <phrase>
@@ -12776,7 +12778,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Fills support many different styles.  Click to switch between solid color, pattern, and gradient styles.</original>
-<translation>填充支持許多不同的風格。 單擊可在純色、圖案和漸變樣式之間切換。</translation>
+<translation>填充支援多種不同樣式。點擊使純色、圖樣和漸層樣式之間切換。</translation>
 </phrase>
 
 <phrase>
@@ -12786,12 +12788,14 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Normally, fill operations analyze the entire image.  You can also analyze just the active layer.</original>
-<translation>通常情況下，填充操作分析整個圖像，您也可以僅分析活動層。</translation>
+<translation>通常！填充操作會分析整張圖像，
+您也可以僅分析作用中圖層。</translation>
 </phrase>
 
 <phrase>
 <original>Normally, fills spread out from a target pixel, adding neighboring pixels as it goes.  You can alternatively set it to analyze the entire image, without regard for continuity.</original>
-<translation>通常，填充從目標像素展開，新增相鄰像素。 您也可以將其設置為分析整個圖像，而不考慮連續性。</translation>
+<translation>通常！填充會從目標像素向外擴散，逐步納入相鄰像素。
+您也可以改為分析整張圖像，而不考慮像素之間的連續性。</translation>
 </phrase>
 
 <phrase>
@@ -13106,12 +13110,13 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>The magic wand tool can operate on the entire image, or just the active layer.</original>
-<translation>魔法棒可以在整個圖像上操作，或者僅僅是在活動層上。</translation>
+<translation>魔法棒可以在整張圖像上操作，也可以僅是在作用中圖層上。</translation>
 </phrase>
 
 <phrase>
 <original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  Alternatively, you can have it search the entire image, without regards for continuity.</original>
-<translation>通常，魔術棒會從目標像素中擴散，在選擇的情況下增加相鄰像素。可以把它設置為搜索整個圖像，而不考慮連續性。</translation>
+<translation>通常！魔術棒會從目標像素向外擴散，逐步將相鄰像素加入選取範圍。
+您也可以改為搜尋整張圖像，而不考慮像素之間的連續性。</translation>
 </phrase>
 
 <phrase>
@@ -13123,7 +13128,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>click to edit text</original>
-<translation>單擊以編輯文字</translation>
+<translation>點擊以編輯文字</translation>
 </phrase>
 
 <phrase>
@@ -13240,7 +13245,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>click to edit</original>
-<translation>單擊此處進行編輯</translation>
+<translation>點擊以編輯</translation>
 </phrase>
 
 <phrase>
@@ -13327,7 +13332,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>restore default</original>
-<translation>恢復預設</translation>
+<translation>還原預設</translation>
 </phrase>
 
 <phrase>
@@ -13347,7 +13352,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>restore all defaults</original>
-<translation>恢復所有預設值</translation>
+<translation>還原所有預設值</translation>
 </phrase>
 
 <phrase>
@@ -13479,37 +13484,37 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Save this translation and proceed to the next phrase</original>
-<translation>儲存並繼續翻譯下一句</translation>
+<translation>儲存此翻譯並前往下一句片語</translation>
 </phrase>
 
 <phrase>
 <original>translated phrase</original>
-<translation>翻譯後內容：</translation>
+<translation>翻譯後片語：</translation>
 </phrase>
 
 <phrase>
 <original>original phrase</original>
-<translation>未翻譯詞條：</translation>
+<translation>原件片語：</translation>
 </phrase>
 
 <phrase>
 <original>Auto-translate all missing phrases</original>
-<translation>自動翻譯所有缺失的短語</translation>
+<translation>自動翻譯所有缺失的片語</translation>
 </phrase>
 
 <phrase>
 <original>reference translation from .po file</original>
-<translation>參考譯文來自.po圖檔</translation>
+<translation>參考 .po 檔案中的翻譯</translation>
 </phrase>
 
 <phrase>
 <original>(NOTE: CTRL+ENTER automatically saves and proceeds to next phrase.)</original>
-<translation>(注意：CTRL+ENTER自動儲存並進入下一樂句)。</translation>
+<translation>（注意：CTRL+ENTER 會自動儲存並前往下一句片語。）</translation>
 </phrase>
 
 <phrase>
 <original>phrase types</original>
-<translation>短語類型</translation>
+<translation>片語類型</translation>
 </phrase>
 
 <phrase>
@@ -13534,7 +13539,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>files where this phrase occurs</original>
-<translation>出現這句話的圖檔</translation>
+<translation>此片語出現的檔案</translation>
 </phrase>
 
 <phrase>
@@ -13544,7 +13549,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>copy system locale</original>
-<translation>複製系統區域設置</translation>
+<translation>複製系統區域設定</translation>
 </phrase>
 
 <phrase>
@@ -13579,17 +13584,17 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>optional translation aids</original>
-<translation>可選的翻譯輔助工具</translation>
+<translation>選用的翻譯輔助工具</translation>
 </phrase>
 
 <phrase>
 <original>free DeepL.com API key for automatic translation suggestions</original>
-<translation>免費的DeepL.com API密鑰用於自動翻譯建議</translation>
+<translation>免費的 DeepL.com API 金鑰，用於自動提供翻譯建議</translation>
 </phrase>
 
 <phrase>
 <original>language file (.po) from any other software, as a reference</original>
-<translation>其他軟體的語言檔（.po 格式），作為參考用</translation>
+<translation>其他軟體的語言檔案（.po 格式），作為參考用</translation>
 </phrase>
 
 <phrase>
@@ -13599,12 +13604,12 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>These optional settings can accelerate the translation process.  They are not saved to the language file.</original>
-<translation>這些可選設置可以加速翻譯過程。  它們不會被儲存到語言檔中。</translation>
+<translation>這些選用設定可以加快翻譯流程。它們不會儲存至語言檔案中。</translation>
 </phrase>
 
 <phrase>
 <original>delete selected language file</original>
-<translation>刪除選定的語言檔</translation>
+<translation>刪除選定的語言檔案</translation>
 </phrase>
 
 <phrase>
@@ -13624,7 +13629,7 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 
 <phrase>
 <original>Processing phrase %1 of %2</original>
-<translation>處理詞組 %1/%2</translation>
+<translation>處理片語 %1/%2</translation>
 </phrase>
 
 <phrase>
@@ -13666,10 +13671,9 @@ PhotoDemon 可以透過加入空白邊界或進行裁切來避免此問題。</t
 <original>Unfortunately, PhotoDemon's en-US language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds.
 
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>很遺憾，在這台電腦上無法找到 PhotoDemon 的 en-US 語言檔。
-該檔包含在PhotoDemon的正式版本中，但它可能不包含在開發或測試版中。
+<translation>很抱歉，在此電腦上找不到 PhotoDemon 的 en-US 語言檔。此檔案包含在 PhotoDemon 的正式版本中，但開發版或 Beta 版可能不包含此檔案。
 
-要開始一個新的翻譯，請從 photodemon.org 下載一個新的 PhotoDemon 版本。</translation>
+若要開始新的翻譯，請從 photodemon.org 下載最新的 PhotoDemon 版本。</translation>
 </phrase>
 
 <phrase>
@@ -13718,7 +13722,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>apply language and translation settings</original>
-<translation>應用語言和翻譯設置</translation>
+<translation>應用語言和翻譯設定</translation>
 </phrase>
 
 <phrase>
@@ -13758,7 +13762,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>[phrase not in file]</original>
-<translation>[圖檔中沒有這句話]</translation>
+<translation>[檔案中沒有此片語]</translation>
 </phrase>
 
 <phrase>
@@ -13852,7 +13856,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>Loading</original>
-<translation>讀取中</translation>
+<translation>讀取時</translation>
 </phrase>
 
 <phrase>
@@ -13884,7 +13888,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <original>All settings will be restored to their default values.  This action cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation>所有設置都將恢復到預設值。此動作無法撤銷。
+<translation>所有設定都將還原到預設值。此動作無法撤銷。
+
 您確定要繼續嗎？</translation>
 </phrase>
 
@@ -13897,17 +13902,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Reset all library options</original>
-<translation>重置所有庫選項</translation>
+<translation>重置全部函式庫選項</translation>
 </phrase>
 
 <phrase>
 <original>library details</original>
-<translation>庫詳情</translation>
+<translation>函式庫詳情</translation>
 </phrase>
 
 <phrase>
 <original>library status</original>
-<translation>庫狀態</translation>
+<translation>函式庫狀態</translation>
 </phrase>
 
 <phrase>
@@ -13917,7 +13922,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>library folder</original>
-<translation>庫資料夾</translation>
+<translation>函式庫資料夾</translation>
 </phrase>
 
 <phrase>
@@ -13927,12 +13932,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>homepage</original>
-<translation>主頁</translation>
+<translation>首頁</translation>
 </phrase>
 
 <phrase>
 <original>license</original>
-<translation>許可證</translation>
+<translation>授權條款</translation>
 </phrase>
 
 <phrase>
@@ -14061,12 +14066,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>recording settings</original>
-<translation>錄製設置</translation>
+<translation>錄製設定</translation>
 </phrase>
 
 <phrase>
 <original>target frame rate (fps)</original>
-<translation>目標幀速率（fps）</translation>
+<translation>目標影格率（fps）</translation>
 </phrase>
 
 <phrase>
@@ -14101,7 +14106,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>cursor and clicks</original>
-<translation>游標和單擊</translation>
+<translation>游標與點擊</translation>
 </phrase>
 
 		<!-- Tools_ScreenVideoPrefs.frm contains 19 phrases. 9 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -14210,12 +14215,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>session restore</original>
-<translation>恢復作業階段</translation>
+<translation>工作階段還原</translation>
 </phrase>
 
 <phrase>
 <original>automatically restore sessions interrupted by system updates or reboots</original>
-<translation>自動恢復因系統更新或重新啟動而中斷的作業階段</translation>
+<translation>自動還原因系統更新或重新啟動而中斷的工作階段</translation>
 </phrase>
 
 <phrase>
@@ -14225,7 +14230,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>display warning when image files aren't loaded successfully</original>
-<translation>圖片檔案載入失敗時顯示警告</translation>
+<translation>圖像檔案載入失敗時顯示警告</translation>
 </phrase>
 
 <phrase>
@@ -14250,7 +14255,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If your PC reboots while PhotoDemon is running, PhotoDemon can automatically restore your previous session.</original>
-<translation>如果你的電腦在 PhotoDemon 執行時重新啟動，PhotoDemon 可以自動還原你先前的作業階段。</translation>
+<translation>如果你的電腦在 PhotoDemon 執行時重新啟動，PhotoDemon 可以自動還原你先前的工作階段。</translation>
 </phrase>
 
 		<!-- Options_Loading.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
@@ -14292,17 +14297,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>使用「另存為」時，使用初始資料夾</translation>
+<translation>使用「另存新檔」時，將初始資料夾設置為</translation>
 </phrase>
 
 <phrase>
 <original>when "Save as" is used</original>
-<translation>當使用「另存為」時</translation>
+<translation>當使用「另存新檔」時</translation>
 </phrase>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation>對新圖片使用「儲存」時，建議使用此檔案格式</translation>
+<translation>對新圖像使用「儲存」時，建議使用此檔案格式</translation>
 </phrase>
 
 <phrase>
@@ -14322,17 +14327,18 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Most photo editors default to the current image's folder.  For workflows that involve loading images from one folder but saving to a new folder, use the last-used folder to save time.</original>
-<translation>大多數圖像編輯器預設使用目前圖片所在的資料夾。若您的工作流程需要從某個資料夾載入圖像，再儲存至新的資料夾，使用上次使用的資料夾可以節省時間。</translation>
+<translation>大多數圖像編輯器預設使用目前圖像所在的資料夾。若您的工作流程需要從某個資料夾載入圖像，再儲存至新的資料夾，使用上次使用的資料夾可以節省時間。</translation>
 </phrase>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation>自動（依圖片屬性選擇格式）</translation>
+<translation>自動（依圖像屬性選擇格式）</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation>此設定決定從未儲存過的圖片初始建議使用的檔案格式。\n「自動」設定會依預設選擇：圖層圖片使用 PDI（PhotoDemon 的原生格式）、沒有透明度的單圖層圖片使用 JPEG，以及具有透明度的單圖層圖片使用 PNG。</translation>
+<translation>此設定決定從未儲存過的圖像初始建議使用的檔案格式。
+「自動」設定會依預設選擇：圖層圖像使用 PDI（PhotoDemon 的原生格式）、沒有透明度的單圖層圖像使用 JPEG，以及具有透明度的單圖層圖像使用 PNG。</translation>
 </phrase>
 
 <phrase>
@@ -14379,15 +14385,15 @@ PhotoDemon 提供一個更「安全」的選項，每次儲存都會產生檔案
 
 <phrase>
 <original>In most photo editors, the "Save as" command defaults to the current filename.  PhotoDemon also provides a "safer" option, where Save As will automatically increment filenames for you.</original>
-<translation>「在大多數照片編輯器中，「另存為」指令會預設為目前使用的檔案名稱。
-PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自動為你遞增檔案名稱。」</translation>
+<translation>在大多數圖像編輯器中，「另存新檔」命令預設會使用目前的檔案名稱。
+PhotoDemon 也提供較「安全」的選項，讓「另存新檔」自動為您遞增檔案名稱。</translation>
 </phrase>
 
 		<!-- Options_Saving.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <phrase>
 <original>compress undo/redo data at the following level</original>
-<translation>撤銷/重做的資料壓縮等級</translation>
+<translation>撤銷/重做的資料壓縮級別</translation>
 </phrase>
 
 <phrase>
@@ -14437,7 +14443,7 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 
 <phrase>
 <original>maximize quality</original>
-<translation>最大限度地提高品質</translation>
+<translation>最大限度品質</translation>
 </phrase>
 
 <phrase>
@@ -14447,7 +14453,7 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 
 <phrase>
 <original>maximize performance</original>
-<translation>最大限度地提高性能</translation>
+<translation>最大限度性能</translation>
 </phrase>
 
 <phrase>
@@ -14464,8 +14470,9 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 
 <phrase>
 <original>Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance.</original>
-<translation>彩現主要圖像畫布是 PhotoDemon 效能的一個常見瓶頸。
-建議使用自動設定，但對於較舊的電腦，你可以手動選擇「最大化效能」選項，以犧牲畫質來換取原始效能</translation>
+<translation>彩現主要圖像畫布是 PhotoDemon 效能常見的瓶頸。
+建議使用自動設定，
+但對於較舊的電腦，您可以手動選擇「最大限度效能」選項，以降低品質換取純粹的效能</translation>
 </phrase>
 
 <phrase>
@@ -14473,7 +14480,7 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 <translation>低壓縮設定需要更多磁碟空間，但撤消/重做操作會更快。
 高壓縮設定需要更少的磁碟空間，但撤消/重做操作會更慢。
 
-關閉圖像時會刪除已撤銷數據，因此此設定僅在正在編輯影像時影響磁碟空間。</translation>
+關閉圖像時會刪除刪除撤銷資料，所以此設定僅影響編輯影像時所使用的磁碟空間。</translation>
 </phrase>
 
 		<!-- Options_Performance.frm contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
@@ -14580,24 +14587,23 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation>如果你不知道這個設定控制什麼，請將其設定為「感知」。
-感知彩現意圖是大多數使用者的最佳選擇。</translation>
+<translation>如果您不知道此設置的用途，請將其設為「感知」。對大多數使用者而言，感知轉譯意圖是最佳選擇。</translation>
 </phrase>
 
 <phrase>
 <original>BPC is primarily relevant in colorimetric rendering intents, where it helps preserve detail in dark (shadow) regions of images.  For most workflows, BPC should be turned ON.</original>
-<translation>黑點補償 (BPC) 主要在色度彩現意圖中相關，它有助於保留圖像（陰影）暗部區域的細節。
-對於大多數工作流程，BPC 應該保持開啟。</translation>
+<translation>BPC 主要與色度轉譯意圖相關，可協助保留圖像暗部（陰影區域）的細節。
+對大多數工作流程而言，建議開啟 BPC。</translation>
 </phrase>
 
 <phrase>
 <original>Embedded ICC profiles improve color fidelity.  Even if this setting is turned off, PhotoDemon may still use ICC profiles for some tasks (like handling CMYK data).</original>
-<translation>內嵌 ICC 設定檔能提升色彩準確度。即使關閉此設定，PhotoDemon 仍可能在某些任務中（例如處理 CMYK 資料時）使用 ICC 設定檔。</translation>
+<translation>嵌入的 ICC 描述檔可提升色彩還原的準確度。即使關閉此設定，PhotoDemon 在某些工作中仍可能使用 ICC 描述檔（例如處理 CMYK 資料）。</translation>
 </phrase>
 
 <phrase>
 <original>Some image formats support both ICC profiles and their own color management solutions.  PhotoDemon always prefers ICC profiles, but when none are embedded, other color management approaches can be tried.</original>
-<translation>有些影像格式同時支援 ICC 設定檔及其自身的色彩管理解決方案。PhotoDemon 總是偏好 ICC 設定檔，但若無內嵌設定檔，則會嘗試其他色彩管理方式。</translation>
+<translation>某些圖像格式同時支援 ICC 描述檔與自身的色彩管理方案。PhotoDemon 一律優先使用 ICC 描述檔，但如果圖像中沒有嵌入 ICC 描述檔，也可以嘗試其他色彩管理方式。</translation>
 </phrase>
 
 		<!-- Options_ColorManagement.frm contains 34 phrases. 11 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
@@ -14629,7 +14635,7 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 
 <phrase>
 <original>each session</original>
-<translation>每次啟動時</translation>
+<translation>每個工作階段</translation>
 </phrase>
 
 <phrase>
@@ -14685,11 +14691,11 @@ PhotoDemon 也提供一個更「安全」的選項，在「另存為」時會自
 <original>You have placed PhotoDemon in a restricted system folder.  Security precautions prevent PhotoDemon from modifying this folder, so automatic updates are now disabled.  To restore them, you must move PhotoDemon to a non-admin folder, like Desktop, Documents, or Downloads.
 
 (If you leave PhotoDemon where it is, please don't forget to visit photodemon.org from time to time to check for new versions.)</original>
-<translation>你已將 PhotoDemon 放置在一個受限的系統資料夾中。
-安全預防措施阻止 PhotoDemon 修改此資料夾，因此自動更新現已停用。
-要恢復自動更新，你必須將 PhotoDemon 移動到一個非管理員權限的資料夾，例如桌面、文件或下載。
+<translation>您已將 PhotoDemon 放置在受限制的系統資料夾中。
+基於安全性考量，PhotoDemon 無法修改此資料夾，因此自動更新功能目前已停用。
+若要恢復自動更新，您必須將 PhotoDemon 移至非系統管理員權限的資料夾，例如桌面、文件或下載。
 
-（如果你將 PhotoDemon 留在目前的位置，請不要忘記不時訪問 photodemon.org 以檢查是否有新版本。</translation>
+（如果您將 PhotoDemon 留在目前的位置，請記得不時造訪 photodemon.org，檢查是否有新版本。）</translation>
 </phrase>
 
 <phrase>
@@ -14708,7 +14714,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>reset all program settings</original>
-<translation>重置所有程式設置</translation>
+<translation>重置所有程式設定</translation>
 </phrase>
 
 <phrase>
@@ -14733,7 +14739,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>application settings folder</original>
-<translation>應用程式設置資料夾</translation>
+<translation>應用程式設定資料夾</translation>
 </phrase>
 
 <phrase>
@@ -14766,12 +14772,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>max PhotoDemon memory usage this session</original>
-<translation>本次 PhotoDemon 作業階段的最大記憶體使用量</translation>
+<translation>本工作階段的最大 PhotoDemon 記憶體使用量</translation>
 </phrase>
 
 <phrase>
 <original>Click to select a new temporary folder.</original>
-<translation>點擊以選擇一個新的暫存資料夾。</translation>
+<translation>點擊以選取一個新的暫存資料夾。</translation>
 </phrase>
 
 <phrase>
@@ -14846,9 +14852,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>When using Remote Desktop or a VM (Virtual Machine), high-resolution mouse input may not work correctly.  This is a long-standing Windows bug.  In these situations, you can use this setting to restore correct mouse behavior.</original>
-<translation>當使用遠端桌面或虛擬機器 (VM) 時，高解析度的滑鼠輸入可能無法正常運作。
-這是一個長期存在的 Windows 錯誤。
-在這些情況下，你可以使用這個設定來恢復正確的滑鼠行為。</translation>
+<translation>使用遠端桌面或虛擬機器（Virtual Machine）時，高解析度滑鼠輸入可能無法正常運作。
+這是 Windows 長期存在的錯誤。在這些情況下，您可以使用此設定來恢復正常的滑鼠行為。</translation>
 </phrase>
 
 		<!-- Options_Input.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -14894,22 +14899,22 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>loading</original>
-<translation>讀取中</translation>
+<translation>讀取時</translation>
 </phrase>
 
 <phrase>
 <original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>強行提取二進製類型標記為Base64（慢）</translation>
+<translation>強制將二進位類型標籤擷取為 Base64（慢）</translation>
 </phrase>
 
 <phrase>
 <original>estimate original JPEG quality settings</original>
-<translation>評估原始JPEG品質設置</translation>
+<translation>估算原始 JPEG 品質設定</translation>
 </phrase>
 
 <phrase>
 <original>extract unknown tags</original>
-<translation>提取未知標簽</translation>
+<translation>擷取未知標籤</translation>
 </phrase>
 
 <phrase>
@@ -14919,7 +14924,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>saving</original>
-<translation>存檔中</translation>
+<translation>存檔時</translation>
 </phrase>
 
 <phrase>
@@ -14947,8 +14952,8 @@ PhotoDemon 可以透過分析其他詮釋資料（例如量化表）來推斷品
 
 <phrase>
 <original>By default, large binary tags (like image thumbnails) are not processed.  Instead, PhotoDemon simply reports the size of the embedded data.  If you require this data, PhotoDemon can manually convert it to Base64 for further analysis.</original>
-<translation>預設情況下，大型二進制標籤（例如圖像縮圖）不會被處理。PhotoDemon 只是報告嵌入資料的大小。
-如果你需要這些資料，PhotoDemon 可以手動將其轉換為 Base64 以供進一步分析。</translation>
+<translation>預設不會處理大型二進位標籤（例如圖像縮圖），而是由 PhotoDemon 直接顯示嵌入資料的大小。
+如果您需要這些資料，PhotoDemon 可以手動將其轉換為 Base64，以便進一步分析。</translation>
 </phrase>
 
 <phrase>
