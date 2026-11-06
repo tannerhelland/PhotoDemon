@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -630,7 +630,7 @@
 
 <phrase>
 <original>Remove holes from selection</original>
-<translation></translation>
+<translation>Премахни дупки от селекцията</translation>
 </phrase>
 
 <phrase>
@@ -660,7 +660,7 @@
 
 <phrase>
 <original>Selection mask from active layer</original>
-<translation></translation>
+<translation>Селектирана Маска от активния слой</translation>
 </phrase>
 
 <phrase>
@@ -675,12 +675,12 @@
 
 <phrase>
 <original>Selection mask to file</original>
-<translation>Маска за селекция като изображение</translation>
+<translation>Селектирана Маска към изображение</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask to layer</original>
-<translation></translation>
+<translation>Селектирана Маска към слой</translation>
 </phrase>
 
 <phrase>
@@ -1550,17 +1550,17 @@
 
 <phrase>
 <original>Next blend mode</original>
-<translation></translation>
+<translation>Следващ режим на смесване</translation>
 </phrase>
 
 <phrase>
 <original>Previous blend mode</original>
-<translation></translation>
+<translation>Предишен режим на смесване</translation>
 </phrase>
 
 <phrase>
 <original>Blend mode: %1</original>
-<translation></translation>
+<translation>Режим на смесване: %1</translation>
 </phrase>
 
 <!-- Colors.bas contains 118 phrases. 86 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
@@ -2043,17 +2043,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Re-show: %1</original>
-<translation></translation>
+<translation>Пре-покажи: %1</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to re-show</original>
-<translation></translation>
+<translation>Няма за Пре-показ</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to repeat</original>
-<translation></translation>
+<translation>Няма за повтаряне</translation>
 </phrase>
 
 <phrase>
@@ -3156,17 +3156,17 @@ Description: %2
 
 <phrase>
 <original>horizontal scaling</original>
-<translation></translation>
+<translation>хоризонтално мащабиране</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation></translation>
+<translation>вертикално мащабиране</translation>
 </phrase>
 
 <phrase>
 <original>text style preset</original>
-<translation></translation>
+<translation>пресет стил на текста</translation>
 </phrase>
 
 <phrase>
@@ -3368,7 +3368,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Applying changes</original>
-<translation></translation>
+<translation>Прилагане на промените</translation>
 </phrase>
 
 <!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -4243,12 +4243,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>Въведете парола</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>Този файл е защитен с парола. Моля, въведете паролата</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -5340,12 +5340,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Remove holes</original>
-<translation></translation>
+<translation>Премахване на дупки</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask from crop tool</original>
-<translation></translation>
+<translation>Селектирана Маска от инструмента за изрязване</translation>
 </phrase>
 
 <phrase>
@@ -5355,7 +5355,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Recently used</original>
-<translation></translation>
+<translation>Последно използвани</translation>
 </phrase>
 
 <phrase>
@@ -7782,7 +7782,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation>Ако сте посредине на работа, продължете спокойно. Процесът на актуализиране ще се завърши автоматично, когато следващия път използвате програмата.</translation>
+<translation>Ако сте по средата на работа, продължете спокойно. Процесът на актуализиране ще се завърши автоматично, когато следващия път използвате програмата.</translation>
 </phrase>
 
 <phrase>
@@ -7809,7 +7809,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Bitmap</original>
-<translation>Битмапа</translation>
+<translation>Bitmap</translation>
 </phrase>
 
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9902,12 +9902,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>preserve input folder structure</original>
-<translation>запази структурата на входната папка</translation>
+<translation>Запази структурата на входната папка</translation>
 </phrase>
 
 <phrase>
 <original>select destination folder</original>
-<translation>Изберете целевата папка</translation>
+<translation>Избери целева папка</translation>
 </phrase>
 
 <phrase>
@@ -10097,7 +10097,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>sort list</original>
-<translation></translation>
+<translation>сортирай списъка</translation>
 </phrase>
 
 <phrase>
@@ -10356,17 +10356,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>фиксирана ширина, запази съотношение на страните</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>фиксирана височина, запази съотношение на страните</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>макс размер, за побиране, запази съотношение на страните</translation>
 </phrase>
 
 <phrase>
@@ -13169,7 +13169,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>scale (x, y)</original>
-<translation></translation>
+<translation>мащаб (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -13371,22 +13371,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Blend modes</original>
-<translation></translation>
+<translation>Режим на смесване</translation>
 </phrase>
 
 <phrase>
 <original>Recent files</original>
-<translation></translation>
+<translation>Последни файлове</translation>
 </phrase>
 
 <phrase>
 <original>Recent file %1</original>
-<translation></translation>
+<translation>Последен файлове %1</translation>
 </phrase>
 
 <phrase>
 <original>Recent macro %1</original>
-<translation></translation>
+<translation>Последен макрос %1</translation>
 </phrase>
 
 <phrase>
@@ -14199,12 +14199,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>display warning when image files aren't loaded successfully</original>
-<translation></translation>
+<translation>показвай предупреждение, когато файловете с изображения не се заредят успешно</translation>
 </phrase>
 
 <phrase>
 <original>broken files</original>
-<translation></translation>
+<translation>повредени файлове</translation>
 </phrase>
 
 <phrase>
@@ -14236,12 +14236,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save As", suggest this file format</original>
-<translation></translation>
+<translation>Когато използва "Запази като", предложи този файлов формат</translation>
 </phrase>
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>Когато се използва "Save"</translation>
+<translation>Когато се използва "Запази"</translation>
 </phrase>
 
 <phrase>
@@ -14266,7 +14266,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>при използване на "Save As", задайте началната папка към</translation>
+<translation>при използване на "Save As", задай началната папка към</translation>
 </phrase>
 
 <phrase>
@@ -14276,7 +14276,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>Когато използва бутона "Запази" за ново изображение, предложи този формат на файла</translation>
 </phrase>
 
 <phrase>
@@ -14301,12 +14301,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>автоматично (съвпадение формат и свойства на изображението)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>Тази настройка определя първоначалното предложение за файлов формат за изображения, които никога не са били записвани преди.  Настройката „автоматично“ по подразбиране е PDI (родният формат на PhotoDemon) за наслоени изображения, JPEG за еднослойни изображения без прозрачност и PNG за еднослойни изображения с прозрачност.</translation>
 </phrase>
 
 <phrase>
@@ -14749,12 +14749,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>maximum number of recent fonts to remember</original>
-<translation></translation>
+<translation>максимален брой скорошни шрифтове за запомняне</translation>
 </phrase>
 
 <phrase>
 <original>recent fonts</original>
-<translation></translation>
+<translation>скорошни шрифтове</translation>
 </phrase>
 
 <phrase>
