@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>bg-BG</langid>
 <langname>Български</langname>
-<langversion>2025.4.158</langversion>
+<langversion>2026.1.244</langversion>
 <langstatus>Автообновяем</langstatus>
 
 <author>jekovcar</author>
@@ -630,7 +630,7 @@
 
 <phrase>
 <original>Remove holes from selection</original>
-<translation></translation>
+<translation>Премахни дупки от селекцията</translation>
 </phrase>
 
 <phrase>
@@ -660,7 +660,7 @@
 
 <phrase>
 <original>Selection mask from active layer</original>
-<translation></translation>
+<translation>Селектирана Маска от активния слой</translation>
 </phrase>
 
 <phrase>
@@ -675,12 +675,12 @@
 
 <phrase>
 <original>Selection mask to file</original>
-<translation>Маска за селекция като изображение</translation>
+<translation>Селектирана Маска към изображение</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask to layer</original>
-<translation></translation>
+<translation>Селектирана Маска към слой</translation>
 </phrase>
 
 <phrase>
@@ -935,7 +935,7 @@
 
 <phrase>
 <original>Box blur</original>
-<translation>Кутия размазване</translation>
+<translation>Рамково размазване</translation>
 </phrase>
 
 <phrase>
@@ -985,12 +985,12 @@
 
 <phrase>
 <original>Pinch and whirl</original>
-<translation>Стискане и въртене</translation>
+<translation>Свиване и въртене</translation>
 </phrase>
 
 <phrase>
 <original>Poke</original>
-<translation>Тукане</translation>
+<translation>Сбръчкване</translation>
 </phrase>
 
 <phrase>
@@ -1020,7 +1020,7 @@
 
 <phrase>
 <original>Emboss</original>
-<translation>Релаф</translation>
+<translation>Релеф</translation>
 </phrase>
 
 <phrase>
@@ -1030,7 +1030,7 @@
 
 <phrase>
 <original>Find edges</original>
-<translation>Намиране на ръбове</translation>
+<translation>Селекция ръбове</translation>
 </phrase>
 
 <phrase>
@@ -1045,7 +1045,7 @@
 
 <phrase>
 <original>Trace contour</original>
-<translation>Проследяване на контур</translation>
+<translation>Трасиране по контура</translation>
 </phrase>
 
 <phrase>
@@ -1055,12 +1055,12 @@
 
 <phrase>
 <original>Bump map</original>
-<translation>Карта на вдлъбнатини</translation>
+<translation>Релефна карта</translation>
 </phrase>
 
 <phrase>
 <original>Cross-screen</original>
-<translation>Кръстосан екран</translation>
+<translation>Звездни лъчи</translation>
 </phrase>
 
 <phrase>
@@ -1070,17 +1070,17 @@
 
 <phrase>
 <original>Sunshine</original>
-<translation>Слънце</translation>
+<translation>Слънчева светлина</translation>
 </phrase>
 
 <phrase>
 <original>Dilate (maximum rank)</original>
-<translation>Разширяване (максимален ранг)</translation>
+<translation>Разширяване (макс. филтр)</translation>
 </phrase>
 
 <phrase>
 <original>Erode (minimum rank)</original>
-<translation>Ерозиране (минимален ранг)</translation>
+<translation>Ерозиране (мин. филтр)</translation>
 </phrase>
 
 <phrase>
@@ -1095,7 +1095,7 @@
 
 <phrase>
 <original>Ignite</original>
-<translation>Запалване</translation>
+<translation>Пламък</translation>
 </phrase>
 
 <phrase>
@@ -1120,7 +1120,7 @@
 
 <phrase>
 <original>Add film grain</original>
-<translation>Добави филмово зърно</translation>
+<translation>Добави зърнест филм</translation>
 </phrase>
 
 <phrase>
@@ -1145,7 +1145,7 @@
 
 <phrase>
 <original>Mean shift</original>
-<translation>Среден сдвиг</translation>
+<translation>Смяна средно</translation>
 </phrase>
 
 <phrase>
@@ -1155,7 +1155,7 @@
 
 <phrase>
 <original>Symmetric nearest-neighbor</original>
-<translation>Симетричен най-близък съсед</translation>
+<translation>По близки точки</translation>
 </phrase>
 
 <phrase>
@@ -1185,7 +1185,7 @@
 
 <phrase>
 <original>Pointillize</original>
-<translation>Точкизиране</translation>
+<translation>Точкозиране</translation>
 </phrase>
 
 <phrase>
@@ -1210,7 +1210,7 @@
 
 <phrase>
 <original>Unsharp mask</original>
-<translation>Маска за изостряне</translation>
+<translation>Контурна острота</translation>
 </phrase>
 
 <phrase>
@@ -1230,12 +1230,12 @@
 
 <phrase>
 <original>Outline</original>
-<translation>Очертаване</translation>
+<translation>Контур</translation>
 </phrase>
 
 <phrase>
 <original>Palette</original>
-<translation>Палета</translation>
+<translation>Палитра</translation>
 </phrase>
 
 <phrase>
@@ -1250,7 +1250,7 @@
 
 <phrase>
 <original>Twins</original>
-<translation>Близнаци</translation>
+<translation>Осева симетрия</translation>
 </phrase>
 
 <phrase>
@@ -1295,12 +1295,12 @@
 
 <phrase>
 <original>Animation foreground</original>
-<translation>Анимационен преден план</translation>
+<translation>Анимация преден план</translation>
 </phrase>
 
 <phrase>
 <original>Animation playback speed</original>
-<translation>Скорост на възпроизвеждане на анимацията</translation>
+<translation>Скорост възпроизвеждане на анимацията</translation>
 </phrase>
 
 <phrase>
@@ -1310,7 +1310,7 @@
 
 <phrase>
 <original>Photoshop (8bf) plugin</original>
-<translation>Photoshop (8bf) плъгин</translation>
+<translation>Плъгин Photoshop (8bf)</translation>
 </phrase>
 
 <phrase>
@@ -1320,7 +1320,7 @@
 
 <phrase>
 <original>Stop macro recording</original>
-<translation>Спрете запис на макрос</translation>
+<translation>Спри записа на макрос</translation>
 </phrase>
 
 <phrase>
@@ -1371,7 +1371,7 @@
 
 <phrase>
 <original>Unloading image %1 of %2</original>
-<translation>Разтоварване на изображение %1 от %2</translation>
+<translation>Зареждане на изображение %1 от %2</translation>
 </phrase>
 
 <phrase>
@@ -1398,7 +1398,7 @@
 
 <phrase>
 <original>Profile exported successfully.</original>
-<translation>Профилът беше експортиран успешно.</translation>
+<translation>Профилът бе експортиран успешно.</translation>
 </phrase>
 
 <!-- ColorManagement_ICM.bas contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -1530,7 +1530,7 @@
 
 <phrase>
 <original>Grain merge</original>
-<translation>Сливане на гранула</translation>
+<translation>Слята гранула</translation>
 </phrase>
 
 <phrase>
@@ -1540,7 +1540,7 @@
 
 <phrase>
 <original>Behind</original>
-<translation>Оригинал</translation>
+<translation>Отзад</translation>
 </phrase>
 
 <phrase>
@@ -1550,44 +1550,44 @@
 
 <phrase>
 <original>Next blend mode</original>
-<translation></translation>
+<translation>Следващ режим на смесване</translation>
 </phrase>
 
 <phrase>
 <original>Previous blend mode</original>
-<translation></translation>
+<translation>Предишен режим на смесване</translation>
 </phrase>
 
 <phrase>
 <original>Blend mode: %1</original>
-<translation></translation>
+<translation>Режим на смесване: %1</translation>
 </phrase>
 
 <!-- Colors.bas contains 118 phrases. 86 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <phrase>
 <original>How would you like to load this image?</original>
-<translation>Как искате да заредите това изображение?</translation>
+<translation>Как да заредите това изображение?</translation>
 </phrase>
 
 <phrase>
 <original>Open it as a standalone image.</original>
-<translation>Отвори го като отделно изображение.</translation>
+<translation>Отвори като отделно изображение.</translation>
 </phrase>
 
 <phrase>
 <original>Add it to the current image as a new layer.</original>
-<translation>Добави го към текущото изображение като нов слой.</translation>
+<translation>Добави към текущото изображение като нов слой.</translation>
 </phrase>
 
 <phrase>
 <original>I can't decide.  Cancel this action.</original>
-<translation>Не мога да реша.  Отмени това действие.</translation>
+<translation>Не мога да реша. Отмени това действие.</translation>
 </phrase>
 
 <phrase>
 <original>in the future, do this without asking me</original>
-<translation>в бъдеще, прави това без да ме питаш</translation>
+<translation>Повече не питай</translation>
 </phrase>
 
 <phrase>
@@ -1611,7 +1611,7 @@
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation>Базата данни с етикети се грижи за техническите подробности на над 20 000 метаданни етикета, поддържани от PhotoDemon. Създаването на базата отнема 10 до 15 секунди и е необходимо само при първото използване на редактора на метаданни.</translation>
+<translation>Базата данни съдържа технически подробности за над 20 000 тагови метаданни, поддържани от PhotoDemon. Създаването на базата отнема 10 до 15 секунди и е необходимо само при първото използване на редактора за метаданни.</translation>
 </phrase>
 
 <phrase>
@@ -1676,7 +1676,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>background</original>
-<translation>фон</translation>
+<translation>Фон</translation>
 </phrase>
 
 <phrase>
@@ -1698,7 +1698,7 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Auto-correcting colors and lighting</original>
-<translation>Автоматично коригиране на цветовете и осветлението</translation>
+<translation>Автокорекция на цветове и осветеност</translation>
 </phrase>
 
 <phrase>
@@ -1745,26 +1745,26 @@ If the problem persists, please report it to the PhotoDemon developers via photo
 
 <phrase>
 <original>Generating grids</original>
-<translation>Генериране на мрежи</translation>
+<translation>Създай мрежа</translation>
 </phrase>
 
 <phrase>
 <original>Applying grid blur</original>
-<translation>Прилагане на размазване на мрежата</translation>
+<translation>Прилагане на размазване по мрежата</translation>
 </phrase>
 
 <!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <phrase>
 <original>Carving image relief</original>
-<translation>Изрязване на релефа на изображението</translation>
+<translation>Изрязване релефа на изображението</translation>
 </phrase>
 
 <!-- Filters_Edge.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <phrase>
 <original>Counting the number of unique colors in this image</original>
-<translation>Броене на броя уникални цветове в това изображение</translation>
+<translation>Количество уникални цветове в това изображение</translation>
 </phrase>
 
 <phrase>
@@ -1785,27 +1785,27 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>random</original>
-<translation>случаен</translation>
+<translation>Случаен</translation>
 </phrase>
 
 <phrase>
 <original>image</original>
-<translation>изображение</translation>
+<translation>Изображение</translation>
 </phrase>
 
 <phrase>
 <original>repeat</original>
-<translation>повтаряне</translation>
+<translation>Повторни</translation>
 </phrase>
 
 <phrase>
 <original>waves</original>
-<translation>вълни</translation>
+<translation>Вълни</translation>
 </phrase>
 
 <phrase>
 <original>quilt</original>
-<translation>лозуна</translation>
+<translation>Квилтинг</translation>
 </phrase>
 
 <phrase>
@@ -1815,27 +1815,27 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>weave</original>
-<translation>тъкане</translation>
+<translation>Модел</translation>
 </phrase>
 
 <phrase>
 <original>arc</original>
-<translation>дъга</translation>
+<translation>Арка</translation>
 </phrase>
 
 <phrase>
 <original>line</original>
-<translation>линия</translation>
+<translation>Линия</translation>
 </phrase>
 
 <phrase>
 <original>maze</original>
-<translation>лабиринт</translation>
+<translation>Лабиринт</translation>
 </phrase>
 
 <phrase>
 <original>triangle</original>
-<translation>триъгълник</translation>
+<translation>Триъгълник</translation>
 </phrase>
 
 <phrase>
@@ -1845,7 +1845,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>circle</original>
-<translation>кръг</translation>
+<translation>Кръг</translation>
 </phrase>
 
 <!-- Filters_Render.bas contains 26 phrases. 13 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -1859,7 +1859,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Analyzing image</original>
-<translation>Анализиране на изображението</translation>
+<translation>Анализ на изображението</translation>
 </phrase>
 
 <phrase>
@@ -1869,7 +1869,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Image is already cropped intelligently.  Autocrop abandoned.  (No changes were made to the image.)</original>
-<translation>Изображението вече е интелигентно изрязано.  Автокръп прекратен.  (Не бяха направени промени в изображението.)</translation>
+<translation>Изображението вече е интелигентно изрязано.  Автоизреза е прекратен.  (Не бяха направени промени в изображението.)</translation>
 </phrase>
 
 <phrase>
@@ -1879,7 +1879,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>No active selection found.  Crop abandoned.</original>
-<translation>Не е намерена активна селекция.  Изрязването прекратено.</translation>
+<translation>Не е намерена активна селекция. Изрязването е отменено.</translation>
 </phrase>
 
 <phrase>
@@ -1899,17 +1899,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Fitting image canvas around layer</original>
-<translation>Поставяне на платно на изображението около слоя</translation>
+<translation>Напасване на платното с изображение към слоя</translation>
 </phrase>
 
 <phrase>
 <original>Image is fully transparent.  Trim abandoned.</original>
-<translation>Изображението е напълно прозрачно.  Подрязването прекратено.</translation>
+<translation>Изображението е напълно прозрачно. Изрязването е отменено.</translation>
 </phrase>
 
 <phrase>
 <original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>Изображението вече е подрязано.  (Не бяха направени промени в изображението.)</translation>
+<translation>Изображението вече е изрязано.(Не бяха направени промени в изображението.)</translation>
 </phrase>
 
 <phrase>
@@ -2043,17 +2043,17 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Re-show: %1</original>
-<translation></translation>
+<translation>Пре-покажи: %1</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to re-show</original>
-<translation></translation>
+<translation>Няма за Пре-показ</translation>
 </phrase>
 
 <phrase>
 <original>Nothing to repeat</original>
-<translation></translation>
+<translation>Няма за повтаряне</translation>
 </phrase>
 
 <phrase>
@@ -2265,7 +2265,7 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>No.  Leave text and vector layers as they are.</original>
-<translation>Не.  Оставете текстовите и векторните слоеве така, както са.</translation>
+<translation>Не.  Остави текстовите и векторните слоеве така, както са.</translation>
 </phrase>
 
 <phrase>
@@ -2275,12 +2275,12 @@ This image contains %2 unique color + opacity values (RGBA).</original>
 
 <phrase>
 <original>Yes.  Please convert this text layer.</original>
-<translation>Да.  Моля, преобразувайте този текстов слой.</translation>
+<translation>Да.  Моля, преобразувай този текстов слой.</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave this text layer as it is.</original>
-<translation>Не.  Оставете този текстов слой както е.</translation>
+<translation>Не.  Остави този текстов слой както е.</translation>
 </phrase>
 
 <phrase>
@@ -2526,7 +2526,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>empty</original>
-<translation>празен</translation>
+<translation>Няма</translation>
 </phrase>
 
 <phrase>
@@ -3156,17 +3156,17 @@ Description: %2
 
 <phrase>
 <original>horizontal scaling</original>
-<translation></translation>
+<translation>хоризонтално мащабиране</translation>
 </phrase>
 
 <phrase>
 <original>vertical scaling</original>
-<translation></translation>
+<translation>вертикално мащабиране</translation>
 </phrase>
 
 <phrase>
 <original>text style preset</original>
-<translation></translation>
+<translation>пресет стил на текста</translation>
 </phrase>
 
 <phrase>
@@ -3243,7 +3243,7 @@ When finished, click the Submit New Issue button.  Thank you!</original>
 %1
 
 In the meantime, please try saving the image to an alternate format.  You can also let the PhotoDemon developers know about this via the Help > Submit Bug Report menu.</original>
-<translation>Възникна грешка при опит за запазване на това изображение.  Приставката FreeImage съобщи следните подробности за грешката: 
+<translation>Възникна грешка при опит за запазване на това изображение. Плъгинът FreeImage съобщи следните подробности за грешката: 
 
 %1
 
@@ -3368,7 +3368,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 <phrase>
 <original>Applying changes</original>
-<translation></translation>
+<translation>Прилагане на промените</translation>
 </phrase>
 
 <!-- SelectionFilters.bas contains 20 phrases. 14 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -3609,7 +3609,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>unknown</original>
-<translation>неизвестен</translation>
+<translation>Неизвестен</translation>
 </phrase>
 
 <phrase>
@@ -4243,12 +4243,12 @@ You will need to manually download this file using your Internet browser.</origi
 
 <phrase>
 <original>Enter password</original>
-<translation></translation>
+<translation>Въведете парола</translation>
 </phrase>
 
 <phrase>
 <original>This file is password-protected.  Please enter a password</original>
-<translation></translation>
+<translation>Този файл е защитен с парола. Моля, въведете паролата</translation>
 </phrase>
 
 <!-- pdPDF.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -4923,7 +4923,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>size</original>
-<translation>размер</translation>
+<translation>Размер</translation>
 </phrase>
 
 <phrase>
@@ -5300,7 +5300,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Other open images into this image (as layers)</original>
-<translation>Други отворени изображения в това изображение (като слоеве)</translation>
+<translation>Отвори други изображения в това изображение (като слоеве)</translation>
 </phrase>
 
 <phrase>
@@ -5335,17 +5335,17 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Feather</original>
-<translation>Мекост</translation>
+<translation>Перо</translation>
 </phrase>
 
 <phrase>
 <original>Remove holes</original>
-<translation></translation>
+<translation>Премахване на дупки</translation>
 </phrase>
 
 <phrase>
 <original>Selection mask from crop tool</original>
-<translation></translation>
+<translation>Селектирана Маска от инструмент изрязване</translation>
 </phrase>
 
 <phrase>
@@ -5355,7 +5355,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Recently used</original>
-<translation></translation>
+<translation>Последно използвани</translation>
 </phrase>
 
 <phrase>
@@ -5365,12 +5365,12 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Shift left</original>
-<translation>Преместване наляво</translation>
+<translation>Премести наляво</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation>Преместване надясно</translation>
+<translation>Премести надясно</translation>
 </phrase>
 
 <phrase>
@@ -5430,7 +5430,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Blur</original>
-<translation>Размъгване</translation>
+<translation>Размазване</translation>
 </phrase>
 
 <phrase>
@@ -5440,7 +5440,7 @@ The final value must be between %3 and %4.</original>
 
 <phrase>
 <original>Correct existing distortion</original>
-<translation>Коригиране на съществуващата деформация</translation>
+<translation>Коригирай съществуваща деформация</translation>
 </phrase>
 
 <phrase>
@@ -5940,12 +5940,12 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>do not modify</original>
-<translation>не променяйте</translation>
+<translation>Не променяй</translation>
 </phrase>
 
 <phrase>
 <original>remove from image</original>
-<translation>премахване от изображението</translation>
+<translation>Премахни от изображението</translation>
 </phrase>
 
 <phrase>
@@ -7557,7 +7557,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Filmic</original>
-<translation>Кинематографично</translation>
+<translation>Филмов</translation>
 </phrase>
 
 <phrase>
@@ -7584,7 +7584,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>interface accent color</original>
-<translation>цвет на акцент в интерфейса</translation>
+<translation>Цвят на акцента в интерфейса</translation>
 </phrase>
 
 <phrase>
@@ -7614,7 +7614,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>orange</original>
-<translation>оранжев</translation>
+<translation>Оранжев</translation>
 </phrase>
 
 <phrase>
@@ -7629,7 +7629,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>teal</original>
-<translation>Тюркоазен</translation>
+<translation>Тюркоаз</translation>
 </phrase>
 
 <phrase>
@@ -7649,7 +7649,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>You can change language and theme settings at any time from the Tools menu.</original>
-<translation>Можете да променяте езика и настройките на темата по всяко време от менюто Инструменти.</translation>
+<translation>Можете да променяте езика и настройките на темата по всяко време от меню Инструменти.</translation>
 </phrase>
 
 <phrase>
@@ -7671,22 +7671,22 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Save the image before closing it</original>
-<translation>Запазете изображението преди да го затворите</translation>
+<translation>Запази изображението преди да се затвори</translation>
 </phrase>
 
 <phrase>
 <original>Repeat this action for all unsaved images (%1 in total)</original>
-<translation>Повторете действието за всички несъхранени изображения (%1 общо)</translation>
+<translation>Повтори действието за всички несъхранени изображения (%1 общо)</translation>
 </phrase>
 
 <phrase>
 <original>Do not save the image (discard all changes)</original>
-<translation>Не запазвайте изображението (отхвърлете всички промени)</translation>
+<translation>Не запазвай изображението (отхвърли всички промени)</translation>
 </phrase>
 
 <phrase>
 <original>Cancel, and return to editing</original>
-<translation>Откажете и се върнете към редактирането</translation>
+<translation>Откажи и се върни към редактиране</translation>
 </phrase>
 
 <phrase>
@@ -7725,7 +7725,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>unnamed image %1</original>
-<translation>неименувано изображение %1</translation>
+<translation>Неименувано изображение %1</translation>
 </phrase>
 
 <phrase>
@@ -7782,7 +7782,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation>Ако сте посредине на работа, продължете спокойно. Процесът на актуализиране ще се завърши автоматично, когато следващия път използвате програмата.</translation>
+<translation>Ако сте по средата на работа, продължете спокойно. Процесът на актуализиране ще се завърши автоматично, когато следващия път използвате програмата.</translation>
 </phrase>
 
 <phrase>
@@ -7809,7 +7809,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Bitmap</original>
-<translation>Битмапа</translation>
+<translation>Bitmap</translation>
 </phrase>
 
 <!-- Edit_Clipboard.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -7971,7 +7971,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>default plugin folder</original>
-<translation>Папка по подразбиране за приставки</translation>
+<translation>Папка по подразбиране за Плъгини</translation>
 </phrase>
 
 <phrase>
@@ -7986,27 +7986,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>scan for new plugins</original>
-<translation>сканирай за нови приставки</translation>
+<translation>сканирай за нови плъгини</translation>
 </phrase>
 
 <phrase>
 <original>about this plugin</original>
-<translation>Относно тази приставка</translation>
+<translation>Относно този Плъгин</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for plugin</original>
-<translation>Включи приставка</translation>
+<translation>Включи Плъгин</translation>
 </phrase>
 
 <phrase>
 <original>Plugin canceled.</original>
-<translation>Приставката е отменена.</translation>
+<translation>Плъгина е отменен.</translation>
 </phrase>
 
 <phrase>
 <original>plugins</original>
-<translation>приставки</translation>
+<translation>Плъгини</translation>
 </phrase>
 
 <phrase>
@@ -8016,12 +8016,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>loading plugin collection</original>
-<translation>Зареди колекция от приставки</translation>
+<translation>Зареди колекция от плъгини</translation>
 </phrase>
 
 <phrase>
 <original>No plugins found.</original>
-<translation>Не са намерени приставки.</translation>
+<translation>Не са намерени плъгини.</translation>
 </phrase>
 
 <phrase>
@@ -8134,7 +8134,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>brush size</original>
-<translation>размер на четка</translation>
+<translation>Размер на четка</translation>
 </phrase>
 
 <phrase>
@@ -8436,7 +8436,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>keep both dimensions in sync</original>
-<translation>запазете двете размери в синхрон</translation>
+<translation>Запази двата размери в синхрон</translation>
 </phrase>
 
 <phrase>
@@ -8507,7 +8507,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>distance</original>
-<translation>разстояние</translation>
+<translation>Разстояние</translation>
 </phrase>
 
 <phrase>
@@ -8529,7 +8529,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>accuracy</original>
-<translation>точност</translation>
+<translation>Точност</translation>
 </phrase>
 
 <!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8729,12 +8729,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>pinch amount</original>
-<translation>степен на стискане</translation>
+<translation>степен на свиване</translation>
 </phrase>
 
 <phrase>
 <original>Pinching and whirling image</original>
-<translation>Стискане и въртене на изображението</translation>
+<translation>Свиване и въртене на изображението</translation>
 </phrase>
 
 <!-- Effects_Distort_Pinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8981,7 +8981,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>apply contour smoothing</original>
-<translation>приложи изглаждане на контур</translation>
+<translation>Приложи изглаждане на контур</translation>
 </phrase>
 
 <phrase>
@@ -9902,12 +9902,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>preserve input folder structure</original>
-<translation>запази структурата на входната папка</translation>
+<translation>Запази структурата на входната папка</translation>
 </phrase>
 
 <phrase>
 <original>select destination folder</original>
-<translation>Изберете целевата папка</translation>
+<translation>Избери целева папка</translation>
 </phrase>
 
 <phrase>
@@ -9952,7 +9952,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>after images are processed, save them with the following name</original>
-<translation>след като изображенията бъдат обработени, запазете ги със следното име</translation>
+<translation>след като изображенията бъдат обработени, ги запази със следното име</translation>
 </phrase>
 
 <phrase>
@@ -9987,22 +9987,22 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>keep images in their original format</original>
-<translation>запазете изображенията в оригиналния им формат</translation>
+<translation>Запази изображенията в оригиналния им формат</translation>
 </phrase>
 
 <phrase>
 <original>convert all images to a new format</original>
-<translation>конвертирайте всички изображения в нов формат</translation>
+<translation>конвертирай всички изображения в нов формат</translation>
 </phrase>
 
 <phrase>
 <original>set export settings for animated images</original>
-<translation>задайте настройки за експортиране за анимирани изображения</translation>
+<translation>Задай настройки за експортиране за анимирани изображения</translation>
 </phrase>
 
 <phrase>
 <original>apply photo editing actions</original>
-<translation>приложете действия за редактиране на снимки</translation>
+<translation>Приложи действия за редактиране на снимки</translation>
 </phrase>
 
 <phrase>
@@ -10012,22 +10012,22 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>resize image by</original>
-<translation>преоразмерете изображението с</translation>
+<translation>Преоразмери изображението с</translation>
 </phrase>
 
 <phrase>
 <original>select macro</original>
-<translation>Изберете макрос</translation>
+<translation>Избери макрос</translation>
 </phrase>
 
 <phrase>
 <original>apply other actions from a saved macro file</original>
-<translation>приложете други действия от записан файл с макрос</translation>
+<translation>Приложи други действия от записан файл с макрос</translation>
 </phrase>
 
 <phrase>
 <original>resize images</original>
-<translation>преоразмеряване на изображения</translation>
+<translation>Преоразмеряване на изображения</translation>
 </phrase>
 
 <phrase>
@@ -10042,12 +10042,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>save list</original>
-<translation>запази списъка</translation>
+<translation>Запази списъка</translation>
 </phrase>
 
 <phrase>
 <original>load list</original>
-<translation>зареди списъка</translation>
+<translation>Зареди списък</translation>
 </phrase>
 
 <phrase>
@@ -10057,7 +10057,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>remove selected image</original>
-<translation>премахни избраното изображение</translation>
+<translation>Премахни избраното изображение</translation>
 </phrase>
 
 <phrase>
@@ -10067,12 +10067,12 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>show image previews</original>
-<translation>покажи визуализации на изображенията</translation>
+<translation>Покажи визуализации на изображенията</translation>
 </phrase>
 
 <phrase>
 <original>add images</original>
-<translation>добави изображения</translation>
+<translation>Добави изображения</translation>
 </phrase>
 
 <phrase>
@@ -10082,22 +10082,22 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>load / save list</original>
-<translation>зареждане / запазване на списъка</translation>
+<translation>Зареждане / запазване на списъка</translation>
 </phrase>
 
 <phrase>
 <original>add entire folder(s)</original>
-<translation>добави цяла(и) папка(и)</translation>
+<translation>Добави цяла(и) папка(и)</translation>
 </phrase>
 
 <phrase>
 <original>remove all images in this folder</original>
-<translation>премахни всички изображения в тази папка</translation>
+<translation>Премахни всички изображения в тази папка</translation>
 </phrase>
 
 <phrase>
 <original>sort list</original>
-<translation></translation>
+<translation>Сортирай списъка</translation>
 </phrase>
 
 <phrase>
@@ -10161,7 +10161,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>no macro selected</original>
-<translation>не е избран макрос</translation>
+<translation>Не е избран макрос</translation>
 </phrase>
 
 <phrase>
@@ -10336,7 +10336,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>no</original>
-<translation>не</translation>
+<translation>Не</translation>
 </phrase>
 
 <phrase>
@@ -10356,17 +10356,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>fixed width, preserve aspect ratio</original>
-<translation></translation>
+<translation>фиксирана ширина, запази съотношение на страните</translation>
 </phrase>
 
 <phrase>
 <original>fixed height, preserve aspect ratio</original>
-<translation></translation>
+<translation>фиксирана височина, запази съотношение на страните</translation>
 </phrase>
 
 <phrase>
 <original>max size, fit within, preserve aspect ratio</original>
-<translation></translation>
+<translation>макс размер, за побиране, запази съотношение на страните</translation>
 </phrase>
 
 <phrase>
@@ -10798,7 +10798,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>paper size</original>
-<translation>размер на хартията</translation>
+<translation>Размер на хартията</translation>
 </phrase>
 
 <phrase>
@@ -11055,7 +11055,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>treat each layer as a unique icon frame</original>
-<translation>обработвайте всеки слой като уникална рамка на икона</translation>
+<translation>Обработвай всеки слой като уникална рамка на икона</translation>
 </phrase>
 
 <phrase>
@@ -11090,7 +11090,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>use original file settings</original>
-<translation>използвайте оригиналните настройки на файла</translation>
+<translation>Използвай оригиналните настройки на файла</translation>
 </phrase>
 
 <!-- File_Save_ICO.frm contains 21 phrases. 9 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -11223,7 +11223,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>use progressive encoding</original>
-<translation>използвайте прогресивно кодиране</translation>
+<translation>Използвай прогресивно кодиране</translation>
 </phrase>
 
 <!-- File_Save_JXR.frm contains 22 phrases. 21 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -11456,7 +11456,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>anchor position</original>
-<translation>позиция на котвата</translation>
+<translation>Позиция на котвата</translation>
 </phrase>
 
 <!-- Image_CanvasSize.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -11483,7 +11483,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>compare using Lab color space</original>
-<translation>сравнявайте, използвайки Lab цветово пространство</translation>
+<translation>Сравнявай, използвайки Lab цветово пространство</translation>
 </phrase>
 
 <phrase>
@@ -12629,17 +12629,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>apply</original>
-<translation>приложи</translation>
+<translation>Приложи</translation>
 </phrase>
 
 <phrase>
 <original>position (x, y)</original>
-<translation>позиция (x, y)</translation>
+<translation>Позиция (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>size (w, h)</original>
-<translation>размер (w, h)</translation>
+<translation>Размер (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -13169,7 +13169,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>scale (x, y)</original>
-<translation></translation>
+<translation>мащаб (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -13371,22 +13371,22 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Blend modes</original>
-<translation></translation>
+<translation>Режим на смесване</translation>
 </phrase>
 
 <phrase>
 <original>Recent files</original>
-<translation></translation>
+<translation>Последни файлове</translation>
 </phrase>
 
 <phrase>
 <original>Recent file %1</original>
-<translation></translation>
+<translation>Последен файлове %1</translation>
 </phrase>
 
 <phrase>
 <original>Recent macro %1</original>
-<translation></translation>
+<translation>Последен макрос %1</translation>
 </phrase>
 
 <phrase>
@@ -13661,7 +13661,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>phrases that don't match reference</original>
-<translation>изрази, които не съвпадат с референтните</translation>
+<translation>Изрази, които не съвпадат с референтните</translation>
 </phrase>
 
 <phrase>
@@ -13926,7 +13926,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Plugin options saved.</original>
-<translation>Настройките на приставката са запазени.</translation>
+<translation>Настройките на плъгина са запазени.</translation>
 </phrase>
 
 <phrase>
@@ -13956,7 +13956,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>incompatible with Windows 7</original>
-<translation>несъвместима с Windows 7</translation>
+<translation>Несъвместима с Windows 7</translation>
 </phrase>
 
 <phrase>
@@ -14092,7 +14092,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>main window</original>
-<translation>главен прозорец</translation>
+<translation>Главен прозорец</translation>
 </phrase>
 
 <phrase>
@@ -14159,27 +14159,27 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>display splash screen</original>
-<translation>показвай начален екран</translation>
+<translation>Показвай начален екран</translation>
 </phrase>
 
 <phrase>
 <original>when images arrive from an external source (like Windows Explorer)</original>
-<translation>когато изображенията пристигат от външен източник (като Windows Explorer)</translation>
+<translation>Когато изображенията са от външен източник (като Windows Explorer)</translation>
 </phrase>
 
 <phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
-<translation>показвай опциите за тонално картографиране при импорт на HDR и RAW изображения</translation>
+<translation>Показвай опциите за тонално картографиране при импорт на HDR и RAW изображения</translation>
 </phrase>
 
 <phrase>
 <original>high-dynamic range (HDR) images</original>
-<translation>изображения с висок динамичен обхват (HDR)</translation>
+<translation>Изображения с висок динамичен обхват (HDR)</translation>
 </phrase>
 
 <phrase>
 <original>app instances</original>
-<translation>инстанции на приложението</translation>
+<translation>Копия на приложението</translation>
 </phrase>
 
 <phrase>
@@ -14199,22 +14199,22 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>display warning when image files aren't loaded successfully</original>
-<translation></translation>
+<translation>показвай предупреждение, когато файловете с изображения не се заредят успешно</translation>
 </phrase>
 
 <phrase>
 <original>broken files</original>
-<translation></translation>
+<translation>повредени файлове</translation>
 </phrase>
 
 <phrase>
 <original>load into this instance</original>
-<translation>Зареди в тази инстанция</translation>
+<translation>Зареди в това копие</translation>
 </phrase>
 
 <phrase>
 <original>load into a new PhotoDemon instance</original>
-<translation>Зареди в нова инстанция на PhotoDemon</translation>
+<translation>Зареди в ново копие на PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -14236,12 +14236,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save As", suggest this file format</original>
-<translation></translation>
+<translation>Когато използва "Запази като", предложи този файлов формат</translation>
 </phrase>
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>Когато се използва "Save"</translation>
+<translation>Когато се използва "Запази"</translation>
 </phrase>
 
 <phrase>
@@ -14266,7 +14266,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save As", set the initial folder to</original>
-<translation>при използване на "Save As", задайте началната папка към</translation>
+<translation>при използване на "Save As", задай началната папка към</translation>
 </phrase>
 
 <phrase>
@@ -14276,7 +14276,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>when using "Save" on a new image, suggest this file format</original>
-<translation></translation>
+<translation>Когато използва бутона "Запази" за ново изображение, предложи този формат на файла</translation>
 </phrase>
 
 <phrase>
@@ -14301,12 +14301,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>automatic (match format to image properties)</original>
-<translation></translation>
+<translation>автоматично (съвпадение формат и свойства на изображението)</translation>
 </phrase>
 
 <phrase>
 <original>This setting determines the initial file format suggestion for images that have never been saved before.  The "automatic" setting defaults to PDI (PhotoDemon's native format) for layered images, JPEG for single-layer images without transparency, and PNG for single-layer images with transparency.</original>
-<translation></translation>
+<translation>Тази настройка определя първоначалното предложение за файлов формат за изображения, които никога не са били записвани преди.  Настройката „автоматично“ по подразбиране е PDI (родният формат на PhotoDemon) за наслоени изображения, JPEG за еднослойни изображения без прозрачност и PNG за еднослойни изображения с прозрачност.</translation>
 </phrase>
 
 <phrase>
@@ -14648,7 +14648,7 @@ Are you sure you want to continue?</original>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Разработчиците на PhotoDemon отнасят поверителността много сериозно, затова никоя информация – статистическа или каквато и да е – не се качва по време на процеса на актуализиране. Актуализациите просто включват изтегляне на няколко малки XML файла от photodemon.org. Тези файлове съдържат последните версии на софтуера, приставките и езика. Ако бъдат намерени обновени версии и предпочитанията на потребителя позволяват, обновените файлове се изтеглят и автоматично се прилагат пачове.
+<translation>Разработчиците на PhotoDemon отнасят поверителността много сериозно, затова никоя информация – статистическа или каквато и да е – не се качва по време на процеса на актуализиране. Актуализациите просто включват изтегляне на няколко малки XML файла от photodemon.org. Тези файлове съдържат последните версии на софтуера, плъгините и езика. Ако бъдат намерени обновени версии и предпочитанията на потребителя позволяват, обновените файлове се изтеглят и автоматично се прилагат пачове.
 
 Ако все пак решите да изключите актуализациите, не забравяйте да посещавате photodemon.org от време на време, за да проверявате за нови версии.</translation>
 </phrase>
@@ -14729,17 +14729,17 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>add another folder</original>
-<translation>добави друга папка</translation>
+<translation>Добави друга папка</translation>
 </phrase>
 
 <phrase>
 <original>font folders</original>
-<translation>папки със шрифтове</translation>
+<translation>Папки със шрифтове</translation>
 </phrase>
 
 <phrase>
 <original>interface font</original>
-<translation>шрифт на интерфейса</translation>
+<translation>Шрифт на интерфейса</translation>
 </phrase>
 
 <phrase>
@@ -14749,12 +14749,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>maximum number of recent fonts to remember</original>
-<translation></translation>
+<translation>максимален брой скорошни шрифтове за запомняне</translation>
 </phrase>
 
 <phrase>
 <original>recent fonts</original>
-<translation></translation>
+<translation>скорошни шрифтове</translation>
 </phrase>
 
 <phrase>
@@ -14781,12 +14781,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>high-resolution mouse input</original>
-<translation>висококачествен вход от мишка</translation>
+<translation>Високопрецизно движение на мишката</translation>
 </phrase>
 
 <phrase>
 <original>scroll</original>
-<translation>превъртане</translation>
+<translation>Превъртане</translation>
 </phrase>
 
 <phrase>
