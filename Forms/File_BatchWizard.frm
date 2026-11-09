@@ -824,6 +824,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Added Nov 2026: this could be exposed to the user, but it would require new translations
+Private Const COPY_SOURCE_FILETIMES As Boolean = True
+
 'Currently active page in the wizard
 Private m_CurrentPage As Long
 
@@ -2006,6 +2009,14 @@ Private Sub PrepareForBatchConversion()
             'Load the target image
             If Loading.LoadFileAsNewImage(srcFilename, vbNullString, False, importDialogResults, False, overrideParams.GetParamString()) Then
                 
+                'If the load worked, cached any relevant source file information
+                Dim srcTimeAccess As Currency, srcTimeCreate As Currency, srcTimeModify As Currency
+                If COPY_SOURCE_FILETIMES Then
+                    srcTimeAccess = Files.FileGetTimeAsCurrency(srcFilename, PDFT_AccessTime)
+                    srcTimeCreate = Files.FileGetTimeAsCurrency(srcFilename, PDFT_CreateTime)
+                    srcTimeModify = Files.FileGetTimeAsCurrency(srcFilename, PDFT_WriteTime)
+                End If
+                
                 'Manually activate the just-loaded image
                 Dim tmpStack As pdStack
                 Set tmpStack = Nothing
@@ -2029,6 +2040,12 @@ Private Sub PrepareForBatchConversion()
                 ' TODO: metadata for animated images
                 ' TODO: track success/fail results and collate any failures into a list that we can report to the user
                 Saving.PhotoDemon_BatchSaveImage PDImages.GetActiveImage(), dstFilename, PDImages.GetActiveImage.GetCurrentFileFormat, finalSaveParams, m_ExportSettingsMetadata
+                
+                If COPY_SOURCE_FILETIMES And Files.FileExists(dstFilename) Then
+                    Files.FileSetTimeFromCurrency dstFilename, srcTimeAccess, PDFT_AccessTime
+                    Files.FileSetTimeFromCurrency dstFilename, srcTimeCreate, PDFT_CreateTime
+                    Files.FileSetTimeFromCurrency dstFilename, srcTimeModify, PDFT_WriteTime
+                End If
                 
                 'Unload the finished image
                 CanvasManager.FullPDImageUnload PDImages.GetActiveImageID()

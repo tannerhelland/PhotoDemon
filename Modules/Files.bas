@@ -420,6 +420,10 @@ Public Sub FileSelectInExplorer(ByRef srcFile As String)
     End If
 End Sub
 
+Public Function FileSetTimeFromCurrency(ByRef dstFile As String, ByVal newTime As Currency, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Boolean
+    If InitializeFSO Then FileSetTimeFromCurrency = m_FSO.FileSetTimeFromCurrency(dstFile, newTime, typeOfTime)
+End Function
+
 Public Function FileTestAccess_Read(ByVal srcFile As String, Optional ByRef dstLastDLLError As Long) As Boolean
     If InitializeFSO Then FileTestAccess_Read = m_FSO.FileTestAccess_Read(srcFile, dstLastDLLError)
 End Function

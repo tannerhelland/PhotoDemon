@@ -161,6 +161,7 @@ Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal ptr
 Private Declare Function ReplaceFileW Lib "kernel32" (ByVal lpReplacedFileName As Long, ByVal lpReplacementFileName As Long, ByVal lpBackupFileName As Long, ByVal dwReplaceFlags As Long, ByVal lpExclude As Long, ByVal lpReserved As Long) As Long
 Private Declare Function SetEndOfFile Lib "kernel32" (ByVal hFile As Long) As Long
 Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByVal lDistanceToMove As Long, ByRef lpDistanceToMoveHigh As Long, ByVal dwMoveMethod As FILE_POINTER_MOVE_METHOD) As Long
+Private Declare Function SetFileTime Lib "kernel32" (ByVal hFile As Long, ByVal ptrCreationTimeCurrency As Long, ByVal ptrLastAccessTimeCurrency As Long, ByVal ptrLastWriteTime As Long) As Long
 Private Declare Function UnmapViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 
@@ -1427,6 +1428,40 @@ Friend Function FileSetLength(ByVal hFile As Long, ByVal newLength As Long) As B
     If (hFile <> 0) Then
         If Me.FileMovePointer(hFile, newLength, FILE_BEGIN) Then FileSetLength = (SetEndOfFile(hFile) <> 0) Else FSOError "FileSetLength", "couldn't set file length", Err.LastDllError
     End If
+End Function
+
+'Sets varies types of file times from a source currency value.
+'
+'RETURNS: boolean TRUE if successful; FALSE if failed.
+Friend Function FileSetTimeFromCurrency(ByRef dstFile As String, ByVal srcTime As Currency, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Boolean
+    
+    Const FUNC_NAME As String = "FileSetTimeFromCurrency"
+    FileSetTimeFromCurrency = False
+    
+    'Open a writable handle to the target file
+    Dim hFile As Long
+    If Me.FileCreateHandle(dstFile, hFile, True, True) Then
+        If (hFile <> 0) Then
+            
+            Dim newTimeCreate As Currency, newTimeAccess As Currency, newTimeWrite As Currency
+            Select Case typeOfTime
+                Case PDFT_CreateTime
+                    FileSetTimeFromCurrency = (SetFileTime(hFile, VarPtr(srcTime), ByVal 0&, ByVal 0&) <> 0)
+                Case PDFT_AccessTime
+                    FileSetTimeFromCurrency = (SetFileTime(hFile, ByVal 0&, VarPtr(srcTime), ByVal 0&) <> 0)
+                Case PDFT_WriteTime
+                    FileSetTimeFromCurrency = (SetFileTime(hFile, ByVal 0&, ByVal 0&, VarPtr(srcTime)) <> 0)
+            End Select
+            
+            If (Not FileSetTimeFromCurrency) Then FSOError FUNC_NAME, "API error", Err.LastDllError
+            
+        Else
+            FSOError FUNC_NAME, "null handle: " & dstFile
+        End If
+    Else
+        FSOError FUNC_NAME, "failed to create handle: " & dstFile
+    End If
+    
 End Function
 
 'Test a file for READ access.  This is helpful before attempting to open a file, to see if some other process has
