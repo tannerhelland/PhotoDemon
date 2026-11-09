@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>bg-BG</langid>
 <langname>Български</langname>
-<langversion>2026.1.244</langversion>
+<langversion>2026.1.245</langversion>
 <langstatus>Автообновляем</langstatus>
 
 <author>jekovcar</author>
